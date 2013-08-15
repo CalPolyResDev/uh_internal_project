@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load dict_filters %}
+{% block meta %}
+<script type="text/javascript">
+	function completeOrientation() {
+		Dajaxice.resnet_internal.orientation.complete_orientation(Dajax.process,{'username':'{{request.user.username}}'});
+	};
+</script>
+{% endblock %}
+{% block subtitle %} | Orientation{% endblock %}
+
+{% block content %}
+<div id="content-2col">
+	<div id="content">
+		<div id="topContent">
+			<h1>Orientation</h1>
+		</div>
+		<div class="clear"></div>
+		<div>
+			<p>
+				Congratulations on your new position at ResNet! We look forward to having you as a new employee. Below is a short checklist of items that you will need to complete in order to gain access to all of our systems and payroll. Please try to get all of these taken care of as soon as possible.
+			</p>
+			<ul id="checklist">
+				{% if request.user.onity_complete %}
+				<li id="onity" class="checked">
+					Onity Door Access
+				</li>
+				{% else %}
+				<li id="onity">
+					<a href="{% url 'orientation-onity' %}">Onity Door Access</a>
+				</li>
+				{% endif %}
+
+				{% if request.user.srs_complete %}
+				<li id="srs" class="checked">
+					Ticket Manager/SRS Access
+				</li>
+				{% else %}
+				<li id="srs">
+					<a href="{% url 'orientation-srs' %}">Ticket Manager/SRS Access</a>
+				</li>
+				{% endif %}
+
+				{% if request.user.payroll_complete %}
+				<li id="payroll" class="checked">
+					Payroll Access
+				</li>
+				{% else %}
+				<li id="payroll">
+					<a href="{% url 'orientation-payroll' %}">Payroll Access</a>
+				</li>
+				{% endif %}
+			</ul>
+		</div>
+		{% if request.user.onity_complete and request.user.srs_complete and request.user.payroll_complete and not request.user.orientation_complete %}
+		<div>
+			<p>
+				You did it! That wasn't too hard, was it? Click the following button to complete your orientation <b>(you will be logged out after doing so)</b>:
+			</p>
+			<p>
+				<input type="button" onclick="completeOrientation()" value="Complete Orientation!" />
+			</p>
+		</div>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}

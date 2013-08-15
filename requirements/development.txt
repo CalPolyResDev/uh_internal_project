@@ -1,0 +1,8 @@
+# Development dependencies go here
+-r base.txt
+django-devserver==0.6.2
+coverage==3.6
+django-discover-runner==0.4
+Sphinx==1.2b1
+django-debug-toolbar==0.9.4
+django-debug-toolbar-user-panel-fc==1.0.1

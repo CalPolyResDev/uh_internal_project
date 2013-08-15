@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block meta %}
+{{ block.super }}
+<link href="/static/css/table.css" rel="stylesheet" type="text/css" media="screen" />
+<script type="text/javascript" src="/static/js/jquery.dataTables-1.9.4.min.js"></script>
+<script type="text/javascript" src="/static/js/resnet_internal.admin_csdMap.js"></script>
+<script type="text/javascript" src="/static/js/resnet_internal.admin_staffMap.js"></script>
+{% endblock %}
+
+{% block subtitle %} | User Mapping{% endblock %}
+
+{% block content %}
+<div id="content-2col">
+	<div id="content" style="width: 700px;">
+		<div id="splashOuter">
+			<!--<div id="splash"></div>-->
+		</div>
+		<div id="topContent">
+			<h1>CSD Domain Mapping</h1>
+		</div>
+		<div class="clear"></div>
+		<table id="csdMap">
+			<thead>
+				<tr>
+					<th><a href="#">ID</a></th>
+					<th><a href="#">Domain</a></th>
+					<th><a href="#">Name</a></th>
+					<th><a href="#">Alias</a></th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
+			</tfoot>
+			<tbody>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="clear"></div>
+		
+		<div id="topContent">
+			<h1>ResNet Staff Mapping</h1>
+		</div>
+		<div class="clear"></div>
+		<table id="rnStaffMap">
+			<thead>
+				<tr>
+					<th><a href="#">ID</a></th>
+					<th><a href="#">Title</a></th>
+					<th><a href="#">Name</a></th>
+					<th><a href="#">Alias</a></th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
+			</tfoot>
+			<tbody>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="clear"></div>
+	</div>
+</div>
+{% endblock %} 

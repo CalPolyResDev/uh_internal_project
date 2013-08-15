@@ -1,0 +1,248 @@
+/*table data editing*/
+.editbox {
+    display:none;
+    background-color:#ffffcc;
+    border:solid 1px #000;
+    padding:0;
+    width: 50%;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * DataTables display
+ */
+
+#content table {
+	border: none;
+	width:100%;
+}
+#content table th {
+	border: none;
+	border-bottom: #ccc solid 1px;
+	cursor: pointer;
+	color: rgb(0, 51, 0);
+    text-decoration: underline;
+}
+#content table td {
+	border: none;
+}
+.width0 {
+	width:0px;
+}
+.width100 {
+	width:100px;
+}
+.width150 {
+	width:150px;
+}
+.width50 {
+	width:50px;
+}
+.width200 {
+	width:200px;
+}
+.width55 {
+	width:55px;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * DataTables features
+ */
+
+.dataTables_wrapper {
+	width:100%;
+	position: relative;
+	clear: both;
+	zoom: 1; /* Feeling sorry for IE */
+}
+
+.dataTables_processing {
+	position: absolute;
+	top: 200px;
+	left:50%;
+	width: 250px;
+	height: 30px;
+	margin-left: -125px;
+	z-index: 100;
+	margin-top: -15px;
+	padding: 14px 0 2px 0;
+	border: 1px solid #ddd;
+	text-align: center;
+	color: #999;
+	font-size: 14px;
+	background-color: white;
+
+}
+
+.dataTables_length {
+	width: 40%;
+	float: left;
+	padding-bottom:20px;
+}
+
+.dataTables_filter {
+	width: 50%;
+	float: right;
+	text-align: right;
+	padding-bottom:20px;
+}
+
+.dataTables_info {
+	width: 60%;
+	float: left;
+}
+
+.dataTables_paginate {
+	float: right;
+	text-align: right;
+}
+
+/* Pagination nested */
+.paginate_disabled_previous, .paginate_enabled_previous,
+.paginate_disabled_next, .paginate_enabled_next {
+	height: 19px;
+	float: left;
+	cursor: pointer;
+	*cursor: hand;
+	color: #111 !important;
+}
+.paginate_disabled_previous:hover, .paginate_enabled_previous:hover,
+.paginate_disabled_next:hover, .paginate_enabled_next:hover {
+	text-decoration: none !important;
+}
+.paginate_disabled_previous:active, .paginate_enabled_previous:active,
+.paginate_disabled_next:active, .paginate_enabled_next:active {
+	outline: none;
+}
+
+.paginate_disabled_previous,
+.paginate_disabled_next {
+	color: #666 !important;
+}
+.paginate_disabled_previous, .paginate_enabled_previous {
+	padding-left: 23px;
+}
+.paginate_disabled_next, .paginate_enabled_next {
+	padding-right: 23px;
+	margin-left: 10px;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * DataTables sorting
+ */
+
+.sorting_asc {
+	background: url('/static/images/datatables/sort_asc.png') no-repeat center right #e8e9e5 !important;
+}
+
+.sorting_desc {
+	background: url('/static/images/datatables/sort_desc.png') no-repeat center right #e8e9e5 !important;
+}
+
+.sorting {
+	background: url('/static/images/datatables/sort_both.png') no-repeat center right #e8e9e5 !important;
+}
+
+th:active {
+	outline: none;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * DataTables row classes
+ */
+tr.odd {
+	background-color:transparent;
+}
+
+tr.even {
+	background-color: #f6f7f5;
+}
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * Misc
+ */
+
+.dataTables_empty {
+	text-align: center;
+}
+
+.paging_full_numbers {
+	width: 400px;
+	height: 22px;
+	line-height: 22px;
+}
+
+.paging_full_numbers a:active {
+	outline: none
+}
+
+.paging_full_numbers a:hover {
+	text-decoration: none;
+}
+
+.paging_full_numbers a.paginate_button,
+ 	.paging_full_numbers a.paginate_active {
+	border: 1px solid #aaa;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	padding: 2px 5px;
+	margin: 0 3px;
+	cursor: pointer;
+	*cursor: hand;
+	color: #333 !important;
+}
+
+.paging_full_numbers a.paginate_button {
+	background-color: #ddd;
+}
+
+.paging_full_numbers a.paginate_button:hover {
+	background-color: #ccc;
+	text-decoration: none !important;
+}
+
+.paging_full_numbers a.paginate_active {
+	background-color: #b5d6af;
+}
+
+/*
+ * Sorting classes for columns
+ */
+/* For the standard odd/even */
+tr.odd td.sorting_1 {
+	background-color: #e7e7e7;
+}
+tr.odd td.sorting_2 {
+	background-color: #e7e7e7;
+}
+tr.odd td.sorting_3 {
+	background-color: #e7e7e7;
+}
+
+tr.even td.sorting_1 {
+	background-color: #dbdbdb;
+}
+tr.even td.sorting_2 {
+	background-color: #dbdbdb;
+}
+tr.even td.sorting_3 {
+	background-color: #dbdbdb;
+}
+
+/*
+ * Custom Row Highlighting
+ *
+ */
+
+table.dataTable tr:hover {
+    background-color: #86BC7D;
+}
+
+table.dataTable tr:hover td.edit_trigger {
+	background: url('/static/images/datatables/edit.png') right no-repeat;
+	cursor:pointer;
+}
+
+tr:hover td.sorting_1, tr:hover td.sorting_2, tr:hover td.sorting_3 {
+	background-color: #86BC7D;
+}

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+{% load dajaxice_templatetags %}
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<meta name="layout" content="Cal Poly Web Template" />
+		<meta name="author" content="Alex Kavanaugh - ResNet Development Team" />
+		<meta name="keywords" content="Resnet Internal" />
+		<meta name="description" content="Residential Networking Services Internal Tools" />
+		<link href="{{STATIC_URL}}css/jqueryui/jqueryui-1.8.22.cp.css" rel="stylesheet" type="text/css" />
+		<link href="{{STATIC_URL}}common/css/cp_screen_3.4.css" rel="stylesheet" type="text/css" media="screen" />
+		<link href="{{STATIC_URL}}css/screen.css" rel="stylesheet" type="text/css" media="screen" />
+		<link href="{{STATIC_URL}}images/icons/favicon.ico" rel="shortcut icon" />
+		{% dajaxice_js_import %}
+		<script type="text/javascript" src="{{STATIC_URL}}js/jquery.dajax.core.js"></script>
+		<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.2.min.js"></script>
+		<script type="text/javascript">
+			function refreshDuties() {
+			    return false;
+				Dajaxice.resnet_internal.core.refresh_duties(Dajax.process);
+			};
+			function updateDuty(duty) {
+			    return false;
+				Dajaxice.resnet_internal.core.update_duty(Dajax.process,{'username':'{{request.user.username}}', 'duty': duty});
+				refreshDuties()
+			};
+		</script>
+		{% block meta %}{% endblock %}
+		<title>ResNet Internal - Online Tools{% block subtitle %}{% endblock %}</title>
+	</head>
+	<body {% if request.user.is_authenticated %}onload="refreshDuties()"{% endif %}>
+		<noscript><div id="noscript-padding"></div></noscript>
+		<div id="container">
+			<div id="header">
+				<div id="cplogo">
+					<a href="http://www.calpoly.edu/"><img src="{{STATIC_URL}}common/images/header/cp_logo.gif" alt="Cal Poly" title="Go to Cal Poly Home" width="166" height="60" /></a>
+				</div>
+				<div id="headercontent">
+					<a href="https://resnet.calpoly.edu"><img src="{{STATIC_URL}}images/resnetlogo.png" alt="ResNet Logo" title="Go to the ResNet home page" id="headerimage" height="50" width="136.5" /></a>
+					<div id="deptname">
+						<p id="department_name">
+							Residential Networking Services
+						</p>
+						<p id="optional_deptinfo">
+							<a href="{% url 'home' %}">ResNet Online Tools</a><font color="red">&nbsp;&nbsp;RC Alpha 0.1</font>
+						</p>
+					</div>
+				</div>
+				<!-- Begin Login Display Module -->
+				{% if request.user.is_authenticated %} {# User is logged in - display user information. #}
+					<div class="loginDisplay">
+						You are logged in as <span style="color: #A1B39C">{{ request.session.user_display_name }}</span>
+						<br />
+						{# Display User Specializations #}
+						{% for title in request.session.user_specializations %}
+							{{ title }}{% if not forloop.last %}, {% endif %}
+						{% endfor %}
+						<br />
+						(<a href="{% url 'logout' %}">Logout</a>)
+					</div>
+				{% else %} {# User is not logged in - display log in link. #}
+					<div class="loginDisplay">
+							You are not currently logged in.
+							<br />
+							(<a href="{% url 'login' %}">Login</a>)
+					</div>
+				{% endif %}
+				<!-- End Login Display Module -->
+				<div id="cp">
+					<p>
+						California Polytechnic State University
+					</p>
+				</div>
+			</div>
+			{% if request.user.is_authenticated and not request.user.is_new_tech %} {# User is logged in - display navigation bar. #}
+			<!-- Begin Navigation Bar -->
+			<div id="leftnav">
+				<h1>Navigation</h1>
+
+				{% if request.user.is_developer or request.user.is_staff or request.user.is_technician %}
+				<h2>Technician Tools</h2>
+				<ul>
+					<li>
+						<a href="/frame/portal/" target="_blank"><img src="{{STATIC_URL}}images/icons/calpoly.ico" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
+					</li>
+					<li>
+						<a href="/frame/srs/" target="_blank"><img src="{{STATIC_URL}}images/icons/ticket.png" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" />SRS Ticket Manager</a>
+					</li>
+					<li>
+						<a href="/frame/advocate/" target="_blank"><img src="{{STATIC_URL}}images/icons/advocate.ico" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
+					</li>
+					<li>
+						<a href="/frame/devices/"><img src="{{STATIC_URL}}images/icons/controller.png" alt="Device Manager" align="top" width="16" height="16" border="0" />Device Pass Through</a>
+					</li>
+					<!-- <li>
+						<a href="/frame/abuse/"><img src="{{STATIC_URL}}images/icons/log.png" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
+					</li> -->
+					<li>
+						<a href="/frame/aruba/"><img src="{{STATIC_URL}}images/icons/aruba.ico" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
+					</li>
+					<li>
+						<a href="/frame/cisco/" target="_blank"><img src="{{STATIC_URL}}images/icons/cisco.gif" alt="Cisco View" align="top" width="16" height="16" border="0" />Cisco View</a>
+					</li>
+					<li>
+						<a href="/frame/ccamgr/"><img src="{{STATIC_URL}}images/icons/cisco.gif" alt="Clean Access Manager" align="top" width="16" height="16" border="0" />CCA Manager</a>
+					</li>
+					<li>
+						<a href="/frame/wiki/"><img src="{{STATIC_URL}}images/icons/favicon.ico" alt="ResNet Wiki" align="top" width="16" height="16" border="0" />ResNet Wiki</a>
+					</li>
+				</ul>
+				{% endif %}
+
+                {% comment %}
+				{% if request.user.is_developer %}
+				<h2>Administration</h2>
+				<ul>
+					<li>
+						<a href="{% url 'userMap' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="User Mapping" align="top" width="16" height="16" border="0" />User Mapping</a>
+					</li>
+				</ul>
+				{% endif %}
+				{% endcomment %}
+
+				{% if request.user.is_developer or request.user.is_staff or request.user.is_technician or request.user.is_net_admin or request.user.is_telecom %}
+				<h2>Databases</h2>
+				<ul>
+					<li>
+						<a href="{% url 'residence_halls_wired_ports' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="Residence Halls Port Map" align="top" width="16" height="16" border="0" />Res Halls Port Map</a>
+					</li>
+					{% if request.user.is_developer %} {# or request.user.is_staff or request.user.is_domain_manager or request.user.is_osd or request.user.is_net_admin #}
+					<li>
+						<a href="#"><img src="{{STATIC_URL}}images/icons/database.png" alt="UH Computer Map" align="top" width="16" height="16" border="0" />UH Computer Map</a>
+					</li>
+					<li>
+						<a href="#"><img src="{{STATIC_URL}}images/icons/database.png" alt="UH Printer Map" align="top" width="16" height="16" border="0" />UH Printer Map</a>
+					</li>
+					{% endif %}
+				</ul>
+				{% endif %}
+
+				{% if request.user.is_developer %} {# or request.user.is_staff or request.user.is_technician #}
+				<h2>Equipment</h2>
+				<ul>
+					<li>
+						<a href="#"><img src="{{STATIC_URL}}images/icons/printer.png" alt="Printer Requests" align="top" width="16" height="16" border="0" />Printer Requests</a>
+					</li>
+					<ul>
+						<li>
+						<font size="1em"><a href="#">Check Inventory</a></font>
+					    </li>
+					</ul>
+					<li>
+						<a href="#"><img src="{{STATIC_URL}}images/icons/inventory.png" alt="Equipment Checkout" align="top" width="16" height="16" border="0" />Equipment Checkout</a>
+					</li>
+					<ul>
+						<li>
+						<font size="1em"><a href="#">Check Inventory</a></font>
+					    </li>
+					</ul>
+				</ul>
+				{% endif %}
+
+				{% if request.user.is_developer or request.user.is_staff or request.user.is_technician %}
+				<!-- Begin Daily Duties Widget -->
+				<div id="navcontent1">
+					<div class="gold" id="dailyDuties">
+						<h2 class="center">Daily Duties</h2>
+						<h3>Check Messages</h3>
+						<p>
+							Last Checked:
+							<br />
+							<font color="#900">retrieving data...</font>
+							<br />
+						</p>
+						<h3>Check Email</h3>
+						<p>
+							Last Checked:
+							<br />
+							<font color="#900">retrieving data...</font>
+							<br />
+						</p>
+						<h3>Check Tickets</h3>
+						<p>
+							Last Checked:
+							<br />
+							<font color="#900">retrieving data...</font>
+							<br />
+						</p>
+						<h3></h3>
+						<p>
+							Note: Times update upon click of task title link.
+						</p>
+					</div>
+				</div>
+				<!-- End Daily Duties Widget -->
+				{% endif %}
+			</div>
+			<!-- End Navigation Bar -->
+			{% endif %}
+			{% block content %}{% endblock %}
+			<div id="footer">
+				<div id="footer_links">
+					<p>
+						<a href="http://get.adobe.com/reader/" title="Download Adobe Reader for viewing PDFs">Get Adobe Reader</a>					</p>
+				</div>
+				<div id="footer_deptlinks">
+					<ul>
+						<li class="removeBullet">
+							<a href="https://housing.calpoly.edu">University Housing</a>
+						</li>
+						<li>
+							<a href="https://residentiallife.calpoly.edu">Residential Life &amp; Education</a>
+						</li>
+						<li>
+							<a href="https://resnet.calpoly.edu">Residential Networking Services</a>
+						</li>
+					</ul>
+					<img src="{{STATIC_URL}}images/django_logo_negative.png" width="136px" height="60px" class="djangoLogo" />
+				</div>
+				<div id="footer_deptinfo">
+					<p>
+						ResNet Development Team
+						<br />
+						California Polytechnic State University
+						<br />
+						San Luis Obispo, CA 93401
+						<br />
+						<a href="mailto:resdev@calpoly.edu">resdev@calpoly.edu</a>
+					</p>
+				</div>
+			</div>
+		</div>
+		{% block extra_script %}{% endblock %}
+		<noscript>
+        	<div id="noscript-warning">Many applications on this website require that JavaScript be enabled. Please do so.</div>
+    	</noscript>
+	</body>
+</html>

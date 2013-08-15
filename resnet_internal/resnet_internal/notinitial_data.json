@@ -1,0 +1,249 @@
+[
+   {
+      "pk":1,
+      "model":"contenttypes.contenttype",
+      "fields":{
+         "model":"permission",
+         "name":"permission",
+         "app_label":"auth"
+      }
+   },
+   {
+      "pk":2,
+      "model":"contenttypes.contenttype",
+      "fields":{
+         "model":"group",
+         "name":"group",
+         "app_label":"auth"
+      }
+   },
+   {
+      "pk":3,
+      "model":"contenttypes.contenttype",
+      "fields":{
+         "model":"contenttype",
+         "name":"content type",
+         "app_label":"contenttypes"
+      }
+   },
+   {
+      "pk":4,
+      "model":"contenttypes.contenttype",
+      "fields":{
+         "model":"session",
+         "name":"session",
+         "app_label":"sessions"
+      }
+   },
+   {
+      "pk":5,
+      "model":"contenttypes.contenttype",
+      "fields":{
+         "model":"logentry",
+         "name":"log entry",
+         "app_label":"admin"
+      }
+   },
+   {
+      "pk":6,
+      "model":"contenttypes.contenttype",
+      "fields":{
+         "model":"csdmapping",
+         "name":"csd mapping",
+         "app_label":"core"
+      }
+   },
+   {
+      "pk":7,
+      "model":"contenttypes.contenttype",
+      "fields":{
+         "model":"resnetinternaluser",
+         "name":"ResNet Internal User",
+         "app_label":"core"
+      }
+   },
+   {
+      "pk":8,
+      "model":"contenttypes.contenttype",
+      "fields":{
+         "model":"dailyduties",
+         "name":"daily duties",
+         "app_label":"core"
+      }
+   },
+   {
+      "pk":9,
+      "model":"contenttypes.contenttype",
+      "fields":{
+         "model":"staffmapping",
+         "name":"staff mapping",
+         "app_label":"core"
+      }
+   },
+   {
+      "pk":1,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Chuck Petranek",
+         "csd_alias":"cpetrane",
+         "csd_domain":"Fremont"
+      }
+   },
+   {
+      "pk":2,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Lauren Wilson",
+         "csd_alias":"lwilso06",
+         "csd_domain":"Muir"
+      }
+   },
+   {
+      "pk":3,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Allison Keuch",
+         "csd_alias":"akeuch",
+         "csd_domain":"Santa Lucia/North Mountain"
+      }
+   },
+   {
+      "pk":4,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Greg Haines",
+         "csd_alias":"ghaines",
+         "csd_domain":"Sequoia"
+      }
+   },
+   {
+      "pk":5,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Sarah Fernandez",
+         "csd_alias":"ssfernan",
+         "csd_domain":"Sierra Madre"
+      }
+   },
+   {
+      "pk":6,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Christina Tutt",
+         "csd_alias":"ctutt",
+         "csd_domain":"Tenaya"
+      }
+   },
+   {
+      "pk":7,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Briana Enriquez",
+         "csd_alias":"bnenriqu",
+         "csd_domain":"Trinity"
+      }
+   },
+   {
+      "pk":8,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Hunter Simmons",
+         "csd_alias":"hasimmon",
+         "csd_domain":"Yosemite"
+      }
+   },
+   {
+      "pk":9,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Laurel Eby",
+         "csd_alias":"leby",
+         "csd_domain":"Cerro Vista 1"
+      }
+   },
+   {
+      "pk":10,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Emily Kalstad",
+         "csd_alias":"ekalstad",
+         "csd_domain":"Cerro Vista 2"
+      }
+   },
+   {
+      "pk":11,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Erica Little",
+         "csd_alias":"eslittle",
+         "csd_domain":"Poly Canyon Village 1"
+      }
+   },
+   {
+      "pk":12,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Tim Bethune",
+         "csd_alias":"tbethune",
+         "csd_domain":"Poly Canyon Village 2"
+      }
+   },
+   {
+      "pk":13,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Andy Lopinot",
+         "csd_alias":"alopinot",
+         "csd_domain":"Poly Canyon Village 3"
+      }
+   },
+   {
+      "pk":14,
+      "model":"core.csdmapping",
+      "fields":{
+         "csd_name":"Test User",
+         "csd_alias":"uh-test",
+         "csd_domain":"Variable Domain"
+      }
+   },
+   {
+      "pk":1,
+      "model":"core.staffmapping",
+      "fields":{
+         "staff_title":"ResNet: Resident Coordinator",
+         "staff_ext":5602,
+         "staff_alias":"jabney",
+         "staff_name":"Jeannie Abney"
+      }
+   },
+   {
+      "pk":2,
+      "model":"core.staffmapping",
+      "fields":{
+         "staff_title":"ResNet: Assistant Resident Coordinator",
+         "staff_ext":5619,
+         "staff_alias":"jfporter",
+         "staff_name":"Jeffrey F. Porter"
+      }
+   },
+   {
+      "pk":3,
+      "model":"core.staffmapping",
+      "fields":{
+         "staff_title":"Housing: Information Technology Consultant",
+         "staff_ext":7159,
+         "staff_alias":"jagibson",
+         "staff_name":"Julie Gibson"
+      }
+   },
+   {
+      "pk":4,
+      "model":"core.staffmapping",
+      "fields":{
+         "staff_title":"ITS: SRS Account Manager",
+         "staff_ext":2516,
+         "staff_alias":"awest",
+         "staff_name":"Anita West"
+      }
+   }
+]

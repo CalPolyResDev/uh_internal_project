@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load dict_filters %}
+{% block meta %}
+<script type="text/javascript">
+	function completeTask(task) {
+		Dajaxice.resnet_internal.orientation.complete_task(Dajax.process,{'username':'{{request.user.username}}', 'task': task});
+	};
+</script>
+{% endblock %}
+{% block subtitle %} | Orientation{% endblock %}
+
+{% block content %}
+<div id="content">
+	<div id="mainLeftFull">
+		<h1>Orientation - SRS Access</h1>
+		<p>
+			The SRS (Service Request System) is a tool we technicians use on a daily basis to log troubleshooting efforts and request service from other departments. More information on what the SRS is used for, along with how it is used, can be found in the wiki.
+		</p>
+		<p>
+			To gain access to the SRS Manager, you must first fill out this <a href="{{MEDIA_URL}}forms/RUP_Student_Agreement.pdf" target="_blank">Responsible Use Policy Agreement (RUP)</a>, sign it, scan it, and then upload it below.
+		</p>
+
+		<p>
+			Once you upload your signed RUP, an account request will be created in your name. It can take up to a week to process the request, so please be patient.
+		</p>
+
+	</div>
+	<div>
+		<form method="post" enctype="multipart/form-data" id="srs_upload_form">
+			<fieldset>
+				<legend>
+					Please upload your signed RUP below. It must be a .pdf file:
+				</legend>
+				<p>
+					{{ form.non_field_errors }}
+				</p>
+				{% for field in form %}
+				<p>
+					{{ field.errors }}
+					{{ field }}
+				</p>
+				{% endfor %}
+			</fieldset>
+			<p>
+				<input type="submit" value="Upload" />
+			</p>
+			{% csrf_token %}
+		</form>
+	</div>
+
+	<div>
+		<p>
+			Once you gain access to the SRS, click the following button to take this item off the checklist:
+		</p>
+		<p>
+			<input type="button" onclick="completeTask('srs')" value="I am Able to Access the SRS" />
+		</p>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{# Major credit to Kyle Fast for saving a couple months' worth of work entering database info #}
+{% extends "base.html" %}
+
+{% block meta %}
+{{ block.super }}
+<link href="/static/css/table.css" rel="stylesheet" type="text/css" media="screen" />
+<script type="text/javascript" src="/static/js/jquery.dataTables-1.9.4.min.js"></script>
+<script type="text/javascript" src="/static/js/resnet_internal.computerMap.js"></script>
+<script type="text/javascript"> 
+/* Superior Web Systems */ 
+function displayHideBox(boxNumber) 
+{ 
+    if(document.getElementById("LightBox"+boxNumber).style.display=="none") {
+        document.getElementById("LightBox"+boxNumber).style.display="block";
+        document.getElementById("grayBG").style.display="block"; 
+    } else { 
+        document.getElementById("LightBox"+boxNumber).style.display="none";
+        document.getElementById("grayBG").style.display="none"; 
+    } 
+} 
+</script>
+<style> 
+.grayBox{ 
+    position: fixed; 
+    top: 0%; 
+    left: 0%; 
+    width: 100%; 
+    height: 100%; 
+    background-color: black; 
+    z-index:1001; 
+    -moz-opacity: 0.8; 
+    opacity:.80; 
+    filter: alpha(opacity=80); 
+} 
+.box_content { 
+    position: fixed; 
+    top: 25%; 
+    left: 30%; 
+    right: 30%; 
+    width: 40%; 
+    padding: 16px; 
+    z-index:1002; 
+    overflow: auto; 
+} 
+</style>
+{% endblock %}
+
+{% block subtitle %} | University Housing Computer Map{% endblock %}
+
+{% block content %}
+<div id="content-2col">
+	<div id="content">
+		<div id="splashOuter">
+			<!--<div id="splash"></div>-->
+		</div>
+		<div id="topContent">
+			<h1>University Housing Computer Map</h1>
+		</div>
+		<div class="clear"></div>
+		<table id="computerMap">
+			<thead>
+				<tr>
+					<th><a href="#">Serial Number</a></th>
+					<th><a href="#">Department</a></th>
+					<th><a href="#">Sub Department</a></th>
+					<th><a href="#">Computer Name</a></th>
+					<th><a href="#">IP Address</a></th>
+					<th><a href="#">MAC Address</a></th>
+					<th><a href="#">Description</a></th>
+					<th><a href="#">Model</a></th>
+					<th><a href="#">OU Path</a></th>
+					<th><a href="#">Configuration Manager Status</a></th>
+					<th><a href="#">Pinhole Info</a></th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+					<th></th>
+				</tr>
+			</tfoot>
+			<tbody>
+				<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="clear"></div>
+	</div>
+</div>
+{% endblock %} 

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block subtitle %} | Authentication{% endblock %}
+
+{% block content %}
+  <div id="content-2col">
+    <div id="content">
+      <div id="splashOuter">
+        {# <div id="splash"></div> #}
+      </div>
+      <div id="topContent">
+        <h1>Authentication</h1>
+      </div>
+      <div id="login_form">
+	      <form method="post" id="id_form">
+			<fieldset>
+				<legend>Please Log In to Continue</legend>
+					{{ form.as_p }}
+			</fieldset>
+			<p>
+				<input type="submit" value="Submit" />
+				<input type="reset" value="Reset" />
+			</p>
+			{% csrf_token %}
+		  </form>
+      </div>
+      <div class="clear"></div>
+    </div>
+  </div>
+{% endblock %}

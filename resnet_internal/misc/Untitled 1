@@ -1,0 +1,25 @@
+Generate Log Data-------------------------------------------------------------------------
+import datetime
+from resnet_internal.judicialManager.log_utils import parse_logs
+datetime_string = '2012-05-12 14:09:28'
+ip_address = '198.188.154.41'
+search_datetime = datetime.datetime.strptime(datetime_string, '%Y-%m-%d %H:%M:%S')
+parser = parse_logs(search_datetime, ip_address)
+
+for gather_pass in parser.log_data:
+	print "\n----" + gather_pass + "----"
+	for attribute in parser.log_data[gather_pass]:
+		print attribute + ":"
+		print parser.log_data[gather_pass][attribute]
+
+
+Get Address------------------------------------------------------------------------------------------
+from resnet_internal.rmsConnector import models
+from resnet_internal.rmsConnector.utils import get_current_terms
+
+userID = 'akavanau'
+email = userID + '@calpoly.edu'
+
+rmsID =  models.PpleTAddress.objects.using('rms').filter(e_mail = email)[0].ck_rms_id_id
+address = models.RmgtTRoomPerson.objects.using('rms').filter(ck_rms_id_id = rmsID, fk_term_id__pk_term_id__icontains = get_current_terms()[1][:-2])[0].ck_bed_space[:-1]
+print address

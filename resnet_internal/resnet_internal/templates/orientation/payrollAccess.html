@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load dict_filters %}
+{% block meta %}
+<script type="text/javascript">
+	function completeTask(task) {
+		Dajaxice.resnet_internal.orientation.complete_task(Dajax.process,{'username':'{{request.user.username}}', 'task': task});
+	};
+</script>
+{% endblock %}
+{% block subtitle %} | Orientation{% endblock %}
+
+{% block content %}
+<div id="content">
+	<div id="mainLeftFull">
+		<h1>Orientation - Payroll Access</h1>
+		<p>
+			A few forms must be filled out and processed before you can bill the hours you will work.
+		</p>
+		<p>
+			Download the following forms, fill them out, and bring them to the Payroll office (Administration Building, Room 107):
+			<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{MEDIA_URL}}forms/SERF.pdf" target="_blank">Student Employment Request Form (SERF)</a>
+			<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{MEDIA_URL}}forms/CSU_Form_SSA-1945.pdf" target="_blank">Statement Concerning Your Employment in a Job Not Covered By Social Security (CSU SSA-1945)</a>
+			<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.uscis.gov/files/form/i-9.pdf" target="_blank">DHS Employment Eligibility Verification (Form I-9)</a>
+			<br />
+		</p>
+
+		<p>
+			More information on the subject can be found on the <a href="https://afd.calpoly.edu/payroll/student_employment.asp" target="_blank">Payroll Services website</a>.
+		</p>
+	</div>
+
+	<div>
+		<p>
+			Once you've submitted your paperwork, click the following button to take this item off the checklist:
+		</p>
+		<p>
+			<input type="button" onclick="completeTask('payroll')" value="I Have Submitted the Required Payroll Paperwork" />
+		</p>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+@charset "UTF-8";
+/*========================================================================
+Cal Poly Template Custom Web Stylesheet
+
+Add custom styles for your web site here.
+=========================================================================*/
+body {
+	min-width: 1034px;
+}
+
+.djangoLogo {
+	margin-top: -5px;
+	padding-left: 10px;
+}
+
+#leftnav ul li a img {
+	padding-right: 5px;
+}
+
+.loginDisplay {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #fff;
+	font-size: 80%;
+	float: right;
+	text-align: right;
+	margin: 10px;
+}
+
+.loginDisplay a {
+	color: #A1B39C;
+	text-decoration: none;
+}
+
+.loginDisplay a:hover {
+	text-decoration: underline;
+}
+
+#checklist {
+	list-style-image: url('/static/images/checkbox_unchecked.png')
+}
+
+#checklist .checked {
+	list-style-image: url('/static/images/checkbox_checked.png')
+}
+
+#email_form textarea {
+	width: 100%;
+}
+
+#noscript-padding {
+	padding-top: 1.5em;
+}
+
+#noscript-warning {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    z-index: 1000000;
+    text-align: center;
+    font-weight: bold;
+    font-size: 90%;
+    color: rgb(255, 255, 255);
+    background-color: rgb(174, 0, 0);
+    padding: 5px 0px;
+}

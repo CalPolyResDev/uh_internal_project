@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load dict_filters %}
+{% block meta %}
+<script type="text/javascript">
+	function completeTask(task) {
+		Dajaxice.resnet_internal.orientation.complete_task(Dajax.process,{'username':'{{request.user.username}}', 'task': task});
+	};
+</script>
+{% endblock %}
+
+{% block subtitle %} | Orientation{% endblock %}
+
+{% block content %}
+<div id="content">
+	<div id="mainLeftFull">
+		<h1>Orientation - Onity Door Access</h1>
+		<p>
+			After getting your PolyCard coded, you will be able to use it to get into both ResNet offices. More information about how to use your card and which doors it will open can be found in the wiki.
+		</p>
+
+		<p>
+			<b>To get your card coded:</b>
+			<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;Contact {{data.onityStaffName}} (Housing and Business Services)
+			<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Phone: 6-{{data.onityStaffExt}}
+			<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Email: {{data.onityStaffEmail}}
+			<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Office: The office behind Trinity Hall (near the study lounge and laundry room)
+			<br />
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Office Hours: 9am-5pm M-F
+			<br />
+			<br />
+
+			You may call this person, visit his/her office during hours of operation, or use the following email submission form:
+		</p>
+		<div>
+			<form method="post" id="email_form">
+				<fieldset>
+					<legend>
+						Send an email to {{data.onityStaffName}} (optional):
+					</legend>
+					<p>
+						{{ form.non_field_errors }}
+					</p>
+					{% for field in form %}
+					<p>
+						{{ field.errors }}
+						{{ field }}
+					</p>
+					{% endfor %}
+				</fieldset>
+				<p>
+					<input type="submit" value="Send" />
+					<input type="reset" value="Reset" />
+				</p>
+				{% csrf_token %}
+			</form>
+		</div>
+
+		<div>
+			<p>
+				If your PolyCard has been encoded, click the following button to take this item off the checklist:
+			</p>
+			<p>
+				<input type="button" onclick="completeTask('onity')" value="My PolyCard Has Been Encoded" />
+			</p>
+		</div>
+	</div>
+</div>
+{% endblock %}
