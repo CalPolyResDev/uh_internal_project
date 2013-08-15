@@ -213,7 +213,6 @@ LDAP_GROUPS_ATTRIBUTE_LIST = ['displayName', 'sAMAccountName', 'distinguishedNam
 # ======================================================================================================== #
 
 # Cookie settings.
-SESSION_COOKIE_NAME = 'MordorSessionID'
 SESSION_COOKIE_HTTPONLY = True
 
 # Session expiraton
@@ -237,7 +236,7 @@ MEDIA_URL = '/media/'
 # The directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
-MEDIA_ROOT = PROJECT_DIR.child("static")
+STATIC_ROOT = PROJECT_DIR.child("static")
 
 # URL prefix for static files. Make sure to use a trailing slash.
 STATIC_URL = '/static/'

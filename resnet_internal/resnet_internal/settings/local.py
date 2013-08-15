@@ -3,6 +3,8 @@ from .base import *
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+SESSION_COOKIE_NAME = 'MordorSessionID'
+
 CONCURRENT_RANDOM_DELAY = True
 
 DATABASES["default"] = {
