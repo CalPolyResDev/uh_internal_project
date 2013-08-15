@@ -7,15 +7,6 @@ SESSION_COOKIE_NAME = 'MordorSessionID'
 
 CONCURRENT_RANDOM_DELAY = True
 
-DATABASES["default"] = {
-    'ENGINE': 'django.db.backends.mysql',
-    'NAME': 'test_resnet_internal',
-    'USER': 'root',
-    'PASSWORD': "In7ru&e!",
-    'HOST': 'uh-rivendell.housing.calpoly.edu',
-    'PORT': '3306',
-}
-
 
 # ======================================================================================================== #
 #                                          Debugging Configuration                                         #
