@@ -23,6 +23,6 @@ SECURE_BROWSER_XSS_FILTER = True
 #                                  File/Application Handling Configuration                                 #
 # ======================================================================================================== #
 
-MIDDLEWARE_CLASSES += ('djangosecure.middleware.SecurityMiddleware')
+MIDDLEWARE_CLASSES += ('djangosecure.middleware.SecurityMiddleware',)
 
-INSTALLED_APPS += ('djangosecure')
+INSTALLED_APPS += ('djangosecure',)
