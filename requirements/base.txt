@@ -1,4 +1,4 @@
-Django==1.5.1
+Django==1.5.2
 django-braces==1.0.0
 django-model-utils==1.4.0
 django-auth-ldap==1.1.4
@@ -8,13 +8,11 @@ django-datatables-view==1.6
 logutils==0.3.3
 requests==1.2.3
 South==0.7.6
-#reportlab==2.7
-#PIL==1.1.7
-#Pillow==2.0.0
 python-dateutil==2.1
 colorama==0.2.5
 unipath==1.0
-raven==3.4.0
+raven==3.4.1
+git+https://uh-hornrock.housing.calpoly.edu/stash/scm/rmsc/rmsconnector.git@2f2aba6#egg=rmsconnector
 
 # Manual Install
 python-ldap==2.4.13

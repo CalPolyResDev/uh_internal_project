@@ -25,7 +25,7 @@ class SRSRouter(object):
     # Returns a database match if the model matches a "srsConnector" model
     #
     def db_for_read(self, model, **hints):
-        if self._app(model) == 'srsConnector' and self._mod(model) in MODELS:
+        if self._app(model) == 'srsconnector' and self._mod(model) in MODELS:
             return ALIAS
         return None
 
@@ -33,7 +33,7 @@ class SRSRouter(object):
     # Returns a database match if the model matches a "srsConnector" model
     #
     def db_for_write(self, model, **hints):
-        if self._app(model) == 'srsConnector' and self._mod(model) in MODELS:
+        if self._app(model) == 'srsconnector' and self._mod(model) in MODELS:
             return ALIAS
         return None
 
@@ -47,6 +47,6 @@ class SRSRouter(object):
     # Forbids table synchronization for "srsConnector" models
     #
     def allow_syncdb(self, db, model):
-        if self._app(model) == 'srsConnector' and self._mod(model) in MODELS:
+        if self._app(model) == 'srsconnector' and self._mod(model) in MODELS:
             return False
         return None

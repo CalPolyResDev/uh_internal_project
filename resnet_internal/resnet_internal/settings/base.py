@@ -107,7 +107,7 @@ DATABASES = {
         'PORT': '1521',
     },
     'srs': {
-        'ENGINE': 'srsconnector.ewiz',
+        'ENGINE': 'django_ewiz',
         'NAME': 'Calpoly Test',
         'USER': 'resnetapi@calpoly.edu',
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_SRS_PASSWORD'),
@@ -117,9 +117,9 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = (
-    'portmap.routers.PortmapRouter',
+    'resnet_internal.portmap.routers.PortmapRouter',
     'rmsconnector.routers.RMSRouter',
-#    'srsconnector.routers.SRSRouter',
+    'srsconnector.routers.SRSRouter',
 )
 
 # ======================================================================================================== #
@@ -299,7 +299,8 @@ INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
     'dajaxice',
     'rmsconnector',
-#    'srsconnector',
+    'srsconnector',
+    'django_ewiz',
     'resnet_internal.core',
     'resnet_internal.core.templatetags',
 #    'resnet_internal.orientation',
