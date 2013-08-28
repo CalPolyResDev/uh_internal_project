@@ -82,6 +82,14 @@ DATABASES = {
         'HOST': 'uh-rivendell.housing.calpoly.edu',
         'PORT': '3306',
     },
+    'common': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'common',
+        'USER': 'common',
+        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_COMMON_PASSWORD'),
+        'HOST': 'uh-rivendell.housing.calpoly.edu',
+        'PORT': '3306',
+    },
     'portmap': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'portmap',

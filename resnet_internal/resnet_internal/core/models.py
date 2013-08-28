@@ -14,6 +14,8 @@ from django.db.models import Model, CharField, IntegerField, TextField, DateTime
 from django.utils.http import urlquote
 from django.core.mail import send_mail
 
+DATABASE_ALIAS = "common"
+
 
 class DailyDuties(Model):
     """Daily Duties Information"""
@@ -31,6 +33,11 @@ class CSDMapping(Model):
     csd_name = CharField(max_length=50, verbose_name=u'CSD Full Name')
     csd_alias = CharField(max_length=8, verbose_name=u'CSD Alias')
 
+    class Meta:
+        db_table = u'csdmapping'
+        managed = False
+        verbose_name = u'CSD Domain Mapping'
+
 
 class StaffMapping(Model):
     """A mapping of various department staff to their respective positions."""
@@ -39,6 +46,11 @@ class StaffMapping(Model):
     staff_name = CharField(max_length=50, verbose_name=u'Staff Full Name')
     staff_alias = CharField(max_length=8, verbose_name=u'Staff Alias')
     staff_ext = IntegerField(max_length=4, verbose_name=u'Staff Telephone Extension')
+
+    class Meta:
+        db_table = u'staffmapping'
+        managed = False
+        verbose_name = u'Campus Staff Mapping'
 
 
 class ResNetInternalUser(AbstractBaseUser):
