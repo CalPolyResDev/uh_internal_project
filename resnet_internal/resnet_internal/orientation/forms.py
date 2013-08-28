@@ -1,15 +1,18 @@
-from django import forms
+"""
+.. module:: resnet_internal.orientation.forms
+   :synopsis: ResNet Internal Orientation Forms.
+
+.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+
+"""
+
 import os
 
-#
-# ResNet Internal Orientation forms
-#
-# Author: Alex Kavanaugh
-# Email:  kavanaugh.development@outlook.com
-#
+from django.forms import Form, CharField, FileField, Textarea, ValidationError
 
-class SRSUploadForm(forms.Form):
-    signed_rup = forms.FileField(required=True)
+
+class SRSUploadForm(Form):
+    signed_rup = FileField(required=True)
 
     def clean(self):
         cleaned_data = super(SRSUploadForm, self).clean()
@@ -19,8 +22,9 @@ class SRSUploadForm(forms.Form):
                 ext = os.path.splitext(name)[1]
                 ext = ext.lower()
                 if ext != '.pdf':
-                    raise forms.ValidationError("The RUP you tried uploading is not a PDF file. It's okay; you're still new here... (love, Alex)")
+                    raise ValidationError("The RUP you tried uploading is not a PDF file. It's okay; you're still new here... (love, Alex)")
         return cleaned_data
 
-class OnityEmailForm(forms.Form):
-    message = forms.CharField(widget=forms.Textarea, error_messages={'required': 'The message field cannot be left blank.'}, required=True)
+
+class OnityEmailForm(Form):
+    message = CharField(widget=Textarea, error_messages={'required': 'The message field cannot be left blank.'}, required=True)

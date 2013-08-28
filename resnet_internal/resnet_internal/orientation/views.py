@@ -1,139 +1,73 @@
-from django.shortcuts import render_to_response
-from django.template.context import RequestContext
-from django.views.generic.edit import View
-from django.contrib.auth.decorators import user_passes_test
-from django.utils.decorators import method_decorator
+"""
+.. module:: resnet_internal.orientation.views
+   :synopsis: ResNet Internal Orientation Views.
+
+.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+
+"""
+
+from django.conf import settings
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
-#from resnet_internal.main.models import StaffMapping
-from forms import SRSUploadForm, OnityEmailForm
 from django.http.response import HttpResponseRedirect
-from django.conf import settings
+from django.views.generic.edit import FormView
+
+from django_ewiz import EwizAttacher
 from srsconnector.settings import ALIAS as SRS_ALIAS
 from srsconnector.models import AccountRequest
-from srsconnector.ewiz.attacher import EwizAttacher
 
-#
-# Resnet Internal Orientation views
-#
-# Author: Alex Kavanaugh
-# Email:  kavanaugh.development@outlook.com
-#
+from resnet_internal.core.models import StaffMapping, DATABASE_ALIAS
+from .forms import SRSUploadForm, OnityEmailForm
 
-#
-# Permissions Test
-#
-def orientation_test(user):
-    if user.is_authenticated and (user.is_developer or user.is_new_tech):
-        return True
-    return False
 
-#
-# Orientation Checklist
-#
-class ChecklistView(View):
-    template_name = 'orientation/checklist.html'
+class OnityDoorAccessView(FormView):
+    """Orientation Checklist Item: Onity Door Access."""
 
-    def __render(self):
-        self.request.session.set_test_cookie()
-        return render_to_response(self.template_name, context_instance=RequestContext(self.request))
+    template_name = "orientation/onityDoorAccess.html"
+    form_class = OnityEmailForm
 
-    @method_decorator(user_passes_test(orientation_test))
-    def dispatch(self, *args, **kwargs):
-        return super(ChecklistView, self).dispatch(*args, **kwargs)
+    def get_initial(self):
+        full_name = self.request.user.get_full_name()
+        first_name = self.request.user.first_name
+        initial_message = "To Whom It May Concern:\n\nMy name is %s. I've just been hired as a ResNet technician and would like to set up an appointment to get my PolyCard coded for Onity Door Access to the ResNet offices.\n\nSincerely,\n%s" % (full_name, first_name)
 
-    def get(self, *args, **kwargs):
-        return self.__render()
+        return {'message': initial_message}
 
-#
-# Orientation Checklist Item: Onity Door Access
-#
-# class OnityDoorAccessView(View):
-#     template_name = "orientation/onityDoorAccess.html"
-#     form = None
-#     data = None
-# 
-#     def __render(self):
-#         self.request.session.set_test_cookie()
-#         onityStaff = StaffMapping.objects.get(staff_title="Housing: Information Technology Consultant")
-#         self.data = {'onityStaffName': onityStaff.staff_name, 'onityStaffEmail': onityStaff.staff_alias + u'@calpoly.edu', 'onityStaffExt': onityStaff.staff_ext}
-# 
-#         return render_to_response(self.template_name, {"form": self.form, "data": self.data}, context_instance=RequestContext(self.request))
-# 
-#     @method_decorator(user_passes_test(orientation_test))
-#     def dispatch(self, *args, **kwargs):
-#         return super(OnityDoorAccessView, self).dispatch(*args, **kwargs)
-# 
-#     def post(self, *args, **kwargs):
-#         self.form = OnityEmailForm(data=self.request.POST)
-# 
-#         if self.form.is_valid():
-#             send_mail(subject="New ResNet Technician Onity Door Access Appointment", message=self.form.cleaned_data.get('message'), from_email=self.request.user.email, recipient_list=["alex.kavanaugh@outlook.com"], fail_silently=False)
-#             return HttpResponseRedirect(reverse('orientation-checklist'))
-# 
-#         if self.request.session.test_cookie_worked():
-#             self.request.session.delete_test_cookie()
-#         return self.__render()
-# 
-#     def get(self, *args, **kwargs):
-#         fullName = self.request.user.get_full_name()
-#         firstName = self.request.user.first_name
-#         initialMessage = "To Whom It May Concern:\n\nMy name is " + fullName + ". I've just been hired as a ResNet technician and would like to set up an appointment to get my PolyCard coded for Onity Door Access to the ResNet offices.\n\nSincerely,\n" + firstName
-#         self.form = OnityEmailForm(initial={'message': initialMessage})
-#         return self.__render()
+    def get_context_data(self, **kwargs):
+        context = super(OnityDoorAccessView, self).get_context_data(**kwargs)
 
-#
-# Orientation Checklist Item: SRS Access
-#
-class SRSAccessView(View):
+        onity_staff = StaffMapping.objects.using(DATABASE_ALIAS).get(staff_title="Housing: Information Technology Consultant")
+
+        context['onity_staff_name'] = onity_staff.staff_name
+        context['onity_staff_email'] = onity_staff.staff_alias + u'@calpoly.edu'
+        context['onity_staff_extension'] = onity_staff.staff_ext
+
+        return context
+
+    def form_valid(self, form):
+        send_mail(subject="New ResNet Technician Onity Door Access Appointment",
+                  message=self.form.cleaned_data.get('message'),
+                  from_email=self.request.user.email,
+                  recipient_list=["alex.kavanaugh@outlook.com"], fail_silently=False)
+
+        return HttpResponseRedirect(reverse('orientation-checklist'))
+
+
+class SRSAccessView(FormView):
+    """Orientation Checklist Item: SRS Access."""
+
     template_name = "orientation/srsAccess.html"
-    form = None
+    form_class = SRSUploadForm
 
-    def __render(self):
-        self.request.session.set_test_cookie()
-        return render_to_response(self.template_name, {"form": self.form}, context_instance=RequestContext(self.request))
+    def form_valid(self, form):
+        # Create a new account request
+        ticket = AccountRequest(subjectUsername=self.request.user.get_alias())
+        ticket.save()
 
-    @method_decorator(user_passes_test(orientation_test))
-    def dispatch(self, *args, **kwargs):
-        return super(SRSAccessView, self).dispatch(*args, **kwargs)
+        # Grab the RUP
+        file_pointer = self.request.FILES['signed_rup'].file
 
-    def post(self, *args, **kwargs):
-        self.form = SRSUploadForm(self.request.POST, self.request.FILES)
+        # Upload the RUP
+        EwizAttacher(settings_dict=settings.DATABASES[SRS_ALIAS], model=ticket, file_pointer=file_pointer, fileName=self.request.user.get_alias() + u'.pdf').attachFile()
 
-        if self.form.is_valid():
-            # Create a new account request
-            ticket = AccountRequest(subjectUsername=self.request.user.get_alias())
-            ticket.save()
-
-            # Grab the RUP
-            filePointer = self.request.FILES['signed_rup'].file
-
-            # Upload the RUP
-            EwizAttacher(settingsDict=settings.DATABASES[SRS_ALIAS], model=ticket, filePointer=filePointer, fileName=self.request.user.get_alias() + u'.pdf').attachFile()
-
-            return HttpResponseRedirect(reverse('orientation-checklist'))
-
-        if self.request.session.test_cookie_worked():
-            self.request.session.delete_test_cookie()
-        return self.__render()
-
-    def get(self, *args, **kwargs):
-        self.form = SRSUploadForm()
-        return self.__render()
-
-#
-# Orientation Checklist Item: Payroll Access
-#
-class PayrollAccessView(View):
-    template_name = "orientation/payrollAccess.html"
-
-    def __render(self):
-        self.request.session.set_test_cookie()
-        return render_to_response(self.template_name, context_instance=RequestContext(self.request))
-
-    @method_decorator(user_passes_test(orientation_test))
-    def dispatch(self, *args, **kwargs):
-        return super(PayrollAccessView, self).dispatch(*args, **kwargs)
-
-    def get(self, *args, **kwargs):
-        return self.__render()
+        return HttpResponseRedirect(reverse('orientation-checklist'))

@@ -7,7 +7,6 @@
 """
 
 from django.conf import settings
-from django.views.generic import View
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.db.models import Q
 
@@ -15,19 +14,6 @@ from rmsconnector.utils import Resident
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from .models import ResHallWired
-
-
-class ModifyPort(View):
-    """Updates modified port map data."""
-
-    def post(self, *args, **kwargs):
-        # Update the database entries
-        portmap_instance = ResHallWired.objects.get(id=self.request.POST['id'])
-
-        for column in ResidenceHallWiredPortsView.editable_columns:
-            portmap_instance.column = self.request.POST[column]
-
-        portmap_instance.save()
 
 
 class ResidenceHallWiredPortsView(BaseDatatableView):

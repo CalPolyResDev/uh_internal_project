@@ -1,14 +1,17 @@
-from dajax.core import Dajax
-from dajaxice.decorators import dajaxice_register
+"""
+.. module:: resnet_internal.orientation.ajax
+   :synopsis: ResNet Internal Orientation AJAX URLs.
+
+.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+
+"""
+
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 
-#
-# resnet_internal orientation ajax methods
-#
-# Author: Alex Kavanaugh
-# Email:  kavanaugh.development@outlook.com
-#
+from dajax.core import Dajax
+from dajaxice.decorators import dajaxice_register
+
 
 @dajaxice_register
 def complete_task(request, username, task):
@@ -28,6 +31,7 @@ def complete_task(request, username, task):
     dajax.redirect(reverse('orientation-checklist'))
 
     return dajax.json()
+
 
 @dajaxice_register
 def complete_orientation(request, username):

@@ -14,11 +14,14 @@ from django.conf.urls.defaults import patterns, include, url
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic.base import TemplateView
 
+from django.contrib import admin
+admin.autodiscover()
+
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 dajaxice_autodiscover()
 
 from .core.views import LoginView
-# from .orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollAccessView
+from .orientation.views import OnityDoorAccessView, SRSAccessView
 from .portmap.views import ModifyPort, ResidenceHallWiredPortsView
 
 logger = logging.getLogger(__name__)
@@ -29,6 +32,7 @@ portmap_access = user_passes_test(lambda user: user.is_developer or user.is_staf
 # Core
 urlpatterns = patterns('core.views',
     url(r'^$', TemplateView.as_view(template_name='core/index.html'), name='home'),
+    url(r'^flugzeug/', include(admin.site.urls), name='admin'),  # admin site urls, masked
     url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^logout/$', 'logout', name='logout'),
     url(r'^(?P<mode>frame|external)/(?P<key>\b[a-zA-Z0-9]*\b)/$', 'link_handler', name='link_handler'),
@@ -36,18 +40,17 @@ urlpatterns = patterns('core.views',
 )
 
 # ResNet Technician Orientation
-# urlpatterns += patterns('',
-#     url(r'^orientation/$', login_required(orientation_access(ChecklistView.as_view())), name='orientation-checklist'),
-#     url(r'^orientation/onity$', login_required(orientation_access(OnityDoorAccessView.as_view())), name='orientation-onity'),
-#     url(r'^orientation/srs$', login_required(orientation_access(SRSAccessView.as_view())), name='orientation-srs'),
-#     url(r'^orientation/payroll$', login_required(orientation_access(PayrollAccessView.as_view())), name='orientation-payroll'),
-# )
+urlpatterns += patterns('',
+    url(r'^orientation/$', login_required(orientation_access(TemplateView.as_view(template_name='orientation/checklist.html'))), name='orientation-checklist'),
+    url(r'^orientation/onity$', login_required(orientation_access(OnityDoorAccessView.as_view())), name='orientation-onity'),
+    url(r'^orientation/srs$', login_required(orientation_access(SRSAccessView.as_view())), name='orientation-srs'),
+    url(r'^orientation/payroll$', login_required(orientation_access(TemplateView.as_view(template_name='orientation/payrollAccess.html'))), name='orientation-payroll'),
+)
 
 # Residence Halls Wired Port Map
 urlpatterns += patterns('',
     url(r'^portmap/$', login_required(portmap_access(TemplateView.as_view(template_name='portmap/portmap.html'))), name='residence_halls_wired_ports'),
     url(r'^portmap/populate/$', login_required(portmap_access(ResidenceHallWiredPortsView.as_view())), name='populate_residence_halls_wired_ports'),
-#    url(r'^portmap/modify/$', login_required(portmap_access(ModifyPort.as_view())), name='modify_residence_halls_wired_ports'),
 )
 
 # Univeristy Housing Computer Map
