@@ -1,15 +1,19 @@
+"""
+.. module:: srsconnector.fields
+    :synopsis: RMS Connector Special Ewiz and Non-Relational Model Fields
+
+    ListField and DictField derived from ListField, which was written by stackoverflow.com/users/194311/jathanism.
+
+.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+
+"""
+
+import ast
+import datetime
+
 from django.core.exceptions import ValidationError
 from django.db.models import SubfieldBase, DateTimeField, TextField, BooleanField
-import ast, datetime
 
-#
-# Special Ewiz and Non-Relational Model Fields
-#
-# Author: Alex Kavanaugh
-# Email: kavanaugh.development@outlook.com
-#
-# ListField and DictField derived from ListField, which was written by stackoverflow.com/users/194311/jathanism.
-#
 
 class EwizDateTimeField(DateTimeField):
     __metaclass__ = SubfieldBase
@@ -57,6 +61,7 @@ class EwizDateTimeField(DateTimeField):
         val = self._get_val_from_obj(obj)
         return '' if val is None else val.isoformat()
 
+
 class YNBooleanField(BooleanField):
 
     __metaclass__ = SubfieldBase
@@ -88,6 +93,7 @@ class YNBooleanField(BooleanField):
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
         return self.get_db_prep_value(value)
+
 
 class YesNoBooleanField(BooleanField):
 
@@ -121,6 +127,7 @@ class YesNoBooleanField(BooleanField):
         value = self._get_val_from_obj(obj)
         return self.get_db_prep_value(value)
 
+
 class ListField(TextField):
     __metaclass__ = SubfieldBase
     description = "Stores a python list"
@@ -149,6 +156,7 @@ class ListField(TextField):
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
         return self.get_db_prep_value(value)
+
 
 class DictField(TextField):
     __metaclass__ = SubfieldBase

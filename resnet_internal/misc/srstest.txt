@@ -5,8 +5,8 @@ sampleQuery = {"table": u'helpdesk_case',  "filters": [u"created_by = 'Jeff Port
 from resnet_internal.srsConnector import models
 ticket = models.PrinterRequest.objects.get(ticketID = 99047)
 
-from resnet_internal.srsConnector import models
-ticket = models.ServiceRequest.objects.get(ticketID = 99047)
+from srsconnector import models
+ticket = models.ServiceRequest.objects.get(ticket_id = 99047)
 ticket.assignedPerson = u'Alexander Kavanaugh'
 ticket.save()
 

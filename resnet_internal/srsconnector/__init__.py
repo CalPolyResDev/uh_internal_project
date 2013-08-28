@@ -1,18 +1,19 @@
-#
-#
-#   SRS Connector v0 - A tool to read, write, and update data to and from the Enterprize Wizard Service Request System.
-#
-#
-# This Python package, "srsConnector" requires the 'ewiz' database backend for non-relational queries.
-# 
-# This tool has been developed for use with Cal Poly San Luis Obispo's SRS and is therefore customized to its fields and data.
-#
-# Author: Alex Kavanaugh
-# Email:  kavanaugh.development@outlook.com
-#
+"""
+
+SRS Connector v1 - A tool to read, write, and update data to and from the Enterprize Wizard Service Request System.
+
+This Python package, "srsconnector" requires the 'ewiz' database backend for non-relational queries.
+
+It has been developed for use with Cal Poly San Luis Obispo's SRS and is therefore customized to its fields and data.
+
+.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+
+"""
+
 
 #
 # Version Classification
-# Major Overhaul, Utility Addition, Utility Revision
+# Major Updates, Minor Updates, Revision/Bugfix Updates
 #
-VERSION = ("0", "0", "0")
+VERSION = ("1", "0", "0")
+__version__ = ".".join(VERSION)

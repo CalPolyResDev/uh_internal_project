@@ -1,42 +1,34 @@
-from django.db.models import Model, CharField, AutoField, IntegerField
-from fields import ListField, DictField, EwizDateTimeField, YNBooleanField, YesNoBooleanField
-from resnet_internal.core.models import StaffMapping
+"""
+.. module:: srsconnector.models
+    :synopsis: SRS Connector Models.
 
-#
-# srsConnector Ticket Models
-#
-# Author: Alex Kavanaugh
-# Email: kavanaugh.development@outlook.com
-#
+.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
-#
-# Pinhole Request
-#
-# A service request ticket for pinhole requests
-#
-# class PinholeRequest():
-#    return None
+"""
 
-#
-# Printer Request
-#
-# A service request ticket for toner and part replacement requests.
-#
-# NOTE:
-# 1) help_text=':' denotes a foreign table relationship. See EnterpriseWizard documentation for details.
-#        Many fields are related fields. If a DatabaseError is raised, try making the field related.
-# 1) help_text='file' denotes a file field. It can only be populated with the EwizAttacher utility. Sample usage:
-#        from srsConnector.ewiz.attacher import EwizAttacher
-#        response = EwizAttacher(settingsDict, model, filePointer, fileName).attachFile()
-#
-#        where:
-#            'settingsDict' is the DATABASES dictionary that contains SRS connection settings. e.g. settings.DATABASES[SRS_ALIAS]
-#            'model' is the model instance of a ticket. e.g. models.AccountRequest.objects.get(ticketID = 1)
-#            'filePointer' is a Python file object. If the file is coming from a django form, grab it via request.FILES['form_field_name'].file
-#            'fileName' is the desired file name. If the file is coming from a django form, you can grab it's name via request.FILES['form_field_name'].name
-# 2) Not all ticket fields can be changed via REST. Add editable=False to remove DatabaseErrors
-#
+from django.db.models import Model, AutoField, CharField, IntegerField
+
+from .fields import ListField, DictField, EwizDateTimeField, YNBooleanField, YesNoBooleanField
+
+DATABASE_ALIAS = "common"
+
+
+class StaffMapping(Model):
+    """A mapping of various department staff to their respective positions."""
+
+    staff_title = CharField(max_length=35, unique=True, verbose_name=u'Staff Title')
+    staff_name = CharField(max_length=50, verbose_name=u'Staff Full Name')
+    staff_alias = CharField(max_length=8, verbose_name=u'Staff Alias')
+    staff_ext = IntegerField(max_length=4, verbose_name=u'Staff Telephone Extension')
+
+    class Meta:
+        db_table = u'staffmapping'
+        managed = False
+        verbose_name = u'Campus Staff Mapping'
+
+
 class PrinterRequest(Model):
+    """A service request ticket for toner and part replacement requests."""
 
     STATUS_CHOICES = [
         ('Open', 'Open'),
@@ -98,19 +90,16 @@ class PrinterRequest(Model):
         managed = False
         verbose_name = u'Printer Request'
 
-    #
-    # Return the submitter's email
-    #
     def __get_email(self):
+        """Return the submitter's email."""
+
         try:
             return self.submitterUsername + u'@calpoly.edu'
         except AttributeError:
             return None
     submitterEmail = property(__get_email)
 
-#
-# Account Request
-#
+
 class AccountRequest(Model):
     STATUS_CHOICES = [
         ('Open', 'Open'),
@@ -126,8 +115,8 @@ class AccountRequest(Model):
         ('Please remove from ResNet team.', 'Remove'),
     ]
 
-    srs_account_manager = StaffMapping.objects.get(staff_title="ITS: SRS Account Manager").staff_name
-    assistant_resident_coordinator = StaffMapping.objects.get(staff_title="ResNet: Assistant Resident Coordinator").staff_alias
+    srs_account_manager = StaffMapping.objects.using(DATABASE_ALIAS).get(staff_title="ITS: SRS Account Manager").staff_name
+    assistant_resident_coordinator = StaffMapping.objects.using(DATABASE_ALIAS).get(staff_title="ResNet: Assistant Resident Coordinator").staff_alias
 
     ticket_id = AutoField(primary_key=True, db_column='id')
     status = CharField(choices=STATUS_CHOICES, default='Open', db_column='wfstate')
@@ -150,13 +139,10 @@ class AccountRequest(Model):
         managed = False
         verbose_name = u'Account Request'
 
-#
-# General Service Request
-#
-#
-# This is a list of all currently known model fields in the helpdesk_case table
-#
+
 class ServiceRequest(Model):
+    """This is a list of all currently known model fields in the helpdesk_case table."""
+
     STATUS_CHOICES = [
         ('Open', 'Open'),
         ('Work In Progress', 'Work In Progress'),

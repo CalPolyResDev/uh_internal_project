@@ -1,52 +1,75 @@
-from settings import ALIAS
-from settings import MODELS
+"""
+.. module:: srsconnector.routers
+   :synopsis: SRS Connector Database Routers.
 
-#
-# A database router to control interactions with the EnterpriseWizard REST interface.
-#
-# This router supports reads, writes, but disables relations and "syncdb" for
-# the models listed in "SRS_MODELS".
-#
+.. moduleauthor:: Kyle Dodson <kdodson@caloply.edu>
+.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+
+"""
+
+from .settings import ALIAS, MODELS, APP_NAME
+
+
 class SRSRouter(object):
+    """ A database router to control interactions with the EnterpriseWizard
+    REST interface.
 
-    #
-    # Shortcut to return a model's application label
-    #
+    This router must be added to the 'DATABASE_ROUTERS' list in the project
+    settings.
+
+    The "MODELS" list defined in the application settings define which models are
+    handled by the router. If a new RMS model is created it must be added to that
+    list.
+
+    This router supports reads, writes, and relations and disables "syncdb" for
+    the models listed in "SRS_MODELS".
+
+    """
+
     def _app(self, model):
+        """ A shortcut to retrieve the provided model's application label.
+
+        :param model: A model instance from which to retrieve information.
+        :type model: model
+        :returns: The provided model's app label.
+
+        """
+
         return model._meta.app_label
 
-    #
-    # Shortcut to return a model's module name, a lower-cased version of its object name
-    #
     def _mod(self, model):
+        """ A shortcut to retrieve the provided model's module name, a lower-cased version of its object name.
+
+        :param model: A model instance from which to retrieve information.
+        :type model: model
+        :returns: The provided model's module name.
+
+        """
+
         return model._meta.module_name
 
-    #
-    # Returns a database match if the model matches a "srsConnector" model
-    #
     def db_for_read(self, model, **hints):
-        if self._app(model) == 'srsconnector' and self._mod(model) in MODELS:
+        """Routes database read requests to the database only if the requested model belongs to a model in this application's MODELS list."""
+
+        if self._app(model) == APP_NAME and self._mod(model) in MODELS:
             return ALIAS
         return None
 
-    #
-    # Returns a database match if the model matches a "srsConnector" model
-    #
     def db_for_write(self, model, **hints):
-        if self._app(model) == 'srsconnector' and self._mod(model) in MODELS:
+        """Routes database write requests to the database only if the requested model belongs to a model in this application's MODELS list."""
+
+        if self._app(model) == APP_NAME and self._mod(model) in MODELS:
             return ALIAS
         return None
 
-    #
-    # Provides no constraints on relationships
-    #
     def allow_relation(self, obj1, obj2, **hints):
+        """Provides no constraints on relationships."""
+
         return None
 
-    #
-    # Forbids table synchronization for "srsConnector" models
-    #
     def allow_syncdb(self, db, model):
-        if self._app(model) == 'srsconnector' and self._mod(model) in MODELS:
+        """Disallows table synchronization for this application's models."""
+
+        if self._app(model) == APP_NAME and self._mod(model) in MODELS:
             return False
         return None

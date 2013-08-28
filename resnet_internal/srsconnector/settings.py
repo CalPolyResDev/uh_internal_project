@@ -1,36 +1,18 @@
+"""
+.. module:: srsconnector.settings
+   :synopsis: SRS Connector Settings.
+
+.. moduleauthor:: Kyle Dodson <kdodson@caloply.edu>
+.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+
+"""
+
 from django.conf import settings
 
-#
-# The "srsConnector" application configuration.
-#
-# These settings may be specified in the project settings file. Simply prefix
-# each setting name with "SRS_". For example,
-#
-#    SRS_ALIAS = 'srs'
-#
-# configured in the project settings would result in,
-#
-#    ALIAS = 'srs'
-#
-# configured in the application configuration.
-#
-# Author: Kyle Dodson <kdodson@calpoly.edu>
-# Author: Alex Kavanaugh <kavanaugh.development@outlook.com>
-#
+APP_NAME = 'srsconnector'
 
 #
-# Configures the RMS database alias
-#
-# This alias should map to the following database configuration:
-#
-# {
-#    'ENGINE': '[projectName].srsConnector.ewiz',
-#    'NAME': '', # KnowledgeBase name
-#    'USER': '',
-#    'PASSWORD': '',
-#    'HOST': 'calpoly.enterprisewizard.com/ewws/',
-#    'PORT': '443', # Web Protocol (443='https://', else 'http://)
-# }
+# Configures the SRS database alias
 #
 # Default: 'srs'
 #
@@ -40,18 +22,16 @@ except AttributeError:
     ALIAS = 'srs'
 
 #
-# Configures the RMS database models
+# Configures the SRS database models
 #
-# This list of models will be handled by the RMS database router when
-# "srsConnector.routers.SRSRouter" is added to the "DATABASE_ROUTERS" list. Each entry
+# This list of models will be handled by the SRS database router when
+# it is added to the "DATABASE_ROUTERS" list in the project settings. Each entry
 # will be matched against the model's module name, a lower-cased version of the
 # object name.
 #
 # If a new model is created it must be added to this list to ensure it is
-# correctly routed to the RMS database.
+# correctly routed to the SRS database.
 #
-# Default: Each model object in "srsConnector.models"
-#
-# NOTE: Each model name MUST be in lower-case form.
+# NOTE: Each model name must be in lowercase form.
 #
 MODELS = ('servicerequest', 'accountrequest', 'printerrequest')
