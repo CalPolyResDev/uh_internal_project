@@ -6,7 +6,7 @@
 
 """
 
-from django.db.models import Model, AutoField, CharField, IntegerField
+from django.db.models import Model, AutoField, CharField, TextField, IntegerField
 
 from .fields import ListField, DictField, EwizDateTimeField, YNBooleanField, YesNoBooleanField
 
@@ -61,29 +61,29 @@ class PrinterRequest(Model):
     ]
 
     ticket_id = AutoField(primary_key=True, db_column='id')
-    status = CharField(choices=STATUS_CHOICES, default='Open', db_column='wfstate')
-    priority = CharField(choices=PRIORITY_CHOICES, default='Low')
-    assigned_team = CharField(help_text=':', editable=False, default='SA RESNET', db_column='team_name')
+    status = CharField(max_length=25, choices=STATUS_CHOICES, default='Open', db_column='wfstate')
+    priority = CharField(max_length=25, choices=PRIORITY_CHOICES, default='Low')
+    assigned_team = CharField(help_text=':', max_length=50, editable=False, default='SA RESNET', db_column='team_name')
 
-    requestor_username = CharField(help_text=':', db_column='submitter_username')
-    requestor_full_name = CharField(editable=False, db_column='full_name')
-    requestor_building = CharField(editable=False, db_column='building')
-    requestor_room = CharField(editable=False, db_column='room')
-    requestor_phone = CharField(editable=False, db_column='direct_phone')
-    contact_method = CharField(choices=CONTACT_CHOICES, default='Email', db_column='preferred_contact_method')
+    requestor_username = CharField(help_text=':', max_length=25, db_column='submitter_username')
+    requestor_full_name = CharField(max_length=50, editable=False, db_column='full_name')
+    requestor_building = CharField(max_length=50, editable=False, db_column='building')
+    requestor_room = CharField(max_length=15, editable=False, db_column='room')
+    requestor_phone = CharField(max_length=15, editable=False, db_column='direct_phone')
+    contact_method = CharField(max_length=15, choices=CONTACT_CHOICES, default='Email', db_column='preferred_contact_method')
     preferred_contact_times = DictField()
 
-    general_issue = CharField(default='Hardware Problem')
-    specific_issue = CharField(default='Printer Issue')
+    general_issue = CharField(max_length=50, default='Hardware Problem')
+    specific_issue = CharField(max_length=50, default='Printer Issue')
 
-    printer_model = CharField(choices=PRINTER_MODEL_CHOICES, db_column='model')
-    printer_manufacturer = CharField(choices=PRINTER_MANUFACTURER_CHOICES, db_column='manufacturer')
-    printer_property_id = CharField(blank=True, db_column='cal_poly_property_id')
+    printer_model = CharField(max_length=15, choices=PRINTER_MODEL_CHOICES, db_column='model')
+    printer_manufacturer = CharField(max_length=15, choices=PRINTER_MANUFACTURER_CHOICES, db_column='manufacturer')
+    printer_property_id = CharField(max_length=50, blank=True, db_column='cal_poly_property_id')
 
-    request_type = CharField(choices=REQUEST_TYPE_CHOICES, db_column='summary')
-    request_tist = ListField(db_column='problem_description')  # Either a list of toner colors or a list of parts
-    work_log = CharField(blank=True, db_column='staff_only_notes')  # Name and Timestamp are automatically added by Ewiz
-    solution = CharField(blank=True)
+    request_type = CharField(max_length=50, choices=REQUEST_TYPE_CHOICES, db_column='summary')
+    request_list = ListField(db_column='problem_description')  # Either a list of toner colors or a list of parts
+    work_log = TextField(blank=True, db_column='staff_only_notes')  # Name and Timestamp are automatically added by Ewiz
+    solution = TextField(blank=True)
 
     class Meta:
         db_table = u'helpdesk_case'
@@ -119,20 +119,20 @@ class AccountRequest(Model):
     assistant_resident_coordinator = StaffMapping.objects.using(DATABASE_ALIAS).get(staff_title="ResNet: Assistant Resident Coordinator").staff_alias
 
     ticket_id = AutoField(primary_key=True, db_column='id')
-    status = CharField(choices=STATUS_CHOICES, default='Open', db_column='wfstate')
-    assigned_person = CharField(help_text=':', default=srs_account_manager)
-    assigned_team = CharField(help_text=':', default='ITS Service Desk')
+    status = CharField(max_length=25, choices=STATUS_CHOICES, default='Open', db_column='wfstate')
+    assigned_person = CharField(help_text=':', max_length=50, default=srs_account_manager)
+    assigned_team = CharField(help_text=':', max_length=50, default='ITS Service Desk')
 
-    requestor_username = CharField(help_text=':', default=assistant_resident_coordinator, db_column='req_username')
-    subject_username = CharField(help_text=':')
+    requestor_username = CharField(help_text=':', max_length=25, default=assistant_resident_coordinator, db_column='req_username')
+    subject_username = CharField(help_text=':', max_length=25)
 
-    request_type = CharField(choices=REQUEST_TYPES, default='New Account')
-    request_subtype = CharField(default='Resnet Technician')
+    request_type = CharField(max_length=50, choices=REQUEST_TYPES, default='New Account')
+    request_subtype = CharField(max_length=50, default='Resnet Technician')
 
-    action = CharField(choices=ACTION_DESCRIPTION_CHOICES, default='Please add to ResNet team. Signed RUP form is attached.', db_column='description')
+    action = CharField(max_length=75, choices=ACTION_DESCRIPTION_CHOICES, default='Please add to ResNet team. Signed RUP form is attached.', db_column='description')
 
     # Use this field only in conjunction with EwizAttacher - do not attempt to populate it
-    file_field = CharField(help_text='file', editable=False, db_column='attached_files')
+    file_field = TextField(help_text='file', editable=False, db_column='attached_files')
 
     class Meta:
         db_table = u'account_request'
@@ -161,51 +161,51 @@ class ServiceRequest(Model):
     ]
 
     ticket_id = AutoField(primary_key=True, db_column='id')
-    ticket_type = CharField(db_column='type')
-    status = CharField(choices=STATUS_CHOICES, default='Open', db_column='wfstate')
-    priority = CharField(default='Low')
-    created_by = CharField(editable=False)
-    creator_username = CharField(editable=False)
+    ticket_type = CharField(max_length=25, db_column='type')
+    status = CharField(max_length=25, choices=STATUS_CHOICES, default='Open', db_column='wfstate')
+    priority = CharField(max_length=25, default='Low')
+    created_by = CharField(max_length=50, editable=False)
+    creator_username = CharField(max_length=25, editable=False)
     date_created = EwizDateTimeField(editable=False)
-    assigned_team = CharField(help_text=':', db_column='team_name')
-    assigned_person = CharField(help_text=':')
-    assigned_team_leader = CharField(editable=False, db_column='team_leader')
+    assigned_team = CharField(help_text=':', max_length=50, db_column='team_name')
+    assigned_person = CharField(help_text=':', max_length=50)
+    assigned_team_leader = CharField(max_length=50, editable=False, db_column='team_leader')
     override_default_team = YesNoBooleanField(db_column='override_default_team')
 
-    requestor_username = CharField(help_text=':', db_column='submitter_username')
-    requestor_full_name = CharField(editable=False, db_column='full_name')
-    requestor_role = CharField(editable=False, db_column='primary_role')
-    requestor_housing_address = CharField(editable=False, db_column='univ_housing_address')
-    requestor_housing_phone = CharField(editable=False, db_column='univ_housing_phone')
-    requestor_building = CharField(editable=False, db_column='building')
-    requestor_room = CharField(editable=False, db_column='room')
-    requestor_department = CharField(editable=False, db_column='dept_description')
-    requestor_phone = CharField(editable=False, db_column='direct_phone')
-    contact_method = CharField(choices=CONTACT_CHOICES, default='Email', db_column='preferred_contact_method')
+    requestor_username = CharField(help_text=':', max_length=25, db_column='submitter_username')
+    requestor_full_name = CharField(max_length=50, editable=False, db_column='full_name')
+    requestor_role = CharField(max_length=50, editable=False, db_column='primary_role')
+    requestor_housing_address = CharField(max_length=75, editable=False, db_column='univ_housing_address')
+    requestor_housing_phone = CharField(max_length=15, editable=False, db_column='univ_housing_phone')
+    requestor_building = CharField(max_length=50, editable=False, db_column='building')
+    requestor_room = CharField(max_length=15, editable=False, db_column='room')
+    requestor_department = CharField(max_length=50, editable=False, db_column='dept_description')
+    requestor_phone = CharField(max_length=15, editable=False, db_column='direct_phone')
+    contact_method = CharField(max_length=15, choices=CONTACT_CHOICES, default='Email', db_column='preferred_contact_method')
     preferred_contact_times = DictField()
     is_student = YNBooleanField(editable=False, db_column='student_flag')
     is_ferpa = YNBooleanField(editable=False, db_column='ferpa_flag')
 
-    general_issue = CharField()
-    specific_issue = CharField()
-    issue_type = CharField(default='End User Issue', db_column='type_of_problem')
+    general_issue = CharField(max_length=50)
+    specific_issue = CharField(max_length=50)
+    issue_type = CharField(max_length=50, default='End User Issue', db_column='type_of_problem')
 
     lab_lelated = YesNoBooleanField(db_column='does_this_relate_to_a_lab')
     residence_hall_related = YesNoBooleanField(db_column='reshall_related')
 
-    model = CharField()
-    manufacturer = CharField()
-    property_id = CharField(blank=True, db_column='cal_poly_property_id')
+    model = CharField(max_length=50)
+    manufacturer = CharField(max_length=50)
+    property_id = CharField(max_length=50, blank=True, db_column='cal_poly_property_id')
 
-    summary = CharField()
-    description = CharField(db_column='problem_description')
-    work_log = CharField(blank=True, db_column='staff_only_notes')  # Name and Timestamp are automatically added by Ewiz
-    latest_log = CharField(editable=False, db_column='latest_notes_appended')
-    requestor_notification = CharField(blank=True, db_column='additional_information')  # Name and Timestamp are automatically added by Ewiz
-    solution = CharField(blank=True)
+    summary = CharField(max_length=250)
+    description = TextField(db_column='problem_description')
+    work_log = TextField(blank=True, db_column='staff_only_notes')  # Name and Timestamp are automatically added by Ewiz
+    latest_log = TextField(editable=False, db_column='latest_notes_appended')
+    requestor_notification = TextField(blank=True, db_column='additional_information')  # Name and Timestamp are automatically added by Ewiz
+    solution = TextField(blank=True)
 
-    updated_by = CharField(editable=False)
-    updater_username = CharField(editable=False)
+    updated_by = CharField(max_length=50, editable=False)
+    updater_username = CharField(max_length=25, editable=False)
     updater_is_technician = YNBooleanField(editable=False, db_column='updater_technician_staff_flag')
     date_updated = EwizDateTimeField(editable=False)
 
