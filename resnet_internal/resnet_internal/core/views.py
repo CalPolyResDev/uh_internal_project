@@ -125,7 +125,7 @@ class LoginView(FormView):
             user_specializations.append('UHTV Staff')
         if self.request.user.is_drupal:
             user_specializations.append('ResNet Drupal Admin')
-        if self.request.user.is_staff:
+        if self.request.user.is_rn_staff:
             user_specializations.append('ResNet Staff')
         if self.request.user.is_developer:
             user_specializations.append('ResNet Developer')

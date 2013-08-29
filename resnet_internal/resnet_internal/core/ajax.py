@@ -14,7 +14,7 @@ from django.contrib.auth import get_user_model
 
 from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
-#from srsconnector.models import ServiceRequest
+from srsconnector.models import ServiceRequest
 
 from .models import DailyDuties
 
@@ -31,8 +31,7 @@ def refresh_duties(request):
     # Load data dicts
     messages_dict = GetDutyData().get_messages()
     email_dict = GetDutyData().get_email()
-    #tickets_dict = GetDutyData().get_tickets()
-    tickets_dict = {'count': 0}
+    tickets_dict = GetDutyData().get_tickets()
 
     if messages_dict["count"] > 0:
         message_count = u' <b>(' + str(messages_dict["count"]) + ')</b>'
@@ -172,11 +171,11 @@ class GetDutyData:
             "last_user": None
         }
 
-#        open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status__gt='Closed').exclude(assigned_person="ResnetAPI").count()
+        open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status__gt='Closed').exclude(assigned_person="ResnetAPI").count()
 
         data = DailyDuties.objects.get(name='tickets')
 
-#        tickets["count"] = open_tickets
+        tickets["count"] = open_tickets
         if data.last_checked > datetime.datetime.now() - ACCEPTABLE_LAST_CHECKED:
             tickets["status_color"] = GREEN
         else:

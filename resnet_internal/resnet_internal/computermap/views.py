@@ -17,7 +17,7 @@ from django.contrib.auth.decorators import user_passes_test
 # Permissions Test
 #
 def computerMap_test(user):
-    if user.is_authenticated and (user.is_developer or user.is_staff or user.is_technician or user.is_net_admin):
+    if user.is_authenticated and (user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin):
         return True
     return False
 

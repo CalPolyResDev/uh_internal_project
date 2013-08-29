@@ -11,22 +11,22 @@ import logging
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls.defaults import patterns, include, url
+from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic.base import TemplateView
 
-from django.contrib import admin
-admin.autodiscover()
-
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config
-dajaxice_autodiscover()
 
 from .core.views import LoginView
 from .orientation.views import OnityDoorAccessView, SRSAccessView
-from .portmap.views import ModifyPort, ResidenceHallWiredPortsView
+from .portmap.views import ResidenceHallWiredPortsView
+
+admin.autodiscover()
+dajaxice_autodiscover()
 
 logger = logging.getLogger(__name__)
 orientation_access = user_passes_test(lambda user: user.is_developer or user.is_technician)
-portmap_access = user_passes_test(lambda user: user.is_developer or user.is_staff or user.is_technician or user.is_net_admin or user.is_telecom)
+portmap_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom)
 
 
 # Core
@@ -58,13 +58,6 @@ urlpatterns += patterns('',
 #     url(r'^computerMap/$', 'render_table', name='computerMap'),
 #     url(r'^computerMap/get_records/$', 'get_records'),
 # #    url(r'^computerMap/view_pinholes/(?P<serial>.*)/$', 'view_pinholes', name='pinholePopup')
-# )
-
-# Administration
-# urlpatterns += patterns('admin_userMap.views',
-#     url(r'^admin/userMap/$', 'render_table', name='userMap'),
-#     url(r'^admin/csdMap/get_records/$', 'get_records_csdMap'),
-#     url(r'^admin/staffMap/get_records/$', 'get_records_staffMap'),
 # )
 
 # jCal (hours schedule)

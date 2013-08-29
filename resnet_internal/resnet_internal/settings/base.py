@@ -125,6 +125,7 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = (
+    'resnet_internal.core.routers.CommonRouter',
     'resnet_internal.portmap.routers.PortmapRouter',
     'rmsconnector.routers.RMSRouter',
     'srsconnector.routers.SRSRouter',
@@ -199,8 +200,11 @@ AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     'is_osd': 'CN=UH-RN-OSD,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
     'is_uhtv': 'CN=UH-RN-UHTV-Admin,OU=UHTV,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
     'is_drupal': 'CN=UH-RN-Drupal,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_staff': 'CN=UH-RN-Staff,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_developer': 'CN=UH-RN-DevTeam,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu'
+    'is_rn_staff': 'CN=UH-RN-Staff,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
+    'is_developer': 'CN=UH-RN-DevTeam,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
+
+    'is_staff': 'CN=UH-RN-DevTeam,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
+    'is_superuser': 'CN=UH-RN-DevTeam,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
 }
 
 # ======================================================================================================== #
@@ -301,7 +305,7 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-#   'django.contrib.messages',
+    'django.contrib.messages',
     'django.contrib.admin',
     'django.contrib.staticfiles',
     'raven.contrib.django.raven_compat',
@@ -311,7 +315,7 @@ INSTALLED_APPS = (
     'django_ewiz',
     'resnet_internal.core',
     'resnet_internal.core.templatetags',
-#    'resnet_internal.orientation',
+    'resnet_internal.orientation',
     'resnet_internal.portmap',
 #    'resnet_internal.usermap',
     'south',

@@ -8,7 +8,7 @@
 
 import re
 
-from django.contrib.auth.models import AbstractBaseUser, UserManager
+from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
 from django.conf import settings
 from django.db.models import Model, CharField, IntegerField, TextField, DateTimeField, ForeignKey, EmailField, NullBooleanField, BooleanField
 from django.utils.http import urlquote
@@ -53,13 +53,16 @@ class StaffMapping(Model):
         verbose_name = u'Campus Staff Mapping'
 
 
-class ResNetInternalUser(AbstractBaseUser):
+class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     """ResNet Internal User Model"""
 
     username = CharField(max_length=30, unique=True, verbose_name=u'Username')
     first_name = CharField(max_length=30, blank=True, verbose_name=u'First Name')
     last_name = CharField(max_length=30, blank=True, verbose_name=u'Last Name')
     email = EmailField(blank=True, verbose_name=u'Email Address')
+
+    is_active = BooleanField(default=True)
+    is_staff = BooleanField(default=False)
 
     USERNAME_FIELD = 'username'
     objects = UserManager()
@@ -78,7 +81,7 @@ class ResNetInternalUser(AbstractBaseUser):
     is_osd = BooleanField(default=False)  # access to operating system deployment tools
     is_uhtv = BooleanField(default=False)  # access to uhtv tools
     is_drupal = BooleanField(default=False)  # access to drupal tools
-    is_staff = BooleanField(default=False)  # access to all tools as well as staff tools
+    is_rn_staff = BooleanField(default=False)  # access to all tools as well as staff tools
     is_developer = BooleanField(default=False)  # full access to resnet internal
 
     #
@@ -105,6 +108,11 @@ class ResNetInternalUser(AbstractBaseUser):
         """Returns the username with the possible '-admin' removed."""
 
         return re.sub(r'-admin', '', self.username)
+
+    def get_short_name(self):
+        "Returns the short name for the user."
+
+        return self.get_alias()
 
     def email_user(self, subject, message, from_email=None):
         """Sends an email to this user."""
