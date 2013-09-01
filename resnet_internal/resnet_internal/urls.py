@@ -19,6 +19,7 @@ from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 
 from .core.views import LoginView
 from .orientation.views import OnityDoorAccessView, SRSAccessView
+from .computers.views import ComputersView, ComputerRecordsView
 from .portmap.views import ResidenceHallWiredPortsView
 
 admin.autodiscover()
@@ -26,6 +27,7 @@ dajaxice_autodiscover()
 
 logger = logging.getLogger(__name__)
 orientation_access = user_passes_test(lambda user: user.is_developer or user.is_technician)
+computers_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician)
 portmap_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom)
 
 
@@ -53,12 +55,12 @@ urlpatterns += patterns('',
     url(r'^portmap/populate/$', login_required(portmap_access(ResidenceHallWiredPortsView.as_view())), name='populate_residence_halls_wired_ports'),
 )
 
-# Univeristy Housing Computer Map
-# urlpatterns += patterns('computerMap.views',
-#     url(r'^computerMap/$', 'render_table', name='computerMap'),
-#     url(r'^computerMap/get_records/$', 'get_records'),
-# #    url(r'^computerMap/view_pinholes/(?P<serial>.*)/$', 'view_pinholes', name='pinholePopup')
-# )
+# Univeristy Housing Computer Index
+urlpatterns += patterns('',
+    url(r'^computers/$', login_required(computers_access(TemplateView.as_view(template_name='computers/computers.html'))), name='uh_computers'),
+    url(r'^computers/populate/$', login_required(computers_access(ComputersView.as_view())), name='populate_uh_computers'),
+    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(computers_access(ComputerRecordsView.as_view())), name='view_uh_computer_record')
+)
 
 # jCal (hours schedule)
 # urlpatterns += patterns('jCal.views',
@@ -70,7 +72,6 @@ urlpatterns += patterns('',
 #    url(r'^jCal/set_avail/(?P<year>\d{4})/(?P<quarter>[a-z]{2})/(?P<is_finals>\d{1})/$', 'set_avail'),
 #    url(r'^jCal/jCal_admin/$', 'jCal_admin'),
 # )
-
 # (r'^articles/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$', 'news.views.article_detail'),
 # news.views.article_detail(request, year='2003', month='03', day='03').
 # (?P<month>[a-z]{3})

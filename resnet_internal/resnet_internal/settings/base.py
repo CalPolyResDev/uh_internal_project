@@ -90,19 +90,19 @@ DATABASES = {
         'HOST': 'uh-rivendell.housing.calpoly.edu',
         'PORT': '3306',
     },
+    'computers': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'computers',
+        'USER': 'computers',
+        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_COMPUTERS_PASSWORD'),
+        'HOST': 'uh-rivendell.housing.calpoly.edu',
+        'PORT': '3306',
+    },
     'portmap': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'portmap',
         'USER': 'portmap',
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_PORTMAP_PASSWORD'),
-        'HOST': 'uh-rivendell.housing.calpoly.edu',
-        'PORT': '3306',
-    },
-    'cisco_logs': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'cisco_logs',
-        'USER': 'cisco_logs',
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_CISCO_LOGS_PASSWORD'),
         'HOST': 'uh-rivendell.housing.calpoly.edu',
         'PORT': '3306',
     },
@@ -126,6 +126,7 @@ DATABASES = {
 
 DATABASE_ROUTERS = (
     'resnet_internal.core.routers.CommonRouter',
+    'resnet_internal.computers.routers.ComputersRouter',
     'resnet_internal.portmap.routers.PortmapRouter',
     'rmsconnector.routers.RMSRouter',
     'srsconnector.routers.SRSRouter',

@@ -16,7 +16,7 @@ from django_ewiz import EwizAttacher
 from srsconnector.settings import ALIAS as SRS_ALIAS
 from srsconnector.models import AccountRequest
 
-from resnet_internal.core.models import StaffMapping, DATABASE_ALIAS
+from resnet_internal.core.models import StaffMapping
 from .forms import SRSUploadForm, OnityEmailForm
 
 
@@ -36,7 +36,7 @@ class OnityDoorAccessView(FormView):
     def get_context_data(self, **kwargs):
         context = super(OnityDoorAccessView, self).get_context_data(**kwargs)
 
-        onity_staff = StaffMapping.objects.using(DATABASE_ALIAS).get(staff_title="Housing: Information Technology Consultant")
+        onity_staff = StaffMapping.objects.get(staff_title="Housing: Information Technology Consultant")
 
         context['onity_staff_name'] = onity_staff.staff_name
         context['onity_staff_email'] = onity_staff.staff_alias + u'@calpoly.edu'

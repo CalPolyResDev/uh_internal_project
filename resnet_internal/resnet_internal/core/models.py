@@ -14,8 +14,6 @@ from django.db.models import Model, CharField, IntegerField, TextField, DateTime
 from django.utils.http import urlquote
 from django.core.mail import send_mail
 
-DATABASE_ALIAS = "common"
-
 
 class DailyDuties(Model):
     """Daily Duties Information"""

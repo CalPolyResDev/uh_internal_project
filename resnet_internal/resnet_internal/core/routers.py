@@ -7,13 +7,13 @@
 
 """
 
-ALIAS = "common"
-APP_NAME = "core"
-MODELS = ('csdmapping', 'staffmapping')
-
 
 class CommonRouter(object):
     """Routes all common models to the correct database."""
+
+    ALIAS = "common"
+    APP_NAME = "core"
+    MODELS = ('csdmapping', 'staffmapping')
 
     def _app(self, model):
         """ A shortcut to retrieve the provided model's application label.
@@ -40,15 +40,15 @@ class CommonRouter(object):
     def db_for_read(self, model, **hints):
         """Routes database read requests to the database only if the requested model belongs to a model in this application's MODELS list."""
 
-        if self._app(model) == APP_NAME and self._mod(model) in MODELS:
-            return ALIAS
+        if self._app(model) == self.APP_NAME and self._mod(model) in self.MODELS:
+            return self.ALIAS
         return None
 
     def db_for_write(self, model, **hints):
         """Routes database write requests to the database only if the requested model belongs to a model in this application's MODELS list."""
 
-        if self._app(model) == APP_NAME and self._mod(model) in MODELS:
-            return ALIAS
+        if self._app(model) == self.APP_NAME and self._mod(model) in self.MODELS:
+            return self.ALIAS
         return None
 
     def allow_relation(self, obj1, obj2, **hints):
@@ -57,8 +57,6 @@ class CommonRouter(object):
         return None
 
     def allow_syncdb(self, db, model):
-        """Disallows table synchronization for this application's models."""
+        """Provides no constraints on table synchronization."""
 
-        if self._app(model) == APP_NAME and self._mod(model) in MODELS:
-            return False
         return None

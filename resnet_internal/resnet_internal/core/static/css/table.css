@@ -4,7 +4,7 @@
     background-color:#ffffcc;
     border:solid 1px #000;
     padding:0;
-    width: 50%;
+    width: 80%;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -28,21 +28,28 @@
 .width0 {
 	width:0px;
 }
+.width50 {
+    width:50px;
+}
+.width55 {
+    width:55px;
+}
 .width100 {
 	width:100px;
 }
 .width150 {
 	width:150px;
 }
-.width50 {
-	width:50px;
+.width155 {
+    width:155px;
 }
 .width200 {
 	width:200px;
 }
-.width55 {
-	width:55px;
+.width225 {
+    width:225px;
 }
+
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * DataTables features

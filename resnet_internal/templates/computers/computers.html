@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block meta %}
+{{ block.super }}
+<link href="{{ STATIC_URL }}css/table.css" rel="stylesheet" type="text/css" media="screen" />
+<link rel="stylesheet" href="{{ STATIC_URL }}fancybox/jquery.fancybox.css?v=2.1.5" type="text/css" media="screen" />
+<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".iprecord").fancybox({
+            type: 'iframe',
+            maxWidth    : 800,
+            maxHeight   : 600,
+            fitToView   : false,
+            width       : '70%',
+            height      : '70%',
+            autoSize    : false,
+            closeClick  : false,
+            openEffect  : 'none',
+            closeEffect : 'none'
+        });
+    });
+</script>
+<script type="text/javascript">
+    jQuery.fn.dataTableExt.aTypes.unshift(
+        function ( sData )
+        {
+            // IP Address Filter for dataTables
+            if (/^\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b$/.test(sData)) {
+                return 'ip-address';
+            }
+
+            if (/^([0-9a-fA-F]{2}([:]?|$)){6}$/.test(sData)) {
+                return 'mac-address';
+            }
+            return null;
+        }
+    );
+
+    // initialize the dataTable
+    $(document).ready(function() {
+        // Initialize the DataTable. See datatables documentation for information about each option
+        var computer_index = $('#computer_index').dataTable( {
+            "aaSorting": [[ 1, "asc" ], [ 2, "asc" ], [ 3, "asc" ]],
+            "oLanguage": {
+                "sLengthMenu": 'Display <select>'+
+                    '<option value="50">50</option>'+
+                    '<option value="100">100</option>'+
+                    '<option value="250">250</option>'+
+                    '<option value="500">500</option>'+
+                    '<option value="1000">1000</option>'+
+                    '<option value="-1">All</option>'+
+                    '</select> records:',
+                "sSearch": "Filter records:",
+                "sZeroRecords": "No records to display."
+            },
+            "bProcessing": true,
+            "bServerSide": true,
+            "sAjaxSource": "{% url 'populate_uh_computers' %}",
+            "iDisplayLength": 50,
+            "sPaginationType": "full_numbers",
+            "bLengthChange": true,
+            "bAutoWidth": false,
+            "sDom": '<lrf><"clear">t<ip><"clear">',
+            // Custom column rendering
+            "aoColumnDefs": [
+                { "sClass": "width0", "bSearchable": false, "bVisible": false, "aTargets": [ 0 ] },
+                { "sClass": "width225", "sType": "string", "aTargets": [ 1 ] },
+                { "sClass": "width225", "sType": "string", "aTargets": [ 2 ] },
+                { "sClass": "width150", "sType": "string", "aTargets": [ 3 ] },
+                { "sClass": "width150", "sType": "ip-address", "aTargets": [ 4 ] },
+                { "sClass": "width150", "sType": "mac-address", "aTargets": [ 5 ] },
+                { "sClass": "width100", "sType": "string", "aTargets": [ 6 ] },
+                { "sClass": "width100", "sType": "string", "aTargets": [ 7 ] },
+                { "sClass": "width100", "sType": "string", "aTargets": [ 8 ] },
+                { "sClass": "width225", "sType": "string", "aTargets": [ 9 ] },
+                { "sClass": "edit_trigger width225", "sType": "string", "aTargets": [ 10 ] },
+            ],
+        });
+
+        $(document).on("click", ".edit_trigger", function() {
+            row_id = $(this).children("div").attr("id");
+            editable_columns = $("#"+ row_id + ".editable");
+
+            editable_columns.children(".display_data").hide(); // Hide the display field
+            editable_columns.children(".editbox").show(); // Show the edit field
+
+            $(".editbox").change(function() {
+                request_dict = {};
+                row_zero = $("#" + row_id + ":eq(0)").text();
+
+                // Generate a request string
+                editable_columns.children(".editbox").each(function () {
+                    column_name = $(this).parent().attr("column");
+                    value = $(this).val();
+
+                    // Validate each field as it comes through
+                    if (value != null || value.length > 0) {
+                        request_dict[column_name] = $(this).val();
+                    }
+                    else {
+                        alert('Please fill all editable fields with data.');
+                        return false;
+                    }
+                });
+
+                // Send the data
+                Dajaxice.resnet_internal.computers.modify_computer(Dajax.process, {"request_dict": request_dict, "row_id": row_id, "row_zero": row_zero, "username": '{{ request.user.username }}'});
+            });
+
+            // Edit input box click action
+            $(".editbox").mouseup(function() {
+                return false;
+            });
+
+            // Outside click action
+            $(document).mouseup(function() {
+                $(".editbox").hide();
+                $(".display_data").show();
+            });
+        });
+    });
+</script>
+{% endblock %}
+
+{% block subtitle %} | University Housing Computer Index{% endblock %}
+
+{% block content %}
+<div id="content-2col">
+    <div id="content">
+        <div id="splashOuter">
+            <!--<div id="splash"></div>-->
+        </div>
+        <div id="topContent">
+            <h1>University Housing Computer Index</h1>
+        </div>
+        <div class="clear"></div>
+        <table id="computer_index">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Department</th>
+                    <th>Sub Department</th>
+                    <th>Computer Name</th>
+                    <th>IP Address</th>
+                    <th>MAC Address</th>
+                    <th>Model</th>
+                    <th>Serial Number</th>
+                    <th>Property ID</th>
+                    <th>Distinguished Name</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tfoot>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </tfoot>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="clear"></div>
+    </div>
+</div>
+{% endblock %}

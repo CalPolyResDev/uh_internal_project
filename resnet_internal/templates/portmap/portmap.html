@@ -1,11 +1,8 @@
-{# Major credit to Kyle Fast for saving a couple months' worth of work entering database info #}
 {% extends "base.html" %}
 
 {% block meta %}
 {{ block.super }}
-<link href="{{ STATIC_URL }}css/table.css" rel="stylesheet" type="text/css" media="screen" />
 <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.jeditable.js"></script>
 <script type="text/javascript">
     // IP Address Filter for dataTables
     jQuery.fn.dataTableExt.aTypes.unshift(
@@ -60,7 +57,7 @@
 
         $(document).on("click", ".edit_trigger", function() {
             row_id = $(this).children("div").attr("id");
-            editable_columns = $("#"+ row_id + ".editable")
+            editable_columns = $("#"+ row_id + ".editable");
 
             editable_columns.children(".display_data").hide(); // Hide the display field
             editable_columns.children(".editbox").show(); // Show the edit field

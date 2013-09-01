@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+{% load dajaxice_templatetags %}
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta name="layout" content="Cal Poly Web Template" />
+        <meta name="author" content="Alex Kavanaugh - ResNet Development Team" />
+        <meta name="keywords" content="Resnet Internal" />
+        <meta name="description" content="Residential Networking Services Internal Tools" />
+        <link href="{{STATIC_URL}}css/jqueryui/jqueryui-1.8.22.cp.css" rel="stylesheet" type="text/css" />
+        <link href="{{STATIC_URL}}common/css/cp_screen_3.4.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="{{STATIC_URL}}css/screen.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="{{ STATIC_URL }}css/table.css" rel="stylesheet" type="text/css" media="screen" />
+        <link href="{{STATIC_URL}}images/icons/favicon.ico" rel="shortcut icon" />
+        {% dajaxice_js_import %}
+        <script type="text/javascript" src="{{STATIC_URL}}js/jquery.dajax.core.js"></script>
+        <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.2.min.js"></script>
+        <style type="text/css">
+            table th {
+                cursor: auto !important;
+            }
+        </style>
+        <title>ResNet Internal - Online Tools | University Housing Computer Record</title>
+    </head>
+    <body style="background: none; background-color: rgb(253, 253, 253); min-width: 0; width: inherit;">
+        <div id="content">
+            <h1>Association Record for {{ ip_address }}</h1>
+            <br />
+            <h2>Pinholes</h2>
+            <table class="dataTable">
+                <tbody>
+                    <tr>
+                        <th scope="col" width="50%">Service Name</th>
+                        <th scope="col" width="25%">TCP Ports</th>
+                        <th scope="col" width="25%">UDP Ports</th>
+                    </tr>
+                    {% if pinholes %}
+                        {% for pinhole in pinholes %}
+                        <tr>
+                            <td>{{ pinhole.service_name }}</td>
+                            <td>
+                                {% for port in pinhole.tcp_ports %}
+                                    {{ port }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for port in pinhole.udp_ports %}
+                                    {{ port }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="3">There are no pinholes associated with this IP address.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            <div class="clear"></div>
+            <h2>DNS Records</h2>
+            <table class="dataTable">
+                <tbody>
+                    <tr>
+                        <th scope="col" width="50%">DNS Record</th>
+                    </tr>
+                    {% if dns_records %}
+                        {% for dns_record in dns_records %}
+                        <tr>
+                            <td>{{ dns_record.dns_record }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td>There are no dns records associated with this IP Address.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+            <div class="clear"></div>
+            <h2>Domain Names</h2>
+            <table class="dataTable">
+                <tbody>
+                    <tr>
+                        <th scope="col" width="50%">Domain Name</th>
+                    </tr>
+                    {% if domain_names %}
+                        {% for domain_name in domain_names %}
+                        <tr>
+                            <td>{{ domain_name.domain_name }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td>There are no domain names associated with this IP Address.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

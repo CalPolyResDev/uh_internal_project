@@ -10,6 +10,7 @@
 		<link href="{{STATIC_URL}}css/jqueryui/jqueryui-1.8.22.cp.css" rel="stylesheet" type="text/css" />
 		<link href="{{STATIC_URL}}common/css/cp_screen_3.4.css" rel="stylesheet" type="text/css" media="screen" />
 		<link href="{{STATIC_URL}}css/screen.css" rel="stylesheet" type="text/css" media="screen" />
+		<link href="{{ STATIC_URL }}css/table.css" rel="stylesheet" type="text/css" media="screen" />
 		<link href="{{STATIC_URL}}images/icons/favicon.ico" rel="shortcut icon" />
 		{% dajaxice_js_import %}
 		<script type="text/javascript" src="{{STATIC_URL}}js/jquery.dajax.core.js"></script>
@@ -40,7 +41,7 @@
 							Residential Networking Services
 						</p>
 						<p id="optional_deptinfo">
-							<a href="{% url 'home' %}">ResNet Online Tools</a><font color="red">&nbsp;&nbsp;RC Alpha 0.1</font>
+							<a href="{% url 'home' %}">ResNet Online Tools</a><font color="red">&nbsp;&nbsp;RC Alpha 0.3</font>
 						</p>
 					</div>
 				</div>
@@ -113,7 +114,7 @@
 				<h2>Administration</h2>
 				<ul>
 					<li>
-						<a href="{% url 'userMap' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="User Mapping" align="top" width="16" height="16" border="0" />User Mapping</a>
+						<a href="{% url 'admin' %}"><img src="{{STATIC_URL}}images/icons/django.ico" alt="Django Admin" align="top" width="16" height="16" border="0" />Django Admin Site</a>
 					</li>
 				</ul>
 				{% endif %}
@@ -127,7 +128,7 @@
 					</li>
 					{% if request.user.is_developer %} {# or request.user.is_rn_staff or request.user.is_domain_manager or request.user.is_osd or request.user.is_net_admin #}
 					<li>
-						<a href="#"><img src="{{STATIC_URL}}images/icons/database.png" alt="UH Computer Map" align="top" width="16" height="16" border="0" />UH Computer Map</a>
+						<a href="{% url 'uh_computers' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="UH Computer Index" align="top" width="16" height="16" border="0" />UH Computer Index</a>
 					</li>
 					<li>
 						<a href="#"><img src="{{STATIC_URL}}images/icons/database.png" alt="UH Printer Map" align="top" width="16" height="16" border="0" />UH Printer Map</a>

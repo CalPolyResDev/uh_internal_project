@@ -1,14 +1,14 @@
 """
-.. module:: resnet_internal.portmap.routers
-   :synopsis: ResNet Internal Core Portmap Routers.
+.. module:: resnet_internal.computers.routers
+   :synopsis: ResNet Internal Computer Index Database Routers.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
 
 
-class PortmapRouter(object):
-    """ A Django database router that ensures the portmap models use the portmap database
+class ComputersRouter(object):
+    """ A Django database router that ensures the computers models use the computers database
 
     This router must be added to the 'DATABASE_ROUTERS' list in the project
     settings.
@@ -17,8 +17,8 @@ class PortmapRouter(object):
 
     """
 
-    ALIAS = "portmap"
-    APP_NAME = "portmap"
+    ALIAS = "computers"
+    APP_NAME = "computers"
 
     def _app(self, model):
         """ A shortcut to retrieve the provided model's application label.
