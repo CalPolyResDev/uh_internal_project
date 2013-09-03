@@ -317,8 +317,8 @@ INSTALLED_APPS = (
     'resnet_internal.core',
     'resnet_internal.core.templatetags',
     'resnet_internal.orientation',
+    'resnet_internal.computers',
     'resnet_internal.portmap',
-#    'resnet_internal.usermap',
     'south',
 )
 

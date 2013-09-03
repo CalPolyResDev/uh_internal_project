@@ -44,7 +44,15 @@ class ComputersView(BaseDatatableView):
         """
 
         if column == 'ip_address':
-            return "<div id='%s' class='editable' column='%s'><div class='display_data'><a href='/computers/%s/' class='iprecord'>%s</a><img src='%simages/icons/ip_record.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' /></div><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column), settings.STATIC_URL, getattr(row, column))
+            beginning = "<div id='%s' class='editable' column='%s'><div class='display_data'><a href='/computers/%s/' class='iprecord'>%s</a>" % (row.id, column, getattr(row, column), getattr(row, column))
+            image = "<img src='%simages/icons/ip_record.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' />" % settings.STATIC_URL
+            end = "</div><input type='text' class='editbox' value='%s' /></div>" % getattr(row, column)
+
+            # Only display the record icon if the ip exists
+            if getattr(row, column):
+                return beginning + image + end
+            else:
+                return beginning + end
         elif column in self.editable_columns:
             return "<div id='%s' class='editable' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column))
         else:
