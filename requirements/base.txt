@@ -13,6 +13,7 @@ colorama==0.2.5
 unipath==1.0
 raven==3.4.1
 git+https://uh-hornrock.housing.calpoly.edu/stash/scm/rmsc/rmsconnector.git@2f2aba6#egg=rmsconnector
+git+https://uh-hornrock.housing.calpoly.edu/stash/scm/srsc/srsconnector.git@2e404cb#egg=srsconnector
 django-ewiz==1.1.17
 
 
