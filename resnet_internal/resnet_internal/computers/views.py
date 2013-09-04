@@ -25,6 +25,7 @@ class ComputersView(BaseDatatableView):
     """Renders the computer index."""
 
     model = Computer
+    max_display_length = 250
 
     # define the columns that will be returned
     columns = ['id', 'department', 'sub_department', 'computer_name', 'ip_address', 'mac_address', 'model', 'serial_number', 'property_id', 'dn', 'description']
