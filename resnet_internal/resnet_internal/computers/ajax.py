@@ -36,10 +36,7 @@ def modify_computer(request, request_dict, row_id, row_zero, username):
     # Log the action
     logger.info("User %s modified computer (id='%s') with the following data: %s" % (username, row_id, request_dict))
 
-    # Update the table
-    for column, value in request_dict.items():
-        dajax.assign("#%s[column='%s'] .display_data" % (row_id, column), 'innerHTML', value)
-
-    dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', row_zero)
+    # Redraw the table
+    dajax.script('computer_index.fnDraw();')
 
     return dajax.json()

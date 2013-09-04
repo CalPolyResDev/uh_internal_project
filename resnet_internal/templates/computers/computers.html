@@ -38,10 +38,12 @@
         }
     );
 
+    var computer_index;
+
     // initialize the dataTable
     $(document).ready(function() {
         // Initialize the DataTable. See datatables documentation for information about each option
-        var computer_index = $('#computer_index').dataTable( {
+        computer_index = $('#computer_index').dataTable( {
             "aaSorting": [[ 1, "asc" ], [ 2, "asc" ], [ 3, "asc" ]],
             "oLanguage": {
                 "sLengthMenu": 'Display <select>'+
