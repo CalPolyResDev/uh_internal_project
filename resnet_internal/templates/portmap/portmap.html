@@ -15,10 +15,12 @@
         }
     );
 
+    var residence_halls_wired_port_map;
+
     // initialize the dataTable
     $(document).ready(function() {
         // Initialize the DataTable. See datatables documentation for information about each option
-        var residence_halls_wired_port_map = $('#residence_halls_wired_port_map').dataTable( {
+        residence_halls_wired_port_map = $('#residence_halls_wired_port_map').dataTable( {
             "aaSorting": [[ 1, "asc" ], [ 2, "asc" ], [ 3, "asc" ]],
             "oLanguage": {
                 "sLengthMenu": 'Display <select>'+

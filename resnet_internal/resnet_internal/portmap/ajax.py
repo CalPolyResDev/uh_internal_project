@@ -36,14 +36,7 @@ def modify_port(request, request_dict, row_id, row_zero, username):
     # Log the action
     logger.info("User %s modified port (id='%s') with the following data: %s" % (username, row_id, request_dict))
 
-    # Update the table
-    for column, value in request_dict.items():
-        if column == "switch_ip":
-            dajax.assign("#%s[column='%s'] .display_data a" % (row_id, column), 'href', '/frame/cisco/%s/' % value)
-            dajax.assign("#%s[column='%s'] .display_data a" % (row_id, column), 'innerHTML', value)
-        else:
-            dajax.assign("#%s[column='%s'] .display_data" % (row_id, column), 'innerHTML', value)
-
-    dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', row_zero)
+    # Redraw the table
+    dajax.script('residence_halls_wired_port_map.fnDraw();')
 
     return dajax.json()
