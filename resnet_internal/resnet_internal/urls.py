@@ -13,7 +13,7 @@ from django.conf.urls.static import static
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, RedirectView
 
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 
@@ -34,6 +34,7 @@ portmap_access = user_passes_test(lambda user: user.is_developer or user.is_rn_s
 # Core
 urlpatterns = patterns('core.views',
     url(r'^$', TemplateView.as_view(template_name='core/index.html'), name='home'),
+    url(r'^favicon\.ico$', RedirectView.as_view(url='%simages/icons/favicon.ico' % settings.STATIC_URL), name='favicon'),
     url(r'^flugzeug/', include(admin.site.urls), name='admin'),  # admin site urls, masked
     url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^logout/$', 'logout', name='logout'),
