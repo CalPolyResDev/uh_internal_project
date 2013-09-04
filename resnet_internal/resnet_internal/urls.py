@@ -27,8 +27,8 @@ dajaxice_autodiscover()
 
 logger = logging.getLogger(__name__)
 orientation_access = user_passes_test(lambda user: user.is_developer or user.is_technician)
-computers_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician)
-portmap_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom)
+computers_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_domain_manager or user.is_net_admin or user.is_tag)
+portmap_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag or user.is_telecom)
 
 
 # Core

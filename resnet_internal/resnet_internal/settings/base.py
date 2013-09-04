@@ -195,6 +195,7 @@ AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     'is_csd': 'CN=UH-CSD,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
     'is_net_admin': 'CN=ITS-CCS-NetAdmin - LocalAdmins,OU=Groups,OU=Delegated,OU=NetAdmin,OU=CCS,OU=ITS,OU=Depts,DC=CP-Calpoly,DC=edu',
     'is_telecom': 'CN=IS-Telecom - LocalAdmins,OU=Groups,OU=IS,OU=Depts,DC=CP-Calpoly,DC=edu',
+    'is_tag': 'CN=UH-TAG,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
     'is_technician': 'CN=UH-ResTech-Admins,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
     'is_network_analyst': 'CN=UH-RN-Network,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
     'is_domain_manager': 'CN=UH-RN-OUadmin,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',

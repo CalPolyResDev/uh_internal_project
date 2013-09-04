@@ -71,8 +71,9 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     #
     is_new_tech = NullBooleanField(null=True)  # determines whether or not to show the orentation site
     is_csd = BooleanField(default=False)  # limited access only to apps that csds are allowed use
-    is_net_admin = BooleanField(default=False)  # limited access only to apps that network admins are allowed use
-    is_telecom = BooleanField(default=False)  # limited access only to apps that telecom admins are allowed use
+    is_net_admin = BooleanField(default=False)  # limited access only to apps that network admins are allowed to use
+    is_telecom = BooleanField(default=False)  # limited access only to apps that telecom admins are allowed to use
+    is_tag = BooleanField(default=False)  # limited access only to apps that uh-tag mambers are allowed to use
     is_technician = BooleanField(default=False)  # access to technician tools
     is_network_analyst = BooleanField(default=False)  # access to network analysis tools
     is_domain_manager = BooleanField(default=False)  # access to domain management tools

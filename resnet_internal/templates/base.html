@@ -120,7 +120,7 @@
 				{% endif %}
 				{% endcomment %}
 
-				{% if request.user.is_developer or request.user.is_rn_staff or request.user.is_technician or request.user.is_net_admin or request.user.is_telecom %}
+				{% if request.user.is_developer or request.user.is_rn_staff or request.user.is_technician or request.user.is_net_admin or request.user.is_tag or request.user.is_telecom %}
 				<h2>Databases</h2>
 				<ul>
 					<li>
