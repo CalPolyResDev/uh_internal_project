@@ -6,13 +6,19 @@
 
 """
 
+import logging
+import socket
+import subprocess
+
 from django.conf import settings
 from django.db.models import Q
 from django.views.generic.base import TemplateView
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
-from .models import Computer, Pinhole, DNSRecord, DomainName
+from .models import Computer, Pinhole, DomainName
+
+logger = logging.getLogger(__name__)
 
 
 class ComputersView(BaseDatatableView):
@@ -44,15 +50,26 @@ class ComputersView(BaseDatatableView):
         """
 
         if column == 'ip_address':
-            beginning = "<div id='%s' class='editable' column='%s'><div class='display_data'><a href='/computers/%s/' class='iprecord'>%s</a>" % (row.id, column, getattr(row, column), getattr(row, column))
-            image = "<img src='%simages/icons/ip_record.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' />" % settings.STATIC_URL
-            end = "</div><input type='text' class='editbox' value='%s' /></div>" % getattr(row, column)
+            ip_address = getattr(row, column)
 
-            # Only display the record icon if the ip exists
-            if getattr(row, column):
-                return beginning + image + end
-            else:
-                return beginning + end
+            beginning = "<div id='%s' class='editable' column='%s'><div class='display_data'><a href='/computers/%s/' class='iprecord'>%s</a>" % (row.id, column, ip_address, ip_address)
+            pinholes = "<img src='%simages/icons/pinholes.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' />" % settings.STATIC_URL
+            domain_names = "<img src='%simages/icons/domain_names.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' />" % settings.STATIC_URL
+            end = "</div><input type='text' class='editbox' value='%s' /></div>" % ip_address
+
+            result = beginning
+
+            # Only display the icon if the record exists
+            if ip_address:
+                has_pinholes = Pinhole.objects.filter(ip_address=ip_address).count() != 0
+                has_domain_names = DomainName.objects.filter(ip_address=ip_address).count() != 0
+
+                if has_pinholes:
+                    result = result + pinholes
+                if has_domain_names:
+                    result = result + domain_names
+
+            return result + end
         elif column in self.editable_columns:
             return "<div id='%s' class='editable' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column))
         else:
@@ -109,13 +126,43 @@ class ComputerRecordsView(TemplateView):
         context = super(ComputerRecordsView, self).get_context_data(**kwargs)
 
         ip_address = context['ip_address']
+        error_string = "There is no dns record associated with this IP Address"
+
+        socket_lookup = True
+        subprocess_error = False
+
+        #
+        # A socket lookup on the local machine doesn't hit the DNS server.
+        # This checks if the ip is that of the local machine, and forces an
+        # nslookup through the terminal instead.
+        #
+        # NOTE: This will only work on systems with the 'nslookup' binary (Win32)
+        #
+        if ip_address == socket.gethostbyname(socket.gethostname()):
+            socket_lookup = False
+
+            try:
+                response = subprocess.check_output(["nslookup", ip_address], stderr=subprocess.STDOUT)
+                dns_record = response.split("Name:    ")[-1].split("\r\n")[0]
+            except (OSError, WindowsError):
+                logger.error("This server does not have the 'nslookup' binary.")
+                socket_lookup = True
+                subprocess_error = True
+
+        if socket_lookup:
+            try:
+                dns_record = socket.gethostbyaddr(ip_address)[0]
+
+                if subprocess_error:
+                    dns_record = "%s (local hostname)" % dns_record
+            except socket.herror:
+                dns_record = error_string
 
         pinholes = Pinhole.objects.filter(ip_address=ip_address)
-        dns_records = DNSRecord.objects.filter(ip_address=ip_address)
         domain_names = DomainName.objects.filter(ip_address=ip_address)
 
         context['pinholes'] = pinholes
-        context['dns_records'] = dns_records
+        context['dns_record'] = dns_record
         context['domain_names'] = domain_names
 
         return context

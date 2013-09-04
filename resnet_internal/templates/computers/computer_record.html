@@ -30,14 +30,18 @@
             <table class="dataTable">
                 <tbody>
                     <tr>
-                        <th scope="col" width="50%">Service Name</th>
-                        <th scope="col" width="25%">TCP Ports</th>
-                        <th scope="col" width="25%">UDP Ports</th>
+                        <th scope="col" width="20%">Service Name</th>
+                        <th scope="col" width="12.5%">Inner FW?</th>
+                        <th scope="col" width="12.5%">Border FW?</th>
+                        <th scope="col" width="27.5%">TCP Ports</th>
+                        <th scope="col" width="27.5%">UDP Ports</th>
                     </tr>
                     {% if pinholes %}
                         {% for pinhole in pinholes %}
                         <tr>
                             <td>{{ pinhole.service_name }}</td>
+                            <td>{{ pinhole.inner_fw }}</td>
+                            <td>{{ pinhole.border_fw }}</td>
                             <td>
                                 {% for port in pinhole.tcp_ports %}
                                     {{ port }}{% if not forloop.last %}, {% endif %}
@@ -52,29 +56,21 @@
                         {% endfor %}
                     {% else %}
                     <tr>
-                        <td colspan="3">There are no pinholes associated with this IP address.</td>
+                        <td colspan="5">There are no pinholes associated with this IP address.</td>
                     </tr>
                     {% endif %}
                 </tbody>
             </table>
             <div class="clear"></div>
-            <h2>DNS Records (ANAME)</h2>
+            <h2>DNS Record (A)</h2>
             <table class="dataTable">
                 <tbody>
                     <tr>
-                        <th scope="col" width="50%">DNS Record</th>
+                        <th scope="col">DNS Record</th>
                     </tr>
-                    {% if dns_records %}
-                        {% for dns_record in dns_records %}
-                        <tr>
-                            <td>{{ dns_record.dns_record }}</td>
-                        </tr>
-                        {% endfor %}
-                    {% else %}
                     <tr>
-                        <td>There are no dns records associated with this IP Address.</td>
+                        <td>{{ dns_record }}</td>
                     </tr>
-                    {% endif %}
                 </tbody>
             </table>
             <div class="clear"></div>
@@ -82,7 +78,7 @@
             <table class="dataTable">
                 <tbody>
                     <tr>
-                        <th scope="col" width="50%">Domain Name</th>
+                        <th scope="col">Domain Name</th>
                     </tr>
                     {% if domain_names %}
                         {% for domain_name in domain_names %}
