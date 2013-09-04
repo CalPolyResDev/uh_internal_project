@@ -97,8 +97,20 @@ class ComputersView(BaseDatatableView):
             firstCol = True
             firstParam = True
 
+            # Check for pinhole / domain flags
             for param in params:
-                if param != "":
+                if param[:1] == '?':
+                    flag = param[1:]
+
+                    if flag == "pinhole":
+                        pinhole_ip_list = Pinhole.objects.values_list('ip_address', flat=True).distinct()
+                        qs = qs.filter(ip_address__in=pinhole_ip_list)
+                    elif flag == "domain":
+                        domain_name_ip_list = DomainName.objects.values_list('ip_address', flat=True).distinct()
+                        qs = qs.filter(ip_address__in=domain_name_ip_list)
+
+            for param in params:
+                if param != "" and not (param == "?pinhole" or param == "?domain"):
                     for searchable_column in self.searchable_columns:
                         kwargz = {searchable_column + "__icontains": param}
                         q = Q(**kwargz)
@@ -114,7 +126,8 @@ class ComputersView(BaseDatatableView):
                         paramQ.add(columnQ, Q.AND)
                     columnQ = None
                     firstCol = True
-            qs = qs.filter(paramQ)
+            if paramQ:
+                qs = qs.filter(paramQ)
 
         return qs
 
