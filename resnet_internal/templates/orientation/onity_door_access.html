@@ -1,13 +1,4 @@
-{% extends "base.html" %}
-{% block meta %}
-<script type="text/javascript">
-	function completeTask(task) {
-		Dajaxice.resnet_internal.orientation.complete_task(Dajax.process,{'username':'{{request.user.username}}', 'task': task});
-	};
-</script>
-{% endblock %}
-
-{% block subtitle %} | Orientation{% endblock %}
+{% extends "base_checklist_item.html" %}
 
 {% block content %}
 <div id="content">
@@ -20,11 +11,11 @@
 		<p>
 			<b>To get your card coded:</b>
 			<br />
-			&nbsp;&nbsp;&nbsp;&nbsp;Contact {{data.onityStaffName}} (Housing and Business Services)
+			&nbsp;&nbsp;&nbsp;&nbsp;Contact {{ onity_staff_name }} (Housing and Business Services)
 			<br />
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Phone: 6-{{data.onityStaffExt}}
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Phone: 6-{{ onity_staff_extension }}
 			<br />
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Email: {{data.onityStaffEmail}}
+			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Email: {{ onity_staff_email }}
 			<br />
 			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Office: The office behind Trinity Hall (near the study lounge and laundry room)
 			<br />
@@ -38,7 +29,7 @@
 			<form method="post" id="email_form">
 				<fieldset>
 					<legend>
-						Send an email to {{data.onityStaffName}} (optional):
+						Send an email to {{ onity_staff_name }} (optional):
 					</legend>
 					<p>
 						{{ form.non_field_errors }}
@@ -51,6 +42,7 @@
 					{% endfor %}
 				</fieldset>
 				<p>
+				    <input type="hidden" value="{{ onity_staff_email }}" name="to_email" />
 					<input type="submit" value="Send" />
 					<input type="reset" value="Reset" />
 				</p>
@@ -63,7 +55,7 @@
 				If your PolyCard has been encoded, click the following button to take this item off the checklist:
 			</p>
 			<p>
-				<input type="button" onclick="completeTask('onity')" value="My PolyCard Has Been Encoded" />
+				<input type="button" onclick="complete_task('onity')" value="My PolyCard Has Been Encoded" />
 			</p>
 		</div>
 	</div>

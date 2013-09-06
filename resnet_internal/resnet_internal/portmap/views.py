@@ -9,6 +9,7 @@
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.db.models import Q
+from django.views.generic import TemplateView
 
 from rmsconnector.utils import Resident
 from django_datatables_view.base_datatable_view import BaseDatatableView
@@ -16,7 +17,11 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from .models import ResHallWired
 
 
-class ResidenceHallWiredPortsView(BaseDatatableView):
+class ResidenceHallWiredPortsView(TemplateView):
+    template_name = "portmap/portmap.html"
+
+
+class PopulateResidenceHallWiredPorts(BaseDatatableView):
     """Renders the port map."""
 
     model = ResHallWired

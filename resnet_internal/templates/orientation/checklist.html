@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block meta %}
 <script type="text/javascript">
-	function completeOrientation() {
+	function complete_orientation() {
 		Dajaxice.resnet_internal.orientation.complete_orientation(Dajax.process,{'username':'{{request.user.username}}'});
 	};
 </script>
@@ -26,7 +26,7 @@
 				</li>
 				{% else %}
 				<li id="onity">
-					<a href="{% url 'orientation-onity' %}">Onity Door Access</a>
+					<a href="{% url 'orientation_onity' %}">Onity Door Access</a>
 				</li>
 				{% endif %}
 
@@ -36,7 +36,7 @@
 				</li>
 				{% else %}
 				<li id="srs">
-					<a href="{% url 'orientation-srs' %}">Ticket Manager/SRS Access</a>
+					<a href="{% url 'orientation_srs' %}">Ticket Manager/SRS Access</a>
 				</li>
 				{% endif %}
 
@@ -46,7 +46,7 @@
 				</li>
 				{% else %}
 				<li id="payroll">
-					<a href="{% url 'orientation-payroll' %}">Payroll Access</a>
+					<a href="{% url 'orientation_payroll' %}">Payroll Access</a>
 				</li>
 				{% endif %}
 			</ul>
@@ -57,7 +57,7 @@
 				You did it! That wasn't too hard, was it? Click the following button to complete your orientation <b>(you will be logged out after doing so)</b>:
 			</p>
 			<p>
-				<input type="button" onclick="completeOrientation()" value="Complete Orientation!" />
+				<input type="button" onclick="complete_orientation()" value="Complete Orientation!" />
 			</p>
 		</div>
 		{% endif %}

@@ -14,10 +14,10 @@ from dajaxice.decorators import dajaxice_register
 
 
 @dajaxice_register
-def complete_task(request, username, task):
+def complete_task(request, task):
     dajax = Dajax()
 
-    user = get_user_model().objects.get(username=username)
+    user = get_user_model().objects.get(username=request.user.username)
 
     if task == "onity":
         user.onity_complete = True
@@ -34,10 +34,10 @@ def complete_task(request, username, task):
 
 
 @dajaxice_register
-def complete_orientation(request, username):
+def complete_orientation(request):
     dajax = Dajax()
 
-    user = get_user_model().objects.get(username=username)
+    user = get_user_model().objects.get(username=request.user.username)
     user.orientation_complete = True
     user.is_new_tech = False
     user.save()

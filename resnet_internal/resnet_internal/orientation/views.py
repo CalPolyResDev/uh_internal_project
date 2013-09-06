@@ -8,9 +8,9 @@
 
 from django.conf import settings
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
-from django.http.response import HttpResponseRedirect
+from django.core.urlresolvers import reverse_lazy
 from django.views.generic.edit import FormView
+from django.views.generic import TemplateView
 
 from django_ewiz import EwizAttacher
 from srsconnector.settings import ALIAS as SRS_ALIAS
@@ -20,11 +20,16 @@ from resnet_internal.core.models import StaffMapping
 from .forms import SRSUploadForm, OnityEmailForm
 
 
+class ChecklistView(TemplateView):
+    template_name = "orientation/checklist.html"
+
+
 class OnityDoorAccessView(FormView):
     """Orientation Checklist Item: Onity Door Access."""
 
-    template_name = "orientation/onityDoorAccess.html"
+    template_name = "orientation/onity_door_access.html"
     form_class = OnityEmailForm
+    success_url = reverse_lazy('orientation_checklist')
 
     def get_initial(self):
         full_name = self.request.user.get_full_name()
@@ -50,14 +55,15 @@ class OnityDoorAccessView(FormView):
                   from_email=self.request.user.email,
                   recipient_list=["alex.kavanaugh@outlook.com"], fail_silently=False)
 
-        return HttpResponseRedirect(reverse('orientation-checklist'))
+        return super(OnityDoorAccessView, self).form_valid(form)
 
 
 class SRSAccessView(FormView):
     """Orientation Checklist Item: SRS Access."""
 
-    template_name = "orientation/srsAccess.html"
+    template_name = "orientation/srs_access.html"
     form_class = SRSUploadForm
+    success_url = reverse_lazy('orientation_checklist')
 
     def form_valid(self, form):
         # Create a new account request
@@ -70,4 +76,8 @@ class SRSAccessView(FormView):
         # Upload the RUP
         EwizAttacher(settings_dict=settings.DATABASES[SRS_ALIAS], model=ticket, file_pointer=file_pointer, fileName=self.request.user.get_alias() + u'.pdf').attachFile()
 
-        return HttpResponseRedirect(reverse('orientation-checklist'))
+        return super(SRSAccessView, self).form_valid(form)
+
+
+class PayrollView(TemplateView):
+    template_name = "orientation/payroll_access.html"

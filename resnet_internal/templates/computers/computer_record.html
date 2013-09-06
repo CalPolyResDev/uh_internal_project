@@ -25,7 +25,7 @@
 {% block content %}
     <h1>Association Record for {{ ip_address }}</h1>
     <br />
-    <h2 style="float: left;">Pinholes&nbsp;&nbsp;</h2><a class="add_link" href="{% url 'pinhole_request' ip_address=ip_address %}">+Add Pinhole</a>
+    <h2 style="float: left;">Pinholes&nbsp;&nbsp;</h2>{% if request.user.is_developer or request.user.is_net_admin or request.user.is_tag %}<a class="add_link" href="{% url 'pinhole_request' ip_address=ip_address %}">+Add Pinhole</a>{% endif %}
     <table class="dataTable">
         <tbody>
             <tr>
@@ -35,7 +35,7 @@
                 <th scope="col" width="20%">TCP Ports</th>
                 <th scope="col" width="20%">UDP Ports</th>
                 <th scope="col" width="10%">SR Number</th>
-                <th scope="col" width="10%">&nbsp;</th>
+                <th scope="col" width="10%" style="text-decoration: none !important">&nbsp;</th>
             </tr>
             {% if pinholes %}
                 {% for pinhole in pinholes %}
@@ -54,7 +54,7 @@
                         {% endfor %}
                     </td>
                     <td>{{ pinhole.sr_number }}</td>
-                    <td><a style="color:red; cursor:pointer;" onclick="Dajaxice.resnet_internal.computers.remove_pinhole(Dajax.process,{'pinhole_id':'{{ pinhole.id }}'})">Remove</a></td>
+                    <td>{% if request.user.is_developer or request.user.is_net_admin or request.user.is_tag %}<a style="color:red; cursor:pointer;" onclick="Dajaxice.resnet_internal.computers.remove_pinhole(Dajax.process,{'pinhole_id':'{{ pinhole.id }}'})">Remove</a>{% endif %}</td>
                 </tr>
                 {% endfor %}
             {% else %}
@@ -77,20 +77,20 @@
         </tbody>
     </table>
     <div class="clear"></div>
-    <h2 style="float: left;">Domain Names (CNAME)&nbsp;&nbsp;</h2><a class="add_link" href="{% url 'domain_name_request' ip_address=ip_address %}">+Add Domain Name</a>
+    <h2 style="float: left;">Domain Names (CNAME)&nbsp;&nbsp;</h2>{% if request.user.is_developer or request.user.is_net_admin or request.user.is_tag %}<a class="add_link" href="{% url 'domain_name_request' ip_address=ip_address %}">+Add Domain Name</a>{% endif %}
     <table class="dataTable">
         <tbody>
             <tr>
                 <th scope="col" width="80%">Domain Name</th>
                 <th scope="col" width="10%">SR Number</th>
-                <th scope="col" width="10%">&nbsp;</th>
+                <th scope="col" width="10%" style="text-decoration: none !important">&nbsp;</th>
             </tr>
             {% if domain_names %}
                 {% for domain_name in domain_names %}
                 <tr>
                     <td>{{ domain_name.domain_name }}</td>
                     <td>{{ domain_name.sr_number }}</td>
-                    <td><a style="color:red; cursor:pointer;" onclick="Dajaxice.resnet_internal.computers.remove_domain_name(Dajax.process,{'domain_name_id':'{{ domain_name.id }}'})">Remove</a></td>
+                    <td>{% if request.user.is_developer or request.user.is_net_admin or request.user.is_tag %}<a style="color:red; cursor:pointer;" onclick="Dajaxice.resnet_internal.computers.remove_domain_name(Dajax.process,{'domain_name_id':'{{ domain_name.id }}'})">Remove</a>{% endif %}</td>
                 </tr>
                 {% endfor %}
             {% else %}

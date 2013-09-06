@@ -7,7 +7,6 @@
 """
 
 
-from django.views.generic.edit import FormView
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -15,6 +14,8 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
+from django.views.generic.edit import FormView
+from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse_lazy
 
@@ -65,6 +66,10 @@ def link_handler(request, mode, key, ip=""):
 #    return render_to_response('core/frame.html', {'subtitle': subtitle, 'source': source}, context_instance=RequestContext(request))
 
 
+class IndexView(TemplateView):
+    template_name = "core/index.html"
+
+
 class LoginView(FormView):
     """
 
@@ -96,10 +101,10 @@ class LoginView(FormView):
             auth_login(self.request, user)
 
         # Check if user is new tech
-#         if self.request.user.is_technician:
-#             if self.request.user.is_new_tech == None:  # First time log in, set flag from None to True
-#                 self.request.user.is_new_tech = True
-#                 self.request.user.save()
+        if self.request.user.is_technician:
+            if self.request.user.is_new_tech == None:  # First time log in, set flag from None to True
+                self.request.user.is_new_tech = True
+                self.request.user.save()
 
         # Set user session variables
         display_name = self.request.user.get_full_name()
@@ -129,6 +134,9 @@ class LoginView(FormView):
             user_specializations.append('ResNet Staff')
         if self.request.user.is_developer:
             user_specializations.append('ResNet Developer')
+
+        if self.request.user.is_tag:
+            user.specializations.append('UH TAG Member')
 
         # User is new technician (requires orientation)
         if self.request.user.is_new_tech:
