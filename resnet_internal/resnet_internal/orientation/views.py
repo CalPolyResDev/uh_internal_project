@@ -61,7 +61,7 @@ class SRSAccessView(FormView):
 
     def form_valid(self, form):
         # Create a new account request
-        ticket = AccountRequest(subjectUsername=self.request.user.get_alias())
+        ticket = AccountRequest(subject_username=self.request.user.get_alias())
         ticket.save()
 
         # Grab the RUP

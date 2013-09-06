@@ -43,4 +43,31 @@ ticket.save()
 from resnet_internal.srsConnector import models
 openTickets = models.ServiceRequest.objects.filter(assignedTeam="SA RESNET").exclude(status__gt='Closed').count()
 
+===============================================================================
+from srsconnector.models import PinholeRequest
+description = """Please add the following pinholes to [129.65.65.34]:
 
+Inner Firewall? True
+Border Firewall? True
+
+------------------------TCP------------------------
+80,443
+
+------------------------UDP------------------------
+993
+
+Thanks,
+Alexander Kavanaugh (via ResNet Internal)"""
+new_pinhole_request = PinholeRequest(priority='High', requestor_username='jfporter', work_log='Created Ticket for Alexander Kavanaugh.', description=description)
+((99234))
+
+===============================================================================
+from srsconnector.models import DomainNameRequest
+description = """Please add the following DNS Aliases to [129.65.65.34]:
+
+subdomain.example.com
+
+Thanks,
+Alexander Kavanaugh (via ResNet Internal)"""
+new_pinhole_request = DomainNameRequest(priority='High', requestor_username='jfporter', work_log='Created Ticket for Alexander Kavanaugh.', description=description)
+((99235))

@@ -19,7 +19,7 @@ from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 
 from .core.views import LoginView
 from .orientation.views import OnityDoorAccessView, SRSAccessView
-from .computers.views import ComputersView, ComputerRecordsView
+from .computers.views import ComputersView, ComputerRecordsView, PinholeRequestView, DomainNameRequestView
 from .portmap.views import ResidenceHallWiredPortsView
 
 admin.autodiscover()
@@ -60,7 +60,9 @@ urlpatterns += patterns('',
 urlpatterns += patterns('',
     url(r'^computers/$', login_required(computers_access(TemplateView.as_view(template_name='computers/computers.html'))), name='uh_computers'),
     url(r'^computers/populate/$', login_required(computers_access(ComputersView.as_view())), name='populate_uh_computers'),
-    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(computers_access(ComputerRecordsView.as_view())), name='view_uh_computer_record')
+    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(computers_access(ComputerRecordsView.as_view())), name='view_uh_computer_record'),
+    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/pinhole_request/$', login_required(computers_access(PinholeRequestView.as_view())), name='pinhole_request'),
+    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/domain_name_request/$', login_required(computers_access(DomainNameRequestView.as_view())), name='domain_name_request'),
 )
 
 # jCal (hours schedule)

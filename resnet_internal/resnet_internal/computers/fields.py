@@ -13,8 +13,26 @@ import ast
 from django.forms.fields import RegexField
 from django.db.models import Field, SubfieldBase, TextField
 
+# MAC Address
 MAC_RE = r'^([0-9a-fA-F]{2}([:]?|$)){6}$'
 mac_re = re.compile(MAC_RE)
+
+# Comma separated integers (list of ports)
+CSI_RE = r'^(\d+(,\d+)*)?$'
+csi_re = re.compile(CSI_RE)
+
+# Comma separated values (list of domain names)
+CSV_RE = r'^(.+(,.+)*)?$'
+csv_re = re.compile(CSV_RE, re.DOTALL)
+
+
+class DomainNameListFormFiled(RegexField):
+    default_error_messages = {
+        'invalid': u'Domain names must be comma-separated e.g. "a.example.com, b.example.com, c.example.com".',
+    }
+
+    def __init__(self, *args, **kwargs):
+        super(DomainNameListFormFiled, self).__init__(csv_re, *args, **kwargs)
 
 
 class MACAddressFormField(RegexField):
@@ -40,6 +58,15 @@ class MACAddressField(Field):
         defaults = {'form_class': MACAddressFormField}
         defaults.update(kwargs)
         return super(MACAddressField, self).formfield(**defaults)
+
+
+class PortListFormField(RegexField):
+    default_error_messages = {
+        'invalid': u'Ports must be comma-separated with no whitespace. e.g. "22,80,443,993".',
+    }
+
+    def __init__(self, *args, **kwargs):
+        super(PortListFormField, self).__init__(csi_re, *args, **kwargs)
 
 
 class ListField(TextField):
@@ -70,3 +97,8 @@ class ListField(TextField):
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
         return self.get_db_prep_value(value)
+
+    def formfield(self, **kwargs):
+        defaults = {'form_class': PortListFormField}
+        defaults.update(kwargs)
+        return super(ListField, self).formfield(**defaults)

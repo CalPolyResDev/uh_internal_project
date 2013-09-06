@@ -1,0 +1,26 @@
+{% extends "base_frame.html" %}
+
+{% block subtitle %} | University Housing Computer Index Domain Name Request{% endblock %}
+
+{% block content %}
+    <h1>Domain Name Request: {{ ip_address }}</h1>
+    <br />
+    <p>When this form is submitted, a service request will be created in your name and sent to NetAdmin.<br />
+    The service request ID will show up next to the newly created domain name record for your reference.<br />
+    Multiple domain names must be separated by commas.</p>
+    <p style="color: red;">NOTE: If you are unsure if you are a valid requestor, check first. Sending a request without proper permissions wastes everyone's time.</p>
+    <div>
+        <form method="post" id="domain_name_request_form">
+            <fieldset>
+                <legend>
+                    Request a Domain Name (CNAME)
+                </legend>
+                {{ form.as_p }}
+            </fieldset>
+            <p>
+                <input type="submit" value="Submit" />
+            </p>
+            {% csrf_token %}
+        </form>
+    <div class="clear"></div>
+{% endblock %}

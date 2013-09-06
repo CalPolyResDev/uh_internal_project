@@ -6,7 +6,7 @@
 
 """
 
-from django.db.models import Model, BooleanField, CharField, IPAddressField
+from django.db.models import Model, BooleanField, CharField, IntegerField, IPAddressField
 
 from .fields import MACAddressField, ListField
 
@@ -43,6 +43,7 @@ class Pinhole(Model):
     border_fw = BooleanField(verbose_name=u'Border Firewall')
     tcp_ports = ListField(verbose_name=u'TCP Ports')
     udp_ports = ListField(verbose_name=u'TCP Ports')
+    sr_number = IntegerField(max_length=11, null=True, verbose_name=u'SR Number', db_column='ticket_id')
 
     def __unicode__(self):
         return 'Pinhole: ' + str(self.ip_address)
@@ -58,6 +59,7 @@ class DomainName(Model):
 
     ip_address = IPAddressField(verbose_name=u'IP Address')
     domain_name = CharField(max_length=100, verbose_name=u'Domain Name')
+    sr_number = IntegerField(max_length=11, null=True, verbose_name=u'SR Number', db_column='ticket_id')
 
     def __unicode__(self):
         return 'DNS Record: ' + str(self.ip_address)

@@ -11,12 +11,18 @@ import socket
 import subprocess
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db.models import Q
+from django.http.response import HttpResponseRedirect
 from django.views.generic.base import TemplateView
+from django.views.generic.edit import FormView
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
+from srsconnector.models import PinholeRequest, DomainNameRequest
 
+from .forms import RequestPinholeForm, RequestDomainNameForm
 from .models import Computer, Pinhole, DomainName
+
 
 logger = logging.getLogger(__name__)
 
@@ -180,3 +186,92 @@ class ComputerRecordsView(TemplateView):
         context['domain_names'] = domain_names
 
         return context
+
+
+class PinholeRequestView(FormView):
+    template_name = "computers/pinhole_request.html"
+    form_class = RequestPinholeForm
+
+    def form_valid(self, form):
+        submitter = self.request.user.get_full_name()
+        priority = form.cleaned_data['priority']
+        requestor_username = form.cleaned_data['requestor_username']
+
+        ip_address = self.kwargs['ip_address']
+        service_name = form.cleaned_data['service_name']
+        inner_fw = form.cleaned_data['inner_fw']
+        border_fw = form.cleaned_data['border_fw']
+        tcp_ports = "[%s]" % form.cleaned_data['tcp_ports']
+        udp_ports = "[%s]" % form.cleaned_data['udp_ports']
+
+        description = """Please add the following pinholes to [%(ip_address)s]:
+
+Inner Firewall? %(inner_fw)s
+Border Firewall? %(border_fw)s
+
+------------------------TCP------------------------
+%(tcp_ports)s
+
+------------------------UDP------------------------
+%(udp_ports)s
+
+Thanks,
+%(submitter)s (via ResNet Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
+
+        # Create service request
+        new_pinhole_request = PinholeRequest(priority=priority, requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
+        new_pinhole_request.save()
+
+        sr_number = new_pinhole_request.ticket_id
+
+        # Create Pinhole record
+        new_pinhole = Pinhole()
+        new_pinhole.ip_address = ip_address
+        new_pinhole.service_name = service_name
+        new_pinhole.inner_fw = bool(inner_fw)
+        new_pinhole.border_fw = bool(border_fw)
+        new_pinhole.tcp_ports = tcp_ports
+        new_pinhole.udp_ports = udp_ports
+        new_pinhole.sr_number = sr_number
+        new_pinhole.save()
+
+        return HttpResponseRedirect(reverse('view_uh_computer_record', kwargs={'ip_address': ip_address}))
+
+
+class DomainNameRequestView(FormView):
+    template_name = "computers/domain_name_request.html"
+    form_class = RequestDomainNameForm
+
+    def form_valid(self, form):
+        submitter = self.request.user.get_full_name()
+        priority = form.cleaned_data['priority']
+        requestor_username = form.cleaned_data['requestor_username']
+
+        ip_address = self.kwargs['ip_address']
+
+        domain_names_raw = "".join(form.cleaned_data['domain_names'].split())
+        domain_names_list = domain_names_raw.split(",")
+        domain_names_split = domain_names_raw.replace(",", "\n")
+
+        description = """Please add the following DNS Aliases to [%(ip_address)s]:
+
+%(domain_names_split)s
+
+Thanks,
+%(submitter)s (via ResNet Internal)""" % {'ip_address': ip_address, 'domain_names_split': domain_names_split, 'submitter': submitter}
+
+        # Create service request
+        new_domain_name_request = DomainNameRequest(priority=priority, requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
+        new_domain_name_request.save()
+
+        sr_number = new_domain_name_request.ticket_id
+
+        # Create Domain Name records
+        for domain_name in domain_names_list:
+            new_domain_name = DomainName()
+            new_domain_name.ip_address = ip_address
+            new_domain_name.domain_name = domain_name
+            new_domain_name.sr_number = sr_number
+            new_domain_name.save()
+
+        return HttpResponseRedirect(reverse('view_uh_computer_record', kwargs={'ip_address': ip_address}))

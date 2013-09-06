@@ -1,0 +1,64 @@
+{% extends "base_frame.html" %}
+
+{% block subtitle %} | University Housing Computer Index Pinhole Request{% endblock %}
+
+{% block content %}
+    <h1>Pinhole Request: {{ ip_address }}</h1>
+    <br />
+    <p>When this form is submitted, a service request will be created in your name and sent to NetAdmin.<br />
+    The service request ID will show up next to the newly created pinhole record for your reference.<br />
+    Multiple ports must be separated by commas and no whitespace.</p>
+    <p style="color: red;">NOTE: If you are unsure if you are a valid requestor, check first. Sending a request without proper permissions wastes everyone's time.</p>
+    <div>
+        <form method="post" id="pinhole_request_form">
+            <fieldset>
+                <legend>
+                    Request a Pinhole
+                </legend>
+                    <p>
+                    {{ form.non_field_errors }}
+                    {% for field in form %}
+                        {{ field.errors }}
+                    {% endfor %}
+                    </p>
+                    <span><b>Request Information</b></span>
+                    <p>
+                        <label for="id_priority">{{ form.priority.label }}:</label>
+                        {{ form.priority }}
+                    </p>
+                    <p>
+                        <label for="id_requestor_username">{{ form.requestor_username.label }}:</label>
+                        {{ form.requestor_username }}
+                    </p>
+                    <br />
+                    <span><b>Pinhole Information</b></span>
+                    <p>
+                        <label for="id_service_name">{{ form.service_name.label }}:</label>
+                        {{ form.service_name }}
+                    </p>
+                    <div class="clear"></div>
+                    <p style="float: left;">
+                        <label for="id_inner_fw">{{ form.inner_fw.label }}:</label>
+                        {{ form.inner_fw }}
+                    </p>
+                    <p style="float: left;">
+                        <label for="id_border_fw">{{ form.border_fw.label }}:</label>
+                        {{ form.border_fw }}
+                    </p>
+                    <div class="clear"></div>
+                    <p>
+                        <label for="id_tcp_ports">{{ form.tcp_ports.label }}:</label>
+                        {{ form.tcp_ports }}
+                    </p>
+                    <p>
+                        <label for="id_udp_ports">{{ form.udp_ports.label }}:</label>
+                        {{ form.udp_ports }}
+                    </p>
+            </fieldset>
+            <p>
+                <input type="submit" value="Submit" />
+            </p>
+            {% csrf_token %}
+        </form>
+    <div class="clear"></div>
+{% endblock %}
