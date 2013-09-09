@@ -12,7 +12,7 @@ python-dateutil==2.1
 colorama==0.2.5
 unipath==1.0
 raven==3.4.1
-git+https://uh-hornrock.housing.calpoly.edu/stash/scm/rmsc/rmsconnector.git@9522126#egg=rmsconnector==3.0.2
+git+https://uh-hornrock.housing.calpoly.edu/stash/scm/rmsc/rmsconnector.git@ad0f380#egg=rmsconnector==3.0.3
 git+https://uh-hornrock.housing.calpoly.edu/stash/scm/srsc/srsconnector.git@bfd1527#egg=srsconnector==2.2.0
 django-ewiz==1.1.17
 ldap-groups==1.0.1
