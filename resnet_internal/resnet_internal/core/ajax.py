@@ -171,7 +171,7 @@ class GetDutyData:
             "last_user": None
         }
 
-        open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status__gt='Closed').exclude(assigned_person="ResnetAPI").count()
+        open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(assigned_person="ResnetAPI").count()
 
         data = DailyDuties.objects.get(name='tickets')
 
