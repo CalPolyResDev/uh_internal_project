@@ -98,7 +98,15 @@
                     value = $(this).val();
 
                     // Validate each field as it comes through
-                    if (value != null || value.length > 0) {
+                    if (value != null) {
+                        // Validate the IP address field (specifially)
+                        if (column_name == "ip_address") {
+                            var reg = /^(\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)?$/;
+                            if (!reg.test(value)) {
+                                alert('Please enter a valid IP address.');
+                                return false;
+                            }
+                        }
                         request_dict[column_name] = $(this).val();
                     }
                     else {
