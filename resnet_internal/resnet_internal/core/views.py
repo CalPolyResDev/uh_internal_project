@@ -136,7 +136,7 @@ class LoginView(FormView):
             user_specializations.append('ResNet Developer')
 
         if self.request.user.is_tag:
-            user.specializations.append('UH TAG Member')
+            user_specializations.append('UH TAG Member')
 
         # User is new technician (requires orientation)
         if self.request.user.is_new_tech:
