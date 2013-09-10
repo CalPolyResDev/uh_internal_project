@@ -171,11 +171,12 @@ class GetDutyData:
             "last_user": None
         }
 
-        open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(assigned_person="ResnetAPI").count()
+        open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).count()
+        api_tickets = ServiceRequest.objects.filter(assigned_person="ResnetAPI").count()
 
         data = DailyDuties.objects.get(name='tickets')
 
-        tickets["count"] = open_tickets
+        tickets["count"] = open_tickets - api_tickets
         if data.last_checked > datetime.datetime.now() - ACCEPTABLE_LAST_CHECKED:
             tickets["status_color"] = GREEN
         else:
