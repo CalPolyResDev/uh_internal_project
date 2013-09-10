@@ -89,22 +89,22 @@
 						<a href="/frame/advocate/" target="_blank"><img src="{{STATIC_URL}}images/icons/advocate.ico" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
 					</li>
 					<li>
-						<a href="/frame/devices/"><img src="{{STATIC_URL}}images/icons/controller.png" alt="Device Manager" align="top" width="16" height="16" border="0" />Device Pass Through</a>
+						<a href="/frame/devices/" target="_blank"><img src="{{STATIC_URL}}images/icons/controller.png" alt="Device Manager" align="top" width="16" height="16" border="0" />Device Pass Through</a>
 					</li>
 					<!-- <li>
-						<a href="/frame/abuse/"><img src="{{STATIC_URL}}images/icons/log.png" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
+						<a href="/frame/abuse/" target="_blank"><img src="{{STATIC_URL}}images/icons/log.png" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
 					</li> -->
 					<li>
-						<a href="/frame/aruba/"><img src="{{STATIC_URL}}images/icons/aruba.ico" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
+						<a href="/frame/aruba/" target="_blank"><img src="{{STATIC_URL}}images/icons/aruba.ico" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
 					</li>
 					<li>
 						<a href="/frame/cisco/" target="_blank"><img src="{{STATIC_URL}}images/icons/cisco.gif" alt="Cisco View" align="top" width="16" height="16" border="0" />Cisco View</a>
 					</li>
 					<li>
-						<a href="/frame/ccamgr/"><img src="{{STATIC_URL}}images/icons/cisco.gif" alt="Clean Access Manager" align="top" width="16" height="16" border="0" />CCA Manager</a>
+						<a href="/frame/ccamgr/" target="_blank"><img src="{{STATIC_URL}}images/icons/cisco.gif" alt="Clean Access Manager" align="top" width="16" height="16" border="0" />CCA Manager</a>
 					</li>
 					<li>
-						<a href="/frame/wiki/"><img src="{{STATIC_URL}}images/icons/favicon.ico" alt="ResNet Wiki" align="top" width="16" height="16" border="0" />ResNet Wiki</a>
+						<a href="/frame/wiki/" target="_blank"><img src="{{STATIC_URL}}images/icons/favicon.ico" alt="ResNet Wiki" align="top" width="16" height="16" border="0" />ResNet Wiki</a>
 					</li>
 				</ul>
 				{% endif %}
@@ -126,10 +126,12 @@
 					<li>
 						<a href="{% url 'residence_halls_wired_ports' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="Residence Halls Port Map" align="top" width="16" height="16" border="0" />Res Halls Port Map</a>
 					</li>
-					{% if request.user.is_developer %} {# or request.user.is_rn_staff or request.user.is_domain_manager or request.user.is_osd or request.user.is_net_admin #}
+					{% if request.user.is_developer or request.user.is_rn_staff or request.user.is_technician or request.user.is_net_admin or request.user.is_tag %}
 					<li>
 						<a href="{% url 'uh_computers' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="UH Computer Index" align="top" width="16" height="16" border="0" />UH Computer Index</a>
 					</li>
+					{% endif %}
+					{% if request.user.is_developer %}
 					<li>
 						<a href="#"><img src="{{STATIC_URL}}images/icons/database.png" alt="UH Printer Map" align="top" width="16" height="16" border="0" />UH Printer Map</a>
 					</li>
