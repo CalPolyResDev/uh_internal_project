@@ -32,6 +32,29 @@ def modify_computer(request, request_dict, row_id, row_zero, username):
     port_instance = Computer.objects.get(id=row_id)
 
     for column, value in request_dict.items():
+        # Uppercase computer names
+        if column == "computer_name":
+            value = value.upper()
+
+        # DN cleanup
+        if column == "dn":
+            dn_pieces = value.split(",")
+            stripped_dn_pieces = []
+
+            for dn_piece in dn_pieces:
+                try:
+                    group_type, value = dn_piece.split("=")
+                except ValueError:
+                    if not request.user.is_developer:
+                        logger.warning("User %(user)s attempted to submit an invalid DN: %(dn)s" % {'user': request.user.username, 'dn': value})
+                    dajax.alert("Please enter a valid DN.")
+                    dajax.script('computer_index.fnDraw();')
+                    return dajax.json()
+
+                stripped_dn_pieces.append('%(type)s=%(value)s' % {'type': group_type.strip(), 'value': value.strip()})
+
+            value = ', '.join(stripped_dn_pieces)
+
         setattr(port_instance, column, value)
 
     port_instance.save()
