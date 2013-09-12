@@ -86,12 +86,12 @@ def refresh_duties(request):
 
 
 @dajaxice_register
-def update_duty(request, username, duty):
+def update_duty(request, duty):
     dajax = Dajax()
 
     data = DailyDuties.objects.get(name=duty)
     data.last_checked = datetime.datetime.now()
-    data.last_user = get_user_model().objects.get(username=username)
+    data.last_user = get_user_model().objects.get(username=request.user.username)
     data.save()
 
     return dajax.json()

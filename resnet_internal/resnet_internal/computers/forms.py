@@ -21,7 +21,7 @@ PRIORITY_CHOICES = [
 class RequestPinholeForm(Form):
 
     # Request info
-    priority = ChoiceField(label=u'Request Priority', choices=PRIORITY_CHOICES)
+    priority = ChoiceField(label=u'Request Priority')
     requestor_username = CharField(label=u'Requestor Alias', max_length=25, error_messages={'required': 'A valid requestor is required'})
 
     # Pinhole info
@@ -47,7 +47,7 @@ class RequestPinholeForm(Form):
 class RequestDomainNameForm(Form):
 
     # Request info
-    priority = ChoiceField(label=u'Request Priority', choices=PRIORITY_CHOICES)
+    priority = ChoiceField(label=u'Request Priority')
     requestor_username = CharField(label=u'Requestor Alias', max_length=25, error_messages={'required': 'A valid requestor is required'})
 
     # Domain Name info

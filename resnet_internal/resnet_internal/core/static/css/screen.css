@@ -8,6 +8,10 @@ body {
 	min-width: 1034px;
 }
 
+.sublink {
+    font-size: 0.75em !important;
+}
+
 .djangoLogo {
 	margin-top: -5px;
 	padding-left: 10px;
@@ -15,6 +19,10 @@ body {
 
 #leftnav ul li a img {
 	padding-right: 5px;
+}
+
+fieldset ul {
+    list-style-type: none !important;
 }
 
 .loginDisplay {

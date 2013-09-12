@@ -11,13 +11,17 @@ from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.urlresolvers import reverse_lazy
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
 from django.utils.decorators import method_decorator
-from django.core.urlresolvers import reverse_lazy
+from django.shortcuts import render_to_response
+from django.template.context import RequestContext
+
+from .forms import NavigationSettingsForm
 
 
 @login_required
@@ -40,15 +44,32 @@ def link_handler(request, mode, key, ip=""):
         source = "https://housingservices.calpoly.edu/guests/device/add/"
     # Cisco View
     elif key == "cisco":
+        subtitle = "Cisco View Switch Manager"
         # Check if a specific ip was passed in
         if ip != '':
             source = "http://cp-cw-01.cp-calpoly.edu:1741/CVng/chassis.do?deviceip=" + ip + "&adhoc=yes"
+            key = 'external'
         else:
             source = "http://cp-cw-01.cp-calpoly.edu:1741/CVng/chassis.do?action=-1/"
     # Aruba ClearPass
     elif key == "aruba":
         subtitle = "Aruba ClearPass"
         source = "https://resnetclearpass.netadm.calpoly.edu/"
+    elif key == "ac_dorms_lan":
+        subtitle = "Aruba Dorms LAN Controller"
+        source = "https://resnetcontroller2.netadm.calpoly.edu:4343"
+    elif key == "ac_pcv_lan":
+        subtitle = "Aruba PCV LAN Controller"
+        source = "https://resnetcontroller1.netadm.calpoly.edu:4343"
+    elif key == "ac_dorms_wlan":
+        subtitle = "Aruba Dorms AirWaves Controller"
+        source = "https://resnetairwaves2.netadm.calpoly.edu"
+    elif key == "ac_pcv_wlan":
+        subtitle = "Aruba PCV AirWaves Controller"
+        source = "https://resnetairwaves1.netadm.calpoly.edu"
+    elif key == "ac_failover":
+        subtitle = "Aruba Failover Controller"
+        source = "https://resnetcontroller3.netadm.calpoly.edu:4343"
     # CCA Manager
     elif key == "ccamgr":
         subtitle = "CCA Manager"
@@ -57,17 +78,39 @@ def link_handler(request, mode, key, ip=""):
     elif key == "wiki":
         subtitle = "ResNet Wiki"
         source = "https://resnet.calpoly.edu/wiki/"
+    elif key == "flugzeug":
+        subtitle = "Django Administration"
+        source = "/flugzeug/"
     # None of the passed keys are correct - return a 404
     else:
         return HttpResponseNotFound()
 
-# Go to the link directly until the frame issues are sorted out.
-    return HttpResponseRedirect(source)
-#    return render_to_response('core/frame.html', {'subtitle': subtitle, 'source': source}, context_instance=RequestContext(request))
+    if key == "frame" or request.user.open_links_in_frame:
+        if key == "external":
+            return HttpResponseRedirect(source)
+
+        return render_to_response('core/frame.html', {'subtitle': subtitle, 'source': source}, context_instance=RequestContext(request))
+    else:
+        return HttpResponseRedirect(source)
 
 
 class IndexView(TemplateView):
     template_name = "core/index.html"
+
+
+class NavigationSettingsView(FormView):
+    template_name = "core/settings/navigation.html"
+    form_class = NavigationSettingsForm
+
+    def form_valid(self, form):
+
+        link_handling = form.cleaned_data['handle_links']
+
+        user_instance = self.request.user
+        user_instance.open_links_in_frame = True if link_handling == "frame" else False
+        user_instance.save()
+
+        return render_to_response('core/settings/close_window.html', context_instance=RequestContext(self.request))
 
 
 class LoginView(FormView):

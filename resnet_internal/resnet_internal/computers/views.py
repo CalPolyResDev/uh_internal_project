@@ -63,7 +63,7 @@ class PopulateComputers(BaseDatatableView):
         if column == 'ip_address':
             ip_address = getattr(row, column)
 
-            beginning = "<div id='%s' class='editable' column='%s'><div class='display_data'><a href='/computers/%s/' class='iprecord'>%s</a>" % (row.id, column, ip_address, ip_address)
+            beginning = "<div id='%s' class='editable' column='%s'><div class='display_data'><a href='/computers/%s/' class='popup_frame'>%s</a>" % (row.id, column, ip_address, ip_address)
             pinholes = "<img src='%simages/icons/pinholes.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' />" % settings.STATIC_URL
             domain_names = "<img src='%simages/icons/domain_names.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' />" % settings.STATIC_URL
             end = "</div><input type='text' class='editbox' value='%s' /></div>" % ip_address

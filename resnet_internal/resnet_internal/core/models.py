@@ -91,6 +91,11 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     payroll_complete = BooleanField(default=False)  # Payroll access
     orientation_complete = BooleanField(default=False)  # Promotes user to Technicain status
 
+    #
+    # Preferences
+    #
+    open_links_in_frame = BooleanField(default=False)  # Link handling
+
     class Meta:
         verbose_name = u'ResNet Internal User'
 
