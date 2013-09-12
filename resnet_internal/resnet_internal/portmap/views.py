@@ -50,7 +50,7 @@ class PopulateResidenceHallWiredPorts(BaseDatatableView):
         """
 
         if column == 'switch_ip':
-            return "<div id='%s' class='editable' column='%s'><div class='display_data'><a href='/frame/cisco/%s/' target='_blank'>%s</a><img src='%simages/icons/cisco.gif' style='padding-left:5px;' align='top' width='16' height='16' border='0' /></div><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column), settings.STATIC_URL, getattr(row, column))
+            return "<div id='%s' class='editable' column='%s'><div class='display_data'><a href='/external/cisco/%s/' target='_blank'>%s</a><img src='%simages/icons/cisco.gif' style='padding-left:5px;' align='top' width='16' height='16' border='0' /></div><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column), settings.STATIC_URL, getattr(row, column))
         elif column in self.editable_columns:
             return "<div id='%s' class='editable' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column))
         else:

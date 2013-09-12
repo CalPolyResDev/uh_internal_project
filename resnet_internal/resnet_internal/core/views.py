@@ -48,7 +48,6 @@ def link_handler(request, mode, key, ip=""):
         # Check if a specific ip was passed in
         if ip != '':
             source = "http://cp-cw-01.cp-calpoly.edu:1741/CVng/chassis.do?deviceip=" + ip + "&adhoc=yes"
-            key = 'external'
         else:
             source = "http://cp-cw-01.cp-calpoly.edu:1741/CVng/chassis.do?action=-1/"
     # Aruba ClearPass
@@ -85,8 +84,8 @@ def link_handler(request, mode, key, ip=""):
     else:
         return HttpResponseNotFound()
 
-    if key == "frame" or request.user.open_links_in_frame:
-        if key == "external":
+    if mode == "frame" or request.user.open_links_in_frame:
+        if mode == "external":
             return HttpResponseRedirect(source)
 
         return render_to_response('core/frame.html', {'subtitle': subtitle, 'source': source}, context_instance=RequestContext(request))
