@@ -43,15 +43,15 @@ def modify_computer(request, request_dict, row_id, row_zero, username):
 
             for dn_piece in dn_pieces:
                 try:
-                    group_type, value = dn_piece.split("=")
+                    group_type, group_string = dn_piece.split("=")
                 except ValueError:
                     if not request.user.is_developer:
-                        logger.warning("User %(user)s attempted to submit an invalid DN: %(dn)s" % {'user': request.user.username, 'dn': value})
+                        logger.warning("User %(user)s attempted to submit an invalid DN for computer (id='%(id)s'): %(dn)s" % {'user': request.user.username, 'id': row_id, 'dn': value})
                     dajax.alert("Please enter a valid DN.")
                     dajax.script('computer_index.fnDraw();')
                     return dajax.json()
 
-                stripped_dn_pieces.append('%(type)s=%(value)s' % {'type': group_type.strip(), 'value': value.strip()})
+                stripped_dn_pieces.append('%(type)s=%(string)s' % {'type': group_type.strip(), 'string': group_string.strip()})
 
             value = ', '.join(stripped_dn_pieces)
 
