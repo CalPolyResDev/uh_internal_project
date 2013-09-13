@@ -317,6 +317,7 @@ INSTALLED_APPS = (
     'django_ewiz',
     'resnet_internal.core',
     'resnet_internal.core.templatetags',
+    'resnet_internal.adgroups',
     'resnet_internal.orientation',
     'resnet_internal.computers',
     'resnet_internal.portmap',

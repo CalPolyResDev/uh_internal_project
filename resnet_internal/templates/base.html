@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load dajaxice_templatetags %}
+{% load url from future %}
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -101,32 +102,41 @@
 				<h2>Technician Tools</h2>
 				<ul>
 					<li>
-						<a href="/link_handler/portal/" class="handler_link"><img src="{{STATIC_URL}}images/icons/calpoly.ico" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
+						<a href="/link_handler/portal/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/calpoly.ico" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
 					</li>
 					<li>
-						<a href="/link_handler/srs/" class="handler_link"><img src="{{STATIC_URL}}images/icons/ticket.png" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" />SRS Ticket Manager</a>
+						<a href="/link_handler/srs/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/ticket.png" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" />SRS Ticket Manager</a>
 					</li>
 					<li>
-						<a href="/link_handler/advocate/" class="handler_link"><img src="{{STATIC_URL}}images/icons/advocate.ico" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
+						<a href="/link_handler/advocate/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/advocate.ico" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
 					</li>
 					<li>
-						<a href="/link_handler/devices/" class="handler_link"><img src="{{STATIC_URL}}images/icons/controller.png" alt="Device Manager" align="top" width="16" height="16" border="0" />Device Pass Through</a>
+						<a href="/link_handler/devices/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/controller.png" alt="Device Manager" align="top" width="16" height="16" border="0" />Device Pass Through</a>
 					</li>
 					<!-- <li>
-						<a href="/link_handler/abuse/" class="handler_link"><img src="{{STATIC_URL}}images/icons/log.png" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
+						<a href="/link_handler/abuse/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/log.png" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
 					</li> -->
 					<li>
-						<a href="/link_handler/aruba/" class="handler_link"><img src="{{STATIC_URL}}images/icons/aruba.ico" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
+						<a href="/link_handler/aruba/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/aruba.ico" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
 					</li>
 					<li>
-						<a href="/link_handler/cisco/" class="handler_link"><img src="{{STATIC_URL}}images/icons/cisco.gif" alt="Cisco View" align="top" width="16" height="16" border="0" />Cisco View</a>
+						<a href="/link_handler/cisco/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/cisco.gif" alt="Cisco View" align="top" width="16" height="16" border="0" />Cisco View</a>
 					</li>
 					<li>
-						<a href="/link_handler/ccamgr/" class="handler_link"><img src="{{STATIC_URL}}images/icons/cisco.gif" alt="Clean Access Manager" align="top" width="16" height="16" border="0" />CCA Manager</a>
+						<a href="/link_handler/ccamgr/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/cisco.gif" alt="Clean Access Manager" align="top" width="16" height="16" border="0" />CCA Manager</a>
 					</li>
 					<li>
-						<a href="/link_handler/wiki/" class="handler_link"><img src="{{STATIC_URL}}images/icons/favicon.ico" alt="ResNet Wiki" align="top" width="16" height="16" border="0" />ResNet Wiki</a>
+						<a href="/link_handler/wiki/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/favicon.ico" alt="ResNet Wiki" align="top" width="16" height="16" border="0" />ResNet Wiki</a>
 					</li>
+				</ul>
+				{% endif %}
+
+				{% if request.user.is_developer or request.user.is_rn_staff %}
+				<h2>Staff Tools</h2>
+				<ul>
+				    <li>
+                        <a href="{% url 'restech_list_edit' %}"><img src="{{ STATIC_URL }}images/icons/restech.png" alt="Manage Technicians" align="top" width="16" height="16" border="0" />Manage Technicians</a>
+                    </li>
 				</ul>
 				{% endif %}
 
@@ -134,9 +144,9 @@
 				<h2>Network Analysis</h2>
                 <ul>
                     <li>
-                        <a><img src="{{STATIC_URL}}images/icons/aruba.ico" alt="Aruba Controllers" align="top" width="16" height="16" border="0" />Aruba Controllers</a>
+                        <a onclick="$('#aruba_controllers_list').toggle()" style="cursor: pointer !important;"><img src="{{STATIC_URL}}images/icons/aruba.ico" alt="Aruba Controllers" align="top" width="16" height="16" border="0" />Aruba Controllers</a>
                     </li>
-                    <ul>
+                    <ul id="aruba_controllers_list" style="display: none;">
                         <li>
                             <a href="/link_handler/ac_dorms_lan/" class="handler_link sublink">Dorms LAN</a>
                         </li>

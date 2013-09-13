@@ -18,6 +18,7 @@ from django.views.generic import RedirectView
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 
 from .core.views import IndexView, LoginView, NavigationSettingsView
+from .adgroups.views import ResTechListEditView
 from .orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .computers.views import ComputersView, PopulateComputers, ComputerRecordsView, PinholeRequestView, DomainNameRequestView
 from .portmap.views import ResidenceHallWiredPortsView, PopulateResidenceHallWiredPorts
@@ -27,6 +28,7 @@ dajaxice_autodiscover()
 
 logger = logging.getLogger(__name__)
 orientation_access = user_passes_test(lambda user: user.is_developer or user.is_technician)
+staff_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff)
 portmap_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag or user.is_telecom)
 computers_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_domain_manager or user.is_net_admin or user.is_tag)
 computer_record_modify_access = user_passes_test(lambda user: user.is_developer or user.is_net_admin or user.is_tag)
@@ -50,6 +52,11 @@ urlpatterns += patterns('',
     url(r'^orientation/onity$', login_required(orientation_access(OnityDoorAccessView.as_view())), name='orientation_onity'),
     url(r'^orientation/srs$', login_required(orientation_access(SRSAccessView.as_view())), name='orientation_srs'),
     url(r'^orientation/payroll$', login_required(orientation_access(PayrollView.as_view())), name='orientation_payroll'),
+)
+
+# AD Group management
+urlpatterns += patterns('',
+    url(r'^manage/technicians/$', login_required(staff_access(ResTechListEditView.as_view())), name='restech_list_edit'),
 )
 
 # Residence Halls Wired Port Map
