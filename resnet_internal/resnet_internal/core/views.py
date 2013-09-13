@@ -200,7 +200,7 @@ class LoginView(FormView):
         success_url = reverse_lazy('home')
 
         if self.request.user.is_new_tech:
-            success_url = reverse_lazy('orientation-checklist')
+            success_url = reverse_lazy('orientation_checklist')
 
         return success_url
 
