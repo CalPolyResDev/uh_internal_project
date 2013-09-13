@@ -28,7 +28,7 @@ def complete_task(request, task):
 
     user.save()
 
-    dajax.redirect(reverse('orientation-checklist'))
+    dajax.redirect(reverse('orientation_checklist'))
 
     return dajax.json()
 
