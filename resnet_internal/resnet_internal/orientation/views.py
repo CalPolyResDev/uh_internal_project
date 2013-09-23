@@ -53,7 +53,7 @@ class OnityDoorAccessView(FormView):
         send_mail(subject="New ResNet Technician Onity Door Access Appointment",
                   message=form.cleaned_data.get('message'),
                   from_email=self.request.user.email,
-                  recipient_list=[form.cleaned_data.get('to_email')], fail_silently=False)
+                  recipient_list=[self.request.POST['to_email']], fail_silently=False)
 
         return super(OnityDoorAccessView, self).form_valid(form)
 
@@ -71,10 +71,10 @@ class SRSAccessView(FormView):
         ticket.save()
 
         # Grab the RUP
-        file_pointer = self.request.FILES['signed_rup'].file
+        file_reference = self.request.FILES['signed_rup'].file
 
         # Upload the RUP
-        EwizAttacher(settings_dict=settings.DATABASES[SRS_ALIAS], model=ticket, file_pointer=file_pointer, fileName=self.request.user.get_alias() + u'.pdf').attachFile()
+        EwizAttacher(settings_dict=settings.DATABASES[SRS_ALIAS], model=ticket, file_reference=file_reference, fileName=self.request.user.get_alias() + u'.pdf').attachFile()
 
         return super(SRSAccessView, self).form_valid(form)
 
