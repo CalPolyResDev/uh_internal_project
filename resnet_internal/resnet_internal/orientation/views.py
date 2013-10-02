@@ -74,7 +74,7 @@ class SRSAccessView(FormView):
         file_reference = self.request.FILES['signed_rup'].file
 
         # Upload the RUP
-        EwizAttacher(settings_dict=settings.DATABASES[SRS_ALIAS], model=ticket, file_reference=file_reference, file_name=self.request.user.get_alias() + u'.pdf').attachFile()
+        EwizAttacher(settings_dict=settings.DATABASES[SRS_ALIAS], model=ticket, file_reference=file_reference, file_name=self.request.user.get_alias() + u'.pdf').attach_file()
 
         return super(SRSAccessView, self).form_valid(form)
 
