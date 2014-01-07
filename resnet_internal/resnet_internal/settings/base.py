@@ -269,7 +269,7 @@ STATICFILES_FINDERS = (
 )
 
 TEMPLATE_DIRS = (
-    PROJECT_DIR.child("templates"),
+    PROJECT_DIR.child("resnet_internal", "templates"),
 )
 
 # List of callables that know how to import templates from various sources.
