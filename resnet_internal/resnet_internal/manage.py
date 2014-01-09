@@ -32,7 +32,7 @@ def activate_env():
     # Activate the virtual env
     # Check for Windows directory, otherwise use Linux directory
     activate_env = virtualenv_dir.child(repo_dir, "Scripts", "activate_this.py")
-    if activate_env.exists() == False:
+    if not activate_env.exists():
         activate_env = virtualenv_dir.child(repo_dir, "bin", "activate_this.py")
     execfile(activate_env, dict(__file__=activate_env))
 
