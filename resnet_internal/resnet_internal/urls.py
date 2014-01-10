@@ -10,7 +10,7 @@ import logging
 
 from django.conf import settings
 from django.conf.urls.static import static
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic import RedirectView
