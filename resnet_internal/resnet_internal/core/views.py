@@ -54,21 +54,21 @@ def link_handler(request, mode, key, ip=""):
     elif key == "aruba":
         subtitle = "Aruba ClearPass"
         source = "https://resnetclearpass.netadm.calpoly.edu/"
-    elif key == "ac_dorms_lan":
-        subtitle = "Aruba Dorms LAN Controller"
-        source = "https://resnetcontroller2.netadm.calpoly.edu:4343"
-    elif key == "ac_pcv_lan":
-        subtitle = "Aruba PCV LAN Controller"
+    elif key == "ac_pcv":
+        subtitle = "Aruba PCV Controller"
         source = "https://resnetcontroller1.netadm.calpoly.edu:4343"
-    elif key == "ac_dorms_wlan":
-        subtitle = "Aruba Dorms AirWaves Controller"
-        source = "https://resnetairwaves2.netadm.calpoly.edu"
-    elif key == "ac_pcv_wlan":
-        subtitle = "Aruba PCV AirWaves Controller"
-        source = "https://resnetairwaves1.netadm.calpoly.edu"
     elif key == "ac_failover":
         subtitle = "Aruba Failover Controller"
         source = "https://resnetcontroller3.netadm.calpoly.edu:4343"
+    elif key == "ac_halls":
+        subtitle = "Aruba Dorms Controller"
+        source = "https://resnetcontroller2.netadm.calpoly.edu:4343"
+    elif key == "ac_pcv_wlan":
+        subtitle = "Aruba AirWaves Primary"
+        source = "https://resnetairwaves1.netadm.calpoly.edu"
+    elif key == "ac_dorms_wlan":
+        subtitle = "Aruba AirWaves Secondary"
+        source = "https://resnetairwaves2.netadm.calpoly.edu"
     # CCA Manager
     elif key == "ccamgr":
         subtitle = "CCA Manager"

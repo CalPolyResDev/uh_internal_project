@@ -117,9 +117,6 @@
 						<a href="/link_handler/abuse/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/log.png" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
 					</li> -->
 					<li>
-						<a href="/link_handler/aruba/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/aruba.ico" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
-					</li>
-					<li>
 						<a href="/link_handler/cisco/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/cisco.gif" alt="Cisco View" align="top" width="16" height="16" border="0" />Cisco View</a>
 					</li>
 					<li>
@@ -143,24 +140,27 @@
 				{% if request.user.is_developer or request.user.is_network_analyst or request.user.is_rn_staff or request.user.is_technician %}
 				<h2>Network Analysis</h2>
                 <ul>
+					<li>
+						<a href="/link_handler/aruba/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/aruba.ico" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
+					</li>
                     <li>
                         <a onclick="$('#aruba_controllers_list').toggle()" style="cursor: pointer !important;"><img src="{{STATIC_URL}}images/icons/aruba.ico" alt="Aruba Controllers" align="top" width="16" height="16" border="0" />Aruba Controllers</a>
                     </li>
                     <ul id="aruba_controllers_list" style="display: none;">
                         <li>
-                            <a href="/link_handler/ac_dorms_lan/" class="handler_link sublink">Dorms LAN</a>
+                            <a href="/link_handler/ac_halls/" class="handler_link sublink">Halls Controller</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_pcv_lan/" class="handler_link sublink">PCV LAN</a>
+                            <a href="/link_handler/ac_pcv/" class="handler_link sublink">PCV Controller</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_dorms_wlan/" class="handler_link sublink">Dorms WLAN</a>
+                            <a href="/link_handler/ac_failover/" class="handler_link sublink">Failover Controller</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_pcv_wlan/" class="handler_link sublink">PCV WLAN</a>
+                            <a href="/link_handler/ac_airwaves_p/" class="handler_link sublink">Airwaves Primary</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_failover/" class="handler_link sublink">Failover</a>
+                            <a href="/link_handler/ac_airwaves_s/" class="handler_link sublink">Airwaves Secondary</a>
                         </li>
                     </ul>
                 </ul>
