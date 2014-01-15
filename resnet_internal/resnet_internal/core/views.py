@@ -63,10 +63,10 @@ def link_handler(request, mode, key, ip=""):
     elif key == "ac_halls":
         subtitle = "Aruba Dorms Controller"
         source = "https://resnetcontroller2.netadm.calpoly.edu:4343"
-    elif key == "ac_pcv_wlan":
+    elif key == "ac_airwaves_p":
         subtitle = "Aruba AirWaves Primary"
         source = "https://resnetairwaves1.netadm.calpoly.edu"
-    elif key == "ac_dorms_wlan":
+    elif key == "ac_airwaves_s":
         subtitle = "Aruba AirWaves Secondary"
         source = "https://resnetairwaves2.netadm.calpoly.edu"
     # CCA Manager
