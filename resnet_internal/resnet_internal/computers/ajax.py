@@ -29,7 +29,7 @@ def modify_computer(request, request_dict, row_id, row_zero, username):
     dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', '<img src="%simages/datatables/load.gif" />' % settings.STATIC_URL)
 
     # Update the database
-    port_instance = Computer.objects.get(id=row_id)
+    computer_instance = Computer.objects.get(id=row_id)
 
     for column, value in request_dict.items():
         # Uppercase computer names
@@ -45,8 +45,6 @@ def modify_computer(request, request_dict, row_id, row_zero, username):
                 try:
                     group_type, group_string = dn_piece.split("=")
                 except ValueError:
-                    if not request.user.is_developer:
-                        logger.warning("User %(user)s attempted to submit an invalid DN for computer (id='%(id)s'): %(dn)s" % {'user': request.user.username, 'id': row_id, 'dn': value})
                     dajax.alert("Please enter a valid DN.")
                     dajax.script('computer_index.fnDraw();')
                     return dajax.json()
@@ -55,12 +53,37 @@ def modify_computer(request, request_dict, row_id, row_zero, username):
 
             value = ', '.join(stripped_dn_pieces)
 
-        setattr(port_instance, column, value)
+        setattr(computer_instance, column, value)
 
-    port_instance.save()
+    computer_instance.save()
 
-    # Log the action
-    logger.info("User %s modified computer (id='%s') with the following data: %s" % (username, row_id, request_dict))
+    # Redraw the table
+    dajax.script('computer_index.fnDraw();')
+
+    return dajax.json()
+
+
+@dajaxice_register
+def remove_computer(request, computer_id):
+    """ Removes computers from the computer index if no pinhole/domain name records are associated with it.
+
+    :param computer_id: The computer's id.
+    :type computer_id: str
+
+    """
+
+    dajax = Dajax()
+
+    computer_instance = Computer.objects.get(id=computer_id)
+    ip_address = computer_instance.ip_address
+
+    pinholes_count = Pinhole.objects.filter(ip_address=ip_address).count()
+    domain_names_count = DomainName.objects.filter(ip_address=ip_address).count()
+
+    if pinholes_count > 0 or domain_names_count > 0:
+        dajax.alert("This computer cannot be deleted because it still has pinholes and/or domain names associated with it.")
+    else:
+        computer_instance.delete()
 
     # Redraw the table
     dajax.script('computer_index.fnDraw();')
