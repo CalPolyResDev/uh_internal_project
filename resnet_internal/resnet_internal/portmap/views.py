@@ -27,7 +27,7 @@ class PopulateResidenceHallWiredPorts(BaseDatatableView):
     model = ResHallWired
 
     # define the columns that will be returned
-    columns = ['id', 'community', 'building', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan']
+    columns = ['id', 'community', 'building', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan', 'remove']
 
     # define column names that can be sorted
     order_columns = columns
@@ -51,6 +51,8 @@ class PopulateResidenceHallWiredPorts(BaseDatatableView):
 
         if column == 'switch_ip':
             return "<div id='%s' class='editable' column='%s'><div class='display_data'><a href='/external/cisco/%s/' target='_blank'>%s</a><img src='%simages/icons/cisco.gif' style='padding-left:5px;' align='top' width='16' height='16' border='0' /></div><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column), settings.STATIC_URL, getattr(row, column))
+        elif column == 'remove':
+            return """<div id='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_remove(%s);">Remove</a></div>""" % (row.id, column, row.id)
         elif column in self.editable_columns:
             return "<div id='%s' class='editable' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column))
         else:

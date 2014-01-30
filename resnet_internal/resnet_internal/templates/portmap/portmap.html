@@ -15,6 +15,15 @@
         }
     );
 
+    function confirm_remove(port_id) {
+		var response = confirm('Are you sure you want to delete this port?'); 
+		if (response) {
+   			Dajaxice.resnet_internal.portmap.remove_port(Dajax.process, {'port_id': port_id});
+		} else {
+    		return false;
+		}
+	}
+
     var residence_halls_wired_port_map;
 
     // initialize the dataTable
@@ -54,6 +63,7 @@
                 { "sClass": "width50", "sType": "numeric", "aTargets": [ 7 ] },
                 { "sClass": "width50", "sType": "numeric", "aTargets": [ 8 ] },
                 { "sClass": "edit_trigger width55", "sType": "numeric", "aTargets": [ 9 ] },
+                { "sClass": "width50", "sType": "string", "aTargets": [ 10 ] },
             ],
         });
 
@@ -127,6 +137,7 @@
 					<th>Blade</th>
 					<th>Port</th>
 					<th>vLan</th>
+					<th>&nbsp;</th>
 				</tr>
 			</thead>
 			<tfoot>
@@ -141,10 +152,12 @@
 					<th></th>
 					<th></th>
 					<th></th>
+					<th></th>
 				</tr>
 			</tfoot>
 			<tbody>
 				<tr>
+					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>

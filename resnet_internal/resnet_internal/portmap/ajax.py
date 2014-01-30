@@ -19,6 +19,26 @@ logger = logging.getLogger(__name__)
 
 
 @dajaxice_register
+def remove_port(request, port_id):
+    """ Removes ports from the portmap index.
+
+    :param port_id: The port's id.
+    :type port_id: str
+
+    """
+
+    dajax = Dajax()
+
+    port_instance = ResHallWired.objects.get(id=port_id)
+    port_instance.delete()
+
+    # Redraw the table
+    dajax.script('residence_halls_wired_port_map.fnDraw();')
+
+    return dajax.json()
+
+
+@dajaxice_register
 def modify_port(request, request_dict, row_id, row_zero, username):
     dajax = Dajax()
 
