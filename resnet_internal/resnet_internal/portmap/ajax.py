@@ -3,6 +3,7 @@
    :synopsis: ResNet Internal Residence Halls Port Map AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: RJ Almada <almada.dev@gmail.com>
 
 """
 
@@ -19,6 +20,30 @@ logger = logging.getLogger(__name__)
 
 
 @dajaxice_register
+def change_port_status(request, port_id):
+    """ Activates ports in the portmap index.
+
+    :param port_id: The port's id.
+    :type port_id: str
+
+    """
+
+    dajax = Dajax()
+
+    port_instance = ResHallWired.objects.get(id=port_id)
+    if port_instance.active:
+        port_instance.active = False
+    else:
+        port_instance.active = True
+    port_instance.save()
+
+    # Redraw the table
+    dajax.script('residence_halls_wired_port_map.fnDraw();')
+
+    return dajax.json()
+
+
+@dajaxice_register
 def modify_port(request, request_dict, row_id, row_zero, username):
     dajax = Dajax()
 
@@ -32,9 +57,6 @@ def modify_port(request, request_dict, row_id, row_zero, username):
         setattr(port_instance, column, value)
 
     port_instance.save()
-
-    # Log the action
-    logger.info("User %s modified port (id='%s') with the following data: %s" % (username, row_id, request_dict))
 
     # Redraw the table
     dajax.script('residence_halls_wired_port_map.fnDraw();')

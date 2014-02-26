@@ -6,9 +6,10 @@
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
+
 """
 
-from django.db.models import Model, CharField, IPAddressField
+from django.db.models import Model, CharField, IPAddressField, BooleanField
 
 
 class ResHallWired(Model):
@@ -22,6 +23,7 @@ class ResHallWired(Model):
     blade = CharField(max_length=2, verbose_name=u'Blade')
     port = CharField(max_length=2, verbose_name=u'Port')
     vlan = CharField(max_length=7, verbose_name=u'vLan')
+    active = BooleanField(default=True, verbose_name=u'Active')
 
     def __unicode__(self):
         return self.community + " - " + self.building + " " + self.room + ": " + self.jack

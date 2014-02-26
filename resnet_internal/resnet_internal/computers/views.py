@@ -38,7 +38,7 @@ class PopulateComputers(BaseDatatableView):
     max_display_length = 250
 
     # define the columns that will be returned
-    columns = ['id', 'department', 'sub_department', 'computer_name', 'ip_address', 'mac_address', 'model', 'serial_number', 'property_id', 'dn', 'description']
+    columns = ['id', 'department', 'sub_department', 'computer_name', 'ip_address', 'mac_address', 'model', 'serial_number', 'property_id', 'dn', 'description', 'remove']
 
     # define column names that can be sorted?
     order_columns = columns
@@ -81,6 +81,8 @@ class PopulateComputers(BaseDatatableView):
                     result = result + domain_names
 
             return result + end
+        elif column == 'remove':
+            return """<div id='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_remove(%s);">Remove</a></div>""" % (row.id, column, row.id)
         elif column in self.editable_columns:
             return "<div id='%s' class='editable' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column))
         else:

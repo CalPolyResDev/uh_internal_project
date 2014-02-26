@@ -15,10 +15,19 @@
         }
     );
 
+    function confirm_status_change(port_id) {
+		var response = confirm('Are you sure you want to switch the status of this port?'); 
+		if (response) {
+   			Dajaxice.resnet_internal.portmap.change_port_status(Dajax.process, {'port_id': port_id});
+		} else {
+    		return false;
+		}
+	}
+
     var residence_halls_wired_port_map;
 
     // initialize the dataTable
-    $(document).ready(function() {
+    $(document).ready(function() {    	
         // Initialize the DataTable. See datatables documentation for information about each option
         residence_halls_wired_port_map = $('#residence_halls_wired_port_map').dataTable( {
             "aaSorting": [[ 1, "asc" ], [ 2, "asc" ], [ 3, "asc" ]],
@@ -54,6 +63,7 @@
                 { "sClass": "width50", "sType": "numeric", "aTargets": [ 7 ] },
                 { "sClass": "width50", "sType": "numeric", "aTargets": [ 8 ] },
                 { "sClass": "edit_trigger width55", "sType": "numeric", "aTargets": [ 9 ] },
+                { "sClass": "width50", "sType": "string", "aTargets": [ 10 ] },
             ],
         });
 
@@ -127,6 +137,7 @@
 					<th>Blade</th>
 					<th>Port</th>
 					<th>vLan</th>
+					<th>&nbsp;</th>
 				</tr>
 			</thead>
 			<tfoot>
@@ -141,10 +152,12 @@
 					<th></th>
 					<th></th>
 					<th></th>
+					<th></th>
 				</tr>
 			</tfoot>
 			<tbody>
 				<tr>
+					<td></td>
 					<td></td>
 					<td></td>
 					<td></td>
