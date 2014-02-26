@@ -3,6 +3,8 @@
    :synopsis: ResNet Internal Residence Halls Port Map Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: RJ Almada <almada.dev@gmail.com>
+
 
 """
 
@@ -27,7 +29,7 @@ class PopulateResidenceHallWiredPorts(BaseDatatableView):
     model = ResHallWired
 
     # define the columns that will be returned
-    columns = ['id', 'community', 'building', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan', 'remove']
+    columns = ['id', 'community', 'building', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan', 'active']
 
     # define column names that can be sorted
     order_columns = columns
@@ -50,13 +52,13 @@ class PopulateResidenceHallWiredPorts(BaseDatatableView):
         """
 
         if column == 'switch_ip':
-            return "<div id='%s' class='editable' column='%s'><div class='display_data'><a href='/external/cisco/%s/' target='_blank'>%s</a><img src='%simages/icons/cisco.gif' style='padding-left:5px;' align='top' width='16' height='16' border='0' /></div><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column), settings.STATIC_URL, getattr(row, column))
-        elif column == 'remove':
-            return """<div id='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_remove(%s);">Remove</a></div>""" % (row.id, column, row.id)
+            return "<div id='%s' class='%s' column='%s'><div class='display_data'><a href='/external/cisco/%s/' target='_blank'>%s</a><img src='%simages/icons/cisco.gif' style='padding-left:5px;' align='top' width='16px' height='16px' border='0' /></div><input type='text' class='editbox' value='%s' /></div>" % (row.id, "editable" if getattr(row, 'active') else "disabled", column, getattr(row, column), getattr(row, column), settings.STATIC_URL, getattr(row, column))
+        elif column == 'active':
+            return """<div id='%s' class='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_status_change(%s);">%s</a></div>""" % (row.id, "" if getattr(row, 'active') else "disabled", column, row.id, "Deactivate" if getattr(row, column) else "Activate")
         elif column in self.editable_columns:
-            return "<div id='%s' class='editable' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column))
+            return "<div id='%s' class='%s' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, "editable" if getattr(row, 'active') else "disabled", column, getattr(row, column), getattr(row, column))
         else:
-            return "<div id='%s' column='%s'>%s</div>" % (row.id, column, getattr(row, column))
+            return "<div id='%s' class='%s' column='%s'>%s</div>" % (row.id, "" if getattr(row, 'active') else "disabled", column, getattr(row, column))
 
     def filter_queryset(self, qs):
         """ Filters the QuerySet by submitted search parameters.

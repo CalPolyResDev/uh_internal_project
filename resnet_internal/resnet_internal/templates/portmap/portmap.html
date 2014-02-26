@@ -15,10 +15,10 @@
         }
     );
 
-    function confirm_remove(port_id) {
-		var response = confirm('Are you sure you want to delete this port?'); 
+    function confirm_status_change(port_id) {
+		var response = confirm('Are you sure you want to switch the status of this port?'); 
 		if (response) {
-   			Dajaxice.resnet_internal.portmap.remove_port(Dajax.process, {'port_id': port_id});
+   			Dajaxice.resnet_internal.portmap.change_port_status(Dajax.process, {'port_id': port_id});
 		} else {
     		return false;
 		}
@@ -27,7 +27,7 @@
     var residence_halls_wired_port_map;
 
     // initialize the dataTable
-    $(document).ready(function() {
+    $(document).ready(function() {    	
         // Initialize the DataTable. See datatables documentation for information about each option
         residence_halls_wired_port_map = $('#residence_halls_wired_port_map').dataTable( {
             "aaSorting": [[ 1, "asc" ], [ 2, "asc" ], [ 3, "asc" ]],
