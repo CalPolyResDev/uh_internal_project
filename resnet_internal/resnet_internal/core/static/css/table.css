@@ -37,6 +37,15 @@
 	height: 20px;
 }
 
+#add_port_form div {
+	padding-left: 25px;
+}
+
+#add_port_form p {
+	float: left;
+	padding: 15px 10px 15px 0;
+}
+
 .width0 {
 	width:0px;
 }

@@ -15,6 +15,10 @@ from django.contrib.auth import get_user_model
 from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
 from srsconnector.models import ServiceRequest
+from rmsconnector.constants import (SIERRA_MADRE, YOSEMITE, SOUTH_MOUNTAIN, NORTH_MOUNTAIN,
+                                    CERRO_VISTA, POLY_CANYON_VILLAGE, SIERRA_MADRE_BUILDINGS, YOSEMITE_BUILDINGS,
+                                    SOUTH_MOUNTAIN_BUILDINGS, NORTH_MOUNTAIN_BUILDINGS, CERRO_VISTA_BUILDINGS,
+                                    POLY_CANYON_VILLAGE_BUILDINGS)
 
 from .models import DailyDuties
 
@@ -22,6 +26,39 @@ GREEN = "#060"
 RED = "#900"
 
 ACCEPTABLE_LAST_CHECKED = datetime.timedelta(days=1)
+
+
+@dajaxice_register
+def update_building(request, community):
+    """ Update building drop-down choices based on the community chosen.
+
+    :param community: The community for which to display building choices.
+    :type community: str
+
+    """
+
+    dajax = Dajax()
+
+    building_options = {
+        SIERRA_MADRE: [(building, building) for building in SIERRA_MADRE_BUILDINGS],
+        YOSEMITE: [(building, building) for building in YOSEMITE_BUILDINGS],
+        SOUTH_MOUNTAIN: [(building, building) for building in SOUTH_MOUNTAIN_BUILDINGS],
+        NORTH_MOUNTAIN: [(building, building) for building in NORTH_MOUNTAIN_BUILDINGS],
+        CERRO_VISTA: [(building, building) for building in CERRO_VISTA_BUILDINGS],
+        POLY_CANYON_VILLAGE: [(building, building) for building in POLY_CANYON_VILLAGE_BUILDINGS],
+    }
+    choices = []
+
+    # Add options iff a printer is selected
+    if str(community) != "":
+        for value, label in building_options[str(community)]:
+            choices.append("<option value='%s'>%s</option>" % (value, label))
+    else:
+        choices.append("<option value='%s'>%s</option>" % ("", "-------------"))
+
+    dajax.assign('#id_building', 'innerHTML', ''.join(choices))
+
+    return dajax.json()
 
 
 @dajaxice_register

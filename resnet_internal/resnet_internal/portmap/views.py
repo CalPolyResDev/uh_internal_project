@@ -10,17 +10,23 @@
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
+from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
-from django.views.generic import TemplateView
+from django.views.generic.edit import CreateView
 
 from rmsconnector.utils import Resident
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from .models import ResHallWired
+from .forms import NewPortForm
 
 
-class ResidenceHallWiredPortsView(TemplateView):
+class ResidenceHallWiredPortsView(CreateView):
     template_name = "portmap/portmap.html"
+    form_class = NewPortForm
+    model = ResHallWired
+    fields = NewPortForm.Meta.fields
+    success_url = reverse_lazy('residence_halls_wired_ports')
 
 
 class PopulateResidenceHallWiredPorts(BaseDatatableView):
