@@ -58,7 +58,7 @@ class PopulateResidenceHallWiredPorts(BaseDatatableView):
         """
 
         if column == 'switch_ip':
-            return "<div id='%s' class='%s' column='%s'><div class='display_data'><a href='/external/cisco/%s/' target='_blank'>%s</a><img src='%simages/icons/cisco.gif' style='padding-left:5px;' align='top' width='16px' height='16px' border='0' /></div><input type='text' class='editbox' value='%s' /></div>" % (row.id, "editable" if getattr(row, 'active') else "disabled", column, getattr(row, column), getattr(row, column), settings.STATIC_URL, getattr(row, column))
+            return "<div id='%s' class='%s margin_fix' column='%s'><div class='display_data'><a href='/external/cisco/%s/' target='_blank'>%s</a><img src='%simages/icons/cisco.gif' style='padding-left:5px;' align='top' width='16px' height='16px' border='0' /></div><input type='text' class='editbox' value='%s' /></div>" % (row.id, "editable" if getattr(row, 'active') else "disabled", column, getattr(row, column), getattr(row, column), settings.STATIC_URL, getattr(row, column))
         elif column == 'active':
             return """<div id='%s' class='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_status_change(%s);">%s</a></div>""" % (row.id, "" if getattr(row, 'active') else "disabled", column, row.id, "Deactivate" if getattr(row, column) else "Activate")
         elif column in self.editable_columns:

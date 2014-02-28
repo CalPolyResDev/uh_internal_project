@@ -35,8 +35,13 @@
 	padding: 4px;
 	line-height: 20px;
 	height: 20px;
+	text-align: middle;
 }
 
+.margin_fix .display_data {
+	margin-left: -4px;
+	margin-top: -4px;
+}
 #add_port_form div {
 	padding-left: 25px;
 }
