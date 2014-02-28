@@ -57,8 +57,6 @@ def modify_computer(request, request_dict, row_id, row_zero, username):
 
     computer_instance.save()
 
-<<<<<<< HEAD
-=======
     # Redraw the table
     dajax.script('computer_index.fnDraw();')
 
@@ -87,7 +85,6 @@ def remove_computer(request, computer_id):
     else:
         computer_instance.delete()
 
->>>>>>> branch 'master' of https://akavanau-admin@uh-hornrock.housing.calpoly.edu/stash/scm/rnin/resnet_internal_project.git
     # Redraw the table
     dajax.script('computer_index.fnDraw();')
 
