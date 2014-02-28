@@ -50,6 +50,10 @@
     width:225px;
 }
 
+.half_table {
+	float: left;
+	width: 45%;
+}
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  * DataTables features

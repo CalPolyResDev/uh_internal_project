@@ -30,7 +30,6 @@ def get_env_variable(name):
 
 ADMINS = (
     ('Alex Kavanaugh', 'kavanaugh.development@outlook.com'),
-    ('Chase Voorhees', 'cvoorhee@calpoly.edu'),
     ('RJ Almada', 'rjalmada@calpoly.edu')
 )
 
@@ -106,6 +105,14 @@ DATABASES = {
         'HOST': 'uh-rivendell.housing.calpoly.edu',
         'PORT': '3306',
     },
+    'printers': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'printers',
+        'USER': 'printers',
+        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_PRINTERS_PASSWORD'),
+        'HOST': 'uh-rivendell.housing.calpoly.edu',
+        'PORT': '3306',
+    },
     'rms': {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'rmsprd',
@@ -128,6 +135,7 @@ DATABASE_ROUTERS = (
     'resnet_internal.core.routers.CommonRouter',
     'resnet_internal.computers.routers.ComputersRouter',
     'resnet_internal.portmap.routers.PortmapRouter',
+    'resnet_internal.printers.routers.PrintersRouter',
     'rmsconnector.routers.RMSRouter',
     'srsconnector.routers.SRSRouter',
 )
@@ -321,6 +329,8 @@ INSTALLED_APPS = (
     'resnet_internal.orientation',
     'resnet_internal.computers',
     'resnet_internal.portmap',
+    'resnet_internal.printers',
+    'resnet_internal.printers.templatetags',
     'south',
 )
 

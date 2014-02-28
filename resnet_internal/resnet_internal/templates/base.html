@@ -110,9 +110,9 @@
 					<li>
 						<a href="/link_handler/advocate/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/advocate.ico" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
 					</li>
-					<li>
+					<!-- <li>
 						<a href="/link_handler/devices/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/controller.png" alt="Device Manager" align="top" width="16" height="16" border="0" />Device Pass Through</a>
-					</li>
+					</li> -->
 					<!-- <li>
 						<a href="/link_handler/abuse/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/log.png" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
 					</li> -->
@@ -122,9 +122,9 @@
 					<li>
 						<a href="/link_handler/ccamgr/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/cisco.gif" alt="Clean Access Manager" align="top" width="16" height="16" border="0" />CCA Manager</a>
 					</li>
-					<li>
+					<!-- <li>
 						<a href="/link_handler/wiki/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/favicon.ico" alt="ResNet Wiki" align="top" width="16" height="16" border="0" />ResNet Wiki</a>
-					</li>
+					</li> -->
 				</ul>
 				{% endif %}
 
@@ -185,24 +185,21 @@
 				</ul>
 				{% endif %}
 
-				{% if request.user.is_developer %} {# or request.user.is_rn_staff or request.user.is_technician #}
+				{% if request.user.is_developer or request.user.is_rn_staff or request.user.is_technician %}
 				<h2>Equipment</h2>
 				<ul>
 					<li>
-						<a href="#"><img src="{{STATIC_URL}}images/icons/printer.png" alt="Printer Requests" align="top" width="16" height="16" border="0" />Printer Requests</a>
+						<a href="{% url 'printer_request_list' %}"><img src="{{STATIC_URL}}images/icons/printer.png" alt="Printer Requests" align="top" width="16" height="16" border="0" />Printer Requests</a>
 					</li>
 					<ul>
 						<li>
-						<a href="#" class="sublink">Check Inventory</a>
+						<a href="{% url 'printer_inventory' %}" class="sublink">Check Inventory</a>
 					    </li>
-					</ul>
-					<li>
-						<a href="#"><img src="{{STATIC_URL}}images/icons/inventory.png" alt="Equipment Checkout" align="top" width="16" height="16" border="0" />Equipment Checkout</a>
-					</li>
-					<ul>
-						<li>
-						<a href="#" class="sublink">Check Inventory</a>
+					    {% if request.user.is_developer or request.user.is_rn_staff %}
+					    <li>
+						<a href="{% url 'printer_ordered_items' %}" class="sublink">Ordered Items</a>
 					    </li>
+					    {% endif %}
 					</ul>
 				</ul>
 				{% endif %}

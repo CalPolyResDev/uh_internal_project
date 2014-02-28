@@ -59,9 +59,6 @@ def modify_computer(request, request_dict, row_id, row_zero, username):
 
     port_instance.save()
 
-    # Log the action
-    logger.info("User %s modified computer (id='%s') with the following data: %s" % (username, row_id, request_dict))
-
     # Redraw the table
     dajax.script('computer_index.fnDraw();')
 

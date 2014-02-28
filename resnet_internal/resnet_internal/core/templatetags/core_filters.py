@@ -1,6 +1,6 @@
 """
-.. module:: reslife_internal.core.templatetags
-   :synopsis: ResLife Internal Core Template Tags and Filters.
+.. module:: resnet_internal.core.templatetags
+   :synopsis: ResNet Internal Core Template Tags and Filters.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 """

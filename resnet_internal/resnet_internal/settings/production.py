@@ -8,7 +8,7 @@ TEMPLATE_DEBUG = DEBUG
 # ======================================================================================================== #
 
 # Cookie Settings
-SESSION_COOKIE_NAME = 'IsengardSessionID'
+SESSION_COOKIE_NAME = 'RNINSessionID'
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 

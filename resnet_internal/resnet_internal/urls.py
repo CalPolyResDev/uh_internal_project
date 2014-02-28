@@ -22,12 +22,13 @@ from .adgroups.views import ResTechListEditView
 from .orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .computers.views import ComputersView, PopulateComputers, ComputerRecordsView, PinholeRequestView, DomainNameRequestView
 from .portmap.views import ResidenceHallWiredPortsView, PopulateResidenceHallWiredPorts
+from .printers.views import RequestsListView, InventoryView, OnOrderView
 
 admin.autodiscover()
 dajaxice_autodiscover()
 
 logger = logging.getLogger(__name__)
-orientation_access = user_passes_test(lambda user: user.is_developer or user.is_technician)
+technician_access = user_passes_test(lambda user: user.is_developer or user.is_technician)
 staff_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff)
 portmap_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag or user.is_telecom)
 computers_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_domain_manager or user.is_net_admin or user.is_tag)
@@ -48,15 +49,22 @@ urlpatterns = patterns('core.views',
 
 # ResNet Technician Orientation
 urlpatterns += patterns('',
-    url(r'^orientation/$', login_required(orientation_access(ChecklistView.as_view())), name='orientation_checklist'),
-    url(r'^orientation/onity$', login_required(orientation_access(OnityDoorAccessView.as_view())), name='orientation_onity'),
-    url(r'^orientation/srs$', login_required(orientation_access(SRSAccessView.as_view())), name='orientation_srs'),
-    url(r'^orientation/payroll$', login_required(orientation_access(PayrollView.as_view())), name='orientation_payroll'),
+    url(r'^orientation/$', login_required(technician_access(ChecklistView.as_view())), name='orientation_checklist'),
+    url(r'^orientation/onity$', login_required(technician_access(OnityDoorAccessView.as_view())), name='orientation_onity'),
+    url(r'^orientation/srs$', login_required(technician_access(SRSAccessView.as_view())), name='orientation_srs'),
+    url(r'^orientation/payroll$', login_required(technician_access(PayrollView.as_view())), name='orientation_payroll'),
 )
 
 # AD Group management
 urlpatterns += patterns('',
     url(r'^manage/technicians/$', login_required(staff_access(ResTechListEditView.as_view())), name='restech_list_edit'),
+)
+
+# Printer Requests
+urlpatterns += patterns('',
+    url(r'^printers/view_requests', login_required(technician_access(RequestsListView.as_view())), name='printer_request_list'),
+    url(r'^printers/view_inventory', login_required(technician_access(InventoryView.as_view())), name='printer_inventory'),
+    url(r'^printers/view_ordered', login_required(staff_access(OnOrderView.as_view())), name='printer_ordered_items'),
 )
 
 # Residence Halls Wired Port Map
