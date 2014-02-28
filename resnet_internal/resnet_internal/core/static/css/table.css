@@ -22,9 +22,21 @@
 	color: rgb(0, 51, 0);
     text-decoration: underline;
 }
+
 #content table td {
 	border: none;
 }
+
+#residence_halls_wired_port_map td {
+	padding: 0 !important;
+}
+
+#residence_halls_wired_port_map td div {
+	padding: 4px;
+	line-height: 20px;
+	height: 20px;
+}
+
 .width0 {
 	width:0px;
 }
@@ -50,9 +62,19 @@
     width:225px;
 }
 
+<<<<<<< HEAD
 .half_table {
 	float: left;
 	width: 45%;
+=======
+.disabled {
+	background-color: rgb(180,180,180);
+	color: rgb(100,100,100);
+}
+
+.disabled a {
+	color: rgb(100,100,100);
+>>>>>>> branch 'master' of https://akavanau-admin@uh-hornrock.housing.calpoly.edu/stash/scm/rnin/resnet_internal_project.git
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *

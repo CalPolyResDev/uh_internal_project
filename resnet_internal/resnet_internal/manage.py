@@ -34,6 +34,7 @@ def activate_env():
     activate_env = virtualenv_dir.child(repo_dir, "Scripts", "activate_this.py")
     if not activate_env.exists():
         activate_env = virtualenv_dir.child(repo_dir, "bin", "activate_this.py")
+
     execfile(activate_env, dict(__file__=activate_env))
 
 if __name__ == "__main__":
