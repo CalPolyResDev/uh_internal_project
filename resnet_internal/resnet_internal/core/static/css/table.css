@@ -42,11 +42,11 @@
 	margin-left: -4px;
 	margin-top: -4px;
 }
-#add_port_form div {
+#add_port_form div, #add_computer_form div  {
 	padding-left: 25px;
 }
 
-#add_port_form p {
+#add_port_form p, #add_computer_form p {
 	float: left;
 	padding: 15px 10px 15px 0;
 }

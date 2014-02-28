@@ -17,8 +17,42 @@ from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from resnet_internal.core.models import StaffMapping
 from .models import Computer, Pinhole, DomainName
+from .constants import (CORE, HOUSING_ADMINISTRATION, HOUSING_AND_BUSINESS_SERVICES, RESIDENTIAL_LIFE_AND_EDUCATION,
+                        CORE_SUB_DEPARTMENTS, HOUSING_ADMINISTRATION_SUB_DEPARTMENTS, HOUSING_AND_BUSINESS_SERVICES_SUB_DEPARTMENTS,
+                        RESIDENTIAL_LIFE_AND_EDUCATION_SUB_DEPARTMENTS)
 
 logger = logging.getLogger(__name__)
+
+
+@dajaxice_register
+def update_sub_department(request, department):
+    """ Update sub-department drop-down choices based on the department chosen.
+
+    :param department: The department for which to display sub-department choices.
+    :type department: str
+
+    """
+
+    dajax = Dajax()
+
+    sub_department_options = {
+        CORE: [(sub_department, sub_department) for sub_department in CORE_SUB_DEPARTMENTS],
+        HOUSING_ADMINISTRATION: [(sub_department, sub_department) for sub_department in HOUSING_ADMINISTRATION_SUB_DEPARTMENTS],
+        HOUSING_AND_BUSINESS_SERVICES: [(sub_department, sub_department) for sub_department in HOUSING_AND_BUSINESS_SERVICES_SUB_DEPARTMENTS],
+        RESIDENTIAL_LIFE_AND_EDUCATION: [(sub_department, sub_department) for sub_department in RESIDENTIAL_LIFE_AND_EDUCATION_SUB_DEPARTMENTS],
+    }
+    choices = []
+
+    # Add options iff a department is selected
+    if str(department) != "":
+        for value, label in sub_department_options[str(department)]:
+            choices.append("<option value='%s'>%s</option>" % (value, label))
+    else:
+        choices.append("<option value='%s'>%s</option>" % ("", "-------------"))
+
+    dajax.assign('#id_sub_department', 'innerHTML', ''.join(choices))
+
+    return dajax.json()
 
 
 @dajaxice_register
@@ -32,10 +66,6 @@ def modify_computer(request, request_dict, row_id, row_zero, username):
     computer_instance = Computer.objects.get(id=row_id)
 
     for column, value in request_dict.items():
-        # Uppercase computer names
-        if column == "computer_name":
-            value = value.upper()
-
         # DN cleanup
         if column == "dn":
             dn_pieces = value.split(",")

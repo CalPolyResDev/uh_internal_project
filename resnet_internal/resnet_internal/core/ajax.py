@@ -49,7 +49,7 @@ def update_building(request, community):
     }
     choices = []
 
-    # Add options iff a printer is selected
+    # Add options iff a building is selected
     if str(community) != "":
         for value, label in building_options[str(community)]:
             choices.append("<option value='%s'>%s</option>" % (value, label))

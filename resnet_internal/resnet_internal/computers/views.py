@@ -11,24 +11,28 @@ import socket
 import subprocess
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Q
 from django.http.response import HttpResponseRedirect
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, CreateView
 from django.views.generic import TemplateView
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
-from .forms import RequestPinholeForm, RequestDomainNameForm
+from .forms import NewComputerForm, RequestPinholeForm, RequestDomainNameForm
 from .models import Computer, Pinhole, DomainName
 
 
 logger = logging.getLogger(__name__)
 
 
-class ComputersView(TemplateView):
+class ComputersView(CreateView):
     template_name = "computers/computers.html"
+    form_class = NewComputerForm
+    model = Computer
+    fields = NewComputerForm.Meta.fields
+    success_url = reverse_lazy('uh_computers')
 
 
 class PopulateComputers(BaseDatatableView):

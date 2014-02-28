@@ -15,10 +15,10 @@ from rmsconnector.constants import COMMUNITIES, ALL_BUILDINGS
 
 class ResHallWired(Model):
     COMMUNITY_CHOICES = [(community, community) for community in COMMUNITIES]
-    ALL_BUILDINGS = [(building, building) for building in ALL_BUILDINGS]
+    BUILDING_CHOICES = [(building, building) for building in ALL_BUILDINGS]
 
     community = CharField(max_length=25, verbose_name=u'Community', choices=COMMUNITY_CHOICES)
-    building = CharField(max_length=25, verbose_name=u'Building', choices=ALL_BUILDINGS)
+    building = CharField(max_length=25, verbose_name=u'Building', choices=BUILDING_CHOICES)
     room = CharField(max_length=10, verbose_name=u'Room')
     switch_ip = IPAddressField(verbose_name=u'Switch IP')
     switch_name = CharField(max_length=35, verbose_name=u'Switch Name')

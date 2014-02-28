@@ -188,6 +188,77 @@
             </tbody>
         </table>
         <div class="clear"></div>
+        <div>
+            <form method="post" id="add_computer_form">
+                <fieldset>
+                <legend>
+                    Add a new computer
+                </legend>
+                    <p>
+                        {{ form.non_field_errors }}
+                        {% for field in form %}
+                        {{ field.errors }}
+                        {% endfor %}
+                    </p>
+                    <div class="horizontal_fields">
+	                    <p>
+	                        <label for="id_department">{{ form.department.label }}</label>
+	                        {{ form.department }}
+	                    </p>
+	                    <p>
+	                        <label for="id_sub_department">{{ form.sub_department.label }}</label>
+	                        <select id="id_sub_department" name="sub_department" size="1">
+	                        	<option value="">-------------</option>
+	                        </select>
+	                    </p>
+	                    <p>
+	                        <label for="id_room">{{ form.computer_name.label }}</label>
+	                        {{ form.computer_name }}
+	                    </p>
+	                    <p>
+	                        <label for="id_switch_ip">{{ form.ip_address.label }}</label>
+	                        {{ form.ip_address }}
+	                    </p>
+	                    <p>
+	                        <label for="id_switch_name">{{ form.mac_address.label }}</label>
+	                        {{ form.mac_address }}
+	                    </p>
+	                    <p>
+	                        <label for="id_jack">{{ form.model.label }}</label>
+	                        {{ form.model }}
+	                    </p>
+	                    <p>
+	                        <label for="id_blade">{{ form.serial_number.label }}</label>
+	                        {{ form.serial_number }}
+	                    </p>
+	                    <p>
+	                        <label for="id_port">{{ form.property_id.label }}</label>
+	                        {{ form.property_id }}
+	                    </p>
+	                    <p>
+	                        <label for="id_vlan">{{ form.dn.label }}</label>
+	                        {{ form.dn }}
+	                    </p>
+	                    <p>
+	                        <label for="id_vlan">{{ form.description.label }}</label>
+	                        {{ form.description }}
+	                    </p>
+                    </div>
+                </fieldset>
+                    <p>
+                        <input type="submit" value="Add" />
+                    </p>
+                {% csrf_token %}
+            </form>
+        </div>
     </div>
 </div>
+{% endblock %}
+{% block extra_script %}
+{{ block.super }}
+<script type="text/javascript">
+	$("#id_department").click(function () {
+		Dajaxice.resnet_internal.computers.update_sub_department(Dajax.process, {'department': $(this).val()});
+	});
+</script>
 {% endblock %}

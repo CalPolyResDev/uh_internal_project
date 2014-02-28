@@ -1,6 +1,6 @@
 """
-.. module:: resnet_internal.printers.forms
-   :synopsis: ResNet Internal Printer Request Forms.
+.. module:: resnet_internal.portmap.forms
+   :synopsis: ResNet Internal Portmap Forms.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

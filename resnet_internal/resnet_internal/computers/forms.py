@@ -6,16 +6,24 @@
 
 """
 
-from django.forms import Form, BooleanField, CharField, ChoiceField, Textarea, ValidationError
+from django.forms import Form, ModelForm, BooleanField, CharField, ChoiceField, Textarea, ValidationError
+from srsconnector.models import PRIORITY_CHOICES
 
 from .fields import PortListFormField, DomainNameListFormFiled
+from .models import Computer
 
-PRIORITY_CHOICES = [
-    ('Low', 'Low'),  # Not crucial or important; respond as time permits
-    ('Medium', 'Medium'),  # Standard problem, question, or request; standard response time acceptable
-    ('High', 'High'),  # Important work cannot be completed until ticket is resolved; respond as quickly as possible
-    ('Urgent', 'Urgent')  # Time critical work cannot be completed until ticket is resolved. Urgent problems or requests should also be called i
-]
+
+class NewComputerForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(NewComputerForm, self).__init__(*args, **kwargs)
+
+        for field_name in self.fields:
+            self.fields[field_name].error_messages = {'required': 'A ' + field_name + ' is required.'}
+
+    class Meta:
+        model = Computer
+        fields = ('department', 'sub_department', 'computer_name', 'ip_address', 'mac_address', 'model', 'serial_number', 'property_id', 'dn', 'description', )
 
 
 class RequestPinholeForm(Form):
@@ -57,3 +65,4 @@ class RequestDomainNameForm(Form):
         super(RequestDomainNameForm, self).__init__(*args, **kwargs)
 
         self.fields["priority"].choices = PRIORITY_CHOICES
+
