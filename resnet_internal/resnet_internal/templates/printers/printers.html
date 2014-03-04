@@ -20,21 +20,21 @@
         }
     );
     
-    function confirm_remove(computer_id) {
-		var response = confirm('Are you sure you want to delete this computer?'); 
+    function confirm_remove(printer_id) {
+		var response = confirm('Are you sure you want to delete this printer?'); 
 		if (response) {
-   			Dajaxice.resnet_internal.computers.remove_computer(Dajax.process, {'computer_id': computer_id});
+   			Dajaxice.resnet_internal.printers.remove_printer(Dajax.process, {'printer_id': printer_id});
 		} else {
     		return false;
 		}
 	}
 
-    var computer_index;
+    var printer_index;
 
     // initialize the dataTable
     $(document).ready(function() {
         // Initialize the DataTable. See datatables documentation for information about each option
-        computer_index = $('#computer_index').dataTable( {
+        computer_index = $('#printer_index').dataTable( {
             "aaSorting": [[ 1, "asc" ], [ 2, "asc" ], [ 3, "asc" ]],
             "oLanguage": {
                 "sLengthMenu": 'Display <select>'+
@@ -45,12 +45,12 @@
                     '<option value="250">250</option>'+
                     '<option value="-1">All</option>'+
                     '</select> records:',
-                "sSearch": "Filter records: (Use ?pinhole and/or ?domain to narrow results.)",
+                "sSearch": "Filter records: ",
                 "sZeroRecords": "No records to display."
             },
             "bProcessing": true,
             "bServerSide": true,
-            "sAjaxSource": "{% url 'populate_uh_computers' %}",
+            "sAjaxSource": "{% url 'populate_uh_printers' %}",
             "iDisplayLength": 50,
             "sPaginationType": "full_numbers",
             "bLengthChange": true,
@@ -108,7 +108,7 @@
                 });
 
                 // Send the data
-                Dajaxice.resnet_internal.computers.modify_computer(Dajax.process, {"request_dict": request_dict, "row_id": row_id, "row_zero": row_zero, "username": '{{ request.user.username }}'});
+                Dajaxice.resnet_internal.printers.modify_printer(Dajax.process, {"request_dict": request_dict, "row_id": row_id, "row_zero": row_zero, "username": '{{ request.user.username }}'});
             });
 
             // Edit input box click action
@@ -126,7 +126,7 @@
 </script>
 {% endblock %}
 
-{% block subtitle %} | University Housing Computer Index{% endblock %}
+{% block subtitle %} | University Housing Printer Index{% endblock %}
 
 {% block content %}
 <div id="content-2col">
@@ -135,7 +135,7 @@
             <!--<div id="splash"></div>-->
         </div>
         <div id="topContent">
-            <h1>University Housing Computer Index</h1>
+            <h1>University Housing Printer Index</h1>
         </div>
         <p style="color: red;">
             {{ form.non_field_errors }}
@@ -144,13 +144,13 @@
             {% endfor %}
         </p>
         <div class="clear"></div>
-        <table id="computer_index">
+        <table id="printer_index">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Department</th>
                     <th>Sub Department</th>
-                    <th>Computer Name</th>
+                    <th>Printer Name</th>
                     <th>IP Address</th>
                     <th>MAC Address</th>
                     <th>Model</th>
@@ -196,10 +196,10 @@
         </table>
         <div class="clear"></div>
         <div>
-            <form method="post" id="add_computer_form">
+            <form method="post" id="add_printer_form">
                 <fieldset>
                 <legend>
-                    Add a new computer
+                    Add a new printer
                 </legend>
                     <p>
                         {{ form.non_field_errors }}
@@ -219,8 +219,8 @@
 	                        </select>
 	                    </p>
 	                    <p>
-	                        <label for="id_computer_name">{{ form.computer_name.label }}</label>
-	                        {{ form.computer_name }}
+	                        <label for="id_printer_name">{{ form.printer_name.label }}</label>
+	                        {{ form.printer_name }}
 	                    </p>
 	                    <p>
 	                        <label for="id_ip_address">{{ form.ip_address.label }}</label>

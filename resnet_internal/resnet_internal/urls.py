@@ -22,7 +22,7 @@ from .adgroups.views import ResTechListEditView
 from .orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .computers.views import ComputersView, PopulateComputers, ComputerRecordsView, PinholeRequestView, DomainNameRequestView
 from .portmap.views import ResidenceHallWiredPortsView, PopulateResidenceHallWiredPorts
-from .printers.views import RequestsListView, InventoryView, OnOrderView
+from .printers.views import RequestsListView, InventoryView, OnOrderView, PrintersView, PopulatePrinters
 
 admin.autodiscover()
 dajaxice_autodiscover()
@@ -32,6 +32,7 @@ technician_access = user_passes_test(lambda user: user.is_developer or user.is_t
 staff_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff)
 portmap_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag or user.is_telecom)
 computers_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_domain_manager or user.is_net_admin or user.is_tag)
+printers_access = computers_access
 computer_record_modify_access = user_passes_test(lambda user: user.is_developer or user.is_net_admin or user.is_tag)
 
 
@@ -65,6 +66,12 @@ urlpatterns += patterns('',
     url(r'^printers/view_requests', login_required(technician_access(RequestsListView.as_view())), name='printer_request_list'),
     url(r'^printers/view_inventory', login_required(technician_access(InventoryView.as_view())), name='printer_inventory'),
     url(r'^printers/view_ordered', login_required(staff_access(OnOrderView.as_view())), name='printer_ordered_items'),
+)
+
+# Univeristy Housing Printer Index
+urlpatterns += patterns('',
+    url(r'^printers/$', login_required(printers_access(PrintersView.as_view())), name='uh_printers'),
+    url(r'^printers/populate/$', login_required(printers_access(PopulatePrinters.as_view())), name='populate_uh_printers'),
 )
 
 # Residence Halls Wired Port Map

@@ -15,8 +15,8 @@ from .constants import DEPARTMENTS, ALL_SUB_DEPARTMENTS
 class Computer(Model):
     """University Housing computers."""
 
-    DEPARTMENT_CHOICES = [(community, community) for community in DEPARTMENTS]
-    SUB_DEPARTMENT_CHOICES = [(building, building) for building in ALL_SUB_DEPARTMENTS]
+    DEPARTMENT_CHOICES = [(department, department) for department in DEPARTMENTS]
+    SUB_DEPARTMENT_CHOICES = [(sub_department, sub_department) for sub_department in ALL_SUB_DEPARTMENTS]
 
     department = CharField(max_length=50, verbose_name=u'Department', choices=DEPARTMENT_CHOICES)
     sub_department = CharField(max_length=50, verbose_name=u'Sub Department', choices=SUB_DEPARTMENT_CHOICES)

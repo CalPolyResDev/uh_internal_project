@@ -13,7 +13,7 @@ class PrintersRouter(object):
 
     ALIAS = "printers"
     APP_NAME = "printers"
-    MODELS = ('printertype', 'toner', 'part', 'request', 'request_toner', 'request_parts')
+    MODELS = ('printer', 'printertype', 'toner', 'part', 'request', 'request_toner', 'request_parts')
 
     def _app(self, model):
         """ A shortcut to retrieve the provided model's application label.

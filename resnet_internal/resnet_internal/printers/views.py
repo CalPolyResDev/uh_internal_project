@@ -8,13 +8,107 @@
 
 import logging
 
-from django.views.generic.base import TemplateView
-from django.views.generic.list import ListView
+from django.core.urlresolvers import reverse_lazy
+from django.db.models import Q
 
-from .forms import TonerCountForm, PartCountForm
-from .models import Request, Toner, Part
+from django.views.generic.base import TemplateView
+from django.views.generic.edit import CreateView
+from django.views.generic.list import ListView
+from django_datatables_view.base_datatable_view import BaseDatatableView
+
+from .forms import NewPrinterForm, TonerCountForm, PartCountForm
+from .models import Printer, Request, Toner, Part
 
 logger = logging.getLogger(__name__)
+
+
+class PrintersView(CreateView):
+    template_name = "printers/printers.html"
+    form_class = NewPrinterForm
+    model = Printer
+    fields = NewPrinterForm.Meta.fields
+    success_url = reverse_lazy('uh_printers')
+
+
+class PopulatePrinters(BaseDatatableView):
+    """Renders the printer index."""
+
+    model = Printer
+    max_display_length = 250
+
+    # define the columns that will be returned
+    columns = ['id', 'department', 'sub_department', 'printer_name', 'ip_address', 'mac_address', 'model', 'serial_number', 'property_id', 'dn', 'description', 'remove']
+
+    # define column names that can be sorted?
+    order_columns = columns
+
+    # define columns that can be searched
+    searchable_columns = ['department', 'sub_department', 'printer_name', 'ip_address', 'mac_address', 'model', 'serial_number', 'property_id', 'dn', 'description']
+
+    # define columns that can be edited
+    editable_columns = ['department', 'sub_department', 'printer_name', 'ip_address', 'property_id', 'dn', 'description']
+
+    def render_column(self, row, column):
+        """Render columns with customized HTML.
+
+        :param row: A dictionary containing row data.
+        :type row: dict
+        :param column: The name of the column to be rendered. This can be used to index into the row dictionary.
+        :type column: str
+        :returns: The HTML to be displayed for this column.
+
+        """
+
+        if column == 'remove':
+            return """<div id='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_remove(%s);">Remove</a></div>""" % (row.id, column, row.id)
+        elif column in self.editable_columns:
+            return "<div id='%s' class='editable' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column))
+        else:
+            return "<div id='%s' column='%s'>%s</div>" % (row.id, column, getattr(row, column))
+
+    def filter_queryset(self, qs):
+        """ Filters the QuerySet by submitted search parameters.
+
+        Made to work with multiple word search queries.
+        PHP source: http://datatables.net/forums/discussion/3343/server-side-processing-and-regex-search-filter/p1
+        Credit for finding the Q.AND method: http://bradmontgomery.blogspot.com/2009/06/adding-q-objects-in-django.html
+
+        :param qs: The QuerySet to be filtered.
+        :type qs: QuerySet
+        :returns: If search parameters exist, the filtered QuerySet, otherwise the original QuerySet.
+
+        """
+
+        search_parameters = self.request.GET.get('sSearch', None)
+
+        if search_parameters:
+            params = search_parameters.split(" ")
+            columnQ = None
+            paramQ = None
+            firstCol = True
+            firstParam = True
+
+            for param in params:
+                if param != "":
+                    for searchable_column in self.searchable_columns:
+                        kwargz = {searchable_column + "__icontains": param}
+                        q = Q(**kwargz)
+                        if (firstCol):
+                            firstCol = False
+                            columnQ = q
+                        else:
+                            columnQ |= q
+                    if (firstParam):
+                        firstParam = False
+                        paramQ = columnQ
+                    else:
+                        paramQ.add(columnQ, Q.AND)
+                    columnQ = None
+                    firstCol = True
+            if paramQ:
+                qs = qs.filter(paramQ)
+
+        return qs
 
 
 class RequestsListView(ListView):

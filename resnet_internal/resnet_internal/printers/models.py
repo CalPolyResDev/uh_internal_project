@@ -6,8 +6,45 @@
 
 """
 
-from django.db.models import Model, CharField, ForeignKey, ManyToManyField, PositiveIntegerField, IntegerField, DateTimeField
+from django.db.models import (Model, CharField, ForeignKey, ManyToManyField, PositiveIntegerField,
+                              IntegerField, DateTimeField, IPAddressField)
 from django.db.models.fields import TextField
+
+from resnet_internal.computers.fields import MACAddressField
+from resnet_internal.computers.constants import DEPARTMENTS, ALL_SUB_DEPARTMENTS
+
+
+class Printer(Model):
+    """University Housing printers."""
+
+    DEPARTMENT_CHOICES = [(department, department) for department in DEPARTMENTS]
+    SUB_DEPARTMENT_CHOICES = [(sub_department, sub_department) for sub_department in ALL_SUB_DEPARTMENTS]
+
+    department = CharField(max_length=50, verbose_name=u'Department', choices=DEPARTMENT_CHOICES)
+    sub_department = CharField(max_length=50, verbose_name=u'Sub Department', choices=SUB_DEPARTMENT_CHOICES)
+    printer_name = CharField(max_length=25, verbose_name=u'Printer Name', unique=True)
+    ip_address = IPAddressField(verbose_name=u'IP Address', unique=True)
+    mac_address = MACAddressField(verbose_name=u'MAC Address', unique=True)
+    model = CharField(max_length=25, verbose_name=u'Model')
+    serial_number = CharField(max_length=20, verbose_name=u'Serial Number', unique=True)
+    property_id = CharField(max_length=50, verbose_name=u'Cal Poly Property ID', unique=True)
+    dn = CharField(max_length=250, verbose_name=u'Distinguished Name')
+    description = CharField(max_length=100, verbose_name=u'Description')
+
+    def __unicode__(self):
+        return self.printer_name
+
+    def save(self, *args, **kwargs):
+        for field_name in ['printer_name', 'mac_address', 'serial_number', 'property_id']:
+            value = getattr(self, field_name, False)
+            if value:
+                setattr(self, field_name, value.upper())
+        super(Printer, self).save(*args, **kwargs)
+
+    class Meta:
+        db_table = u'printer'
+        managed = False
+        verbose_name = u'University Housing Printer'
 
 
 class PrinterType(Model):
