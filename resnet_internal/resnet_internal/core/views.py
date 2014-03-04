@@ -101,6 +101,15 @@ class NavigationSettingsView(FormView):
     template_name = "core/settings/navigation.html"
     form_class = NavigationSettingsForm
 
+    def get_initial(self):
+        initial = self.initial.copy()
+
+        initial.update({
+            'handle_links': 'frame' if self.request.user.open_links_in_frame else 'external',
+        })
+
+        return initial
+
     def form_valid(self, form):
 
         link_handling = form.cleaned_data['handle_links']
