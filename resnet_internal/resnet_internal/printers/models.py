@@ -22,7 +22,7 @@ class Printer(Model):
 
     department = CharField(max_length=50, verbose_name=u'Department', choices=DEPARTMENT_CHOICES)
     sub_department = CharField(max_length=50, verbose_name=u'Sub Department', choices=SUB_DEPARTMENT_CHOICES)
-    printer_name = CharField(max_length=25, verbose_name=u'Printer Name', unique=True)
+    printer_name = CharField(max_length=60, verbose_name=u'Printer Name', unique=True)
     ip_address = IPAddressField(verbose_name=u'IP Address', unique=True)
     mac_address = MACAddressField(verbose_name=u'MAC Address', unique=True)
     model = CharField(max_length=25, verbose_name=u'Model')
