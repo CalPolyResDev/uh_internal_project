@@ -78,7 +78,7 @@ DATABASES = {
         'NAME': 'resnet_internal',
         'USER': 'resnet_internal',
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_DEFAULT_PASSWORD'),
-        'HOST': 'uh-rivendell.housing.calpoly.edu',
+        'HOST': 'data.resdev.calpoly.edu',
         'PORT': '3306',
     },
     'common': {
@@ -86,7 +86,7 @@ DATABASES = {
         'NAME': 'common',
         'USER': 'common',
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_COMMON_PASSWORD'),
-        'HOST': 'uh-rivendell.housing.calpoly.edu',
+        'HOST': 'data.resdev.calpoly.edu',
         'PORT': '3306',
     },
     'computers': {
@@ -94,7 +94,7 @@ DATABASES = {
         'NAME': 'computers',
         'USER': 'computers',
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_COMPUTERS_PASSWORD'),
-        'HOST': 'uh-rivendell.housing.calpoly.edu',
+        'HOST': 'data.resdev.calpoly.edu',
         'PORT': '3306',
     },
     'portmap': {
@@ -102,7 +102,7 @@ DATABASES = {
         'NAME': 'portmap',
         'USER': 'portmap',
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_PORTMAP_PASSWORD'),
-        'HOST': 'uh-rivendell.housing.calpoly.edu',
+        'HOST': 'data.resdev.calpoly.edu',
         'PORT': '3306',
     },
     'printers': {
@@ -110,7 +110,7 @@ DATABASES = {
         'NAME': 'printers',
         'USER': 'printers',
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_PRINTERS_PASSWORD'),
-        'HOST': 'uh-rivendell.housing.calpoly.edu',
+        'HOST': 'data.resdev.calpoly.edu',
         'PORT': '3306',
     },
     'rms': {
