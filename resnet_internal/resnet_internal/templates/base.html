@@ -193,11 +193,9 @@
 						<li>
 						<a href="{% url 'printer_inventory' %}" class="sublink">Check Inventory</a>
 					    </li>
-					    {% if request.user.is_developer or request.user.is_rn_staff %}
 					    <li>
 						<a href="{% url 'printer_ordered_items' %}" class="sublink">Ordered Items</a>
 					    </li>
-					    {% endif %}
 					</ul>
 				</ul>
 				{% endif %}
