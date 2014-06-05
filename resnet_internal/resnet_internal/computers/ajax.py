@@ -201,10 +201,10 @@ Thanks,
 
     sr_number = domain_name_removal_request.ticket_id
 
-    # Delete the pinhole record
+    # Delete the domain record
     domain_name_record.delete()
 
-    dajax.alert("A pinhole removal request has been created in your name. Please use SR#%(sr_number)s as a reference." % {'sr_number': sr_number})
+    dajax.alert("A domain name removal request has been created in your name. Please use SR#%(sr_number)s as a reference." % {'sr_number': sr_number})
 
     dajax.redirect(reverse('view_uh_computer_record', kwargs={'ip_address': ip_address}))
 
