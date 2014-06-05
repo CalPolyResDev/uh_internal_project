@@ -82,7 +82,7 @@ def change_request_status(request, request_id, current_status):
 
     :param request_id: The id of the request to process.
     :type request_id: str
-    :param status: The new status value.
+    :param current_status: The new status value.
     :type status: str
 
     """
@@ -142,7 +142,7 @@ def change_request_status(request, request_id, current_status):
                 request_list.append(part)
 
         ticket.request_list = request_list  # Must include in update; gets blanked otherwise
-        ticket.work_log = "Updated ticket status."
+        ticket.work_log = "Ticket status updated to %s by %s." % (Request.STATUSES[status], request.user.get_full_name())
         ticket.save()
 
     request_instance.status = status
