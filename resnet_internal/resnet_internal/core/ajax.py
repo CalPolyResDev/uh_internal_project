@@ -8,9 +8,11 @@
 
 import datetime
 import imaplib
+import logging
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.db import DatabaseError
 
 from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
@@ -21,6 +23,8 @@ from rmsconnector.constants import (SIERRA_MADRE, YOSEMITE, SOUTH_MOUNTAIN, NORT
                                     POLY_CANYON_VILLAGE_BUILDINGS)
 
 from .models import DailyDuties
+
+logger = logging.getLogger(__name__)
 
 GREEN = "#060"
 RED = "#900"
@@ -208,17 +212,24 @@ class GetDutyData:
             "last_user": None
         }
 
-        open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).count()
-        api_tickets = ServiceRequest.objects.filter(assigned_person="ResnetAPI").count()
+        try:
+            open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).count()
+            api_tickets = ServiceRequest.objects.filter(assigned_person="ResnetAPI").count()
 
-        data = DailyDuties.objects.get(name='tickets')
+            data = DailyDuties.objects.get(name='tickets')
 
-        tickets["count"] = open_tickets - api_tickets
-        if data.last_checked > datetime.datetime.now() - ACCEPTABLE_LAST_CHECKED:
-            tickets["status_color"] = GREEN
-        else:
+            tickets["count"] = open_tickets - api_tickets
+            if data.last_checked > datetime.datetime.now() - ACCEPTABLE_LAST_CHECKED:
+                tickets["status_color"] = GREEN
+            else:
+                tickets["status_color"] = RED
+            tickets["last_checked"] = datetime.datetime.strftime(data.last_checked, "%m/%d/%Y %H:%M%p")
+            tickets["last_user"] = data.last_user.get_full_name()
+        except DatabaseError, message:
+            logger.info(message)
+            tickets["count"] = -1
             tickets["status_color"] = RED
-        tickets["last_checked"] = datetime.datetime.strftime(data.last_checked, "%m/%d/%Y %H:%M%p")
-        tickets["last_user"] = data.last_user.get_full_name()
+            tickets["last_checked"] = datetime.datetime.now()
+            tickets["last_user"] = "Connection Error"
 
         return tickets
