@@ -227,9 +227,9 @@ class GetDutyData:
             tickets["last_user"] = data.last_user.get_full_name()
         except DatabaseError, message:
             logger.info(message)
-            tickets["count"] = -1
+            tickets["count"] = 0
             tickets["status_color"] = RED
             tickets["last_checked"] = datetime.datetime.strftime(datetime.datetime.now(), "%m/%d/%Y %H:%M%p")
-            tickets["last_user"] = "Connection Error"
+            tickets["last_user"] = "Connection Error!"
 
         return tickets
