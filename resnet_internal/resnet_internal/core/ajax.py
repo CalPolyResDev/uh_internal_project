@@ -99,7 +99,7 @@ def refresh_duties(request):
         <br />
         (""" + messages_dict["last_user"] + u""")
     </p>
-    <h3><a style="cursor:pointer;" onclick="updateDuty('email')">Check Email""" + email_count + u"""</a></h3>
+    <h3><a href="/link_handler/zimbra/" style="cursor:pointer;" onclick="updateDuty('email')">Check Email""" + email_count + u"""</a></h3>
     <p>
         Last Checked:
         <br />
@@ -107,7 +107,7 @@ def refresh_duties(request):
         <br />
         (""" + email_dict["last_user"] + u""")
     </p>
-    <h3><a style="cursor:pointer;" onclick="updateDuty('tickets')">Check Tickets""" + ticket_count + u"""</a></h3>
+    <h3><a href ="/link_handler/srs/" style="cursor:pointer;" onclick="updateDuty('tickets')">Check Tickets""" + ticket_count + u"""</a></h3>
     <p>
         Last Checked:
         <br />

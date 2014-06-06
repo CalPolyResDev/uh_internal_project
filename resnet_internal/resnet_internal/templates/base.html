@@ -27,6 +27,7 @@
 			function updateDuty(duty) {
 				Dajaxice.resnet_internal.core.update_duty(Dajax.process,{'duty': duty});
 				refreshDuties();
+				return true;
 			};
 		</script>
 		{% block meta %}

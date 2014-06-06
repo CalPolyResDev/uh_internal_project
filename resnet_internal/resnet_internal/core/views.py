@@ -30,6 +30,10 @@ def link_handler(request, mode, key, ip=""):
     if key == "portal":
         subtitle = "My Cal Poly Portal"
         source = "https://myportal.calpoly.edu/f/u17l1s6/normal/render.uP"
+    # Email
+    elif key == "zimbra":
+        subtitle = "Zimbra Email"
+        source = "https://connect.calpoly.edu/zimbra/mail"
     # SRS Ticket Manager
     elif key == "srs":
         subtitle = "SRS Ticket Manager"
