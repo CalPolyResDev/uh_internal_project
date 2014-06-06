@@ -93,7 +93,17 @@ class SingleGroupEditView(FormView):
             raise ValidationError("You do not have permission to view or modify this group.")
 
         alias = form.cleaned_data['alias']
-        self.ad_group_instance.add_member(alias)
+
+        member_exists = False
+
+        # Check if the user already exists in the group
+        for member in self._get_member_info():
+            if member['alias'] == alias:
+                member_exists = True
+
+        # Don't add the user if (s)he is already in the group.
+        if not member_exists:
+            self.ad_group_instance.add_member(alias)
 
         return super(SingleGroupEditView, self).form_valid(form)
 
