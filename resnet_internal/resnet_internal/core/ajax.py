@@ -229,7 +229,7 @@ class GetDutyData:
             logger.info(message)
             tickets["count"] = -1
             tickets["status_color"] = RED
-            tickets["last_checked"] = datetime.datetime.now()
+            tickets["last_checked"] = datetime.datetime.strftime(datetime.datetime.now(), "%m/%d/%Y %H:%M%p")
             tickets["last_user"] = "Connection Error"
 
         return tickets
