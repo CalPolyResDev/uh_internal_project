@@ -33,7 +33,7 @@ def link_handler(request, mode, key, ip=""):
     # Email
     elif key == "zimbra":
         subtitle = "Zimbra Email"
-        source = "https://connect.calpoly.edu/zimbra/mail"
+        source = "https://connect.calpoly.edu/zimbra/mail#1"
     # SRS Ticket Manager
     elif key == "srs":
         subtitle = "SRS Ticket Manager"
