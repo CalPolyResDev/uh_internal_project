@@ -9,7 +9,7 @@
 
 """
 
-from django.db.models import Model, CharField, IPAddressField, BooleanField
+from django.db.models import Model, CharField, IPAddressField, BooleanField, PositiveSmallIntegerField
 from rmsconnector.constants import COMMUNITIES, ALL_BUILDINGS
 
 
@@ -23,8 +23,8 @@ class ResHallWired(Model):
     switch_ip = IPAddressField(verbose_name=u'Switch IP')
     switch_name = CharField(max_length=35, verbose_name=u'Switch Name')
     jack = CharField(max_length=5, verbose_name=u'Jack')
-    blade = CharField(max_length=2, verbose_name=u'Blade')
-    port = CharField(max_length=2, verbose_name=u'Port')
+    blade = PositiveSmallIntegerField(verbose_name=u'Blade')
+    port = PositiveSmallIntegerField(verbose_name=u'Port')
     vlan = CharField(max_length=7, verbose_name=u'vLan')
     active = BooleanField(default=True, verbose_name=u'Active')
 
