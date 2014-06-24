@@ -67,7 +67,11 @@
             ],
         });
 
-        $(document).on("click", ".edit_trigger", function() {
+        $(document).on("dblclick", "#residence_halls_wired_port_map td", handle_edit);
+        $(document).on("click", "#residence_halls_wired_port_map .edit_trigger", handle_edit);
+        
+        
+        function handle_edit() {
             row_id = $(this).children("div").attr("id");
             editable_columns = $("#"+ row_id + ".editable");
 
@@ -107,7 +111,7 @@
                 $(".editbox").hide();
                 $(".display_data").show();
             });
-        });
+        };
     });
 </script>
 {% endblock %}
