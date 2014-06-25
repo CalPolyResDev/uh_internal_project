@@ -67,7 +67,7 @@ def remove_resnet_tech(request, account_name, group_dn):
 
     sr_number = ticket.ticket_id
 
-    dajax.alert(dajax.alert("A request to remove %(account_name)s from the ResNet team has been created. Please use SR#%(sr_number)s as a reference." % {'account_name': account_name, 'sr_number': sr_number}))
+    dajax.alert("A request to remove %(account_name)s from the ResNet team has been created. Please use SR#%(sr_number)s as a reference." % {'account_name': account_name, 'sr_number': sr_number})
 
     # Remove from AD
     intern_ad_group_instance.remove_member(account_name)
