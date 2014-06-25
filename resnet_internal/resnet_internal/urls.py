@@ -63,9 +63,9 @@ urlpatterns += patterns('',
 
 # Printer Requests
 urlpatterns += patterns('',
-    url(r'^printers/view_requests', login_required(technician_access(RequestsListView.as_view())), name='printer_request_list'),
-    url(r'^printers/view_inventory', login_required(technician_access(InventoryView.as_view())), name='printer_inventory'),
-    url(r'^printers/view_ordered', login_required(technician_access(OnOrderView.as_view())), name='printer_ordered_items'),
+    url(r'^printers/view_requests', login_required(printers_access(RequestsListView.as_view())), name='printer_request_list'),
+    url(r'^printers/view_inventory', login_required(printers_access(InventoryView.as_view())), name='printer_inventory'),
+    url(r'^printers/view_ordered', login_required(printers_access(OnOrderView.as_view())), name='printer_ordered_items'),
 )
 
 # Univeristy Housing Printer Index
