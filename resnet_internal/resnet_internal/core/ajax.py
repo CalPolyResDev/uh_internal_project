@@ -122,6 +122,7 @@ def refresh_duties(request):
 
     # Update the daily duties widget
     dajax.assign('#dailyDuties', 'innerHTML', duties_html)
+    dajax.script('update_link_targets("' + str(request.user.open_links_in_frame) + '");')
 
     return dajax.json()
 
