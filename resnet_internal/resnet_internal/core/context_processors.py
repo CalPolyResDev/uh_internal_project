@@ -28,20 +28,15 @@ def specializations(request):
         # ResNet Titles
         if request.user.is_technician:
             user_specializations.append('ResNet Technician')
-        if request.user.is_network_analyst:
-            user_specializations.append('Network Analyst')
-        if request.user.is_domain_manager:
-            user_specializations.append('Domain Manager')
-        if request.user.is_osd:
-            user_specializations.append('OS Deployer')
         if request.user.is_uhtv:
             user_specializations.append('UHTV Staff')
-        if request.user.is_drupal:
-            user_specializations.append('ResNet Drupal Admin')
         if request.user.is_rn_staff:
             user_specializations.append('ResNet Staff')
         if request.user.is_developer:
             user_specializations.append('ResNet Developer')
+
+        if "akavanau" in request.user.username:
+            user_specializations.append('ResDev BDFL')
 
         if request.user.is_tag:
             user_specializations.append('UH TAG Member')
