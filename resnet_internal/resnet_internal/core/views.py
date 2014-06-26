@@ -161,50 +161,6 @@ class LoginView(FormView):
                 self.request.user.is_new_tech = True
                 self.request.user.save()
 
-        # Set user session variables
-        display_name = self.request.user.get_full_name()
-        user_specializations = []
-
-        # Other Department specializations
-        if self.request.user.is_net_admin:
-            user_specializations.append('ITS Network Administrator')
-
-        if self.request.user.is_telecom:
-            user_specializations.append('IS Telecom Administrator')
-
-        # ResNet Titles
-        if self.request.user.is_technician:
-            user_specializations.append('ResNet Technician')
-        if self.request.user.is_network_analyst:
-            user_specializations.append('Network Analyst')
-        if self.request.user.is_domain_manager:
-            user_specializations.append('Domain Manager')
-        if self.request.user.is_osd:
-            user_specializations.append('OS Deployer')
-        if self.request.user.is_uhtv:
-            user_specializations.append('UHTV Staff')
-        if self.request.user.is_drupal:
-            user_specializations.append('ResNet Drupal Admin')
-        if self.request.user.is_rn_staff:
-            user_specializations.append('ResNet Staff')
-        if self.request.user.is_developer:
-            user_specializations.append('ResNet Developer')
-
-        if self.request.user.is_tag:
-            user_specializations.append('UH TAG Member')
-
-        # User is new technician (requires orientation)
-        if self.request.user.is_new_tech:
-            user_specializations = ['New ResNet Technician']
-
-        # Empty user specializations
-        if not user_specializations:
-            user_specializations = ['No Specializations Available']
-
-        # Set session variables
-        self.request.session['user_display_name'] = display_name
-        self.request.session['user_specializations'] = user_specializations
-
         return super(LoginView, self).form_valid(form)
 
     def get_success_url(self):

@@ -71,10 +71,10 @@
 				<!-- Begin Login Display Module -->
 				{% if request.user.is_authenticated %} {# User is logged in - display user information. #}
 					<div class="loginDisplay">
-						You are logged in as <span style="color: #A1B39C">{{ request.session.user_display_name }}</span>
+						You are logged in as <span style="color: #A1B39C">{{ user_display_name }}</span>
 						<br />
 						{# Display User Specializations #}
-						{% for title in request.session.user_specializations %}
+						{% for title in user_specializations %}
 							{{ title }}{% if not forloop.last %}, {% endif %}
 						{% endfor %}
 						<br />

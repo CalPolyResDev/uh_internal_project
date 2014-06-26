@@ -298,6 +298,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
+    'resnet_internal.core.context_processors.specializations',
     'django.contrib.messages.context_processors.messages',
 )
 
