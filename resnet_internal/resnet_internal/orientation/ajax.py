@@ -42,6 +42,6 @@ def complete_orientation(request):
     user.is_new_tech = False
     user.save()
 
-    dajax.redirect(reverse('logout'))
+    dajax.redirect(reverse('home'))
 
     return dajax.json()
