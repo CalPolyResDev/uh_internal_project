@@ -161,17 +161,12 @@ class LoginView(FormView):
                 self.request.user.is_new_tech = True
                 self.request.user.save()
 
-        return super(LoginView, self).form_valid(form)
-
-    def get_success_url(self):
-        """Generate a success url. If the user is a new technician, send him/her to orientation."""
-
-        success_url = reverse_lazy('home')
-
         if self.request.user.is_new_tech:
-            success_url = reverse_lazy('orientation_checklist')
+            self.success_url = reverse_lazy('orientation_checklist')
+        else:
+            self.success_url = self.request.GET.get("next", reverse_lazy('home'))
 
-        return success_url
+        return super(LoginView, self).form_valid(form)
 
 
 def logout(request):
