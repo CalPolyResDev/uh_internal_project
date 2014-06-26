@@ -26,7 +26,7 @@
 			};
 			function updateDuty(duty) {
 				Dajaxice.resnet_internal.core.update_duty(Dajax.process,{'duty': duty});
-				refreshDuties();
+				{% if request.user.is_authenticated %}refreshDuties();{% endif %}
 				return true;
 			};
 		</script>
