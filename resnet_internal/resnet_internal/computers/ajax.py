@@ -17,8 +17,8 @@ from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from resnet_internal.core.models import StaffMapping
 from .models import Computer, Pinhole, DomainName
-from .constants import (CORE, HOUSING_ADMINISTRATION, HOUSING_AND_BUSINESS_SERVICES, RESIDENTIAL_LIFE_AND_EDUCATION,
-                        CORE_SUB_DEPARTMENTS, HOUSING_ADMINISTRATION_SUB_DEPARTMENTS, HOUSING_AND_BUSINESS_SERVICES_SUB_DEPARTMENTS,
+from .constants import (CORE, HOUSING_ADMINISTRATION, HOUSING_SERVICES, RESIDENTIAL_LIFE_AND_EDUCATION,
+                        CORE_SUB_DEPARTMENTS, HOUSING_ADMINISTRATION_SUB_DEPARTMENTS, HOUSING_SERVICES_SUB_DEPARTMENTS,
                         RESIDENTIAL_LIFE_AND_EDUCATION_SUB_DEPARTMENTS)
 
 logger = logging.getLogger(__name__)
@@ -38,7 +38,7 @@ def update_sub_department(request, department):
     sub_department_options = {
         CORE: [(sub_department, sub_department) for sub_department in CORE_SUB_DEPARTMENTS],
         HOUSING_ADMINISTRATION: [(sub_department, sub_department) for sub_department in HOUSING_ADMINISTRATION_SUB_DEPARTMENTS],
-        HOUSING_AND_BUSINESS_SERVICES: [(sub_department, sub_department) for sub_department in HOUSING_AND_BUSINESS_SERVICES_SUB_DEPARTMENTS],
+        HOUSING_SERVICES: [(sub_department, sub_department) for sub_department in HOUSING_SERVICES_SUB_DEPARTMENTS],
         RESIDENTIAL_LIFE_AND_EDUCATION: [(sub_department, sub_department) for sub_department in RESIDENTIAL_LIFE_AND_EDUCATION_SUB_DEPARTMENTS],
     }
     choices = []
