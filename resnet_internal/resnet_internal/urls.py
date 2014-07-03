@@ -3,6 +3,7 @@
    :synopsis: ResNet Internal URLs.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: RJ Almada <almada.dev@gmail.com>
 
 """
 
@@ -20,7 +21,7 @@ from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 from .core.views import IndexView, LoginView, NavigationSettingsView
 from .adgroups.views import ResTechListEditView
 from .orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
-from .computers.views import ComputersView, PopulateComputers, ComputerRecordsView, PinholeRequestView, DomainNameRequestView
+from .computers.views import ComputersView, PopulateComputers, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
 from .portmap.views import ResidenceHallWiredPortsView, PopulateResidenceHallWiredPorts
 from .printers.views import RequestsListView, InventoryView, OnOrderView, PrintersView, PopulatePrinters
 
@@ -85,6 +86,7 @@ urlpatterns += patterns('',
     url(r'^computers/$', login_required(computers_access(ComputersView.as_view())), name='uh_computers'),
     url(r'^computers/populate/$', login_required(computers_access(PopulateComputers.as_view())), name='populate_uh_computers'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(computers_access(ComputerRecordsView.as_view())), name='view_uh_computer_record'),
+    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/rdp/$', login_required(computer_record_modify_access(RDPRequestView.as_view())), name='rdp_request'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/pinhole_request/$', login_required(computer_record_modify_access(PinholeRequestView.as_view())), name='pinhole_request'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/domain_name_request/$', login_required(computer_record_modify_access(DomainNameRequestView.as_view())), name='domain_name_request'),
 )

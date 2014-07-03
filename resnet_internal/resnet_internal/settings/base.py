@@ -30,7 +30,7 @@ def get_env_variable(name):
 
 ADMINS = (
     ('Alex Kavanaugh', 'kavanaugh.development@outlook.com'),
-    ('RJ Almada', 'rjalmada@calpoly.edu')
+    ('RJ Almada', 'almada.dev@gmail.com')
 )
 
 MANAGERS = ADMINS

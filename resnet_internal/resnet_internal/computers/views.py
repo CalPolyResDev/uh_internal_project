@@ -3,17 +3,20 @@
    :synopsis: ResNet Internal Computer Index Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: RJ Almada <almada.dev@gmail.com>
 
 """
 
 import logging
 import socket
 import subprocess
+import cStringIO as StringIO
 
 from django.conf import settings
 from django.core.urlresolvers import reverse, reverse_lazy
+from django.core.servers.basehttp import FileWrapper
 from django.db.models import Q
-from django.http.response import HttpResponseRedirect
+from django.http.response import HttpResponseRedirect, HttpResponse
 from django.views.generic.edit import FormView, CreateView
 from django.views.generic import TemplateView
 
@@ -42,7 +45,7 @@ class PopulateComputers(BaseDatatableView):
     max_display_length = 250
 
     # define the columns that will be returned
-    columns = ['id', 'department', 'sub_department', 'computer_name', 'ip_address', 'mac_address', 'model', 'serial_number', 'property_id', 'dn', 'description', 'remove']
+    columns = ['id', 'department', 'sub_department', 'computer_name', 'ip_address', 'RDP', 'mac_address', 'model', 'serial_number', 'property_id', 'dn', 'description', 'remove']
 
     # define column names that can be sorted?
     order_columns = columns
@@ -85,6 +88,8 @@ class PopulateComputers(BaseDatatableView):
                     result = result + domain_names
 
             return result + end
+        elif column == 'RDP':
+            return """<div id='%s' column='%s><a href='rdp_request'><img src='%simages/icons/pinholes.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' /></a>""" % (row.id, column, settings.STATIC_URL)
         elif column == 'remove':
             return """<div id='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_remove(%s);">Remove</a></div>""" % (row.id, column, row.id)
         elif column in self.editable_columns:
@@ -196,6 +201,18 @@ class ComputerRecordsView(TemplateView):
         context['domain_names'] = domain_names
 
         return context
+
+
+class RDPRequestView(TemplateView):
+
+    def render_to_response(self, context, **response_kwargs):
+        ip_address = context["ip_address"]
+        rdp_file = StringIO.StringIO()
+        rdp_file.write("full address:s:" + ip_address)
+
+        response = HttpResponse(FileWrapper(rdp_file.getValue()), content_type='application/rdp')
+        response['Content-Disposition'] = 'attachment; filename=' + context["computer_name"] + '.rdp'
+        return response
 
 
 class PinholeRequestView(FormView):
