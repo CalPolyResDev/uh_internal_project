@@ -10,11 +10,9 @@
 import logging
 import socket
 import subprocess
-import cStringIO
 
 from django.conf import settings
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.core.servers.basehttp import FileWrapper
 from django.db.models import Q
 from django.http.response import HttpResponseRedirect, HttpResponse
 from django.views.generic.edit import FormView, CreateView
@@ -89,9 +87,11 @@ class PopulateComputers(BaseDatatableView):
 
             return result + end
         elif column == 'RDP':
-            return """<div id='%s' column='%s'><a style='cursor:pointer;' href='%s'><img src='%simages/icons/rdp.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' /></a>""" % (row.id, column,
-                                                                                                                                                                                                               reverse('rdp_request', kwargs={'ip_address': row.ip_address}),
-                                                                                                                                                                                                               settings.STATIC_URL)
+            try:
+                rdp_file_url = reverse('rdp_request', kwargs={'ip_address': row.ip_address})
+                return """<div id='%s' column='%s'><a style='cursor:pointer;' href='%s'><img src='%simages/icons/rdp.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' /></a>""" % (row.id, column, rdp_file_url, settings.STATIC_URL)
+            except:
+                return ""
         elif column == 'remove':
             return """<div id='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_remove(%s);">Remove</a></div>""" % (row.id, column, row.id)
         elif column in self.editable_columns:
