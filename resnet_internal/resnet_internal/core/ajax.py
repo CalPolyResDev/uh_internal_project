@@ -64,7 +64,7 @@ def update_building(request, community, building_selection=None):
             else:
                 choices.append("<option value='%s'>%s</option>" % (value, label))
     else:
-        choices.append("<option value='%s'>%s</option>" % ("", "-------------"))
+        choices.append("<option value='%s'>%s</option>" % ("", "---------"))
 
     dajax.assign('#id_building', 'innerHTML', ''.join(choices))
 
