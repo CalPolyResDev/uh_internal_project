@@ -56,8 +56,8 @@ def remove_resnet_tech(request, account_name, group_dn):
     if account_name == request.user.username or account_name == request.user.username + "-admin":
         dajax.alert("For security reasons, one cannot delete oneself from a group.")
         return dajax.json()
-    intern_ad_group_instance = ADGroup("CN=UH-ResTech-Users,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu")
-    intern_admin_ad_group_instance = ADGroup("CN=UH-ResTech-Admins,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu")
+
+    ad_group_instance = ADGroup("CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu")
 
     # Remove from SRS
     ticket = AccountRequest(subject_username=account_name)
@@ -70,8 +70,7 @@ def remove_resnet_tech(request, account_name, group_dn):
     dajax.alert("A request to remove %(account_name)s from the ResNet team has been created. Please use SR#%(sr_number)s as a reference." % {'account_name': account_name, 'sr_number': sr_number})
 
     # Remove from AD
-    intern_ad_group_instance.remove_member(account_name)
-    intern_admin_ad_group_instance.remove_member(account_name + "-admin")
+    ad_group_instance.remove_member(account_name)
 
     dajax.remove("#member_" + account_name)
 

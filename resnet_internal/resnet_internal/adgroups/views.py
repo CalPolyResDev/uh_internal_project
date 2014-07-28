@@ -94,15 +94,16 @@ class SingleGroupEditView(FormView):
 
         alias = form.cleaned_data['alias']
 
-        member_exists = False
+        member_already_exists = False
 
-        # Check if the user already exists in the group
-        for member in self._get_member_info():
-            if member['alias'] == alias:
-                member_exists = True
+        # Check if the user already exists in the group (when it isn't empty)
+        if self._get_member_info():
+            for member in self._get_member_info():
+                if member['alias'] == alias:
+                    member_already_exists = True
 
         # Don't add the user if (s)he is already in the group.
-        if not member_exists:
+        if not member_already_exists:
             self.ad_group_instance.add_member(alias)
 
         return super(SingleGroupEditView, self).form_valid(form)
@@ -117,19 +118,5 @@ class ResTechListEditView(SingleGroupEditView):
     template_name = "adgroups/restech_list_edit.html"
     subtitle = u"ResNet Technicians"
     group_name = u"ResNet Technicians"
-    group_dn = "CN=UH-ResTech,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu"
+    group_dn = "CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu"
     removal_method = 'remove_resnet_tech'
-
-    def _instantiate_ad_group(self):
-        self.ad_group_instance = ADGroup("CN=UH-ResTech-Users,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu")
-        self.admin_ad_group_instance = ADGroup("CN=UH-ResTech-Admins,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu")
-
-    def form_valid(self, form):
-        """In addition to the tech group, add the member to the respective admin group."""
-
-        self._instantiate_ad_group()
-
-        alias = form.cleaned_data['alias']
-        self.admin_ad_group_instance.add_member(alias + "-admin")
-
-        return super(ResTechListEditView, self).form_valid(form)

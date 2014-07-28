@@ -28,8 +28,6 @@ def specializations(request):
         # ResNet Titles
         if request.user.is_technician:
             user_specializations.append('ResNet Technician')
-        if request.user.is_uhtv:
-            user_specializations.append('UHTV Staff')
         if request.user.is_rn_staff:
             user_specializations.append('ResNet Staff')
         if request.user.is_developer:

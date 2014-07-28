@@ -182,14 +182,14 @@ AUTHENTICATION_BACKENDS = (
 AUTH_LDAP_BIND_DN = get_env_variable('RESNET_INTERNAL_LDAP_USER_DN')
 AUTH_LDAP_BIND_PASSWORD = get_env_variable('RESNET_INTERNAL_LDAP_PASSWORD')
 
-AUTH_LDAP_SERVER_URI = 'ldap://cp-calpoly.edu:3268'
+AUTH_LDAP_SERVER_URI = 'ldap://ad.calpoly.edu:3268'
 
-AUTH_LDAP_USER_SEARCH = LDAPSearch('OU=Depts,DC=CP-Calpoly,DC=edu', ldap.SCOPE_SUBTREE, '(&(objectClass=user)(sAMAccountName=%(user)s))')
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch('OU=Depts,DC=CP-Calpoly,DC=edu', ldap.SCOPE_SUBTREE, '(objectClass=group)')
+AUTH_LDAP_USER_SEARCH = LDAPSearch('DC=ad,DC=calpoly,DC=edu', ldap.SCOPE_SUBTREE, '(&(objectClass=user)(sAMAccountName=%(user)s))')
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch('DC=ad,DC=calpoly,DC=edu', ldap.SCOPE_SUBTREE, '(objectClass=group)')
 AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
 AUTH_LDAP_FIND_GROUP_PERMS = True
 
-AUTH_LDAP_REQUIRE_GROUP = 'CN=resnetinternal,OU=Websites,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu'
+AUTH_LDAP_REQUIRE_GROUP = 'CN=resnetinternal,OU=Websites,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu'
 
 AUTH_LDAP_USER_ATTR_MAP = {
     'first_name': 'givenName',
@@ -200,29 +200,23 @@ AUTH_LDAP_USER_ATTR_MAP = {
 AUTH_USER_MODEL = 'core.ResNetInternalUser'
 
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-    'is_csd': 'CN=UH-CSD,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_net_admin': 'CN=ITS-CCS-NetAdmin - LocalAdmins,OU=Groups,OU=Delegated,OU=NetAdmin,OU=CCS,OU=ITS,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_telecom': 'CN=IS-Telecom - LocalAdmins,OU=Groups,OU=IS,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_tag': 'CN=UH-TAG,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_technician': 'CN=UH-ResTech-Admins,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_network_analyst': 'CN=UH-RN-Network,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_domain_manager': 'CN=UH-RN-OUadmin,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_osd': 'CN=UH-RN-OSD,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_uhtv': 'CN=UH-RN-UHTV-Admin,OU=UHTV,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_drupal': 'CN=UH-RN-Drupal,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_rn_staff': 'CN=UH-RN-Staff,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_developer': 'CN=UH-RN-DevTeam,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
+    'is_net_admin': 'StateHRDept - IS-ITS-Networks (132900 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu',
+    'is_telecom': 'StateHRDept - IS-ITS-Telecommunications (133100 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu',
+    'is_tag': 'CN=UH-TAG,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu',
+    'is_technician': 'CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
+    'is_rn_staff': 'CN=UH-RN-Staff,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
+    'is_developer': 'CN=UH-RN-DevTeam,OU=User Groups,OU=Websites,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu',
 
-    'is_staff': 'CN=UH-RN-DevTeam,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
-    'is_superuser': 'CN=UH-RN-DevTeam,OU=ResNet,OU=Residential Life,OU=Groups,OU=Delegated,OU=UH,OU=Depts,DC=CP-Calpoly,DC=edu',
+    'is_staff': 'CN=UH-RN-DevTeam,OU=User Groups,OU=Websites,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu',
+    'is_superuser': 'CN=UH-RN-DevTeam,OU=User Groups,OU=Websites,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu',
 }
 
 # ======================================================================================================== #
 #                                        LDAP Groups Configuration                                         #
 # ======================================================================================================== #
 
-LDAP_GROUPS_SERVER_URI = 'ldap://cp-calpoly.edu'
-LDAP_GROUPS_BASE_DN = 'DC=CP-Calpoly,DC=edu'
+LDAP_GROUPS_SERVER_URI = 'ldap://ad.calpoly.edu'
+LDAP_GROUPS_BASE_DN = 'DC=ad,DC=calpoly,DC=edu'
 
 LDAP_GROUPS_BIND_DN = get_env_variable('RESNET_INTERNAL_LDAP_USER_DN')
 LDAP_GROUPS_BIND_PASSWORD = get_env_variable('RESNET_INTERNAL_LDAP_PASSWORD')
