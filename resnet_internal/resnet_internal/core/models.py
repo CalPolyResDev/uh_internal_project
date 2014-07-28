@@ -18,9 +18,21 @@ from django.core.mail import send_mail
 class DailyDuties(Model):
     """Daily Duties Information"""
 
-    name = CharField(max_length=15, unique=True, verbose_name=u'Duty Name')
-    last_checked = DateTimeField(verbose_name=u'Last DateTime Checked')
-    last_user = ForeignKey(settings.AUTH_USER_MODEL, verbose_name=u'Last User to Check')
+    name = CharField(max_length=15, unique=True, verbose_name='Duty Name')
+    last_checked = DateTimeField(verbose_name='Last DateTime Checked')
+    last_user = ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Last User to Check')
+
+
+class SiteAnnouncements(Model):
+    """Latest site announcements"""
+
+    title = CharField(max_length=150, verbose_name='Title')
+    description = TextField(verbose_name='Description')
+    created = DateTimeField(verbose_name='Entry Creation Date')
+
+    class Meta:
+        get_latest_by = "created"
+        verbose_name = u'Site Announcement'
 
 
 class CSDMapping(Model):
@@ -74,7 +86,6 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     is_telecom = BooleanField(default=False)  # limited access only to apps that telecom admins are allowed to use
     is_tag = BooleanField(default=False)  # limited access only to apps that uh-tag mambers are allowed to use
     is_technician = BooleanField(default=False)  # access to technician tools
-    is_uhtv = BooleanField(default=False)  # access to uhtv tools
     is_rn_staff = BooleanField(default=False)  # access to all tools as well as staff tools
     is_developer = BooleanField(default=False)  # full access to resnet internal
 

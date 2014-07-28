@@ -1,6 +1,10 @@
 from django.contrib import admin
 
-from .models import CSDMapping, StaffMapping, ResNetInternalUser
+from .models import SiteAnnouncements, CSDMapping, StaffMapping, ResNetInternalUser
+
+
+class SiteAnnouncementsAdmin(admin.ModelAdmin):
+    list_display = ('title', 'created')
 
 
 class CSDMappingAdmin(admin.ModelAdmin):
@@ -18,6 +22,8 @@ class ResNetInternalUserAdmin(admin.ModelAdmin):
     list_filter = ('is_active', 'is_net_admin', 'is_telecom', 'is_tag', 'is_rn_staff',
                    'is_technician', 'is_new_tech', 'is_developer')
 
+
+admin.site.register(SiteAnnouncements, SiteAnnouncementsAdmin)
 admin.site.register(CSDMapping, CSDMappingAdmin)
 admin.site.register(StaffMapping, StaffMappingAdmin)
 admin.site.register(ResNetInternalUser, ResNetInternalUserAdmin)

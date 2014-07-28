@@ -22,6 +22,7 @@ from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
 from .forms import NavigationSettingsForm
+from .models import SiteAnnouncements
 
 
 @login_required
@@ -99,6 +100,13 @@ def link_handler(request, mode, key, ip=""):
 
 class IndexView(TemplateView):
     template_name = "core/index.html"
+
+    def get_context_data(self, **kwargs):
+
+        context = super(TemplateView, self).get_context_data(**kwargs)
+        context['announcements'] = SiteAnnouncements.objects.all().order_by('-created')[:3]
+
+        return context
 
 
 class NavigationSettingsView(FormView):
