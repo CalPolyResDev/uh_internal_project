@@ -202,7 +202,11 @@
                     <p>
                         <label for="id_building">{{ form.building.label }}</label>
                         <select id="id_building" name="building" size="1">
-                        	<option value="">-------------</option>
+                        {% if form.building.value %}
+                            <option value="{{ form.building.value }}" selected="selected">{{ form.building.label }}</option>
+                        {% else %}
+                        	<option value="" selected="selected">---------</option>
+                        {% endif %}
                         </select>
                     </p>
                     <p>
@@ -247,8 +251,14 @@
 {% block extra_script %}
 {{ block.super }}
 <script type="text/javascript">
-	$("#id_community").click(function () {
+	$("#id_community").change(function () {
 		Dajaxice.resnet_internal.core.update_building(Dajax.process, {'community': $(this).val()});
 	});
+	
+	{% if form.building.value %}
+	$(document).ready(function () {
+		Dajaxice.resnet_internal.core.update_building(Dajax.process, {'community': '{{ form.community.value }}', 'building_selection': '{{ form.building.value }}'});
+	});
+	{% endif %}
 </script>
 {% endblock %}

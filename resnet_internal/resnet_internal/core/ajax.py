@@ -33,11 +33,14 @@ ACCEPTABLE_LAST_CHECKED = datetime.timedelta(days=1)
 
 
 @dajaxice_register
-def update_building(request, community):
+def update_building(request, community, building_selection=None):
     """ Update building drop-down choices based on the community chosen.
 
     :param community: The community for which to display building choices.
     :type community: str
+
+    :param building_selection: The building selected before form submission.
+    :type building_selection: str
 
     """
 
@@ -56,7 +59,10 @@ def update_building(request, community):
     # Add options iff a building is selected
     if str(community) != "":
         for value, label in building_options[str(community)]:
-            choices.append("<option value='%s'>%s</option>" % (value, label))
+            if building_selection and value == building_selection:
+                choices.append("<option value='%s' selected='selected'>%s</option>" % (value, label))
+            else:
+                choices.append("<option value='%s'>%s</option>" % (value, label))
     else:
         choices.append("<option value='%s'>%s</option>" % ("", "-------------"))
 

@@ -218,7 +218,11 @@
 	                    <p>
 	                        <label for="id_sub_department">{{ form.sub_department.label }}</label>
 	                        <select id="id_sub_department" name="sub_department" size="1">
-	                        	<option value="">-------------</option>
+	                       	{% if form.sub_department.value %}
+	                            <option value="{{ form.sub_department.value }}" selected="selected">{{ form.sub_department.label }}</option>
+	                        {% else %}
+	                        	<option value="" selected="selected">---------</option>
+	                        {% endif %}
 	                        </select>
 	                    </p>
 	                    <p>
@@ -267,8 +271,14 @@
 {% block extra_script %}
 {{ block.super }}
 <script type="text/javascript">
-	$("#id_department").click(function () {
+	$("#id_department").change(function () {
 		Dajaxice.resnet_internal.computers.update_sub_department(Dajax.process, {'department': $(this).val()});
 	});
+	
+	{% if form.sub_department.value %}
+	$(document).ready(function () {
+		Dajaxice.resnet_internal.computers.update_sub_department(Dajax.process, {'department': '{{ form.department.value }}', 'sub_department_selection': '{{ form.sub_department.value }}'});
+	});
+	{% endif %}
 </script>
 {% endblock %}

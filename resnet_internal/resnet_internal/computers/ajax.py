@@ -25,11 +25,14 @@ logger = logging.getLogger(__name__)
 
 
 @dajaxice_register
-def update_sub_department(request, department):
+def update_sub_department(request, department, sub_department_selection=None):
     """ Update sub-department drop-down choices based on the department chosen.
 
     :param department: The department for which to display sub-department choices.
     :type department: str
+
+    :param sub_department_selection: The sub_department selected before form submission.
+    :type sub_department_selection: str
 
     """
 
@@ -46,9 +49,12 @@ def update_sub_department(request, department):
     # Add options iff a department is selected
     if str(department) != "":
         for value, label in sub_department_options[str(department)]:
-            choices.append("<option value='%s'>%s</option>" % (value, label))
+            if sub_department_selection and value == sub_department_selection:
+                choices.append("<option value='%s' selected='selected'>%s</option>" % (value, label))
+            else:
+                choices.append("<option value='%s'>%s</option>" % (value, label))
     else:
-        choices.append("<option value='%s'>%s</option>" % ("", "-------------"))
+        choices.append("<option value='%s'>%s</option>" % ("", "---------"))
 
     dajax.assign('#id_sub_department', 'innerHTML', ''.join(choices))
 
