@@ -83,6 +83,7 @@
             editable_columns.children(".display_data").hide(); // Hide the display field
             editable_columns.children(".editbox").show(); // Show the edit field
 
+			$(".editbox").unbind('change'); // Strange fix to prevent multiple ajax calls for one change.
             $(".editbox").change(function() {
                 request_dict = {};
                 row_zero = $("#" + row_id + ":eq(0)").text();
@@ -102,7 +103,7 @@
                                 return false;
                             }
                         }
-                        request_dict[column_name] = $(this).val();
+                        request_dict[column_name] = value;
                     }
                     else {
                         alert('Please fill all editable fields with data.');

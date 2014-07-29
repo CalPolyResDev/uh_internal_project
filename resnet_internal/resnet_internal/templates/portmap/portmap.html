@@ -70,7 +70,6 @@
         $(document).on("dblclick", "#residence_halls_wired_port_map td", handle_edit);
         $(document).on("click", "#residence_halls_wired_port_map .edit_trigger", handle_edit);
         
-        
         function handle_edit() {
             row_id = $(this).children("div").attr("id");
             editable_columns = $("#"+ row_id + ".editable");
@@ -78,6 +77,7 @@
             editable_columns.children(".display_data").hide(); // Hide the display field
             editable_columns.children(".editbox").show(); // Show the edit field
 
+			$(".editbox").unbind('change'); // Strange fix to prevent multiple ajax calls for one change.
             $(".editbox").change(function() {
                 request_dict = {};
                 row_zero = $("#" + row_id + ":eq(0)").text();
@@ -88,8 +88,24 @@
                     value = $(this).val();
 
                     // Validate each field as it comes through
-                    if (value != null || value.length > 0) {
-                        request_dict[column_name] = $(this).val();
+                    if (value != null && value.length > 0) {
+                    	
+                    	if (column_name == "switch_ip") {
+                            var ipreg = /^(\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)?$/;
+                            if (!ipreg.test(value)) {
+                                alert('Please enter a valid IP address.');
+                                return false;
+                            }
+                        }
+                        
+                        if (column_name == "blade" || column_name == "port") {
+                        	var digitreg = /^\d+$/;
+                        	if (!digitreg.test(value)) {
+                        		alert('Blade and Port values must be numbers');
+                        	}
+                        }
+                    	
+                        request_dict[column_name] = value;
                     }
                     else {
                         alert('Please fill all editable fields with data.');
