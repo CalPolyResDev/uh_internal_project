@@ -14,7 +14,6 @@ from django.views.generic import TemplateView
 
 from django_ewiz import EwizAttacher
 from srsconnector.settings import ALIAS as SRS_ALIAS
-from srsconnector.models import AccountRequest
 
 from resnet_internal.core.models import StaffMapping
 from .forms import SRSUploadForm, OnityEmailForm
@@ -67,6 +66,7 @@ class SRSAccessView(FormView):
 
     def form_valid(self, form):
         # Create a new account request
+        from srsconnector.models import AccountRequest
         ticket = AccountRequest(subject_username=self.request.user.get_alias())
         ticket.save()
 
