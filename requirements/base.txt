@@ -1,6 +1,6 @@
 Django==1.6.5
 git+https://code.resdev.calpoly.edu/scm/rmsc/rmsconnector.git@0afdebd#egg=rmsconnector==3.1.1
-git+https://code.resdev.calpoly.edu/scm/srsc/srsconnector.git@197ad34#egg=srsconnector==2.2.6
+git+https://code.resdev.calpoly.edu/scm/srsc/srsconnector.git@c38e03e#egg=srsconnector==2.2.7
 South==0.8.4
 unipath==1.0
 colorama==0.3.1
