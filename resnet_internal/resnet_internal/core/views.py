@@ -58,7 +58,7 @@ def link_handler(request, mode, key, ip=""):
     # Aruba ClearPass
     elif key == "aruba":
         subtitle = "Aruba ClearPass"
-        source = "https://resnetclearpass.netadm.calpoly.edu/"
+        source = "https://clearpass.netadm.calpoly.edu/tips/tipsLogin.action"
     elif key == "ac_pcv":
         subtitle = "Aruba PCV Controller"
         source = "https://resnetcontroller1.netadm.calpoly.edu:4343"
