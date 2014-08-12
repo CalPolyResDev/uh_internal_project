@@ -17,6 +17,10 @@ INTERNAL_IPS = (
     "127.0.0.1",
 )
 
+ALLOWED_HOSTS = [
+    'localhost',
+]
+
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.versions.VersionsPanel',
     'debug_toolbar.panels.timer.TimerPanel',
@@ -42,10 +46,11 @@ DEBUG_TOOLBAR_CONFIG = {
 #                                  File/Application Handling Configuration                                 #
 # ======================================================================================================== #
 
-MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+# DJDT doesn't work anymore, causes dajaxice to fail
+#MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 
 INSTALLED_APPS += (
-    'debug_toolbar',
+#    'debug_toolbar',
     'devserver',
-    'inspector_panel',
+#     'inspector_panel',
 )
