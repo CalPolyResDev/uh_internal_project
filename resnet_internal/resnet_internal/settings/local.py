@@ -14,7 +14,7 @@ CONCURRENT_RANDOM_DELAY = True
 
 INTERNAL_IPS = (
     "localhost",
-    "127.0.0.1"
+    "127.0.0.1",
 )
 
 DEBUG_TOOLBAR_PANELS = (
@@ -45,7 +45,7 @@ DEBUG_TOOLBAR_CONFIG = {
 MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 
 INSTALLED_APPS += (
-   'debug_toolbar',
-   'devserver',
-   'inspector_panel',
+    'debug_toolbar',
+    'devserver',
+    'inspector_panel',
 )

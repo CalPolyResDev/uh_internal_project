@@ -107,7 +107,6 @@ urlpatterns += patterns('',
 
 # Dajaxice
 urlpatterns += patterns('',
-    # The following should align with the DAJAXICE_MEDIA_PREFIX setting
     url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
 )
 

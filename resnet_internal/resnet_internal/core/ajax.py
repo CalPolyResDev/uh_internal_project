@@ -220,7 +220,7 @@ class GetDutyData:
         }
 
         try:
-            open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).count()
+            open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status__gte=4).count()
             api_tickets = ServiceRequest.objects.filter(assigned_person="ResnetAPI").count()
 
             data = DailyDuties.objects.get(name='tickets')
