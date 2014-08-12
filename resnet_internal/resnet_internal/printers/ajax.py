@@ -132,12 +132,12 @@ def change_request_status(request, request_id, current_status):
             ticket.solution = "Item delivered by %s." % request.user.get_full_name()
             send_delivery_confirmation(request_instance)
 
+        request_list = []
+
         if "TONER" in ticket.request_type:
-            request_list = []
             for cartridge in request_instance.toner.all():
                 request_list.append(cartridge)
         elif "PARTS" in ticket.request_type:
-            request_list = []
             for part in request_instance.parts.all():
                 request_list.append(part)
 
