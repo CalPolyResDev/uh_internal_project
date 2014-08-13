@@ -7,6 +7,9 @@ SESSION_COOKIE_NAME = 'RNINDevSessionID'
 
 CONCURRENT_RANDOM_DELAY = True
 
+ALLOWED_HOSTS = [
+    "localhost",
+]
 
 # ======================================================================================================== #
 #                                          Debugging Configuration                                         #
@@ -16,10 +19,6 @@ INTERNAL_IPS = (
     "localhost",
     "127.0.0.1",
 )
-
-ALLOWED_HOSTS = [
-    'localhost',
-]
 
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.versions.VersionsPanel',
