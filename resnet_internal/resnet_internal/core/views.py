@@ -78,10 +78,16 @@ def link_handler(request, mode, key, ip=""):
     elif key == "ccamgr":
         subtitle = "CCA Manager"
         source = "https://ccamgr.calpoly.edu/admin/"
-    # ResNet Wiki
-    elif key == "wiki":
+    # Wiki Pages
+    elif key == "resnet_wiki":
         subtitle = "ResNet Wiki"
-        source = "https://resnet.calpoly.edu/wiki/"
+        source = "https://wiki.calpoly.edu/display/RES/ResNet+Home"
+    elif key == "housing_wiki":
+        subtitle = "University Housing Wiki"
+        source = "https://wiki.calpoly.edu/display/UH/University+Housing+Home"
+    elif key == "its_wiki":
+        subtitle = "ITS Wiki"
+        source = "https://wiki.calpoly.edu/display/ITS/ITS+Home"
     elif key == "flugzeug":
         subtitle = "Django Administration"
         source = "/flugzeug/"
