@@ -63,8 +63,8 @@
                 { "sClass": "width225", "sType": "string", "aTargets": [ 1 ] },
                 { "sClass": "width225", "sType": "string", "aTargets": [ 2 ] },
                 { "sClass": "width150", "sType": "string", "aTargets": [ 3 ] },
-                { "sClass": "width150", "sType": "ip-address", "aTargets": [ 4 ] },
                 { "sClass": "width150", "sType": "mac-address", "aTargets": [ 5 ] },
+                { "sClass": "width150", "sType": "ip-address", "aTargets": [ 4 ] },
                 { "sClass": "width100", "sType": "string", "aTargets": [ 6 ] },
                 { "sClass": "width100", "sType": "string", "aTargets": [ 7 ] },
                 { "sClass": "width100", "sType": "string", "aTargets": [ 8 ] },
@@ -165,8 +165,8 @@
                     <th>Department</th>
                     <th>Sub Department</th>
                     <th>Printer Name</th>
-                    <th>IP Address</th>
                     <th>MAC Address</th>
+                    <th>IP Address</th>
                     <th>Model</th>
                     <th>Serial Number</th>
                     <th>Property ID</th>
@@ -242,12 +242,12 @@
 	                        {{ form.printer_name }}
 	                    </p>
 	                    <p>
-	                        <label for="id_ip_address">{{ form.ip_address.label }}</label>
-	                        {{ form.ip_address }}
-	                    </p>
-	                    <p>
 	                        <label for="id_mac_address">{{ form.mac_address.label }}</label>
 	                        {{ form.mac_address }}
+	                    </p>
+	                    <p>
+	                        <label for="id_ip_address">{{ form.ip_address.label }}</label>
+	                        {{ form.ip_address }}
 	                    </p>
 	                    <p>
 	                        <label for="id_model">{{ form.model.label }}</label>
