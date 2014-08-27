@@ -16,6 +16,7 @@ from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
+from resnet_internal.settings.base import portmap_modify_access_test
 from .forms import NewPrinterForm, TonerCountForm, PartCountForm
 from .models import Printer, Request, Toner, Part
 
@@ -59,9 +60,9 @@ class PopulatePrinters(BaseDatatableView):
 
         """
 
-        if column == 'remove':
+        if column == 'remove' and portmap_modify_access_test(self.request.user):
             return """<div id='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_remove(%s);">Remove</a></div>""" % (row.id, column, row.id)
-        elif column in self.editable_columns:
+        elif column in self.editable_columns and portmap_modify_access_test(self.request.user):
             return "<div id='%s' class='editable' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column))
         else:
             return "<div id='%s' column='%s'>%s</div>" % (row.id, column, getattr(row, column))

@@ -17,6 +17,7 @@ from django.views.generic.edit import CreateView
 from rmsconnector.utils import Resident
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
+from resnet_internal.settings.base import portmap_modify_access_test
 from .models import ResHallWired
 from .forms import NewPortForm
 
@@ -59,9 +60,9 @@ class PopulateResidenceHallWiredPorts(BaseDatatableView):
 
         if column == 'switch_ip':
             return "<div id='%s' class='%s margin_fix' column='%s'><div class='display_data'><a href='/external/cisco/%s/' target='_blank'>%s</a><img src='%simages/icons/cisco.gif' style='padding-left:5px;' align='top' width='16px' height='16px' border='0' /></div><input type='text' class='editbox' value='%s' /></div>" % (row.id, "editable" if getattr(row, 'active') else "disabled", column, getattr(row, column), getattr(row, column), settings.STATIC_URL, getattr(row, column))
-        elif column == 'active':
+        elif column == 'active' and portmap_modify_access_test(self.request.user):
             return """<div id='%s' class='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_status_change(%s);">%s</a></div>""" % (row.id, "" if getattr(row, 'active') else "disabled", column, row.id, "Deactivate" if getattr(row, column) else "Activate")
-        elif column in self.editable_columns:
+        elif column in self.editable_columns and portmap_modify_access_test(self.request.user):
             return "<div id='%s' class='%s' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, "editable" if getattr(row, 'active') else "disabled", column, getattr(row, column), getattr(row, column))
         else:
             return "<div id='%s' class='%s' column='%s'>%s</div>" % (row.id, "" if getattr(row, 'active') else "disabled", column, getattr(row, column))

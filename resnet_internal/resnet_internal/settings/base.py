@@ -123,7 +123,7 @@ DATABASES = {
     },
     'srs': {
         'ENGINE': 'django_ewiz',
-        'NAME': 'Calpoly2',
+        'NAME': 'Calpoly Test',
         'USER': 'resnetapi@calpoly.edu',
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_SRS_PASSWORD'),
         'HOST': 'calpoly.enterprisewizard.com/ewws/',
@@ -167,6 +167,24 @@ EMAIL_HOST_PASSWORD = INCOMING_EMAIL['IMAP4']['PASSWORD']  # The password to use
 SERVER_EMAIL = 'ResDev Mail Relay Server <resdev@calpoly.edu>'
 
 # ======================================================================================================== #
+#                                              Access Permissions                                          #
+# ======================================================================================================== #
+
+technician_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician)
+staff_access_test = (lambda user: user.is_developer or user.is_rn_staff)
+developer_access_test = (lambda user: user.is_developer)
+
+portmap_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom or user.is_tag or user.is_tag_readonly)
+portmap_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom or user.is_tag)
+
+computers_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag or user.is_tag_readonly)
+computers_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag)
+computer_record_modify_access_test = (lambda user: user.is_developer or user.is_net_admin or user.is_tag)
+
+printers_access_test = computers_access_test
+printers_modify_access_test = computers_modify_access_test
+
+# ======================================================================================================== #
 #                                        Authentication Configuration                                      #
 # ======================================================================================================== #
 
@@ -203,6 +221,8 @@ AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     'is_net_admin': 'StateHRDept - IS-ITS-Networks (132900 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu',
     'is_telecom': 'StateHRDept - IS-ITS-Telecommunications (133100 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu',
     'is_tag': 'CN=UH-TAG,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu',
+    'is_tag_readonly': 'CN=UH-TAG-READONLY,OU=User Groups,OU=Websites,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu',
+
     'is_technician': 'CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
     'is_rn_staff': 'CN=UH-RN-Staff,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
     'is_developer': 'CN=UH-RN-DevTeam,OU=User Groups,OU=Websites,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu',
@@ -376,9 +396,14 @@ LOGGING = {
             'handlers': ['console'],
             'propagate': False,
         },
-        'dajaxice': {
-            'handlers': ['console'],
+        'django_auth_ldap': {
             'level': 'INFO',
+            'handlers': ['sentry'],
+            'propagate': True,
+        },
+        'dajaxice': {
+            'level': 'INFO',
+            'handlers': ['sentry'],
             'propagate': True,
         },
     }

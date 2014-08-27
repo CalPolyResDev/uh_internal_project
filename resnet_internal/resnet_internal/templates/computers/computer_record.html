@@ -25,7 +25,7 @@
 {% block content %}
     <h1>Association Record for {{ ip_address }}</h1>
     <br />
-    <h2 style="float: left;">Pinholes&nbsp;&nbsp;</h2>{% if request.user.is_developer or request.user.is_net_admin or request.user.is_tag %}<a class="add_link" href="{% url 'pinhole_request' ip_address=ip_address %}">+Add Pinhole</a>{% endif %}
+    <h2 style="float: left;">Pinholes&nbsp;&nbsp;</h2>{% if computer_record_modify_access(request.user) %}<a class="add_link" href="{% url 'pinhole_request' ip_address=ip_address %}">+Add Pinhole</a>{% endif %}
     <table class="dataTable">
         <tbody>
             <tr>
@@ -54,7 +54,7 @@
                         {% endfor %}
                     </td>
                     <td>{{ pinhole.sr_number }}</td>
-                    <td>{% if request.user.is_developer or request.user.is_net_admin or request.user.is_tag %}<a style="color:red; cursor:pointer;" onclick="Dajaxice.resnet_internal.computers.remove_pinhole(Dajax.process,{'pinhole_id':'{{ pinhole.id }}'})">Remove</a>{% endif %}</td>
+                    <td>{% if computer_record_modify_access(request.user) %}<a style="color:red; cursor:pointer;" onclick="Dajaxice.resnet_internal.computers.remove_pinhole(Dajax.process,{'pinhole_id':'{{ pinhole.id }}'})">Remove</a>{% endif %}</td>
                 </tr>
                 {% endfor %}
             {% else %}
@@ -77,7 +77,7 @@
         </tbody>
     </table>
     <div class="clear"></div>
-    <h2 style="float: left;">Domain Names (CNAME)&nbsp;&nbsp;</h2>{% if request.user.is_developer or request.user.is_net_admin or request.user.is_tag %}<a class="add_link" href="{% url 'domain_name_request' ip_address=ip_address %}">+Add Domain Name</a>{% endif %}
+    <h2 style="float: left;">Domain Names (CNAME)&nbsp;&nbsp;</h2>{% if computer_record_modify_access(request.user) %}<a class="add_link" href="{% url 'domain_name_request' ip_address=ip_address %}">+Add Domain Name</a>{% endif %}
     <table class="dataTable">
         <tbody>
             <tr>
@@ -90,7 +90,7 @@
                 <tr>
                     <td>{{ domain_name.domain_name }}</td>
                     <td>{{ domain_name.sr_number }}</td>
-                    <td>{% if request.user.is_developer or request.user.is_net_admin or request.user.is_tag %}<a style="color:red; cursor:pointer;" onclick="Dajaxice.resnet_internal.computers.remove_domain_name(Dajax.process,{'domain_name_id':'{{ domain_name.id }}'})">Remove</a>{% endif %}</td>
+                    <td>{% if computer_record_modify_access(request.user) %}<a style="color:red; cursor:pointer;" onclick="Dajaxice.resnet_internal.computers.remove_domain_name(Dajax.process,{'domain_name_id':'{{ domain_name.id }}'})">Remove</a>{% endif %}</td>
                 </tr>
                 {% endfor %}
             {% else %}

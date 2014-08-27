@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load dajaxice_templatetags %}
+{% load core_user_tests %}
 {% load url from future %}
 <html>
 	<head>
@@ -99,7 +100,7 @@
 			<div id="leftnav">
 				<h1>Navigation<a href='/settings/navigation/' class='popup_frame'><img src="{{ STATIC_URL }}images/icons/settings_cog.png" alt="Navigation Settings" align="top" width="16" height="16" border="0" style="padding-left: 5px;"/></a></h1>
 
-				{% if request.user.is_developer or request.user.is_rn_staff or request.user.is_technician %}
+				{% if technician_access(request.user) %}
 				<h2>Technician Tools</h2>
 				<ul>
 					<li>
@@ -129,7 +130,7 @@
 				</ul>
 				{% endif %}
 
-				{% if request.user.is_developer or request.user.is_rn_staff %}
+				{% if staff_access(request.user) %}
 				<h2>Staff Tools</h2>
 				<ul>
 				    <li>
@@ -138,7 +139,7 @@
 				</ul>
 				{% endif %}
 
-				{% if request.user.is_developer or request.user.is_network_analyst or request.user.is_rn_staff or request.user.is_technician %}
+				{% if technician_access(request.user) %}
 				<h2>Network Analysis</h2>
                 <ul>
 					<li>
@@ -167,16 +168,20 @@
                 </ul>
                 {% endif %}
 
-				{% if request.user.is_developer or request.user.is_rn_staff or request.user.is_technician or request.user.is_net_admin or request.user.is_tag or request.user.is_telecom %}
+				{% if portmap_access(request.user) or computers_access(request.user) or printers_access(request.user) %}
 				<h2>Databases</h2>
 				<ul>
+					{% if portmap_access(request.user) %}
 					<li>
 						<a href="{% url 'residence_halls_wired_ports' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="Residence Halls Port Map" align="top" width="16" height="16" border="0" />Res Halls Port Map</a>
 					</li>
-					{% if request.user.is_developer or request.user.is_rn_staff or request.user.is_technician or request.user.is_net_admin or request.user.is_tag %}
+					{% endif %}
+					{% if computers_access(request.user) %}
 					<li>
 						<a href="{% url 'uh_computers' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="UH Computer Index" align="top" width="16" height="16" border="0" />UH Computer Index</a>
 					</li>
+					{% endif %}
+					{% if printers_access(request.user} %}
 					<li>
 						<a href="{% url 'uh_printers' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="UH Printer Index" align="top" width="16" height="16" border="0" />UH Printer Index</a>
 					</li>
@@ -184,7 +189,7 @@
 				</ul>
 				{% endif %}
 
-				{% if request.user.is_developer or request.user.is_rn_staff or request.user.is_technician %}
+				{% if technician_access(request.user) %}
 				<h2>Equipment</h2>
 				<ul>
 					<li>
@@ -201,7 +206,7 @@
 				</ul>
 				{% endif %}
 
-				{% if request.user.is_developer %}
+				{% if developer_access(request.user) %}
                 <h2>Administration</h2>
                 <ul>
                     <li>
@@ -210,7 +215,7 @@
                 </ul>
                 {% endif %}
 
-				{% if request.user.is_developer or request.user.is_rn_staff or request.user.is_technician %}
+				{% if technician_access(request.user) %}
 				<!-- Begin Daily Duties Widget -->
 				<div id="navcontent1">
 					<div class="gold" id="dailyDuties">

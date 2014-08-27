@@ -25,17 +25,23 @@ from .computers.views import ComputersView, PopulateComputers, ComputerRecordsVi
 from .portmap.views import ResidenceHallWiredPortsView, PopulateResidenceHallWiredPorts
 from .printers.views import RequestsListView, InventoryView, OnOrderView, PrintersView, PopulatePrinters
 
+from resnet_internal.settings.base import technician_access_test, staff_access_test, printers_access_test, portmap_access_test, computers_access_test, computer_record_modify_access_test
+
+technician_access = user_passes_test(technician_access_test)
+staff_access = user_passes_test(staff_access_test)
+
+portmap_access = user_passes_test(portmap_access_test)
+
+computers_access = user_passes_test(computers_access_test)
+computer_record_modify_access = user_passes_test(computer_record_modify_access_test)
+
+printers_access = user_passes_test(printers_access_test)
+
+
 admin.autodiscover()
 dajaxice_autodiscover()
 
 logger = logging.getLogger(__name__)
-technician_access = user_passes_test(lambda user: user.is_developer or user.is_technician)
-staff_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff)
-portmap_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag or user.is_telecom)
-computers_access = user_passes_test(lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag)
-printers_access = computers_access
-computer_record_modify_access = user_passes_test(lambda user: user.is_developer or user.is_net_admin or user.is_tag)
-
 
 # Core
 urlpatterns = patterns('core.views',
@@ -64,9 +70,9 @@ urlpatterns += patterns('',
 
 # Printer Requests
 urlpatterns += patterns('',
-    url(r'^printers/view_requests', login_required(printers_access(RequestsListView.as_view())), name='printer_request_list'),
-    url(r'^printers/view_inventory', login_required(printers_access(InventoryView.as_view())), name='printer_inventory'),
-    url(r'^printers/view_ordered', login_required(printers_access(OnOrderView.as_view())), name='printer_ordered_items'),
+    url(r'^printers/view_requests', login_required(technician_access(RequestsListView.as_view())), name='printer_request_list'),
+    url(r'^printers/view_inventory', login_required(technician_access(InventoryView.as_view())), name='printer_inventory'),
+    url(r'^printers/view_ordered', login_required(technician_access(OnOrderView.as_view())), name='printer_ordered_items'),
 )
 
 # Univeristy Housing Printer Index
@@ -86,7 +92,7 @@ urlpatterns += patterns('',
     url(r'^computers/$', login_required(computers_access(ComputersView.as_view())), name='uh_computers'),
     url(r'^computers/populate/$', login_required(computers_access(PopulateComputers.as_view())), name='populate_uh_computers'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(computers_access(ComputerRecordsView.as_view())), name='view_uh_computer_record'),
-    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/rdp/$', login_required(computer_record_modify_access(RDPRequestView.as_view())), name='rdp_request'),
+    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/rdp/$', login_required(computers_access(RDPRequestView.as_view())), name='rdp_request'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/pinhole_request/$', login_required(computer_record_modify_access(PinholeRequestView.as_view())), name='pinhole_request'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/domain_name_request/$', login_required(computer_record_modify_access(DomainNameRequestView.as_view())), name='domain_name_request'),
 )

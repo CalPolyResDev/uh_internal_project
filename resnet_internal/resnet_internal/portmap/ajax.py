@@ -14,6 +14,7 @@ from django.conf import settings
 from dajax.core import Dajax
 from dajaxice.decorators import dajaxice_register
 
+from resnet_internal.settings.base import portmap_modify_access_test
 from .models import ResHallWired
 
 logger = logging.getLogger(__name__)
@@ -30,15 +31,16 @@ def change_port_status(request, port_id):
 
     dajax = Dajax()
 
-    port_instance = ResHallWired.objects.get(id=port_id)
-    if port_instance.active:
-        port_instance.active = False
-    else:
-        port_instance.active = True
-    port_instance.save()
+    if portmap_modify_access_test(request.user):
+        port_instance = ResHallWired.objects.get(id=port_id)
+        if port_instance.active:
+            port_instance.active = False
+        else:
+            port_instance.active = True
+        port_instance.save()
 
-    # Redraw the table
-    dajax.script('residence_halls_wired_port_map.fnDraw();')
+        # Redraw the table
+        dajax.script('residence_halls_wired_port_map.fnDraw();')
 
     return dajax.json()
 
@@ -47,18 +49,19 @@ def change_port_status(request, port_id):
 def modify_port(request, request_dict, row_id, row_zero, username):
     dajax = Dajax()
 
-    # Add a temporary loading image to the first column in the edited row
-    dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', '<img src="%simages/datatables/load.gif" />' % settings.STATIC_URL)
+    if portmap_modify_access_test(request.user):
+        # Add a temporary loading image to the first column in the edited row
+        dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', '<img src="%simages/datatables/load.gif" />' % settings.STATIC_URL)
 
-    # Update the database
-    port_instance = ResHallWired.objects.get(id=row_id)
+        # Update the database
+        port_instance = ResHallWired.objects.get(id=row_id)
 
-    for column, value in request_dict.items():
-        setattr(port_instance, column, value)
+        for column, value in request_dict.items():
+            setattr(port_instance, column, value)
 
-    port_instance.save()
+        port_instance.save()
 
-    # Redraw the table
-    dajax.script('residence_halls_wired_port_map.fnDraw();')
+        # Redraw the table
+        dajax.script('residence_halls_wired_port_map.fnDraw();')
 
     return dajax.json()

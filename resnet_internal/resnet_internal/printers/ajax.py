@@ -14,6 +14,7 @@ from dajaxice.decorators import dajaxice_register
 
 from srsconnector.models import STATUS_CHOICES, PrinterRequest
 
+from resnet_internal.settings.base import printers_modify_access_test
 from .models import Printer, Request, Toner, Part
 from .utils import can_fulfill_request, send_replenishment_email, send_delivery_confirmation
 
@@ -22,36 +23,37 @@ from .utils import can_fulfill_request, send_replenishment_email, send_delivery_
 def modify_printer(request, request_dict, row_id, row_zero, username):
     dajax = Dajax()
 
-    # Add a temporary loading image to the first column in the edited row
-    dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', '<img src="%simages/datatables/load.gif" />' % settings.STATIC_URL)
+    if printers_modify_access_test(request.user):
+        # Add a temporary loading image to the first column in the edited row
+        dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', '<img src="%simages/datatables/load.gif" />' % settings.STATIC_URL)
 
-    # Update the database
-    printer_instance = Printer.objects.get(id=row_id)
+        # Update the database
+        printer_instance = Printer.objects.get(id=row_id)
 
-    for column, value in request_dict.items():
-        # DN cleanup
-        if column == "dn":
-            dn_pieces = value.split(",")
-            stripped_dn_pieces = []
+        for column, value in request_dict.items():
+            # DN cleanup
+            if column == "dn":
+                dn_pieces = value.split(",")
+                stripped_dn_pieces = []
 
-            for dn_piece in dn_pieces:
-                try:
-                    group_type, group_string = dn_piece.split("=")
-                except ValueError:
-                    dajax.alert("Please enter a valid DN.")
-                    dajax.script('printer_index.fnDraw();')
-                    return dajax.json()
+                for dn_piece in dn_pieces:
+                    try:
+                        group_type, group_string = dn_piece.split("=")
+                    except ValueError:
+                        dajax.alert("Please enter a valid DN.")
+                        dajax.script('printer_index.fnDraw();')
+                        return dajax.json()
 
-                stripped_dn_pieces.append('%(type)s=%(string)s' % {'type': group_type.strip(), 'string': group_string.strip()})
+                    stripped_dn_pieces.append('%(type)s=%(string)s' % {'type': group_type.strip(), 'string': group_string.strip()})
 
-            value = ', '.join(stripped_dn_pieces)
+                value = ', '.join(stripped_dn_pieces)
 
-        setattr(printer_instance, column, value)
+            setattr(printer_instance, column, value)
 
-    printer_instance.save()
+        printer_instance.save()
 
-    # Redraw the table
-    dajax.script('printer_index.fnDraw();')
+        # Redraw the table
+        dajax.script('printer_index.fnDraw();')
 
     return dajax.json()
 
@@ -67,11 +69,12 @@ def remove_printer(request, printer_id):
 
     dajax = Dajax()
 
-    printer_instance = Printer.objects.get(id=printer_id)
-    printer_instance.delete()
+    if printers_modify_access_test(request.user):
+        printer_instance = Printer.objects.get(id=printer_id)
+        printer_instance.delete()
 
-    # Redraw the table
-    dajax.script('printer_index.fnDraw();')
+        # Redraw the table
+        dajax.script('printer_index.fnDraw();')
 
     return dajax.json()
 

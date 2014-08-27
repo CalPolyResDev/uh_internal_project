@@ -19,9 +19,9 @@
             return null;
         }
     );
-    
+
     function confirm_remove(computer_id) {
-		var response = confirm('Are you sure you want to delete this computer?'); 
+		var response = confirm('Are you sure you want to delete this computer?');
 		if (response) {
    			Dajaxice.resnet_internal.computers.remove_computer(Dajax.process, {'computer_id': computer_id});
 		} else {
@@ -70,63 +70,69 @@
                 { "sClass": "width100", "sType": "string", "aTargets": [ 9 ] },
                 { "sClass": "width225", "sType": "string", "aTargets": [ 10 ] },
                 { "sClass": "edit_trigger width225", "sType": "string", "aTargets": [ 11 ] },
-                { "sClass": "width50", "sType": "string", "aTargets": [ 12 ] },
+                {% if computers_modify_access(request.user) %}
+                	{ "sClass": "width0", "bSearchable": false, "bVisible": false, "aTargets": [ 12 ] },
+                {% else %}
+                	{ "sClass": "width50", "sType": "string", "aTargets": [ 12 ] },
+                {% endif %}
             ],
         });
 
-	    $(document).on("dblclick", "#computer_index td", handle_edit);
-        $(document).on("click", "#computer_index .edit_trigger", handle_edit);
-        
-        function handle_edit() {
-            row_id = $(this).children("div").attr("id");
-            editable_columns = $("#"+ row_id + ".editable");
+        {% if computers_modify_access(request.user) %}
+        	$(document).on("dblclick", "#computer_index td", handle_edit);
+			$(document).on("click", "#computer_index .edit_trigger", handle_edit);
 
-            editable_columns.children(".display_data").hide(); // Hide the display field
-            editable_columns.children(".editbox").show(); // Show the edit field
+	        function handle_edit() {
+	            row_id = $(this).children("div").attr("id");
+	            editable_columns = $("#"+ row_id + ".editable");
 
-			$(".editbox").unbind('change'); // Strange fix to prevent multiple ajax calls for one change.
-            $(".editbox").change(function() {
-                request_dict = {};
-                row_zero = $("#" + row_id + ":eq(0)").text();
+	            editable_columns.children(".display_data").hide(); // Hide the display field
+	            editable_columns.children(".editbox").show(); // Show the edit field
 
-                // Generate a request string
-                editable_columns.children(".editbox").each(function () {
-                    column_name = $(this).parent().attr("column");
-                    value = $(this).val();
+				$(".editbox").unbind('change'); // Strange fix to prevent multiple ajax calls for one change.
+	            $(".editbox").change(function() {
+	                request_dict = {};
+	                row_zero = $("#" + row_id + ":eq(0)").text();
 
-                    // Validate each field as it comes through
-                    if (value != null) {
-                        // Validate the IP address field (specifially)
-                        if (column_name == "ip_address") {
-                            var reg = /^(\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)?$/;
-                            if (!reg.test(value)) {
-                                alert('Please enter a valid IP address.');
-                                return false;
-                            }
-                        }
-                        request_dict[column_name] = value;
-                    }
-                    else {
-                        alert('Please fill all editable fields with data.');
-                        return false;
-                    }
-                });
+	                // Generate a request string
+	                editable_columns.children(".editbox").each(function () {
+	                    column_name = $(this).parent().attr("column");
+	                    value = $(this).val();
 
-                // Send the data
-                Dajaxice.resnet_internal.computers.modify_computer(Dajax.process, {"request_dict": request_dict, "row_id": row_id, "row_zero": row_zero, "username": '{{ request.user.username }}'});
-            });
+	                    // Validate each field as it comes through
+	                    if (value != null) {
+	                        // Validate the IP address field (specifially)
+	                        if (column_name == "ip_address") {
+	                            var reg = /^(\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)?$/;
+	                            if (!reg.test(value)) {
+	                                alert('Please enter a valid IP address.');
+	                                return false;
+	                            }
+	                        }
+	                        request_dict[column_name] = value;
+	                    }
+	                    else {
+	                        alert('Please fill all editable fields with data.');
+	                        return false;
+	                    }
+	                });
 
-            // Edit input box click action
-            $(".editbox").mouseup(function() {
-                return false;
-            });
+	                // Send the data
+	                Dajaxice.resnet_internal.computers.modify_computer(Dajax.process, {"request_dict": request_dict, "row_id": row_id, "row_zero": row_zero, "username": '{{ request.user.username }}'});
+	            });
 
-            // Outside click action
-            $(document).mouseup(function() {
-                $(".editbox").hide();
-                $(".display_data").show();
-            });
-        };
+	            // Edit input box click action
+	            $(".editbox").mouseup(function() {
+	                return false;
+	            });
+
+	            // Outside click action
+	            $(document).mouseup(function() {
+	                $(".editbox").hide();
+	                $(".display_data").show();
+	            });
+	        };
+        {% endif %}
     });
 </script>
 {% endblock %}
@@ -142,12 +148,14 @@
         <div id="topContent">
             <h1>University Housing Computer Index</h1>
         </div>
+        {% if computers_modify_access(request.user) %}
         <p style="color: red;">
             {{ form.non_field_errors }}
             {% for field in form %}
             {{ field.errors }}
             {% endfor %}
         </p>
+        {% endif %}
         <div class="clear"></div>
         <table id="computer_index">
             <thead>
@@ -203,6 +211,7 @@
             </tbody>
         </table>
         <div class="clear"></div>
+        {% if computers_modify_access(request.user) %}
         <div>
             <form method="post" id="add_computer_form">
                 <fieldset>
@@ -270,20 +279,23 @@
                 {% csrf_token %}
             </form>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
 {% block extra_script %}
 {{ block.super }}
+{% if computers_modify_access(request.user) %}
 <script type="text/javascript">
 	$("#id_department").change(function () {
 		Dajaxice.resnet_internal.computers.update_sub_department(Dajax.process, {'department': $(this).val()});
 	});
-	
+
 	{% if form.sub_department.value %}
 	$(document).ready(function () {
 		Dajaxice.resnet_internal.computers.update_sub_department(Dajax.process, {'department': '{{ form.department.value }}', 'sub_department_selection': '{{ form.sub_department.value }}'});
 	});
 	{% endif %}
 </script>
+{% endif %}
 {% endblock %}

@@ -16,6 +16,7 @@ from dajaxice.decorators import dajaxice_register
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from resnet_internal.core.models import StaffMapping
+from resnet_internal.settings.base import computers_modify_access_test
 from .models import Computer, Pinhole, DomainName
 from .constants import (CORE, HOUSING_ADMINISTRATION, HOUSING_SERVICES, RESIDENTIAL_LIFE_AND_EDUCATION,
                         CORE_SUB_DEPARTMENTS, HOUSING_ADMINISTRATION_SUB_DEPARTMENTS, HOUSING_SERVICES_SUB_DEPARTMENTS,
@@ -65,36 +66,37 @@ def update_sub_department(request, department, sub_department_selection=None):
 def modify_computer(request, request_dict, row_id, row_zero, username):
     dajax = Dajax()
 
-    # Add a temporary loading image to the first column in the edited row
-    dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', '<img src="%simages/datatables/load.gif" />' % settings.STATIC_URL)
+    if computers_modify_access_test(request.user):
+        # Add a temporary loading image to the first column in the edited row
+        dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', '<img src="%simages/datatables/load.gif" />' % settings.STATIC_URL)
 
-    # Update the database
-    computer_instance = Computer.objects.get(id=row_id)
+        # Update the database
+        computer_instance = Computer.objects.get(id=row_id)
 
-    for column, value in request_dict.items():
-        # DN cleanup
-        if column == "dn":
-            dn_pieces = value.split(",")
-            stripped_dn_pieces = []
+        for column, value in request_dict.items():
+            # DN cleanup
+            if column == "dn":
+                dn_pieces = value.split(",")
+                stripped_dn_pieces = []
 
-            for dn_piece in dn_pieces:
-                try:
-                    group_type, group_string = dn_piece.split("=")
-                except ValueError:
-                    dajax.alert("Please enter a valid DN.")
-                    dajax.script('computer_index.fnDraw();')
-                    return dajax.json()
+                for dn_piece in dn_pieces:
+                    try:
+                        group_type, group_string = dn_piece.split("=")
+                    except ValueError:
+                        dajax.alert("Please enter a valid DN.")
+                        dajax.script('computer_index.fnDraw();')
+                        return dajax.json()
 
-                stripped_dn_pieces.append('%(type)s=%(string)s' % {'type': group_type.strip(), 'string': group_string.strip()})
+                    stripped_dn_pieces.append('%(type)s=%(string)s' % {'type': group_type.strip(), 'string': group_string.strip()})
 
-            value = ', '.join(stripped_dn_pieces)
+                value = ', '.join(stripped_dn_pieces)
 
-        setattr(computer_instance, column, value)
+            setattr(computer_instance, column, value)
 
-    computer_instance.save()
+        computer_instance.save()
 
-    # Redraw the table
-    dajax.script('computer_index.fnDraw();')
+        # Redraw the table
+        dajax.script('computer_index.fnDraw();')
 
     return dajax.json()
 
@@ -110,19 +112,20 @@ def remove_computer(request, computer_id):
 
     dajax = Dajax()
 
-    computer_instance = Computer.objects.get(id=computer_id)
-    ip_address = computer_instance.ip_address
+    if computers_modify_access_test(request.user):
+        computer_instance = Computer.objects.get(id=computer_id)
+        ip_address = computer_instance.ip_address
 
-    pinholes_count = Pinhole.objects.filter(ip_address=ip_address).count()
-    domain_names_count = DomainName.objects.filter(ip_address=ip_address).count()
+        pinholes_count = Pinhole.objects.filter(ip_address=ip_address).count()
+        domain_names_count = DomainName.objects.filter(ip_address=ip_address).count()
 
-    if pinholes_count > 0 or domain_names_count > 0:
-        dajax.alert("This computer cannot be deleted because it still has pinholes and/or domain names associated with it.")
-    else:
-        computer_instance.delete()
+        if pinholes_count > 0 or domain_names_count > 0:
+            dajax.alert("This computer cannot be deleted because it still has pinholes and/or domain names associated with it.")
+        else:
+            computer_instance.delete()
 
-    # Redraw the table
-    dajax.script('computer_index.fnDraw();')
+        # Redraw the table
+        dajax.script('computer_index.fnDraw();')
 
     return dajax.json()
 

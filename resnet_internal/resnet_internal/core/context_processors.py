@@ -25,6 +25,9 @@ def specializations(request):
         if request.user.is_telecom:
             user_specializations.append('IS Telecom Administrator')
 
+        if request.user.is_tag_readonly:
+            user_specializations.append('UH TAG Member (read-only)')
+
         # ResNet Titles
         if request.user.is_technician:
             user_specializations.append('ResNet Technician')

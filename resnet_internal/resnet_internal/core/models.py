@@ -85,6 +85,7 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     is_net_admin = BooleanField(default=False)  # limited access only to apps that network admins are allowed to use
     is_telecom = BooleanField(default=False)  # limited access only to apps that telecom admins are allowed to use
     is_tag = BooleanField(default=False)  # limited access only to apps that uh-tag mambers are allowed to use
+    is_tag_readonly = BooleanField(default=False)  # limited access only to apps that uh-tag mambers are allowed to use (read-only permissions)
     is_technician = BooleanField(default=False)  # access to technician tools
     is_rn_staff = BooleanField(default=False)  # access to all tools as well as staff tools
     is_developer = BooleanField(default=False)  # full access to resnet internal
