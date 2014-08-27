@@ -37,7 +37,6 @@ computer_record_modify_access = user_passes_test(computer_record_modify_access_t
 
 printers_access = user_passes_test(printers_access_test)
 
-
 admin.autodiscover()
 dajaxice_autodiscover()
 
