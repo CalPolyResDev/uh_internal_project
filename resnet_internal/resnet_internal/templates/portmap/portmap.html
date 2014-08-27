@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load core_user_tests %}
 
 {% block meta %}
 {{ block.super }}
@@ -62,16 +63,18 @@
                 { "sClass": "width50", "sType": "string", "aTargets": [ 6 ] },
                 { "sClass": "width50", "sType": "numeric", "aTargets": [ 7 ] },
                 { "sClass": "width50", "sType": "numeric", "aTargets": [ 8 ] },
-                { "sClass": "edit_trigger width55", "sType": "numeric", "aTargets": [ 9 ] },
-                {% if {{ request.user|portmap_modify_access }} %}
-                	{ "sClass": "width0", "bSearchable": false, "bVisible": false, "aTargets": [ 10 ] },
-                {% else %}
+                {% if request.user|portmap_modify_access %}
+                	{ "sClass": "edit_trigger width55", "sType": "numeric", "aTargets": [ 9 ] },
                 	{ "sClass": "width50", "sType": "string", "aTargets": [ 10 ] },
+
+                {% else %}
+                	{ "sClass": "width55", "sType": "numeric", "aTargets": [ 9 ] },
+                	{ "sClass": "width0", "bSearchable": false, "bVisible": false, "aTargets": [ 10 ] },
                 {% endif %}
             ],
         });
 
-		{% if {{ request.user|portmap_modify_access }} %}
+		{% if request.user|portmap_modify_access %}
 	        $(document).on("dblclick", "#residence_halls_wired_port_map td", handle_edit);
 	        $(document).on("click", "#residence_halls_wired_port_map .edit_trigger", handle_edit);
 
@@ -149,7 +152,7 @@
 		<div id="topContent">
 			<h1>Residence Halls Wired Port Map</h1>
 		</div>
-		{% if {{ request.user|portmap_modify_access }} %}
+		{% if request.user|portmap_modify_access %}
         <p style="color: red;">
             {{ form.non_field_errors }}
             {% for field in form %}
@@ -206,7 +209,7 @@
 			</tbody>
 		</table>
 		<div class="clear"></div>
-		{% if {{ request.user|portmap_modify_access }} %}
+		{% if request.user|portmap_modify_access %}
         <div>
             <form method="post" id="add_port_form">
                 <fieldset>
@@ -276,7 +279,7 @@
 {% endblock %}
 {% block extra_script %}
 {{ block.super }}
-{% if {{ request.user|portmap_modify_access }} %}
+{% if request.user|portmap_modify_access %}
 <script type="text/javascript">
 	$("#id_community").change(function () {
 		Dajaxice.resnet_internal.core.update_building(Dajax.process, {'community': $(this).val()});
@@ -288,5 +291,5 @@
 	});
 	{% endif %}
 </script>
-{% endif % }
+{% endif %}
 {% endblock %}

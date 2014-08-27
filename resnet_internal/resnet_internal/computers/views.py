@@ -93,7 +93,7 @@ class PopulateComputers(BaseDatatableView):
                 return """<div id='%s' column='%s'><a style='cursor:pointer;' href='%s'><img src='%simages/icons/rdp.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' /></a>""" % (row.id, column, rdp_file_url, settings.STATIC_URL)
             except:
                 return ""
-        elif column == 'remove' and computers_modify_access_test(self.request.user):
+        elif column == 'remove':
             return """<div id='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_remove(%s);">Remove</a></div>""" % (row.id, column, row.id)
         elif column in self.editable_columns and computers_modify_access_test(self.request.user):
             return "<div id='%s' class='editable' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column))

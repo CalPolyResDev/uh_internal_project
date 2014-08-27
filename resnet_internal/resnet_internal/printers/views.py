@@ -60,7 +60,7 @@ class PopulatePrinters(BaseDatatableView):
 
         """
 
-        if column == 'remove' and portmap_modify_access_test(self.request.user):
+        if column == 'remove':
             return """<div id='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_remove(%s);">Remove</a></div>""" % (row.id, column, row.id)
         elif column in self.editable_columns and portmap_modify_access_test(self.request.user):
             return "<div id='%s' class='editable' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column))
