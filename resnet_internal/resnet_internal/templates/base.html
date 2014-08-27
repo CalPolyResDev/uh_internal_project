@@ -100,7 +100,7 @@
 			<div id="leftnav">
 				<h1>Navigation<a href='/settings/navigation/' class='popup_frame'><img src="{{ STATIC_URL }}images/icons/settings_cog.png" alt="Navigation Settings" align="top" width="16" height="16" border="0" style="padding-left: 5px;"/></a></h1>
 
-				{% if technician_access(request.user) %}
+				{% if {{ request.user|technician_access }} %}
 				<h2>Technician Tools</h2>
 				<ul>
 					<li>
@@ -130,7 +130,7 @@
 				</ul>
 				{% endif %}
 
-				{% if staff_access(request.user) %}
+				{% if {{ request.user|staff_access }} %}
 				<h2>Staff Tools</h2>
 				<ul>
 				    <li>
@@ -139,7 +139,7 @@
 				</ul>
 				{% endif %}
 
-				{% if technician_access(request.user) %}
+				{% if {{ request.user|technician_access }} %}
 				<h2>Network Analysis</h2>
                 <ul>
 					<li>
@@ -168,20 +168,20 @@
                 </ul>
                 {% endif %}
 
-				{% if portmap_access(request.user) or computers_access(request.user) or printers_access(request.user) %}
+				{% if {{ request.user|portmap_access }} or {{ request.user|computers_access }} or {{ request.user|printers_access }} %}
 				<h2>Databases</h2>
 				<ul>
-					{% if portmap_access(request.user) %}
+					{% if {{ request.user|portmap_access }} %}
 					<li>
 						<a href="{% url 'residence_halls_wired_ports' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="Residence Halls Port Map" align="top" width="16" height="16" border="0" />Res Halls Port Map</a>
 					</li>
 					{% endif %}
-					{% if computers_access(request.user) %}
+					{% if {{ request.user|computers_access }} %}
 					<li>
 						<a href="{% url 'uh_computers' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="UH Computer Index" align="top" width="16" height="16" border="0" />UH Computer Index</a>
 					</li>
 					{% endif %}
-					{% if printers_access(request.user} %}
+					{% if {{ request.user|printers_access }} %}
 					<li>
 						<a href="{% url 'uh_printers' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="UH Printer Index" align="top" width="16" height="16" border="0" />UH Printer Index</a>
 					</li>
@@ -189,7 +189,7 @@
 				</ul>
 				{% endif %}
 
-				{% if technician_access(request.user) %}
+				{% if {{ request.user|technician_access }} %}
 				<h2>Equipment</h2>
 				<ul>
 					<li>
@@ -206,7 +206,7 @@
 				</ul>
 				{% endif %}
 
-				{% if developer_access(request.user) %}
+				{% if {{ request.user|developer_access }} %}
                 <h2>Administration</h2>
                 <ul>
                     <li>
@@ -215,7 +215,7 @@
                 </ul>
                 {% endif %}
 
-				{% if technician_access(request.user) %}
+				{% if {{ request.user|technician_access }} %}
 				<!-- Begin Daily Duties Widget -->
 				<div id="navcontent1">
 					<div class="gold" id="dailyDuties">

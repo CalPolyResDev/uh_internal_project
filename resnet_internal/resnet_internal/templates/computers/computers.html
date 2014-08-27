@@ -70,7 +70,7 @@
                 { "sClass": "width100", "sType": "string", "aTargets": [ 9 ] },
                 { "sClass": "width225", "sType": "string", "aTargets": [ 10 ] },
                 { "sClass": "edit_trigger width225", "sType": "string", "aTargets": [ 11 ] },
-                {% if computers_modify_access(request.user) %}
+                {% if {{ request.user|computers_modify_access }} %}
                 	{ "sClass": "width0", "bSearchable": false, "bVisible": false, "aTargets": [ 12 ] },
                 {% else %}
                 	{ "sClass": "width50", "sType": "string", "aTargets": [ 12 ] },
@@ -78,7 +78,7 @@
             ],
         });
 
-        {% if computers_modify_access(request.user) %}
+        {% if {{ request.user|computers_modify_access }} %}
         	$(document).on("dblclick", "#computer_index td", handle_edit);
 			$(document).on("click", "#computer_index .edit_trigger", handle_edit);
 
@@ -148,7 +148,7 @@
         <div id="topContent">
             <h1>University Housing Computer Index</h1>
         </div>
-        {% if computers_modify_access(request.user) %}
+        {% if {{ request.user|computers_modify_access }} %}
         <p style="color: red;">
             {{ form.non_field_errors }}
             {% for field in form %}
@@ -211,7 +211,7 @@
             </tbody>
         </table>
         <div class="clear"></div>
-        {% if computers_modify_access(request.user) %}
+        {% if {{ request.user|computers_modify_access }} %}
         <div>
             <form method="post" id="add_computer_form">
                 <fieldset>
@@ -285,7 +285,7 @@
 {% endblock %}
 {% block extra_script %}
 {{ block.super }}
-{% if computers_modify_access(request.user) %}
+{% if {{ request.user|computers_modify_access }} %}
 <script type="text/javascript">
 	$("#id_department").change(function () {
 		Dajaxice.resnet_internal.computers.update_sub_department(Dajax.process, {'department': $(this).val()});
