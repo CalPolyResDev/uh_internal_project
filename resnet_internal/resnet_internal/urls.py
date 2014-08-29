@@ -9,6 +9,7 @@
 
 import logging
 
+from django.core.exceptions import PermissionDenied
 from django.conf import settings
 from django.conf.urls.static import static
 from django.conf.urls import patterns, include, url
@@ -27,15 +28,41 @@ from .printers.views import RequestsListView, InventoryView, OnOrderView, Printe
 
 from resnet_internal.settings.base import technician_access_test, staff_access_test, printers_access_test, portmap_access_test, computers_access_test, computer_record_modify_access_test
 
-technician_access = user_passes_test(technician_access_test)
-staff_access = user_passes_test(staff_access_test)
 
-portmap_access = user_passes_test(portmap_access_test)
+def permissions_check(test_func, raise_exception=True):
+    """
+    Decorator for views that checks whether a user has permission to view the
+    requested page, redirecting to the log-in page if neccesary.
+    If the raise_exception parameter is given the PermissionDenied exception
+    is raised.
 
-computers_access = user_passes_test(computers_access_test)
-computer_record_modify_access = user_passes_test(computer_record_modify_access_test)
+    :param test_func: A callable test that takes a User object and returns true if the test passes.
+    :type test_func: callable
+    :param raise_exception: Determines whether or not to throw an exception when permissions test fails.
+    :type raise_exception: bool
 
-printers_access = user_passes_test(printers_access_test)
+    """
+
+    def check_perms(user):
+        # First check if the user has the permission (even anon users)
+        if test_func(user):
+            return True
+        # In case the 403 handler should be called raise the exception
+        if raise_exception:
+            raise PermissionDenied
+        # As the last resort, show the login form
+        return False
+    return user_passes_test(check_perms)
+
+technician_access = permissions_check(technician_access_test)
+staff_access = permissions_check(staff_access_test)
+
+portmap_access = permissions_check(portmap_access_test)
+
+computers_access = permissions_check(computers_access_test)
+computer_record_modify_access = permissions_check(computer_record_modify_access_test)
+
+printers_access = permissions_check(printers_access_test)
 
 admin.autodiscover()
 dajaxice_autodiscover()
