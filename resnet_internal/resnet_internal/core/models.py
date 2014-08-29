@@ -35,20 +35,6 @@ class SiteAnnouncements(Model):
         verbose_name = u'Site Announcement'
 
 
-class CSDMapping(Model):
-    """A mapping of a csd to their controlled buildings."""
-
-    csd_domain = CharField(max_length=35, unique=True, verbose_name=u'CSD Domain')  # The building/buildings the CSD is in charge of
-    csd_domain_dn = TextField(verbose_name=u'CSD Domain Active Directory Distinguished Name')
-    csd_name = CharField(max_length=50, verbose_name=u'CSD Full Name')
-    csd_alias = CharField(max_length=8, verbose_name=u'CSD Alias')
-
-    class Meta:
-        db_table = u'csdmapping'
-        managed = False
-        verbose_name = u'CSD Domain Mapping'
-
-
 class StaffMapping(Model):
     """A mapping of various department staff to their respective positions."""
 
