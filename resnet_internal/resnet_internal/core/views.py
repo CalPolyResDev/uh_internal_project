@@ -171,11 +171,11 @@ class LoginView(FormView):
 
         # Check if user is new tech
         if self.request.user.is_technician:
-            if self.request.user.is_new_tech == None:  # First time log in, set flag from None to True
+            if self.request.user.is_new_tech is None:  # First time log in, set flag from None to True
                 self.request.user.is_new_tech = True
                 self.request.user.save()
 
-        if self.request.user.is_new_tech:
+        if self.request.user.is_technician and self.request.user.is_new_tech:
             self.success_url = reverse_lazy('orientation_checklist')
         else:
             self.success_url = self.request.GET.get("next", reverse_lazy('home'))
