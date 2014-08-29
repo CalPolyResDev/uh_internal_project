@@ -78,6 +78,10 @@ def link_handler(request, mode, key, ip=""):
     elif key == "ccamgr":
         subtitle = "CCA Manager"
         source = "https://ccamgr.calpoly.edu/admin/"
+    # ResLife Internal
+    elif key == "reslife":
+        subtitle = "ResLife Interal"
+        source = "https://internal.reslife.calpoly.edu"
     # Wiki Pages
     elif key == "resnet_wiki":
         subtitle = "ResNet Wiki"
