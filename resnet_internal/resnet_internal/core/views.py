@@ -10,7 +10,6 @@
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth.forms import AuthenticationForm
 from django.core.urlresolvers import reverse_lazy
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.cache import never_cache
@@ -21,7 +20,7 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
-from .forms import NavigationSettingsForm
+from .forms import NavigationSettingsForm, AutoFocusAuthenticationForm
 from .models import SiteAnnouncements
 
 
@@ -151,7 +150,7 @@ class LoginView(FormView):
     """
 
     template_name = 'core/login.html'
-    form_class = AuthenticationForm
+    form_class = AutoFocusAuthenticationForm
 
     @method_decorator(sensitive_post_parameters())
     @method_decorator(csrf_protect)
