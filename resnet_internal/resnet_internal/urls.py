@@ -129,7 +129,7 @@ urlpatterns += patterns('',
 #    url(r'^jCal/my_schedule/(?P<year>\d{4})/(?P<quarter>[a-z]{2})/(?P<office>[a-z]{2})/(?P<is_finals>\d{1})/$', 'my_schedule'),
 #    url(r'^jCal/global_schedule/(?P<year>\d{4})/(?P<quarter>[a-z]{2})/(?P<office>[a-z]{2})/(?P<is_finals>\d{1})/$', 'global_schedule'),
 #    url(r'^jCal/set_avail/$', 'set_avail'),
-    # this will send you to a page to set year/quarter/is_finals, on submit will redirect you to jCal/set_avail/year/quarter/is_finals
+#    this will send you to a page to set year/quarter/is_finals, on submit will redirect you to jCal/set_avail/year/quarter/is_finals
 #    url(r'^jCal/set_avail/(?P<year>\d{4})/(?P<quarter>[a-z]{2})/(?P<is_finals>\d{1})/$', 'set_avail'),
 #    url(r'^jCal/jCal_admin/$', 'jCal_admin'),
 # )
