@@ -41,10 +41,10 @@ class SingleGroupEditView(FormView):
 
         super(SingleGroupEditView, self).__init__(**kwargs)
 
-        if not self.group_dn and not "group_dn" in kwargs:
+        if not self.group_dn and "group_dn" not in kwargs:
             raise ImproperlyConfigured("'group_dn' is required as a specified init argument.")
 
-        if not self.group_dn and not "group_name" in kwargs:
+        if not self.group_dn and "group_name" not in kwargs:
             self.group_name = self.group_dn
 
     def _instantiate_ad_group(self):
