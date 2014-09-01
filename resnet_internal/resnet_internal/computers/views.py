@@ -71,7 +71,7 @@ class PopulateComputers(BaseDatatableView):
 
             beginning = """<div id='{id}' class='editable' column='{column}'>
                             <div class='display_data'>
-                                <a href='/computers/{value}/' class='popup_frame'>{value}</a>""".format(id=row.id, column=column, value=ip_address)
+                                <a href='{record_url}' class='popup_frame'>{value}</a>""".format(id=row.id, column=column, record_url=reverse('view_uh_computer_record', kwargs={'ip_address': ip_address}), value=ip_address)
             pinholes = """<img src="{icon_url}" style='padding-left:5px;' align='top' width='16' height='16' border='0' />""".format(icon_url=static('images/icons/pinholes.png'))
             domain_names = """<img src="{icon_url}" style='padding-left:5px;' align='top' width='16' height='16' border='0' />""".format(icon_url=static('images/icons/domain_names.png'))
             end = """</div><input type='text' class='editbox' value='{value}' /></div>""".format(value=ip_address)
