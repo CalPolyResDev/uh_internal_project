@@ -9,9 +9,8 @@
 
 import logging
 
-from django.conf import settings
-
 from dajax.core import Dajax
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from dajaxice.decorators import dajaxice_register
 
 from resnet_internal.settings.base import portmap_modify_access_test
@@ -51,7 +50,7 @@ def modify_port(request, request_dict, row_id, row_zero, username):
 
     if portmap_modify_access_test(request.user):
         # Add a temporary loading image to the first column in the edited row
-        dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', '<img src="%simages/datatables/load.gif" />' % settings.STATIC_URL)
+        dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', """<img src="{icon_url}" />""".format(icon_url=static('images/datatables/load.gif')))
 
         # Update the database
         port_instance = ResHallWired.objects.get(id=row_id)

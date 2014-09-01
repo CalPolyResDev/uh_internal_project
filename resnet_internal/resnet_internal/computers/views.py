@@ -11,7 +11,6 @@ import logging
 import socket
 import subprocess
 
-from django.conf import settings
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.db.models import Q
 from django.http.response import HttpResponseRedirect, HttpResponse
@@ -24,6 +23,7 @@ from srsconnector.models import PinholeRequest, DomainNameRequest
 from resnet_internal.settings.base import computers_modify_access_test
 from .forms import NewComputerForm, RequestPinholeForm, RequestDomainNameForm
 from .models import Computer, Pinhole, DomainName
+from django.contrib.staticfiles.templatetags.staticfiles import static
 
 
 logger = logging.getLogger(__name__)
@@ -69,10 +69,12 @@ class PopulateComputers(BaseDatatableView):
         if column == 'ip_address':
             ip_address = getattr(row, column)
 
-            beginning = "<div id='%s' class='editable' column='%s'><div class='display_data'><a href='/computers/%s/' class='popup_frame'>%s</a>" % (row.id, column, ip_address, ip_address)
-            pinholes = "<img src='%simages/icons/pinholes.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' />" % settings.STATIC_URL
-            domain_names = "<img src='%simages/icons/domain_names.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' />" % settings.STATIC_URL
-            end = "</div><input type='text' class='editbox' value='%s' /></div>" % ip_address
+            beginning = """<div id='{id}' class='editable' column='{column}'>
+                            <div class='display_data'>
+                                <a href='/computers/{value}/' class='popup_frame'>{value}</a>""".format(id=row.id, column=column, value=ip_address)
+            pinholes = """<img src="{icon_url}" style='padding-left:5px;' align='top' width='16' height='16' border='0' />""".format(icon_url=static('images/icons/pinholes.png'))
+            domain_names = """<img src="{icon_url}" style='padding-left:5px;' align='top' width='16' height='16' border='0' />""".format(icon_url=static('images/icons/domain_names.png'))
+            end = """</div><input type='text' class='editbox' value='{value}' /></div>""".format(value=ip_address)
 
             result = beginning
 
@@ -90,15 +92,20 @@ class PopulateComputers(BaseDatatableView):
         elif column == 'RDP':
             try:
                 rdp_file_url = reverse('rdp_request', kwargs={'ip_address': row.ip_address})
-                return """<div id='%s' column='%s'><a style='cursor:pointer;' href='%s'><img src='%simages/icons/rdp.png' style='padding-left:5px;' align='top' width='16' height='16' border='0' /></a>""" % (row.id, column, rdp_file_url, settings.STATIC_URL)
+                return """<div id='{id}' column='{column}'>
+                            <a style='cursor:pointer;' href='{value}'>
+                                <img src="{icon_url}" style='padding-left:5px;' align='top' width='16' height='16' border='0' />
+                            </a>""".format(id=row.id, column=column, value=rdp_file_url, icon_url=static('images/icons/rdp.png'))
             except:
                 return ""
         elif column == 'remove':
-            return """<div id='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_remove(%s);">Remove</a></div>""" % (row.id, column, row.id)
+            return """<div id='{id}' column='{column}'><a style="color:red; cursor:pointer;" onclick="confirm_remove({id});">Remove</a></div>""".format(id=row.id, column=column)
         elif column in self.editable_columns and computers_modify_access_test(self.request.user):
-            return "<div id='%s' class='editable' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column))
+            return """<div id='{id}' class='editable' column='{column}'>
+                       <span class='display_data'>{value}</span>
+                       <input type='text' class='editbox' value='{value}' /></div>""".format(id=row.id, column=column, value=getattr(row, column))
         else:
-            return "<div id='%s' column='%s'>%s</div>" % (row.id, column, getattr(row, column))
+            return """<div id='{id}' column='{column}'>{value}</div>""".format(id=row.id, column=column, value=getattr(row, column))
 
     def filter_queryset(self, qs):
         """ Filters the QuerySet by submitted search parameters.

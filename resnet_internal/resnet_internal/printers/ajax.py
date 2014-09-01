@@ -6,10 +6,10 @@
 
 """
 
-from django.conf import settings
 from django.core.urlresolvers import reverse
 
 from dajax.core import Dajax
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from dajaxice.decorators import dajaxice_register
 
 from srsconnector.models import STATUS_CHOICES, PrinterRequest
@@ -25,7 +25,7 @@ def modify_printer(request, request_dict, row_id, row_zero, username):
 
     if printers_modify_access_test(request.user):
         # Add a temporary loading image to the first column in the edited row
-        dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', '<img src="%simages/datatables/load.gif" />' % settings.STATIC_URL)
+        dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', """<img src="{icon_url}" />""".format(icon_url=static('images/datatables/load.gif')))
 
         # Update the database
         printer_instance = Printer.objects.get(id=row_id)

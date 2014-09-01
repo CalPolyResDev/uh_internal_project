@@ -65,4 +65,3 @@ class RequestDomainNameForm(Form):
         super(RequestDomainNameForm, self).__init__(*args, **kwargs)
 
         self.fields["priority"].choices = PRIORITY_CHOICES
-

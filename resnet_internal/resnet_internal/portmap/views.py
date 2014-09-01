@@ -8,9 +8,9 @@
 
 """
 
-from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, ImproperlyConfigured
 from django.core.urlresolvers import reverse_lazy
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.db.models import Q
 from django.views.generic.edit import CreateView
 
@@ -59,13 +59,24 @@ class PopulateResidenceHallWiredPorts(BaseDatatableView):
         """
 
         if column == 'switch_ip':
-            return "<div id='%s' class='%s margin_fix' column='%s'><div class='display_data'><a href='/external/cisco/%s/' target='_blank'>%s</a><img src='%simages/icons/cisco.gif' style='padding-left:5px;' align='top' width='16px' height='16px' border='0' /></div><input type='text' class='editbox' value='%s' /></div>" % (row.id, "editable" if getattr(row, 'active') else "disabled", column, getattr(row, column), getattr(row, column), settings.STATIC_URL, getattr(row, column))
+            return """<div id='{id}' class='{htmlclass} margin_fix' column='{column}'>
+                        <div class='display_data'>
+                            <a href='/external/cisco/{value}/' target='_blank'>{value}</a>
+                            <img src="{icon_url}" style='padding-left:5px;' align='top' width='16px' height='16px' border='0' />
+                        </div>
+                        <input type='text' class='editbox' value='{value}' />
+                      </div>""".format(id=row.id, htmlclass="editable" if getattr(row, 'active') else "disabled", column=column, value=getattr(row, column), icon_url=static('images/icons/cisco.gif'))
         elif column == 'active':
-            return """<div id='%s' class='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_status_change(%s);">%s</a></div>""" % (row.id, "" if getattr(row, 'active') else "disabled", column, row.id, "Deactivate" if getattr(row, column) else "Activate")
+            return """<div id='{id}' class='{htmlclass}' column='{column}'>
+                        <a style="color:red; cursor:pointer;" onclick="confirm_status_change({id});">{value}</a>
+                      </div>""".format(id=row.id, htmlclass="" if getattr(row, 'active') else "disabled", column=column, value="Deactivate" if getattr(row, column) else "Activate")
         elif column in self.editable_columns and portmap_modify_access_test(self.request.user):
-            return "<div id='%s' class='%s' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, "editable" if getattr(row, 'active') else "disabled", column, getattr(row, column), getattr(row, column))
+            return """<div id='{id}' class='{htmlclass}' column='{column}'>
+                        <span class='display_data'>{value}</span>
+                        <input type='text' class='editbox' value='{value}' />
+                      </div>""".format(id=row.id, htmlclass="editable" if getattr(row, 'active') else "disabled", column=column, value=getattr(row, column))
         else:
-            return "<div id='%s' class='%s' column='%s'>%s</div>" % (row.id, "" if getattr(row, 'active') else "disabled", column, getattr(row, column))
+            return """<div id='{id}' class='{htmlclass}' column='{column}'>{value}</div>""".format(id=row.id, htmlclass="" if getattr(row, 'active') else "disabled", column=column, value=getattr(row, column))
 
     def filter_queryset(self, qs):
         """ Filters the QuerySet by submitted search parameters.

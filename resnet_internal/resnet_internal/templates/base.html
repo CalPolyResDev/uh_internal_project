@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% load core_user_tests %}
 {% load dajaxice_templatetags %}
+{% load staticfiles %}
 {% load url from future %}
 <html>
 	<head>
@@ -9,18 +10,18 @@
 		<meta name="author" content="Alex Kavanaugh - ResNet Development Team" />
 		<meta name="keywords" content="Resnet Internal" />
 		<meta name="description" content="Residential Networking Services Internal Tools" />
-		<link href="{{ STATIC_URL }}css/jqueryui/jqueryui-1.8.22.cp.css" rel="stylesheet" type="text/css" />
-		<link href="{{ STATIC_URL }}common/css/cp_screen_3.4.css" rel="stylesheet" type="text/css" media="screen" />
-		<link href="{{ STATIC_URL }}common/css/cp_print_3.4.css" rel="stylesheet" type="text/css" media="print" />
-		<link href="{{ STATIC_URL }}css/screen.css" rel="stylesheet" type="text/css" media="screen,print" />
-		<link href="{{ STATIC_URL }}css/print.css" rel="stylesheet" type="text/css" media="print" />
-		<link href="{{ STATIC_URL }}css/table.css" rel="stylesheet" type="text/css" media="screen,print" />
-		<link href="{{ STATIC_URL }}fancybox/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" media="screen" />
-		<link href="{{ STATIC_URL }}images/icons/favicon.ico" rel="shortcut icon" />
+		<link href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'common/css/cp_screen_3.4.css' %}" rel="stylesheet" type="text/css" media="screen" />
+		<link href="{% static 'common/css/cp_print_3.4.css' %}" rel="stylesheet" type="text/css" media="print" />
+		<link href="{% static 'css/screen.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
+		<link href="{% static 'css/print.css' %}" rel="stylesheet" type="text/css" media="print" />
+		<link href="{% static 'css/table.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
+		<link href="{% static 'fancybox/jquery.fancybox.css' %}?v=2.1.5" rel="stylesheet" type="text/css" media="screen" />
+		<link href="{% static 'images/icons/favicon.ico' %}" rel="shortcut icon" />
 		<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.2.min.js"></script>
 		{% dajaxice_js_import %}
-		<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.dajax.core.js"></script>
-        <script type="text/javascript" src="{{ STATIC_URL }}fancybox/jquery.fancybox.pack.js?v=2.1.5"></script>
+		<script type="text/javascript" src="{% static 'js/jquery.dajax.core.js' %}"></script>
+        <script type="text/javascript" src="{% static 'fancybox/jquery.fancybox.pack.js' %}?v=2.1.5"></script>
 		<script type="text/javascript">
 			function refreshDuties() {
 				Dajaxice.resnet_internal.core.refresh_duties(Dajax.process);
@@ -56,10 +57,10 @@
 		<div id="container">
 			<div id="header">
 				<div id="cplogo">
-					<a href="http://www.calpoly.edu/"><img src="{{ STATIC_URL }}common/images/header/cp_logo.gif" alt="Cal Poly" title="Go to Cal Poly Home" width="166" height="60" /></a>
+					<a href="http://www.calpoly.edu/"><img src="{% static 'common/images/header/cp_logo.gif' %}" alt="Cal Poly" title="Go to Cal Poly Home" width="166" height="60" /></a>
 				</div>
 				<div id="headercontent">
-					<a href="https://resnet.calpoly.edu"><img src="{{ STATIC_URL }}images/resnetlogo.png" alt="ResNet Logo" title="Go to the ResNet home page" id="headerimage" height="50" width="136.5" /></a>
+					<a href="https://resnet.calpoly.edu"><img src="{% static 'images/resnetlogo.png' %}" alt="ResNet Logo" title="Go to the ResNet home page" id="headerimage" height="50" width="136.5" /></a>
 					<div id="deptname">
 						<p id="department_name">
 							Residential Networking Services
@@ -98,34 +99,34 @@
 			{% if request.user.is_authenticated and not request.user.is_new_tech %} {# User is logged in - display navigation bar. #}
 			<!-- Begin Navigation Bar -->
 			<div id="leftnav">
-				<h1>Navigation<a href='/settings/navigation/' class='popup_frame'><img src="{{ STATIC_URL }}images/icons/settings_cog.png" alt="Navigation Settings" align="top" width="16" height="16" border="0" style="padding-left: 5px;"/></a></h1>
+				<h1>Navigation<a href='/settings/navigation/' class='popup_frame'><img src="{% static 'images/icons/settings_cog.png' %}" alt="Navigation Settings" align="top" width="16" height="16" border="0" style="padding-left: 5px;"/></a></h1>
 
 				{% if request.user|technician_access %}
 				<h2>Technician Tools</h2>
 				<ul>
 					<li>
-						<a href="/link_handler/portal/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/calpoly.ico" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
+						<a href="/link_handler/portal/" class="handler_link"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
 					</li>
 					<li>
-						<a href="/link_handler/srs/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/ticket.png" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" />SRS Ticket Manager</a>
+						<a href="/link_handler/srs/" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" />SRS Ticket Manager</a>
 					</li>
 					<li>
-						<a href="/link_handler/advocate/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/advocate.ico" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
+						<a href="/link_handler/advocate/" class="handler_link"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
 					</li>
 					<!-- <li>
-						<a href="/link_handler/devices/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/controller.png" alt="Device Manager" align="top" width="16" height="16" border="0" />Device Pass Through</a>
+						<a href="/link_handler/devices/" class="handler_link"><img src="{% static 'images/icons/controller.png' %}" alt="Device Manager" align="top" width="16" height="16" border="0" />Device Pass Through</a>
 					</li> -->
 					<!-- <li>
-						<a href="/link_handler/abuse/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/log.png" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
+						<a href="/link_handler/abuse/" class="handler_link"><img src="{% static 'images/icons/log.png' %}" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
 					</li> -->
 					<li>
-						<a href="/link_handler/cisco/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/cisco.gif" alt="Cisco View" align="top" width="16" height="16" border="0" />Cisco View</a>
+						<a href="/link_handler/cisco/" class="handler_link"><img src="{% static 'images/icons/cisco.gif' %}" alt="Cisco View" align="top" width="16" height="16" border="0" />Cisco View</a>
 					</li>
 					<li>
-						<a href="/link_handler/ccamgr/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/cisco.gif" alt="Clean Access Manager" align="top" width="16" height="16" border="0" />CCA Manager</a>
+						<a href="/link_handler/ccamgr/" class="handler_link"><img src="{% static 'images/icons/cisco.gif' %}" alt="Clean Access Manager" align="top" width="16" height="16" border="0" />CCA Manager</a>
 					</li>
 					<li>
-                        <a onclick="$('#wiki_pages_list').toggle()" style="cursor: pointer !important;"><img src="{{STATIC_URL}}images/icons/confluence_16.png" alt="Wiki Pages" align="top" width="16" height="16" border="0" />Wiki Pages</a>
+                        <a onclick="$('#wiki_pages_list').toggle()" style="cursor: pointer !important;"><img src="{% static 'images/icons/confluence_16.png' %}" alt="Wiki Pages" align="top" width="16" height="16" border="0" />Wiki Pages</a>
                     </li>
                     <ul id="wiki_pages_list" style="display: none;">
                         <li>
@@ -145,7 +146,7 @@
 				<h2>Staff Tools</h2>
 				<ul>
 				    <li>
-                        <a href="{% url 'restech_list_edit' %}"><img src="{{ STATIC_URL }}images/icons/restech.png" alt="Manage Technicians" align="top" width="16" height="16" border="0" />Manage Technicians</a>
+                        <a href="{% url 'restech_list_edit' %}"><img src="{% static 'images/icons/restech.png' %}" alt="Manage Technicians" align="top" width="16" height="16" border="0" />Manage Technicians</a>
                     </li>
 				</ul>
 				{% endif %}
@@ -154,10 +155,10 @@
 				<h2>Network Analysis</h2>
                 <ul>
 					<li>
-						<a href="/link_handler/aruba/" class="handler_link"><img src="{{ STATIC_URL }}images/icons/aruba.ico" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
+						<a href="/link_handler/aruba/" class="handler_link"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
 					</li>
                     <li>
-                        <a onclick="$('#aruba_controllers_list').toggle()" style="cursor: pointer !important;"><img src="{{STATIC_URL}}images/icons/aruba.ico" alt="Aruba Controllers" align="top" width="16" height="16" border="0" />Aruba Controllers</a>
+                        <a onclick="$('#aruba_controllers_list').toggle()" style="cursor: pointer !important;"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba Controllers" align="top" width="16" height="16" border="0" />Aruba Controllers</a>
                     </li>
                     <ul id="aruba_controllers_list" style="display: none;">
                         <li>
@@ -184,17 +185,17 @@
 				<ul>
 					{% if request.user|portmap_access %}
 					<li>
-						<a href="{% url 'residence_halls_wired_ports' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="Residence Halls Port Map" align="top" width="16" height="16" border="0" />Res Halls Port Map</a>
+						<a href="{% url 'residence_halls_wired_ports' %}"><img src="{% static 'images/icons/database.png' %}" alt="Residence Halls Port Map" align="top" width="16" height="16" border="0" />Res Halls Port Map</a>
 					</li>
 					{% endif %}
 					{% if request.user|computers_access %}
 					<li>
-						<a href="{% url 'uh_computers' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="UH Computer Index" align="top" width="16" height="16" border="0" />UH Computer Index</a>
+						<a href="{% url 'uh_computers' %}"><img src="{% static 'images/icons/database.png' %}" alt="UH Computer Index" align="top" width="16" height="16" border="0" />UH Computer Index</a>
 					</li>
 					{% endif %}
 					{% if request.user|printers_access %}
 					<li>
-						<a href="{% url 'uh_printers' %}"><img src="{{STATIC_URL}}images/icons/database.png" alt="UH Printer Index" align="top" width="16" height="16" border="0" />UH Printer Index</a>
+						<a href="{% url 'uh_printers' %}"><img src="{% static 'images/icons/database.png' %}" alt="UH Printer Index" align="top" width="16" height="16" border="0" />UH Printer Index</a>
 					</li>
 					{% endif %}
 				</ul>
@@ -204,7 +205,7 @@
 				<h2>Equipment</h2>
 				<ul>
 					<li>
-						<a href="{% url 'printer_request_list' %}"><img src="{{STATIC_URL}}images/icons/printer.png" alt="Printer Requests" align="top" width="16" height="16" border="0" />Printer Requests</a>
+						<a href="{% url 'printer_request_list' %}"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" />Printer Requests</a>
 					</li>
 					<ul>
 						<li>
@@ -221,7 +222,7 @@
                 <h2>Administration</h2>
                 <ul>
                     <li>
-                        <a href="/link_handler/flugzeug/" class="handler_link"><img src="{{STATIC_URL}}images/icons/django.ico" alt="Django Admin" align="top" width="16" height="16" border="0" />Django Admin Site</a>
+                        <a href="/link_handler/flugzeug/" class="handler_link"><img src="{% static 'images/icons/django.ico' %}" alt="Django Admin" align="top" width="16" height="16" border="0" />Django Admin Site</a>
                     </li>
                 </ul>
                 {% endif %}
@@ -281,7 +282,7 @@
 							<a href="https://resnet.calpoly.edu">Residential Networking Services</a>
 						</li>
 					</ul>
-					<img src="{{STATIC_URL}}images/django_logo_negative.png" width="136px" height="60px" class="djangoLogo" />
+					<img src="{% static 'images/django_logo_negative.png' %}" width="136px" height="60px" class="djangoLogo" />
 				</div>
 				<div id="footer_deptinfo">
 					<p>

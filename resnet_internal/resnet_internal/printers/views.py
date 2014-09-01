@@ -61,11 +61,13 @@ class PopulatePrinters(BaseDatatableView):
         """
 
         if column == 'remove':
-            return """<div id='%s' column='%s'><a style="color:red; cursor:pointer;" onclick="confirm_remove(%s);">Remove</a></div>""" % (row.id, column, row.id)
+            return """<div id='{id}' column='{column}'><a style="color:red; cursor:pointer;" onclick="confirm_remove({id});">Remove</a></div>""".format(id=row.id, column=column)
         elif column in self.editable_columns and portmap_modify_access_test(self.request.user):
-            return "<div id='%s' class='editable' column='%s'><span class='display_data'>%s</span><input type='text' class='editbox' value='%s' /></div>" % (row.id, column, getattr(row, column), getattr(row, column))
+            return """<div id='{id}' class='editable' column='{column}'>
+                       <span class='display_data'>{value}</span>
+                       <input type='text' class='editbox' value='{value}' /></div>""".format(id=row.id, column=column, value=getattr(row, column))
         else:
-            return "<div id='%s' column='%s'>%s</div>" % (row.id, column, getattr(row, column))
+            return """<div id='{id}' column='{column}'>{value}</div>""".format(id=row.id, column=column, value=getattr(row, column))
 
     def filter_queryset(self, qs):
         """ Filters the QuerySet by submitted search parameters.
