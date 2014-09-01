@@ -100,6 +100,10 @@ class PopulateComputers(BaseDatatableView):
                 return ""
         elif column == 'remove':
             return """<div id='{id}' column='{column}'><a style="color:red; cursor:pointer;" onclick="confirm_remove({id});">Remove</a></div>""".format(id=row.id, column=column)
+        elif column == 'dn' or column == 'description':
+            return """<div id='{id}' class='editable' column='{column}'>
+                       <span class='display_data'>{value}</span>
+                       <textarea class='editbox'>{value}</textarea></div>""".format(id=row.id, column=column, value=getattr(row, column))
         elif column in self.editable_columns and computers_modify_access_test(self.request.user):
             return """<div id='{id}' class='editable' column='{column}'>
                        <span class='display_data'>{value}</span>
@@ -120,7 +124,7 @@ class PopulateComputers(BaseDatatableView):
 
         """
 
-        search_parameters = self.request.GET.get('sSearch', None)
+        search_parameters = self.request.GET.get('search[value]', None)
 
         if search_parameters:
             params = search_parameters.split(" ")

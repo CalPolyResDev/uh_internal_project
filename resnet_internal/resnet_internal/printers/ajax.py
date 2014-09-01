@@ -31,23 +31,6 @@ def modify_printer(request, request_dict, row_id, row_zero, username):
         printer_instance = Printer.objects.get(id=row_id)
 
         for column, value in request_dict.items():
-            # DN cleanup
-            if column == "dn":
-                dn_pieces = value.split(",")
-                stripped_dn_pieces = []
-
-                for dn_piece in dn_pieces:
-                    try:
-                        group_type, group_string = dn_piece.split("=")
-                    except ValueError:
-                        dajax.alert("Please enter a valid DN.")
-                        dajax.script('printer_index.fnDraw();')
-                        return dajax.json()
-
-                    stripped_dn_pieces.append('%(type)s=%(string)s' % {'type': group_type.strip(), 'string': group_string.strip()})
-
-                value = ', '.join(stripped_dn_pieces)
-
             setattr(printer_instance, column, value)
 
         printer_instance.save()

@@ -91,7 +91,7 @@ class PopulateResidenceHallWiredPorts(BaseDatatableView):
 
         """
 
-        search_parameters = self.request.GET.get('sSearch', None)
+        search_parameters = self.request.GET.get('search[value]', None)
 
         if search_parameters:
             params = search_parameters.split(" ")

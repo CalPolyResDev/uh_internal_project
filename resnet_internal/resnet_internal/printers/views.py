@@ -38,16 +38,16 @@ class PopulatePrinters(BaseDatatableView):
     max_display_length = 250
 
     # define the columns that will be returned
-    columns = ['id', 'department', 'sub_department', 'printer_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'dn', 'description', 'remove']
+    columns = ['id', 'department', 'sub_department', 'printer_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'description', 'remove']
 
     # define column names that can be sorted?
     order_columns = columns
 
     # define columns that can be searched
-    searchable_columns = ['department', 'sub_department', 'printer_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'dn', 'description']
+    searchable_columns = ['department', 'sub_department', 'printer_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'description']
 
     # define columns that can be edited
-    editable_columns = ['department', 'sub_department', 'printer_name', 'ip_address', 'property_id', 'dn', 'description']
+    editable_columns = ['department', 'sub_department', 'printer_name', 'ip_address', 'property_id', 'description']
 
     def render_column(self, row, column):
         """Render columns with customized HTML.
@@ -82,7 +82,7 @@ class PopulatePrinters(BaseDatatableView):
 
         """
 
-        search_parameters = self.request.GET.get('sSearch', None)
+        search_parameters = self.request.GET.get('search[value]', None)
 
         if search_parameters:
             params = search_parameters.split(" ")

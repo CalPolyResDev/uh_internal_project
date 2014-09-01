@@ -4,7 +4,7 @@ from .models import Printer, PrinterType, Toner, Part, Request, Request_Toner, R
 
 
 class PrinterAdmin(admin.ModelAdmin):
-    list_display = ('department', 'sub_department', 'printer_name', 'ip_address', 'mac_address', 'model', 'serial_number', 'property_id', 'dn', 'description')
+    list_display = ('department', 'sub_department', 'printer_name', 'ip_address', 'mac_address', 'model', 'serial_number', 'property_id', 'description')
 
 admin.site.register(Printer, PrinterAdmin)
 admin.site.register(PrinterType)

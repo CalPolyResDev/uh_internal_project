@@ -28,7 +28,6 @@ class Printer(Model):
     model = CharField(max_length=25, verbose_name=u'Model')
     serial_number = CharField(max_length=20, verbose_name=u'Serial Number', unique=True)
     property_id = CharField(max_length=50, verbose_name=u'Cal Poly Property ID', unique=True)
-    dn = CharField(max_length=250, verbose_name=u'Distinguished Name')
     description = CharField(max_length=100, verbose_name=u'Description')
 
     def __unicode__(self):

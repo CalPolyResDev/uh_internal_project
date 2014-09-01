@@ -20,7 +20,7 @@ class NewPrinterForm(ModelForm):
 
     class Meta:
         model = Printer
-        fields = ('department', 'sub_department', 'printer_name', 'ip_address', 'mac_address', 'model', 'serial_number', 'property_id', 'dn', 'description', )
+        fields = ('department', 'sub_department', 'printer_name', 'ip_address', 'mac_address', 'model', 'serial_number', 'property_id', 'description', )
 
 
 class TonerCountForm(ModelForm):

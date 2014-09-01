@@ -51,31 +51,6 @@
 	padding: 15px 10px 15px 0;
 }
 
-.width0 {
-	width:0px;
-}
-.width50 {
-    width:50px;
-}
-.width55 {
-    width:55px;
-}
-.width100 {
-	width:100px;
-}
-.width150 {
-	width:150px;
-}
-.width155 {
-    width:155px;
-}
-.width200 {
-	width:200px;
-}
-.width225 {
-    width:225px;
-}
-
 .half_table {
 	float: left;
 	width: 45%;

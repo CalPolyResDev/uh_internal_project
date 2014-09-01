@@ -3,13 +3,13 @@
 
 {% block meta %}
 {{ block.super }}
-<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/plug-ins/725b2a2115b/sorting/ip-address.js"></script>
 <script type="text/javascript">
     // IP Address Filter for dataTables
     jQuery.fn.dataTableExt.aTypes.unshift(
-        function ( sData )
-        {
-            if (/^\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b$/.test(sData)) {
+        function (data) {
+            if (/^\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b$/.test(data)) {
                 return 'ip-address';
             }
             return null;
@@ -31,9 +31,9 @@
     $(document).ready(function() {
         // Initialize the DataTable. See datatables documentation for information about each option
         residence_halls_wired_port_map = $('#residence_halls_wired_port_map').dataTable( {
-            "aaSorting": [[ 1, "asc" ], [ 2, "asc" ], [ 3, "asc" ]],
-            "oLanguage": {
-                "sLengthMenu": 'Display <select>'+
+            "order": [[ 1, "asc" ], [ 2, "asc" ], [ 3, "asc" ]],
+            "language": {
+                "lengthMenu": 'Display <select>'+
                     '<option value="50">50</option>'+
                     '<option value="100">100</option>'+
                     '<option value="250">250</option>'+
@@ -41,35 +41,35 @@
                     '<option value="1000">1000</option>'+
                     '<option value="-1">All</option>'+
                     '</select> records:',
-                "sSearch": "Filter records (use ?<i>alias</i> to search RMS):",
-                "sZeroRecords": "No records to display."
+                "search": "Filter records (use ?<i>alias</i> to search RMS):",
+                "zeroRecords": "No records to display."
             },
-            "bProcessing": true,
-            "bServerSide": true,
-            "sAjaxSource": "{% url 'populate_residence_halls_wired_ports' %}",
-            "iDisplayLength": 50,
-            "sPaginationType": "full_numbers",
-            "bLengthChange": true,
-            "bAutoWidth": false,
-            "sDom": '<lrf><"clear">t<ip><"clear">',
+            "processing": true,
+            "serverSide": true,
+            "ajax": "{% url 'populate_residence_halls_wired_ports' %}",
+            "pageLength": 50,
+            "pagingType": "full_numbers",
+            "lengthChange": true,
+            "autoWidth": false,
+            "dom": '<lrf><"clear">t<ip><"clear">',
             // Custom column rendering
-            "aoColumnDefs": [
-                { "sClass": "width0","bSearchable": false, "bVisible": false, "aTargets": [ 0 ] },
-                { "sClass": "width100", "sType": "string", "aTargets": [ 1 ] },
-                { "sClass": "width100", "sType": "string", "aTargets": [ 2 ] },
-                { "sClass": "width50", "sType": "string", "aTargets": [ 3 ] },
-                { "sClass": "width150", "sType": "ip-address", "aTargets": [ 4 ] },
-                { "sClass": "width100", "sType": "string", "aTargets": [ 5 ] },
-                { "sClass": "width50", "sType": "string", "aTargets": [ 6 ] },
-                { "sClass": "width50", "sType": "numeric", "aTargets": [ 7 ] },
-                { "sClass": "width50", "sType": "numeric", "aTargets": [ 8 ] },
+            "columnDefs": [
+                { "width": "0px", "searchable": false, "visible": false, "targets": [ 0 ] },
+                { "width": "100px", "type": "string", "targets": [ 1 ] },
+                { "width": "100px", "type": "string", "targets": [ 2 ] },
+                { "width": "50px", "type": "string", "targets": [ 3 ] },
+                { "width": "150px", "type": "ip-address", "targets": [ 4 ] },
+                { "width": "100px", "type": "string", "targets": [ 5 ] },
+                { "width": "50px", "type": "string", "targets": [ 6 ] },
+                { "width": "50px", "type": "numeric", "targets": [ 7 ] },
+                { "width": "50px", "type": "numeric", "targets": [ 8 ] },
                 {% if request.user|portmap_modify_access %}
-                	{ "sClass": "edit_trigger width55", "sType": "numeric", "aTargets": [ 9 ] },
-                	{ "sClass": "width50", "sType": "string", "aTargets": [ 10 ] },
+                	{ "className": "edit_trigger", "width": "55px", "type": "numeric", "targets": [ 9 ] },
+                	{ "width": "50px", "type": "string", "targets": [ 10 ] },
 
                 {% else %}
-                	{ "sClass": "width55", "sType": "numeric", "aTargets": [ 9 ] },
-                	{ "sClass": "width0", "bSearchable": false, "bVisible": false, "aTargets": [ 10 ] },
+                	{ "width": "55px", "type": "numeric", "targets": [ 9 ] },
+                	{ "width": "0px", "searchable": false, "visible": false, "targets": [ 10 ] },
                 {% endif %}
             ],
         });
@@ -110,6 +110,7 @@
 	                        	var digitreg = /^\d+$/;
 	                        	if (!digitreg.test(value)) {
 	                        		alert('Blade and Port values must be numbers');
+	                        		return false;
 	                        	}
 	                        }
 
@@ -126,7 +127,7 @@
 	            });
 
 	            // Edit input box click action
-	            $(".editbox").mouseup(function() {
+	            $("#" + row_id).parent().parent().mouseup(function() {
 	                return false;
 	            });
 
