@@ -19,7 +19,7 @@ from django.views.generic import RedirectView
 
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 
-from .core.views import IndexView, LoginView, NavigationSettingsView
+from .core.views import IndexView, LoginView, NavigationSettingsView, handler500
 from .adgroups.views import ResTechListEditView
 from .orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .computers.views import ComputersView, PopulateComputers, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
@@ -140,6 +140,13 @@ urlpatterns += patterns('',
 # Dajaxice
 urlpatterns += patterns('',
     url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
+)
+
+# Raise errors on purpose
+urlpatterns += patterns('',
+    url(r'^500/$', 'ThisIsIntentionallyBroken'),
+    url(r'^403/$', 'django.views.defaults.permission_denied'),
+    url(r'^404/$', 'django.views.defaults.page_not_found'),
 )
 
 if settings.DEBUG:

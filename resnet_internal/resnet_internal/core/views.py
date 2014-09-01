@@ -192,3 +192,14 @@ def logout(request):
     auth_logout(request)
     redirection = reverse_lazy('home')
     return HttpResponseRedirect(redirection)
+
+
+def handler500(request):
+    """500 error handler which includes ``request`` in the context."""
+
+    from django.template import loader
+    from django.http import HttpResponseServerError
+
+    template = loader.get_template('500.html')
+
+    return HttpResponseServerError(template.render(RequestContext(request)))

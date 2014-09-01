@@ -96,6 +96,7 @@
 					</p>
 				</div>
 			</div>
+			{% block sidenav %}
 			{% if request.user.is_authenticated and not request.user.is_new_tech %} {# User is logged in - display navigation bar. #}
 			<!-- Begin Navigation Bar -->
 			<div id="leftnav">
@@ -267,6 +268,7 @@
 			</div>
 			<!-- End Navigation Bar -->
 			{% endif %}
+			{% endblock %}
 			{% block content %}{% endblock %}
 			<div id="footer">
 				<div id="footer_links">
