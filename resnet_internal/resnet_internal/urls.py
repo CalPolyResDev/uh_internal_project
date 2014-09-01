@@ -19,7 +19,7 @@ from django.views.generic import RedirectView
 
 from dajaxice.core import dajaxice_autodiscover, dajaxice_config
 
-from .core.views import IndexView, LoginView, NavigationSettingsView, handler500
+from .core.views import IndexView, LoginView, NavigationSettingsView, PhoneInstructionsView, handler500
 from .adgroups.views import ResTechListEditView
 from .orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .computers.views import ComputersView, PopulateComputers, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
@@ -77,6 +77,7 @@ urlpatterns = patterns('core.views',
     url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^logout/$', 'logout', name='logout'),
     url(r'^settings/navigation/$', login_required(NavigationSettingsView.as_view()), name='navigation_settings'),
+    url(r'^message/$', login_required(technician_access(PhoneInstructionsView.as_view())), name='phone_instructions'),
     url(r'^(?P<mode>frame|external|link_handler)/(?P<key>\b[a-zA-Z0-9_]*\b)/$', 'link_handler', name='link_handler'),
     url(r'^(?P<mode>frame|external|link_handler)/(?P<key>cisco)/(?P<ip>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', 'link_handler', name='link_handler_cisco'),
 )

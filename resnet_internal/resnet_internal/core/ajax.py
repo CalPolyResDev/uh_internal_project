@@ -11,6 +11,7 @@ import imaplib
 import logging
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.db import DatabaseError
 
@@ -97,7 +98,7 @@ def refresh_duties(request):
 
     duties_html = u"""
     <h2 class="center">Daily Duties</h2>
-    <h3><a style="cursor:pointer;" onclick="updateDuty('messages')">Check Messages""" + message_count + u"""</a></h3>
+    <h3><a href='""" + reverse('phone_instructions') + """' class="popup_frame" style="cursor:pointer;" onclick="updateDuty('messages')">Check Messages""" + message_count + u"""</a></h3>
     <p>
         Last Checked:
         <br />

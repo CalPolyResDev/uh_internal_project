@@ -33,7 +33,7 @@ def link_handler(request, mode, key, ip=""):
     # Email
     elif key == "zimbra":
         subtitle = "Zimbra Email"
-        source = "https://connect.calpoly.edu/zimbra/mail#1"
+        source = "https://connect.calpoly.edu/zimbra/preauth.jsp"
     # SRS Ticket Manager
     elif key == "srs":
         subtitle = "SRS Ticket Manager"
@@ -140,6 +140,10 @@ class NavigationSettingsView(FormView):
         user_instance.save()
 
         return render_to_response('core/settings/close_window.html', context_instance=RequestContext(self.request))
+
+
+class PhoneInstructionsView(TemplateView):
+    template_name = "core/phone_message_instructions.html"
 
 
 class LoginView(FormView):
