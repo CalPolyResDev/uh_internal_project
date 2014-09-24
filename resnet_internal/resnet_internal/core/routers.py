@@ -13,7 +13,7 @@ class CommonRouter(object):
 
     ALIAS = "common"
     APP_NAME = "core"
-    MODELS = ('staffmapping')
+    MODELS = ('staffmapping', 'community', 'building')
 
     def _app(self, model):
         """ A shortcut to retrieve the provided model's application label.

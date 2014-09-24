@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import SiteAnnouncements, StaffMapping, ResNetInternalUser
+from .models import Community, Building, SiteAnnouncements, StaffMapping, ResNetInternalUser
 
 
 class SiteAnnouncementsAdmin(admin.ModelAdmin):
@@ -19,6 +19,8 @@ class ResNetInternalUserAdmin(admin.ModelAdmin):
                    'is_technician', 'is_new_tech', 'is_developer')
 
 
+admin.site.register(Community, admin.ModelAdmin)
+admin.site.register(Building, admin.ModelAdmin)
 admin.site.register(SiteAnnouncements, SiteAnnouncementsAdmin)
 admin.site.register(StaffMapping, StaffMappingAdmin)
 admin.site.register(ResNetInternalUser, ResNetInternalUserAdmin)
