@@ -8,7 +8,6 @@
 
 
 from django.http import HttpResponseNotFound, HttpResponseRedirect
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.core.urlresolvers import reverse_lazy
 from django.views.decorators.debug import sensitive_post_parameters
@@ -24,7 +23,6 @@ from .forms import NavigationSettingsForm, AutoFocusAuthenticationForm
 from .models import SiteAnnouncements
 
 
-@login_required
 def link_handler(request, mode, key, ip=""):
     # My Cal Poly Portal
     if key == "portal":
