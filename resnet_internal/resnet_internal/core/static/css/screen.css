@@ -12,6 +12,18 @@ body {
     font-size: 0.75em !important;
 }
 
+.add_link {
+    cursor: pointer;
+    float: left;
+    font-weight:bolder;
+    color: rgb(33,94,152) !important;
+    text-decoration: none !important;
+    margin-top: 7px;
+}
+.add_link:hover {
+    color: rgb(39,112,180) !important;
+}
+
 .djangoLogo {
 	margin-top: -5px;
 	padding-left: 10px;
