@@ -1,17 +1,15 @@
-Django==1.6.6
-git+https://code.resdev.calpoly.edu/scm/rmsc/rmsconnector.git@866af46#egg=rmsconnector==3.1.3
-git+https://code.resdev.calpoly.edu/scm/srsc/srsconnector.git@5f8402f89220f895351a02b5b8af05dd1434ef57#egg=srsconnector==2.2.8
-South==1.0
+Django==1.7
+git+https://code.resdev.calpoly.edu/scm/rmsc/rmsconnector.git#egg=rmsconnector==3.1.5
+git+https://code.resdev.calpoly.edu/scm/srsc/srsconnector.git@9e4ed3c#egg=srsconnector==2.2.9
 unipath==1.0
-colorama==0.3.1
+colorama==0.3.2
 django-auth-ldap==1.2.1
-django-dajax==0.9.2
-django-dajaxice==0.6
-django-datatables-view==1.10
-ldap-groups==2.5.1
+djangoajax=2.2.11
+django-datatables-view==1.12
+ldap-groups==2.5.3
 raven==5.0.0
 
 # Manual Install
-python-ldap==2.4.15
+python-ldap==2.4.16
 mysql-python==1.2.5
 cx_Oracle==5.1.3

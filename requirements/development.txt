@@ -2,6 +2,3 @@
 -r base.txt
 django-devserver==0.8.0
 django-debug-toolbar==1.2.1
-git+git://github.com/santiagobasulto/debug-inspector-panel@5d5407fb43
-
-#Sphinx==1.2b1
