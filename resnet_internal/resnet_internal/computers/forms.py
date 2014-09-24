@@ -13,17 +13,42 @@ from .fields import PortListFormField, DomainNameListFormFiled
 from .models import Computer
 
 
-class NewComputerForm(ModelForm):
+class ComputerCreateForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
-        super(NewComputerForm, self).__init__(*args, **kwargs)
+        super(ComputerCreateForm, self).__init__(*args, **kwargs)
 
         for field_name in self.fields:
             self.fields[field_name].error_messages = {'required': 'A ' + field_name + ' is required.'}
 
+        if "department" in self.fields:
+            self.fields["department"].widget.attrs['autocomplete'] = "off"
+
+    def clean_dn(self):
+        data = self.cleaned_data['dn']
+        dn_pieces = data.split(",")
+        stripped_dn_pieces = []
+
+        for dn_piece in dn_pieces:
+            try:
+                group_type, group_string = dn_piece.split("=")
+            except ValueError:
+                self.add_error("dn", ValidationError("Please enter a valid DN."))
+                return data
+
+            stripped_dn_pieces.append('%(type)s=%(string)s' % {'type': group_type.strip(), 'string': group_string.strip()})
+
+        return ', '.join(stripped_dn_pieces)
+
     class Meta:
         model = Computer
-        fields = ('department', 'sub_department', 'computer_name', 'ip_address', 'mac_address', 'model', 'serial_number', 'property_id', 'dn', 'description', )
+        fields = ['id', 'department', 'sub_department', 'computer_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'dn', 'description']
+
+
+class ComputerUpdateForm(ComputerCreateForm):
+
+    class Meta:
+        fields = ['id', 'department', 'sub_department', 'computer_name', 'ip_address', 'property_id', 'dn', 'description']
 
 
 class RequestPinholeForm(Form):

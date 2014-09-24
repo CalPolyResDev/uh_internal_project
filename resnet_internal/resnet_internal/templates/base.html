@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 {% load core_user_tests %}
-{% load dajaxice_templatetags %}
 {% load staticfiles %}
-{% load url from future %}
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -18,20 +16,9 @@
 		<link href="{% static 'css/table.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
 		<link href="{% static 'fancybox/jquery.fancybox.css' %}?v=2.1.5" rel="stylesheet" type="text/css" media="screen" />
 		<link href="{% static 'images/icons/favicon.ico' %}" rel="shortcut icon" />
-		<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.2.min.js"></script>
-		{% dajaxice_js_import %}
-		<script type="text/javascript" src="{% static 'js/jquery.dajax.core.js' %}"></script>
+		<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
+		<script type="text/javascript" src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'fancybox/jquery.fancybox.pack.js' %}?v=2.1.5"></script>
-		<script type="text/javascript">
-			function refreshDuties() {
-				Dajaxice.resnet_internal.core.refresh_duties(Dajax.process);
-			};
-			function updateDuty(duty) {
-				Dajaxice.resnet_internal.core.update_duty(Dajax.process,{'duty': duty});
-				{% if request.user.is_authenticated %}refreshDuties();{% endif %}
-				return true;
-			};
-		</script>
 		{% block meta %}
 		<script type="text/javascript">
             $(document).ready(function() {
@@ -52,7 +39,8 @@
 		{% endblock %}
 		<title>ResNet Internal - Online Tools{% block subtitle %}{% endblock %}</title>
 	</head>
-	<body {% if request.user.is_authenticated %}onload="refreshDuties()"{% endif %}>
+	{% block body %}
+	<body>
 		<noscript><div id="noscript-padding"></div></noscript>
 		<div id="container">
 			<div id="header">
@@ -314,12 +302,30 @@
             };
             $(document).ready(function() {
                 update_link_targets("{{ request.user.open_links_in_frame }}");
+                {% if request.user.is_authenticated %}refreshDuties();{% endif %}
             });
-
         </script>
+        {% if request.user.is_authenticated %}
+		<script type="text/javascript">
+			function refreshDuties() {
+				ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
+					update_link_targets("{{ request.user.open_links_in_frame }}");
+					return true;
+				});
+				return false;
+			};
+			function updateDuty(duty) {
+				ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
+					return true;
+				});
+				return false;
+			};
+		</script>
+		{% endif %}
 		{% endblock %}
 		<noscript>
         	<div id="noscript-warning">Many applications on this website require that JavaScript be enabled. Please do so.</div>
     	</noscript>
 	</body>
+	{% endblock %}
 </html>

@@ -12,163 +12,33 @@ import socket
 import subprocess
 
 from django.core.urlresolvers import reverse, reverse_lazy
-from django.db.models import Q
 from django.http.response import HttpResponseRedirect, HttpResponse
-from django.views.generic.edit import FormView, CreateView
+from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
 
-from django_datatables_view.base_datatable_view import BaseDatatableView
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
-from resnet_internal.settings.base import computers_modify_access_test
-from .forms import NewComputerForm, RequestPinholeForm, RequestDomainNameForm
+from resnet_internal.datatables.views import DatatablesView
+
+from .forms import ComputerCreateForm, RequestPinholeForm, RequestDomainNameForm
 from .models import Computer, Pinhole, DomainName
-from django.contrib.staticfiles.templatetags.staticfiles import static
+from .ajax import PopulateComputers
 
 
 logger = logging.getLogger(__name__)
 
 
-class ComputersView(CreateView):
+class ComputersView(DatatablesView):
+
     template_name = "computers/computers.html"
-    form_class = NewComputerForm
+    form_class = ComputerCreateForm
+    populate_class = PopulateComputers
     model = Computer
-    fields = NewComputerForm.Meta.fields
     success_url = reverse_lazy('uh_computers')
 
 
-class PopulateComputers(BaseDatatableView):
-    """Renders the computer index."""
-
-    model = Computer
-    max_display_length = 250
-
-    # define the columns that will be returned
-    columns = ['id', 'department', 'sub_department', 'computer_name', 'mac_address', 'ip_address', 'RDP', 'model', 'serial_number', 'property_id', 'dn', 'description', 'remove']
-
-    # define column names that can be sorted?
-    order_columns = columns
-
-    # define columns that can be searched
-    searchable_columns = ['department', 'sub_department', 'computer_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'dn', 'description']
-
-    # define columns that can be edited
-    editable_columns = ['department', 'sub_department', 'computer_name', 'ip_address', 'property_id', 'dn', 'description']
-
-    def render_column(self, row, column):
-        """Render columns with customized HTML.
-
-        :param row: A dictionary containing row data.
-        :type row: dict
-        :param column: The name of the column to be rendered. This can be used to index into the row dictionary.
-        :type column: str
-        :returns: The HTML to be displayed for this column.
-
-        """
-
-        if column == 'ip_address':
-            ip_address = getattr(row, column)
-
-            beginning = """<div id='{id}' class='editable' column='{column}'>
-                            <div class='display_data'>
-                                <a href='{record_url}' class='popup_frame'>{value}</a>""".format(id=row.id, column=column, record_url=reverse('view_uh_computer_record', kwargs={'ip_address': ip_address}), value=ip_address)
-            pinholes = """<img src="{icon_url}" style='padding-left:5px;' align='top' width='16' height='16' border='0' />""".format(icon_url=static('images/icons/pinholes.png'))
-            domain_names = """<img src="{icon_url}" style='padding-left:5px;' align='top' width='16' height='16' border='0' />""".format(icon_url=static('images/icons/domain_names.png'))
-            end = """</div><input type='text' class='editbox' value='{value}' /></div>""".format(value=ip_address)
-
-            result = beginning
-
-            # Only display the icon if the record exists
-            if ip_address:
-                has_pinholes = Pinhole.objects.filter(ip_address=ip_address).count() != 0
-                has_domain_names = DomainName.objects.filter(ip_address=ip_address).count() != 0
-
-                if has_pinholes:
-                    result = result + pinholes
-                if has_domain_names:
-                    result = result + domain_names
-
-            return result + end
-        elif column == 'RDP':
-            try:
-                rdp_file_url = reverse('rdp_request', kwargs={'ip_address': row.ip_address})
-                return """<div id='{id}' column='{column}'>
-                            <a style='cursor:pointer;' href='{value}'>
-                                <img src="{icon_url}" style='padding-left:5px;' align='top' width='16' height='16' border='0' />
-                            </a>""".format(id=row.id, column=column, value=rdp_file_url, icon_url=static('images/icons/rdp.png'))
-            except:
-                return ""
-        elif column == 'remove':
-            return """<div id='{id}' column='{column}'><a style="color:red; cursor:pointer;" onclick="confirm_remove({id});">Remove</a></div>""".format(id=row.id, column=column)
-        elif column == 'dn' or column == 'description':
-            return """<div id='{id}' class='editable' column='{column}'>
-                       <span class='display_data'>{value}</span>
-                       <textarea class='editbox'>{value}</textarea></div>""".format(id=row.id, column=column, value=getattr(row, column))
-        elif column in self.editable_columns and computers_modify_access_test(self.request.user):
-            return """<div id='{id}' class='editable' column='{column}'>
-                       <span class='display_data'>{value}</span>
-                       <input type='text' class='editbox' value='{value}' /></div>""".format(id=row.id, column=column, value=getattr(row, column))
-        else:
-            return """<div id='{id}' column='{column}'>{value}</div>""".format(id=row.id, column=column, value=getattr(row, column))
-
-    def filter_queryset(self, qs):
-        """ Filters the QuerySet by submitted search parameters.
-
-        Made to work with multiple word search queries.
-        PHP source: http://datatables.net/forums/discussion/3343/server-side-processing-and-regex-search-filter/p1
-        Credit for finding the Q.AND method: http://bradmontgomery.blogspot.com/2009/06/adding-q-objects-in-django.html
-
-        :param qs: The QuerySet to be filtered.
-        :type qs: QuerySet
-        :returns: If search parameters exist, the filtered QuerySet, otherwise the original QuerySet.
-
-        """
-
-        search_parameters = self.request.GET.get('search[value]', None)
-
-        if search_parameters:
-            params = search_parameters.split(" ")
-            columnQ = None
-            paramQ = None
-            firstCol = True
-            firstParam = True
-
-            # Check for pinhole / domain flags
-            for param in params:
-                if param[:1] == '?':
-                    flag = param[1:]
-
-                    if flag == "pinhole":
-                        pinhole_ip_list = Pinhole.objects.values_list('ip_address', flat=True).distinct()
-                        qs = qs.filter(ip_address__in=pinhole_ip_list)
-                    elif flag == "domain":
-                        domain_name_ip_list = DomainName.objects.values_list('ip_address', flat=True).distinct()
-                        qs = qs.filter(ip_address__in=domain_name_ip_list)
-
-            for param in params:
-                if param != "" and not (param == "?pinhole" or param == "?domain"):
-                    for searchable_column in self.searchable_columns:
-                        kwargz = {searchable_column + "__icontains": param}
-                        q = Q(**kwargz)
-                        if (firstCol):
-                            firstCol = False
-                            columnQ = q
-                        else:
-                            columnQ |= q
-                    if (firstParam):
-                        firstParam = False
-                        paramQ = columnQ
-                    else:
-                        paramQ.add(columnQ, Q.AND)
-                    columnQ = None
-                    firstCol = True
-            if paramQ:
-                qs = qs.filter(paramQ)
-
-        return qs
-
-
 class ComputerRecordsView(TemplateView):
+
     template_name = "computers/computer_record.html"
 
     def get_context_data(self, **kwargs):

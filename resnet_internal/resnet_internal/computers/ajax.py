@@ -7,25 +7,31 @@
 """
 
 import logging
+from collections import OrderedDict
 
-from dajax.core import Dajax
-from django.core.urlresolvers import reverse
+from django.db.models import Q
+from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
 from django.contrib.staticfiles.templatetags.staticfiles import static
-from dajaxice.decorators import dajaxice_register
+from django.views.decorators.http import require_POST
+
+from django_ajax.decorators import ajax
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from resnet_internal.core.models import StaffMapping
 from resnet_internal.settings.base import computers_modify_access_test
+from resnet_internal.datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
 from .models import Computer, Pinhole, DomainName
 from .constants import (CORE, HOUSING_ADMINISTRATION, HOUSING_SERVICES, RESIDENTIAL_LIFE_AND_EDUCATION,
                         CORE_SUB_DEPARTMENTS, HOUSING_ADMINISTRATION_SUB_DEPARTMENTS, HOUSING_SERVICES_SUB_DEPARTMENTS,
                         RESIDENTIAL_LIFE_AND_EDUCATION_SUB_DEPARTMENTS)
+from .forms import ComputerUpdateForm
 
 logger = logging.getLogger(__name__)
 
 
-@dajaxice_register
-def update_sub_department(request, department, sub_department_selection=None):
+@ajax
+@require_POST
+def update_sub_department(request):
     """ Update sub-department drop-down choices based on the department chosen.
 
     :param department: The department for which to display sub-department choices.
@@ -36,7 +42,9 @@ def update_sub_department(request, department, sub_department_selection=None):
 
     """
 
-    dajax = Dajax()
+    # Pull post parameters
+    department = request.POST.get("department", None)
+    sub_department_selection = request.POST.get("sub_department_selection", None)
 
     sub_department_options = {
         CORE: [(sub_department, sub_department) for sub_department in CORE_SUB_DEPARTMENTS],
@@ -47,91 +55,195 @@ def update_sub_department(request, department, sub_department_selection=None):
     choices = []
 
     # Add options iff a department is selected
-    if str(department) != "":
+    if department:
         for value, label in sub_department_options[str(department)]:
             if sub_department_selection and value == sub_department_selection:
                 choices.append("<option value='%s' selected='selected'>%s</option>" % (value, label))
             else:
                 choices.append("<option value='%s'>%s</option>" % (value, label))
     else:
+        logger.warning("A department wasn't passed via POST.")
         choices.append("<option value='%s'>%s</option>" % ("", "---------"))
 
-    dajax.assign('#id_sub_department', 'innerHTML', ''.join(choices))
+    data = {
+        'inner-fragments': {
+            '#id_sub_department': ''.join(choices)
+        },
+    }
 
-    return dajax.json()
-
-
-@dajaxice_register
-def modify_computer(request, request_dict, row_id, row_zero, username):
-    dajax = Dajax()
-
-    if computers_modify_access_test(request.user):
-        # Add a temporary loading image to the first column in the edited row
-        dajax.assign("#%s:eq(0)" % row_id, 'innerHTML', """<img src="{icon_url}" />""".format(icon_url=static('images/datatables/load.gif')))
-
-        # Update the database
-        computer_instance = Computer.objects.get(id=row_id)
-
-        for column, value in request_dict.items():
-            # DN cleanup
-            if column == "dn":
-                dn_pieces = value.split(",")
-                stripped_dn_pieces = []
-
-                for dn_piece in dn_pieces:
-                    try:
-                        group_type, group_string = dn_piece.split("=")
-                    except ValueError:
-                        dajax.alert("Please enter a valid DN.")
-                        dajax.script('computer_index.fnDraw();')
-                        return dajax.json()
-
-                    stripped_dn_pieces.append('%(type)s=%(string)s' % {'type': group_type.strip(), 'string': group_string.strip()})
-
-                value = ', '.join(stripped_dn_pieces)
-
-            setattr(computer_instance, column, value)
-
-        computer_instance.save()
-
-        # Redraw the table
-        dajax.script('computer_index.fnDraw();')
-
-    return dajax.json()
+    return data
 
 
-@dajaxice_register
-def remove_computer(request, computer_id):
+class PopulateComputers(RNINDatatablesPopulateView):
+    """Renders the computer index."""
+
+    table_name = "computer_index"
+    data_source = reverse_lazy('populate_uh_computers')
+    update_source = reverse_lazy('update_uh_computer')
+    model = Computer
+
+    # NOTE Installed Types: ip-address, mac-address
+
+    column_definitions = OrderedDict()
+    column_definitions["id"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "ID"}
+    column_definitions["department"] = {"width": "225px", "type": "string", "title": "Department"}
+    column_definitions["sub_department"] = {"width": "225px", "type": "string", "title": "Sub Department"}
+    column_definitions["computer_name"] = {"width": "150px", "type": "string", "title": "Computer Name"}
+    column_definitions["mac_address"] = {"width": "150px", "type": "mac-address", "editable": False, "title": "MAC Address"}
+    column_definitions["ip_address"] = {"width": "150px", "type": "ip-address", "title": "IP Address"}
+    column_definitions["RDP"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "RDP"}
+    column_definitions["model"] = {"width": "100px", "type": "string", "editable": False, "title": "Model"}
+    column_definitions["serial_number"] = {"width": "100px", "type": "string", "editable": False, "title": "Serial Number"}
+    column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
+    column_definitions["dn"] = {"width": "225px", "type": "string", "title": "Distinguished Name"}
+    column_definitions["description"] = {"width": "225px", "type": "string", "className": "edit_trigger", "title": "Description"}
+    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+
+    extra_options = {
+        "language": {
+            "search": "Filter records: (Use ?pinhole and/or ?domain to narrow results.)",
+        },
+    }
+
+    def get_options(self):
+        if self.get_write_permissions():
+            self.column_definitions["remove"] = {"width": "50px", "type": "string", "searchable": False, "orderable": False, "editable": False, "title": "&nbsp;"}
+
+        return super(PopulateComputers, self).get_options()
+
+    def _initialize_write_permissions(self, user):
+        self.write_permissions = computers_modify_access_test(user)
+
+    def render_column(self, row, column):
+
+        if column == 'ip_address':
+            value = getattr(row, column)
+
+            try:
+                record_url = reverse('view_uh_computer_record', kwargs={'ip_address': row.ip_address})
+            except NoReverseMatch:
+                editable_block = self.editable_block_template.format(value=value)
+                return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+            else:
+                editable_block = self.editable_block_template.format(value=value)
+                link_block = self.link_block_template.format(link_url=record_url, onclick_action="", link_target="", link_class_name="popup_frame", link_style="", link_text=value)
+
+                pinholes = self.icon_template.format(icon_url=static('images/icons/pinholes.png'))
+                domain_names = self.icon_template.format(icon_url=static('images/icons/domain_names.png'))
+                inline_images = ""
+
+                if value:
+                    has_pinholes = Pinhole.objects.filter(ip_address=value).count() != 0
+                    has_domain_names = DomainName.objects.filter(ip_address=value).count() != 0
+
+                    if has_pinholes:
+                        inline_images = pinholes
+                    if has_domain_names:
+                        inline_images = inline_images + domain_names
+
+                return self.base_column_template.format(id=row.id, class_name="editable", column=column, value="", link_block=link_block, inline_images=inline_images, editable_block=editable_block)
+        elif column == 'RDP':
+            try:
+                rdp_file_url = reverse('rdp_request', kwargs={'ip_address': row.ip_address})
+            except NoReverseMatch:
+                return self.base_column_template.format(id=row.id, class_name="", column=column, value="", link_block="", inline_images="", editable_block="")
+            else:
+                rdp_icon = self.icon_template.format(icon_url=static('images/icons/rdp.png'))
+                link_block = self.link_block_template.format(link_url=rdp_file_url, onclick_action="", link_target="", link_class_name="", link_style="", link_text=rdp_icon)
+                return self.base_column_template.format(id=row.id, class_name="", column=column, value="", link_block=link_block, inline_images="", editable_block="")
+        elif column == 'remove':
+            onclick = "confirm_remove({id});return false;".format(id=row.id)
+            link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="", link_style="color:red; cursor:pointer;", link_text="Remove")
+
+            return self.base_column_template.format(id=row.id, class_name="", column=column, value="", link_block=link_block, inline_images="", editable_block="")
+        else:
+            return super(PopulateComputers, self).render_column(row, column)
+
+    def filter_queryset(self, qs):
+        search_parameters = self.request.GET.get('search[value]', None)
+        searchable_columns = self.get_searchable_columns()
+
+        if search_parameters:
+            params = search_parameters.split(" ")
+            columnQ = Q()
+            paramQ = Q()
+
+            # Check for pinhole / domain flags
+            for param in params:
+                if param[:1] == '?':
+                    flag = param[1:]
+
+                    if flag == "pinhole":
+                        pinhole_ip_list = Pinhole.objects.values_list('ip_address', flat=True).distinct()
+                        qs = qs.filter(ip_address__in=pinhole_ip_list)
+                    elif flag == "domain":
+                        domain_name_ip_list = DomainName.objects.values_list('ip_address', flat=True).distinct()
+                        qs = qs.filter(ip_address__in=domain_name_ip_list)
+
+            for param in params:
+                if param != "" and not (param == "?pinhole" or param == "?domain"):
+                    for searchable_column in searchable_columns:
+                        columnQ |= Q(**{searchable_column + "__icontains": param})
+
+                    paramQ.add(columnQ, Q.AND)
+                    columnQ = Q()
+            if paramQ:
+                qs = qs.filter(paramQ)
+
+        return qs
+
+
+class UpdateComputer(BaseDatatablesUpdateView):
+    form_class = ComputerUpdateForm
+    model = Computer
+    populate_class = PopulateComputers
+
+
+@ajax
+@require_POST
+def remove_computer(request):
     """ Removes computers from the computer index if no pinhole/domain name records are associated with it.
 
     :param computer_id: The computer's id.
-    :type computer_id: str
+    :type computer_id: int
 
     """
 
-    dajax = Dajax()
+    # Pull post parameters
+    computer_id = request.POST["computer_id"]
 
-    if computers_modify_access_test(request.user):
-        computer_instance = Computer.objects.get(id=computer_id)
-        ip_address = computer_instance.ip_address
+    context = {}
+    context["success"] = True
+    context["error_message"] = None
+    context["computer_id"] = computer_id
 
-        pinholes_count = Pinhole.objects.filter(ip_address=ip_address).count()
-        domain_names_count = DomainName.objects.filter(ip_address=ip_address).count()
+    computer_instance = Computer.objects.get(id=computer_id)
+    ip_address = computer_instance.ip_address
 
-        if pinholes_count > 0 or domain_names_count > 0:
-            dajax.alert("This computer cannot be deleted because it still has pinholes and/or domain names associated with it.")
-        else:
-            computer_instance.delete()
+    pinholes_count = Pinhole.objects.filter(ip_address=ip_address).count()
+    domain_names_count = DomainName.objects.filter(ip_address=ip_address).count()
 
-        # Redraw the table
-        dajax.script('computer_index.fnDraw();')
+    if pinholes_count > 0 or domain_names_count > 0:
+        context["success"] = False
+        context["error_message"] = "This computer cannot be deleted because it still has pinholes and/or domain names associated with it."
+    else:
+        computer_instance.delete()
 
-    return dajax.json()
+    return context
 
 
-@dajaxice_register
-def remove_pinhole(request, pinhole_id):
-    dajax = Dajax()
+@ajax
+@require_POST
+def remove_pinhole(request):
+    """ Removes a pinhole.
+
+    :param pinhole_id: The pinhole's id.
+    :type pinhole_id: int
+
+    """
+
+    # Pull post parameters
+    pinhole_id = request.POST["pinhole_id"]
 
     # Get the Pinhole record
     pinhole = Pinhole.objects.get(id=int(pinhole_id))
@@ -172,16 +284,24 @@ Thanks,
     # Delete the pinhole record
     pinhole.delete()
 
-    dajax.alert("A pinhole removal request has been created in your name. Please use SR#%(sr_number)s as a reference." % {'sr_number': sr_number})
+    context = {}
+    context["sr_number"] = sr_number
 
-    dajax.redirect(reverse('view_uh_computer_record', kwargs={'ip_address': ip_address}))
-
-    return dajax.json()
+    return context
 
 
-@dajaxice_register
-def remove_domain_name(request, domain_name_id):
-    dajax = Dajax()
+@ajax
+@require_POST
+def remove_domain_name(request):
+    """ Removes a domain name.
+
+    :param domain_name_id: The domain_name's id.
+    :type domain_name_id: int
+
+    """
+
+    # Pull post parameters
+    domain_name_id = request.POST["domain_name_id"]
 
     # Get the Domain Name record
     domain_name_record = DomainName.objects.get(id=int(domain_name_id))
@@ -212,8 +332,7 @@ Thanks,
     # Delete the domain record
     domain_name_record.delete()
 
-    dajax.alert("A domain name removal request has been created in your name. Please use SR#%(sr_number)s as a reference." % {'sr_number': sr_number})
+    context = {}
+    context["sr_number"] = sr_number
 
-    dajax.redirect(reverse('view_uh_computer_record', kwargs={'ip_address': ip_address}))
-
-    return dajax.json()
+    return context

@@ -17,16 +17,23 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic import RedirectView
 
-from dajaxice.core import dajaxice_autodiscover, dajaxice_config
-
-from .core.views import IndexView, LoginView, NavigationSettingsView, PhoneInstructionsView, handler500
+from .core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, PhoneInstructionsView, handler500
 from .adgroups.views import ResTechListEditView
 from .orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
-from .computers.views import ComputersView, PopulateComputers, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
-from .portmap.views import ResidenceHallWiredPortsView, PopulateResidenceHallWiredPorts
-from .printers.views import RequestsListView, InventoryView, OnOrderView, PrintersView, PopulatePrinters
+from .computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
+from .printers.views import RequestsListView, InventoryView, OnOrderView, PrintersView
+from .portmap.views import ResidenceHallWiredPortsView
 
-from resnet_internal.settings.base import technician_access_test, staff_access_test, printers_access_test, portmap_access_test, computers_access_test, computer_record_modify_access_test
+from .core.ajax import update_building, refresh_duties, update_duty
+from .orientation.ajax import complete_task, complete_orientation
+from .computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
+from .printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
+from .portmap.ajax import PopulateResidenceHallWiredPorts, UpdateResidenceHallWiredPort, change_port_status
+
+from resnet_internal.settings.base import (technician_access_test, staff_access_test, printers_access_test, printers_modify_access_test,
+                                           portmap_access_test, portmap_modify_access_test, computers_access_test, computers_modify_access_test,
+                                           computer_record_modify_access_test)
+from resnet_internal.printers.ajax import change_request_status, update_part_inventory, update_toner_inventory
 
 
 def permissions_check(test_func, raise_exception=True):
@@ -58,36 +65,45 @@ technician_access = permissions_check(technician_access_test)
 staff_access = permissions_check(staff_access_test)
 
 portmap_access = permissions_check(portmap_access_test)
+portmap_modify_access = permissions_check(portmap_modify_access_test)
 
 computers_access = permissions_check(computers_access_test)
+computers_modify_access = permissions_check(computers_modify_access_test)
 computer_record_modify_access = permissions_check(computer_record_modify_access_test)
 
 printers_access = permissions_check(printers_access_test)
+printers_modify_access = permissions_check(printers_modify_access_test)
 
 admin.autodiscover()
-dajaxice_autodiscover()
+
+handler500 = handler500
 
 logger = logging.getLogger(__name__)
 
 # Core
-urlpatterns = patterns('core.views',
+urlpatterns = patterns('',
     url(r'^$', IndexView.as_view(), name='home'),
     url(r'^favicon\.ico$', RedirectView.as_view(url='%simages/icons/favicon.ico' % settings.STATIC_URL), name='favicon'),
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
     url(r'^login/$', LoginView.as_view(), name='login'),
-    url(r'^logout/$', 'logout', name='logout'),
+    url(r'^logout/$', logout, name='logout'),
+    url(r'^utils/update_building/$', update_building, name='utils_update_building'),
+    url(r'^daily_duties/refresh_duties/$', login_required(technician_access(refresh_duties)), name='daily_duties_refresh_duties'),
+    url(r'^daily_duties/update_duty/$', login_required(technician_access(update_duty)), name='daily_duties_update_duty'),
     url(r'^settings/navigation/$', login_required(NavigationSettingsView.as_view()), name='navigation_settings'),
     url(r'^message/$', login_required(technician_access(PhoneInstructionsView.as_view())), name='phone_instructions'),
-    url(r'^(?P<mode>frame|external|link_handler)/(?P<key>\b[a-zA-Z0-9_]*\b)/$', 'link_handler', name='link_handler'),
-    url(r'^(?P<mode>frame|external|link_handler)/(?P<key>cisco)/(?P<ip>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', 'link_handler', name='link_handler_cisco'),
+    url(r'^(?P<mode>frame|external|link_handler)/(?P<key>\b[a-zA-Z0-9_]*\b)/$', login_required(link_handler), name='link_handler'),
+    url(r'^(?P<mode>frame|external|link_handler)/(?P<key>cisco)/(?P<ip>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(link_handler), name='link_handler_cisco'),
 )
 
 # ResNet Technician Orientation
 urlpatterns += patterns('',
     url(r'^orientation/$', login_required(technician_access(ChecklistView.as_view())), name='orientation_checklist'),
-    url(r'^orientation/onity$', login_required(technician_access(OnityDoorAccessView.as_view())), name='orientation_onity'),
-    url(r'^orientation/srs$', login_required(technician_access(SRSAccessView.as_view())), name='orientation_srs'),
-    url(r'^orientation/payroll$', login_required(technician_access(PayrollView.as_view())), name='orientation_payroll'),
+    url(r'^orientation/payroll/$', login_required(technician_access(PayrollView.as_view())), name='orientation_payroll'),
+    url(r'^orientation/onity/$', login_required(technician_access(OnityDoorAccessView.as_view())), name='orientation_onity'),
+    url(r'^orientation/srs/$', login_required(technician_access(SRSAccessView.as_view())), name='orientation_srs'),
+    url(r'^orientation/complete_task/$', login_required(technician_access(complete_task)), name='orientation_complete_task'),
+    url(r'^orientation/complete_orientation/$', login_required(technician_access(complete_orientation)), name='orientation_complete'),
 )
 
 # AD Group management
@@ -95,57 +111,50 @@ urlpatterns += patterns('',
     url(r'^manage/technicians/$', login_required(staff_access(ResTechListEditView.as_view())), name='restech_list_edit'),
 )
 
+# Univeristy Housing Computer Index
+urlpatterns += patterns('',
+    url(r'^computers/$', login_required(computers_access(ComputersView.as_view())), name='uh_computers'),
+    url(r'^computers/populate/$', login_required(computers_access(PopulateComputers.as_view())), name='populate_uh_computers'),
+    url(r'^computers/update/$', login_required(computers_modify_access(UpdateComputer.as_view())), name='update_uh_computer'),
+    url(r'^computers/remove/$', login_required(computers_modify_access(remove_computer)), name='remove_uh_computer'),
+    url(r'^computers/remove_pinhole/$', login_required(computer_record_modify_access(remove_pinhole)), name='remove_uh_computer_pinhole'),
+    url(r'^computers/remove_domain_name/$', login_required(computer_record_modify_access(remove_domain_name)), name='remove_uh_computer_domain_name'),
+    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(computers_access(ComputerRecordsView.as_view())), name='view_uh_computer_record'),
+    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/rdp/$', login_required(computers_access(RDPRequestView.as_view())), name='rdp_request'),
+    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/pinhole_request/$', login_required(computer_record_modify_access(PinholeRequestView.as_view())), name='pinhole_request'),
+    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/domain_name_request/$', login_required(computer_record_modify_access(DomainNameRequestView.as_view())), name='domain_name_request'),
+    url(r'^computers/utils/update_sub_department/$', update_sub_department, name='utils_update_sub_department'),
+)
+
 # Printer Requests
 urlpatterns += patterns('',
-    url(r'^printers/view_requests', login_required(technician_access(RequestsListView.as_view())), name='printer_request_list'),
-    url(r'^printers/view_inventory', login_required(technician_access(InventoryView.as_view())), name='printer_inventory'),
-    url(r'^printers/view_ordered', login_required(technician_access(OnOrderView.as_view())), name='printer_ordered_items'),
+    url(r'^printers/requests/list/', login_required(technician_access(RequestsListView.as_view())), name='printer_request_list'),
+    url(r'^printers/requests/view_inventory/', login_required(technician_access(InventoryView.as_view())), name='printer_inventory'),
+    url(r'^printers/requests/view_ordered/', login_required(technician_access(OnOrderView.as_view())), name='printer_ordered_items'),
+    url(r'^printers/requests/change_status/', login_required(technician_access(change_request_status)), name='change_printer_request_status'),
+    url(r'^printers/requests/toner/update_inventory/', login_required(technician_access(update_toner_inventory)), name='update_printer_toner_inventory'),
+    url(r'^printers/requests/parts/update_inventory/', login_required(technician_access(update_part_inventory)), name='update_printer_part_inventory'),
 )
 
 # Univeristy Housing Printer Index
 urlpatterns += patterns('',
     url(r'^printers/$', login_required(printers_access(PrintersView.as_view())), name='uh_printers'),
     url(r'^printers/populate/$', login_required(printers_access(PopulatePrinters.as_view())), name='populate_uh_printers'),
+    url(r'^printers/update/$', login_required(printers_access(UpdatePrinter.as_view())), name='update_uh_printer'),
+    url(r'^printers/remove/$', login_required(printers_modify_access(remove_printer)), name='remove_uh_printer'),
 )
 
 # Residence Halls Wired Port Map
 urlpatterns += patterns('',
     url(r'^portmap/$', login_required(portmap_access(ResidenceHallWiredPortsView.as_view())), name='residence_halls_wired_ports'),
     url(r'^portmap/populate/$', login_required(portmap_access(PopulateResidenceHallWiredPorts.as_view())), name='populate_residence_halls_wired_ports'),
-)
-
-# Univeristy Housing Computer Index
-urlpatterns += patterns('',
-    url(r'^computers/$', login_required(computers_access(ComputersView.as_view())), name='uh_computers'),
-    url(r'^computers/populate/$', login_required(computers_access(PopulateComputers.as_view())), name='populate_uh_computers'),
-    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(computers_access(ComputerRecordsView.as_view())), name='view_uh_computer_record'),
-    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/rdp/$', login_required(computers_access(RDPRequestView.as_view())), name='rdp_request'),
-    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/pinhole_request/$', login_required(computer_record_modify_access(PinholeRequestView.as_view())), name='pinhole_request'),
-    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/domain_name_request/$', login_required(computer_record_modify_access(DomainNameRequestView.as_view())), name='domain_name_request'),
-)
-
-# jCal (hours schedule)
-# urlpatterns += patterns('jCal.views',
-#    url(r'^jCal/$', 'jCal_home'),
-#    url(r'^jCal/my_schedule/(?P<year>\d{4})/(?P<quarter>[a-z]{2})/(?P<office>[a-z]{2})/(?P<is_finals>\d{1})/$', 'my_schedule'),
-#    url(r'^jCal/global_schedule/(?P<year>\d{4})/(?P<quarter>[a-z]{2})/(?P<office>[a-z]{2})/(?P<is_finals>\d{1})/$', 'global_schedule'),
-#    url(r'^jCal/set_avail/$', 'set_avail'),
-#    this will send you to a page to set year/quarter/is_finals, on submit will redirect you to jCal/set_avail/year/quarter/is_finals
-#    url(r'^jCal/set_avail/(?P<year>\d{4})/(?P<quarter>[a-z]{2})/(?P<is_finals>\d{1})/$', 'set_avail'),
-#    url(r'^jCal/jCal_admin/$', 'jCal_admin'),
-# )
-# (r'^articles/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$', 'news.views.article_detail'),
-# news.views.article_detail(request, year='2003', month='03', day='03').
-# (?P<month>[a-z]{3})
-
-# Dajaxice
-urlpatterns += patterns('',
-    url(dajaxice_config.dajaxice_url, include('dajaxice.urls')),
+    url(r'^portmap/update/$', login_required(portmap_access(UpdateResidenceHallWiredPort.as_view())), name='update_residence_halls_wired_port'),
+    url(r'^portmap/change_status/$', login_required(portmap_modify_access(change_port_status)), name='change_residence_halls_wired_port_status'),
 )
 
 # Raise errors on purpose
 urlpatterns += patterns('',
-    url(r'^500/$', 'ThisIsIntentionallyBroken'),
+    url(r'^500/$', 'django.views.defaults.server_error'),
     url(r'^403/$', 'django.views.defaults.permission_denied'),
     url(r'^404/$', 'django.views.defaults.page_not_found'),
 )

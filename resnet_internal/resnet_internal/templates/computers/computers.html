@@ -1,144 +1,10 @@
 {% extends "base.html" %}
 {% load core_user_tests %}
+{% load datatables %}
 
 {% block meta %}
 {{ block.super }}
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/plug-ins/725b2a2115b/sorting/ip-address.js"></script>
-<script type="text/javascript">
-    jQuery.fn.dataTableExt.aTypes.unshift(
-        function (data)
-        {
-            // IP Address Filter for dataTables
-            if (/^\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b$/.test(data)) {
-                return 'ip-address';
-            }
-
-			// MAC Address Filter for dataTables
-            if (/^([0-9a-fA-F]{2}([:]?|$)){6}$/.test(data)) {
-                return 'mac-address';
-            }
-            return null;
-        }
-    );
-
-    function confirm_remove(computer_id) {
-		var response = confirm('Are you sure you want to delete this computer?');
-		if (response) {
-   			Dajaxice.resnet_internal.computers.remove_computer(Dajax.process, {'computer_id': computer_id});
-		} else {
-    		return false;
-		}
-	}
-
-    var computer_index;
-
-    // initialize the dataTable
-    $(document).ready(function() {
-        // Initialize the DataTable. See datatables documentation for information about each option
-        computer_index = $('#computer_index').dataTable( {
-            "order": [[ 1, "asc" ], [ 2, "asc" ], [ 3, "asc" ]],
-            "language": {
-                "lengthMenu": 'Display <select>'+
-               		'<option value="20">20</option>'+
-                    '<option value="50">50</option>'+
-                    '<option value="100">100</option>'+
-                    '<option value="150">150</option>'+
-                    '<option value="200">200</option>'+
-                    '<option value="-1">All</option>'+
-                    '</select> records:',
-                "search": "Filter records: (Use ?pinhole and/or ?domain to narrow results.)",
-                "zeroRecords": "No records to display."
-            },
-            "processing": true,
-            "serverSide": true,
-            "ajax": "{% url 'populate_uh_computers' %}",
-            "pageLength": 50,
-            "pagingType": "full_numbers",
-            "lengthChange": true,
-            "autoWidth": false,
-            "dom": '<lrf><"clear">t<ip><"clear">',
-            // Custom column rendering
-            "columnDefs": [
-                { "width": "0px", "searchable": false, "visible": false, "targets": [ 0 ] },
-                { "width": "225px", "type": "string", "targets": [ 1 ] },
-                { "width": "225px", "type": "string", "targets": [ 2 ] },
-                { "width": "150px", "type": "string", "targets": [ 3 ] },
-                { "width": "150px", "type": "mac-address", "targets": [ 4 ] },
-                { "width": "150px", "type": "ip-address", "targets": [ 5 ] },
-                { "width": "50px", "searchable": false, "type": "html", "targets": [ 6 ] },
-                { "width": "100px", "type": "string", "targets": [ 7 ] },
-                { "width": "100px", "type": "string", "targets": [ 8 ] },
-                { "width": "100px", "type": "string", "targets": [ 9 ] },
-                { "width": "225px", "type": "string", "targets": [ 10 ] },
-                {% if request.user|computers_modify_access %}
-                	{ "className": "edit_trigger", "width": "225px", "type": "string", "targets": [ 11 ] },
-                	{ "width": "50px", "type": "string", "targets": [ 12 ] },
-
-                {% else %}
-                	{ "width": "225px", "type": "string", "targets": [ 11 ] },
-                	{ "width": "0px", "searchable": false, "visible": false, "targets": [ 12 ] },
-                {% endif %}
-            ],
-        });
-
-        {% if request.user|computers_modify_access %}
-        	$(document).on("dblclick", "#computer_index td", handle_edit);
-			$(document).on("click", "#computer_index .edit_trigger", handle_edit);
-
-	        function handle_edit() {
-	            row_id = $(this).children("div").attr("id");
-	            editable_columns = $("#"+ row_id + ".editable");
-
-	            editable_columns.children(".display_data").hide(); // Hide the display field
-	            editable_columns.children(".editbox").show(); // Show the edit field
-
-				$(".editbox").unbind('change'); // Strange fix to prevent multiple ajax calls for one change.
-	            $(".editbox").change(function() {
-	                request_dict = {};
-	                row_zero = $("#" + row_id + ":eq(0)").text();
-
-	                // Generate a request string
-	                editable_columns.children(".editbox").each(function () {
-	                    column_name = $(this).parent().attr("column");
-	                    value = $(this).val();
-
-	                    // Validate each field as it comes through
-	                    if (value != null) {
-	                        // Validate the IP address field (specifially)
-	                        if (column_name == "ip_address") {
-	                            var reg = /^(\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)?$/;
-	                            if (!reg.test(value)) {
-	                                alert('Please enter a valid IP address.');
-	                                return false;
-	                            }
-	                        }
-	                        request_dict[column_name] = value;
-	                    }
-	                    else {
-	                        alert('Please fill all editable fields with data.');
-	                        return false;
-	                    }
-	                });
-
-	                // Send the data
-	                Dajaxice.resnet_internal.computers.modify_computer(Dajax.process, {"request_dict": request_dict, "row_id": row_id, "row_zero": row_zero, "username": '{{ request.user.username }}'});
-	            });
-
-	            // Edit input box click action
-	            $("#" + row_id).parent().parent().mouseup(function() {
-	                return false;
-	            });
-
-	            // Outside click action
-	            $(document).mouseup(function() {
-	                $(".editbox").hide();
-	                $(".display_data").show();
-	            });
-	        };
-        {% endif %}
-    });
-</script>
+{% datatables_script %}
 {% endblock %}
 
 {% block subtitle %} | University Housing Computer Index{% endblock %}
@@ -162,57 +28,11 @@
         {% endif %}
         <div class="clear"></div>
         <table id="computer_index">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Department</th>
-                    <th>Sub Department</th>
-                    <th>Computer Name</th>
-					<th>MAC Address</th>
-                    <th>IP Address</th>
-                    <th>RDP</th>
-                    <th>Model</th>
-                    <th>Serial Number</th>
-                    <th>Property ID</th>
-                    <th>Distinguished Name</th>
-                    <th>Description</th>
-                    <th>&nbsp;</th>
-                </tr>
-            </thead>
             <tfoot>
                 <tr>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
-                    <th></th>
+                	<th></th>
                 </tr>
             </tfoot>
-            <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <th></th>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-            </tbody>
         </table>
         <div class="clear"></div>
         {% if request.user|computers_modify_access %}
@@ -291,13 +111,30 @@
 {{ block.super }}
 {% if request.user|computers_modify_access %}
 <script type="text/javascript">
+	function confirm_remove(computer_id) {
+		var response = confirm('Are you sure you want to delete this computer?');
+		if (response) {
+   			ajaxPost("{% url 'remove_uh_computer' %}", {"computer_id": computer_id}, function(response_context) {
+				if (response_context["success"]) {
+					$("#"+ computer_id).closest("tr").remove();
+				}
+				else {
+					alert(response_context["error_message"]);
+					return false;
+				}
+			});
+		} else {
+    		return false;
+		}
+	}
+
 	$("#id_department").change(function () {
-		Dajaxice.resnet_internal.computers.update_sub_department(Dajax.process, {'department': $(this).val()});
+		ajaxPost("{% url 'utils_update_sub_department' %}", {'department': $(this).val()});
 	});
 
 	{% if form.sub_department.value %}
 	$(document).ready(function () {
-		Dajaxice.resnet_internal.computers.update_sub_department(Dajax.process, {'department': '{{ form.department.value }}', 'sub_department_selection': '{{ form.sub_department.value }}'});
+		ajaxPost("{% url 'utils_update_sub_department' %}", {'department': '{{ form.department.value }}', 'sub_department_selection': '{{ form.sub_department.value }}'});
 	});
 	{% endif %}
 </script>

@@ -33,7 +33,6 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.signals.SignalsPanel',
     'debug_toolbar.panels.logging.LoggingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',
-    'inspector_panel.panels.inspector.InspectorPanel',
 )
 
 DEBUG_TOOLBAR_CONFIG = {
@@ -45,11 +44,9 @@ DEBUG_TOOLBAR_CONFIG = {
 #                                  File/Application Handling Configuration                                 #
 # ======================================================================================================== #
 
-# DJDT doesn't work anymore, causes dajaxice to fail
-#MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 
 INSTALLED_APPS += (
-#    'debug_toolbar',
+    'debug_toolbar',
     'devserver',
-#     'inspector_panel',
 )

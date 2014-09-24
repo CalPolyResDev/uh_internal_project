@@ -8,14 +8,24 @@
 
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
+from django.http.response import HttpResponseRedirect
+from django.views.decorators.http import require_POST
 
-from dajax.core import Dajax
-from dajaxice.decorators import dajaxice_register
+from django_ajax.decorators import ajax
 
 
-@dajaxice_register
-def complete_task(request, task):
-    dajax = Dajax()
+@ajax
+@require_POST
+def complete_task(request):
+    """ Completes a task.
+
+    :param task: The task to complete.
+    :type task: str
+
+    """
+
+    # Pull post parameters
+    task = request.POST["task"]
 
     user = get_user_model().objects.get(username=request.user.username)
 
@@ -28,20 +38,16 @@ def complete_task(request, task):
 
     user.save()
 
-    dajax.redirect(reverse('orientation_checklist'))
-
-    return dajax.json()
+    return HttpResponseRedirect(reverse('orientation_checklist'))
 
 
-@dajaxice_register
+@ajax
 def complete_orientation(request):
-    dajax = Dajax()
+    """ Completes orientation."""
 
     user = get_user_model().objects.get(username=request.user.username)
     user.orientation_complete = True
     user.is_new_tech = False
     user.save()
 
-    dajax.redirect(reverse('home'))
-
-    return dajax.json()
+    return HttpResponseRedirect(reverse('home'))

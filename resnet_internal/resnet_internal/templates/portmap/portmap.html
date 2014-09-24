@@ -1,145 +1,10 @@
 {% extends "base.html" %}
 {% load core_user_tests %}
+{% load datatables %}
 
 {% block meta %}
 {{ block.super }}
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/plug-ins/725b2a2115b/sorting/ip-address.js"></script>
-<script type="text/javascript">
-    // IP Address Filter for dataTables
-    jQuery.fn.dataTableExt.aTypes.unshift(
-        function (data) {
-            if (/^\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b$/.test(data)) {
-                return 'ip-address';
-            }
-            return null;
-        }
-    );
-
-    function confirm_status_change(port_id) {
-		var response = confirm('Are you sure you want to switch the status of this port?');
-		if (response) {
-   			Dajaxice.resnet_internal.portmap.change_port_status(Dajax.process, {'port_id': port_id});
-		} else {
-    		return false;
-		}
-	}
-
-    var residence_halls_wired_port_map;
-
-    // initialize the dataTable
-    $(document).ready(function() {
-        // Initialize the DataTable. See datatables documentation for information about each option
-        residence_halls_wired_port_map = $('#residence_halls_wired_port_map').dataTable( {
-            "order": [[ 1, "asc" ], [ 2, "asc" ], [ 3, "asc" ]],
-            "language": {
-                "lengthMenu": 'Display <select>'+
-                    '<option value="50">50</option>'+
-                    '<option value="100">100</option>'+
-                    '<option value="250">250</option>'+
-                    '<option value="500">500</option>'+
-                    '<option value="1000">1000</option>'+
-                    '<option value="-1">All</option>'+
-                    '</select> records:',
-                "search": "Filter records (use ?<i>alias</i> to search RMS):",
-                "zeroRecords": "No records to display."
-            },
-            "processing": true,
-            "serverSide": true,
-            "ajax": "{% url 'populate_residence_halls_wired_ports' %}",
-            "pageLength": 50,
-            "pagingType": "full_numbers",
-            "lengthChange": true,
-            "autoWidth": false,
-            "dom": '<lrf><"clear">t<ip><"clear">',
-            // Custom column rendering
-            "columnDefs": [
-                { "width": "0px", "searchable": false, "visible": false, "targets": [ 0 ] },
-                { "width": "100px", "type": "string", "targets": [ 1 ] },
-                { "width": "100px", "type": "string", "targets": [ 2 ] },
-                { "width": "50px", "type": "string", "targets": [ 3 ] },
-                { "width": "150px", "type": "ip-address", "targets": [ 4 ] },
-                { "width": "100px", "type": "string", "targets": [ 5 ] },
-                { "width": "50px", "type": "string", "targets": [ 6 ] },
-                { "width": "50px", "type": "numeric", "targets": [ 7 ] },
-                { "width": "50px", "type": "numeric", "targets": [ 8 ] },
-                {% if request.user|portmap_modify_access %}
-                	{ "className": "edit_trigger", "width": "55px", "type": "numeric", "targets": [ 9 ] },
-                	{ "width": "50px", "type": "string", "targets": [ 10 ] },
-
-                {% else %}
-                	{ "width": "55px", "type": "numeric", "targets": [ 9 ] },
-                	{ "width": "0px", "searchable": false, "visible": false, "targets": [ 10 ] },
-                {% endif %}
-            ],
-        });
-
-		{% if request.user|portmap_modify_access %}
-	        $(document).on("dblclick", "#residence_halls_wired_port_map td", handle_edit);
-	        $(document).on("click", "#residence_halls_wired_port_map .edit_trigger", handle_edit);
-
-	        function handle_edit() {
-	            row_id = $(this).children("div").attr("id");
-	            editable_columns = $("#"+ row_id + ".editable");
-
-	            editable_columns.children(".display_data").hide(); // Hide the display field
-	            editable_columns.children(".editbox").show(); // Show the edit field
-
-				$(".editbox").unbind('change'); // Strange fix to prevent multiple ajax calls for one change.
-	            $(".editbox").change(function() {
-	                request_dict = {};
-	                row_zero = $("#" + row_id + ":eq(0)").text();
-
-	                // Generate a request string
-	                editable_columns.children(".editbox").each(function () {
-	                    column_name = $(this).parent().attr("column");
-	                    value = $(this).val();
-
-	                    // Validate each field as it comes through
-	                    if (value != null && value.length > 0) {
-
-	                    	if (column_name == "switch_ip") {
-	                            var ipreg = /^(\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)?$/;
-	                            if (!ipreg.test(value)) {
-	                                alert('Please enter a valid IP address.');
-	                                return false;
-	                            }
-	                        }
-
-	                        if (column_name == "blade" || column_name == "port") {
-	                        	var digitreg = /^\d+$/;
-	                        	if (!digitreg.test(value)) {
-	                        		alert('Blade and Port values must be numbers');
-	                        		return false;
-	                        	}
-	                        }
-
-	                        request_dict[column_name] = value;
-	                    }
-	                    else {
-	                        alert('Please fill all editable fields with data.');
-	                        return false;
-	                    }
-	                });
-
-	                // Send the data
-	                Dajaxice.resnet_internal.portmap.modify_port(Dajax.process, {"request_dict": request_dict, "row_id": row_id, "row_zero": row_zero, "username": '{{ request.user.username }}'});
-	            });
-
-	            // Edit input box click action
-	            $("#" + row_id).parent().parent().mouseup(function() {
-	                return false;
-	            });
-
-	            // Outside click action
-	            $(document).mouseup(function() {
-	                $(".editbox").hide();
-	                $(".display_data").show();
-	            });
-	        };
-	    {% endif %}
-    });
-</script>
+{% datatables_script %}
 {% endblock %}
 
 {% block subtitle %} | Residence Halls Wired Port Map{% endblock %}
@@ -163,51 +28,11 @@
         {% endif %}
 		<div class="clear"></div>
 		<table id="residence_halls_wired_port_map">
-			<thead>
-				<tr>
-					<th>ID</th>
-					<th>Community</th>
-					<th>Building</th>
-					<th>Room</th>
-					<th>Switch IP</th>
-					<th>Switch Name</th>
-					<th>Jack</th>
-					<th>Blade</th>
-					<th>Port</th>
-					<th>vLan</th>
-					<th>&nbsp;</th>
-				</tr>
-			</thead>
 			<tfoot>
 				<tr>
 					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
-					<th></th>
 				</tr>
 			</tfoot>
-			<tbody>
-				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-			</tbody>
 		</table>
 		<div class="clear"></div>
 		{% if request.user|portmap_modify_access %}
@@ -278,17 +103,33 @@
 	</div>
 </div>
 {% endblock %}
+
 {% block extra_script %}
 {{ block.super }}
 {% if request.user|portmap_modify_access %}
 <script type="text/javascript">
+    function confirm_status_change(port_id) {
+     	var response = confirm('Are you sure you want to switch the status of this port?');
+ 		if (response) {
+    		ajaxPost("{% url 'change_residence_halls_wired_port_status' %}", {"port_id": port_id}, function(response_context) {
+	        	// Replace the edited columns with updated html
+	        	columns = response_context["rendered_columns"]
+	        	for (var column in columns) {
+	        		$("[id='" + port_id + "'][column='" + column + "']").parent().html(columns[column]);
+	        	}
+	   		});
+	   	} else {
+	   		return false;
+	   	}
+	}
+
 	$("#id_community").change(function () {
-		Dajaxice.resnet_internal.core.update_building(Dajax.process, {'community': $(this).val()});
+		ajaxPost("{% url 'utils_update_building' %}", {'community': $(this).val()});
 	});
 
 	{% if form.building.value %}
 	$(document).ready(function () {
-		Dajaxice.resnet_internal.core.update_building(Dajax.process, {'community': '{{ form.community.value }}', 'building_selection': '{{ form.building.value }}'});
+		ajaxPost("{% url 'utils_update_building' %}", {'community': '{{ form.community.value }}', 'building_selection': '{{ form.building.value }}'});
 	});
 	{% endif %}
 </script>

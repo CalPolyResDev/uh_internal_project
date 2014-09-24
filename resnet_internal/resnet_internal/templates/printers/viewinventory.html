@@ -21,7 +21,7 @@
                     <tr>
                         <td>{{ item.cartridge.printer }}</td>
                         <td>{{ item.cartridge.color }}</td>
-                        <td><input id="id_toner_{{ item.cartridge.id }}" min="0" name="{{ item.cartridge.id }}" value="{{ item.count_form.quantity.value }}" type="number" onchange="Dajaxice.resnet_internal.printers.update_toner_inventory(Dajax.process, {'toner_id': $(this).attr('name'), 'quantity': $(this).val()})"></td>
+                        <td><input id="id_toner_{{ item.cartridge.id }}" min="0" name="{{ item.cartridge.id }}" value="{{ item.count_form.quantity.value }}" type="number" onchange="update_toner_inventory($(this).attr('name'), $(this).val())"></td>
                     </tr>
                     {% endfor %}
                 {% else %}
@@ -48,7 +48,7 @@
                     <tr>
                         <td>{{ item.part.printer }}</td>
                         <td>{{ item.part.type }}</td>
-                        <td><input id="id_part_{{ item.part.id }}" min="0" name="{{ item.part.id }}" value="{{ item.count_form.quantity.value }}" type="number" onchange="Dajaxice.resnet_internal.printers.update_part_inventory(Dajax.process, {'part_id': $(this).attr('name'), 'quantity': $(this).val()})"></td>
+                        <td><input id="id_part_{{ item.part.id }}" min="0" name="{{ item.part.id }}" value="{{ item.count_form.quantity.value }}" type="number" onchange="update_part_inventory($(this).attr('name'), $(this).val())"></td>
                     </tr>
                     {% endfor %}
                 {% else %}
@@ -63,4 +63,17 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script type="text/javascript">
+    function update_toner_inventory(toner_id, quantity) {
+    	ajaxPost("{% url 'update_printer_toner_inventory' %}", {'toner_id': toner_id, 'quantity': quantity});
+    }
+
+    function update_part_inventory(part_id, quantity) {
+    	ajaxPost("{% url 'update_printer_part_inventory' %}", {'part_id': part_id, 'quantity': quantity});
+    }
+</script>
 {% endblock %}

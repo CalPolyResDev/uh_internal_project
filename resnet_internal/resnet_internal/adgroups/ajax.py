@@ -6,16 +6,17 @@
 
 """
 
-from dajax.core import Dajax
-from dajaxice.decorators import dajaxice_register
+from django.views.decorators.http import require_POST
 
+from django_ajax.decorators import ajax
 from ldap_groups import ADGroup
 from srsconnector.models import AccountRequest
 
 
-@dajaxice_register
-def remove_member(request, account_name, group_dn):
-    """ Removes members from an active directory group.
+@ajax
+@require_POST
+def remove_resnet_tech(request):
+    """ Removes members from both the resnet tech groups.
 
     :param account_name: The member's account name.
     :type account_name: str
@@ -24,40 +25,21 @@ def remove_member(request, account_name, group_dn):
 
     """
 
-    dajax = Dajax()
+    # Pull post parameters
+    account_name = request.POST["account_name"]
+    group_dn = request.POST["group_dn"]
+
+    context = {}
+    context["success"] = True
+    context["error_message"] = None
 
     # Prevent a user from removing himself/herself from the group
     if account_name == request.user.username:
-        dajax.alert("For security reasons, one cannot delete oneself from a group.")
-        return dajax.json()
+        context["success"] = False
+        context["error_message"] = "For security reasons, one cannot delete oneself from a group."
+        return context
 
     ad_group_instance = ADGroup(group_dn)
-    ad_group_instance.remove_member(account_name)
-
-    dajax.remove("#member_" + account_name)
-
-    return dajax.json()
-
-
-@dajaxice_register
-def remove_resnet_tech(request, account_name, group_dn):
-    """ Removes members from both the resnet tech and resnet techadmin groups.
-
-    :param account_name: The member's account name.
-    :type account_name: str
-    :param group_dn: The distinguished name of the active directory group to be modified.
-    :type group_dn: str
-
-    """
-
-    dajax = Dajax()
-
-    # Prevent a user from removing himself/herself from the group
-    if account_name == request.user.username or account_name == request.user.username + "-admin":
-        dajax.alert("For security reasons, one cannot delete oneself from a group.")
-        return dajax.json()
-
-    ad_group_instance = ADGroup("CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu")
 
     # Remove from SRS
     ticket = AccountRequest(subject_username=account_name)
@@ -66,12 +48,9 @@ def remove_resnet_tech(request, account_name, group_dn):
     ticket.save()
 
     sr_number = ticket.ticket_id
-
-    dajax.alert("A request to remove %(account_name)s from the ResNet team has been created. Please use SR#%(sr_number)s as a reference." % {'account_name': account_name, 'sr_number': sr_number})
+    context["sr_number"] = sr_number
 
     # Remove from AD
     ad_group_instance.remove_member(account_name)
 
-    dajax.remove("#member_" + account_name)
-
-    return dajax.json()
+    return context

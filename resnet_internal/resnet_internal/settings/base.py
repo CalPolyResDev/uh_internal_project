@@ -63,9 +63,6 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
-# Dajax media setting
-DAJAXICE_MEDIA_PREFIX = "dajaxice"
-
 ROOT_URLCONF = 'resnet_internal.urls'
 
 # ======================================================================================================== #
@@ -286,7 +283,6 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'dajaxice.finders.DajaxiceFinder',
 #   'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
@@ -323,7 +319,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
+#    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
 )
 
 INSTALLED_APPS = (
@@ -334,19 +330,20 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.staticfiles',
     'raven.contrib.django.raven_compat',
-    'dajaxice',
+    'django_ajax',
     'rmsconnector',
     'srsconnector',
     'django_ewiz',
     'resnet_internal.core',
-    'resnet_internal.core.templatetags',
+    'resnet_internal.core.templatetags.__init__.default_app_config',
+    'resnet_internal.datatables',
+    'resnet_internal.datatables.templatetags.__init__.default_app_config',
     'resnet_internal.adgroups',
     'resnet_internal.orientation',
     'resnet_internal.computers',
     'resnet_internal.portmap',
     'resnet_internal.printers',
-    'resnet_internal.printers.templatetags',
-    'south',
+    'resnet_internal.printers.templatetags.__init__.default_app_config',
 )
 
 # ======================================================================================================== #
@@ -401,7 +398,12 @@ LOGGING = {
             'handlers': ['sentry'],
             'propagate': True,
         },
-        'dajaxice': {
+        'django_ajax': {
+            'level': 'INFO',
+            'handlers': ['sentry'],
+            'propagate': True,
+        },
+        'django_datatables_view': {
             'level': 'INFO',
             'handlers': ['sentry'],
             'propagate': True,

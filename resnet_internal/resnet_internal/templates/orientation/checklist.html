@@ -2,7 +2,7 @@
 {% block meta %}
 <script type="text/javascript">
 	function complete_orientation() {
-		Dajaxice.resnet_internal.orientation.complete_orientation(Dajax.process);
+		ajaxGet("{% url 'orientation_complete' %}");
 	};
 </script>
 {% endblock %}

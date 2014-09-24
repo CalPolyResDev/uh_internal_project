@@ -8,10 +8,20 @@
         }
     </style>
     <script type="text/javascript">
-        function remove_tech(alias) {
-            var response = confirm('Warning: This action will remove "' + alias + '" from SRS and Active Directory. Do you wish to proceed?');
+        function remove_tech(account_name) {
+            var response = confirm('Warning: This action will remove "' + account_name + '" from SRS and Active Directory. Do you wish to proceed?');
             if (response) {
-                Dajaxice.resnet_internal.adgroups.{{ removal_method }}(Dajax.process,{'account_name':alias, 'group_dn':'{{ group_dn }}'})
+            	ajaxPost("{% url 'remove_uh_computer' %}", {'account_name': account_name, 'group_dn': '{{ group_dn }}'}, function(response_context) {
+					if (response_context["success"]) {
+						alert("A request to remove " + account_name + " from the ResNet team has been created. Please use SR#" + response_context["sr_number"] + " as a reference.")
+						$("#member_" + account_name).remove();
+						return true;
+					}
+					else {
+						alert(response_context["error_message"]);
+						return false;
+					}
+				});
             } else {
                 return false;
             }

@@ -3,6 +3,7 @@
    :synopsis: ResNet Internal Printer Template Tags and Filters.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+
 """
 
 from django import template

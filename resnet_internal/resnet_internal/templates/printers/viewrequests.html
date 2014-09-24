@@ -31,7 +31,7 @@
                         	{% for toner in request.toner.all %}{{ toner }} Toner{% if not forloop.last %}, {% endif %}{% endfor %}{% for part in request.parts.all %}{{ part }}{% if not forloop.last %}, {% endif %}{% endfor %}
                         </td>
                         <td>{{ request.address }}</td>
-                    	<td><input id="id_{{ request.id }}" name="{{ request.id }}" status="{{ request.status }}" type="button" value="{{ request.status|statusname|commandstring }}" onclick="Dajaxice.resnet_internal.printers.change_request_status(Dajax.process, {'request_id': $(this).attr('name'), 'current_status': $(this).attr('status')})" /></td>
+                    	<td><input id="id_{{ request.id }}" name="{{ request.id }}" status="{{ request.status }}" type="button" value="{{ request.status|statusname|commandstring }}" onclick="change_request_status($(this).attr('name'), $(this).attr('status'))" /></td>
                     </tr>
                     {% endfor %}
                 {% else %}
@@ -49,4 +49,17 @@
         </table>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script type="text/javascript">
+    function update_toner_inventory(toner_id, quantity) {
+    	ajaxPost("{% url 'update_printer_toner_inventory' %}", {'toner_id': toner_id, 'quantity': quantity});
+    }
+
+    function update_part_inventory(part_id, quantity) {
+    	ajaxPost("{% url 'update_printer_part_inventory' %}", {'part_id': part_id, 'quantity': quantity});
+    }
+</script>
 {% endblock %}
