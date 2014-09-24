@@ -7,7 +7,7 @@
 """
 
 from django.db.models import (Model, CharField, ForeignKey, ManyToManyField, PositiveIntegerField,
-                              IntegerField, DateTimeField, IPAddressField)
+                              IntegerField, DateTimeField, GenericIPAddressField)
 from django.db.models.fields import TextField
 
 from resnet_internal.computers.fields import MACAddressField
@@ -23,7 +23,7 @@ class Printer(Model):
     department = CharField(max_length=50, verbose_name=u'Department', choices=DEPARTMENT_CHOICES)
     sub_department = CharField(max_length=50, verbose_name=u'Sub Department', choices=SUB_DEPARTMENT_CHOICES)
     printer_name = CharField(max_length=60, verbose_name=u'Printer Name', unique=True)
-    ip_address = IPAddressField(verbose_name=u'IP Address', unique=True)
+    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name=u'IP Address', unique=True)
     mac_address = MACAddressField(verbose_name=u'MAC Address', unique=True)
     model = CharField(max_length=25, verbose_name=u'Model')
     serial_number = CharField(max_length=20, verbose_name=u'Serial Number', unique=True)
@@ -35,7 +35,7 @@ class Printer(Model):
 
     def save(self, *args, **kwargs):
         for field_name in ['printer_name', 'mac_address', 'serial_number', 'property_id']:
-            value = getattr(self, field_name, False)
+            value = getattr(self, field_name, None)
             if value:
                 setattr(self, field_name, value.upper())
         super(Printer, self).save(*args, **kwargs)

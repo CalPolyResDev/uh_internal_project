@@ -6,7 +6,7 @@
 
 """
 
-from django.db.models import Model, BooleanField, CharField, IntegerField, IPAddressField
+from django.db.models import Model, BooleanField, CharField, IntegerField, GenericIPAddressField
 
 from .fields import MACAddressField, ListField
 from .constants import DEPARTMENTS, ALL_SUB_DEPARTMENTS
@@ -21,7 +21,7 @@ class Computer(Model):
     department = CharField(max_length=50, verbose_name=u'Department', choices=DEPARTMENT_CHOICES)
     sub_department = CharField(max_length=50, verbose_name=u'Sub Department', choices=SUB_DEPARTMENT_CHOICES)
     computer_name = CharField(max_length=25, verbose_name=u'Computer Name', unique=True)
-    ip_address = IPAddressField(verbose_name=u'IP Address', unique=True)
+    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name=u'IP Address', unique=True)
     mac_address = MACAddressField(verbose_name=u'MAC Address', unique=True)
     model = CharField(max_length=25, verbose_name=u'Model')
     serial_number = CharField(max_length=20, verbose_name=u'Serial Number', unique=True)
@@ -34,7 +34,7 @@ class Computer(Model):
 
     def save(self, *args, **kwargs):
         for field_name in ['computer_name', 'mac_address', 'serial_number', 'property_id']:
-            value = getattr(self, field_name, False)
+            value = getattr(self, field_name, None)
             if value:
                 setattr(self, field_name, value.upper())
         super(Computer, self).save(*args, **kwargs)
@@ -48,10 +48,10 @@ class Computer(Model):
 class Pinhole(Model):
     """University Housing Firewall Pinholes."""
 
-    ip_address = IPAddressField(verbose_name=u'IP Address')
+    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name=u'IP Address')
     service_name = CharField(max_length=50, verbose_name=u'Service Name')
-    inner_fw = BooleanField(verbose_name=u'Inner Firewall')
-    border_fw = BooleanField(verbose_name=u'Border Firewall')
+    inner_fw = BooleanField(default=None, verbose_name=u'Inner Firewall')
+    border_fw = BooleanField(default=None, verbose_name=u'Border Firewall')
     tcp_ports = ListField(verbose_name=u'TCP Ports')
     udp_ports = ListField(verbose_name=u'TCP Ports')
     sr_number = IntegerField(max_length=11, null=True, verbose_name=u'SR Number', db_column='ticket_id')
@@ -68,7 +68,7 @@ class Pinhole(Model):
 class DomainName(Model):
     """University Housing Domain Names."""
 
-    ip_address = IPAddressField(verbose_name=u'IP Address')
+    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name=u'IP Address')
     domain_name = CharField(max_length=100, verbose_name=u'Domain Name')
     sr_number = IntegerField(max_length=11, null=True, verbose_name=u'SR Number', db_column='ticket_id')
 
