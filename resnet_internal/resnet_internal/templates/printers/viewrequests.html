@@ -54,12 +54,13 @@
 {% block extra_script %}
 {{ block.super }}
 <script type="text/javascript">
-    function update_toner_inventory(toner_id, quantity) {
-    	ajaxPost("{% url 'update_printer_toner_inventory' %}", {'toner_id': toner_id, 'quantity': quantity});
-    }
-
-    function update_part_inventory(part_id, quantity) {
-    	ajaxPost("{% url 'update_printer_part_inventory' %}", {'part_id': part_id, 'quantity': quantity});
+    function change_request_status(request_id, current_status) {
+    	ajaxPost("{% url 'change_printer_request_status' %}", {'request_id': request_id, 'current_status': current_status}, function(response_context) {
+			if (!response_context["success"]) {
+				alert(response_context["error_message"]);
+				return false;
+			}
+		});
     }
 </script>
 {% endblock %}

@@ -17,13 +17,14 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic import RedirectView
 
-from .core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, PhoneInstructionsView, handler500
 from .adgroups.views import ResTechListEditView
+from .core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, PhoneInstructionsView, handler500
 from .orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
 from .printers.views import RequestsListView, InventoryView, OnOrderView, PrintersView
 from .portmap.views import ResidenceHallWiredPortsView
 
+from .adgroups.ajax import remove_resnet_tech
 from .core.ajax import update_building, refresh_duties, update_duty
 from .orientation.ajax import complete_task, complete_orientation
 from .computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
@@ -109,6 +110,7 @@ urlpatterns += patterns('',
 # AD Group management
 urlpatterns += patterns('',
     url(r'^manage/technicians/$', login_required(staff_access(ResTechListEditView.as_view())), name='restech_list_edit'),
+    url(r'^manage/technicians/remove/$', login_required(staff_access(remove_resnet_tech)), name='remove_resnet_tech'),
 )
 
 # Univeristy Housing Computer Index

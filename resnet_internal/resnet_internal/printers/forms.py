@@ -34,12 +34,24 @@ class PrinterUpdateForm(PrinterCreateForm):
 
 class TonerCountForm(ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super(TonerCountForm, self).__init__(*args, **kwargs)
+
+        for field_name in self.fields:
+            self.fields[field_name].widget.attrs['autocomplete'] = "off"
+
     class Meta:
         model = Toner
         fields = ('quantity', 'ordered', )
 
 
 class PartCountForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(PartCountForm, self).__init__(*args, **kwargs)
+
+        for field_name in self.fields:
+            self.fields[field_name].widget.attrs['autocomplete'] = "off"
 
     class Meta:
         model = Part
