@@ -9,7 +9,7 @@
 
 """
 
-from django.db.models import Model, CharField, IPAddressField, BooleanField, PositiveSmallIntegerField
+from django.db.models import Model, CharField, GenericIPAddressField, BooleanField, PositiveSmallIntegerField
 from rmsconnector.constants import COMMUNITIES, ALL_BUILDINGS
 
 
@@ -20,7 +20,7 @@ class ResHallWired(Model):
     community = CharField(max_length=25, verbose_name=u'Community', choices=COMMUNITY_CHOICES)
     building = CharField(max_length=25, verbose_name=u'Building', choices=BUILDING_CHOICES)
     room = CharField(max_length=10, verbose_name=u'Room')
-    switch_ip = IPAddressField(verbose_name=u'Switch IP')
+    switch_ip = GenericIPAddressField(protocol='IPv4', verbose_name=u'Switch IP')
     switch_name = CharField(max_length=35, verbose_name=u'Switch Name')
     jack = CharField(max_length=5, verbose_name=u'Jack')
     blade = PositiveSmallIntegerField(verbose_name=u'Blade')
@@ -32,10 +32,17 @@ class ResHallWired(Model):
         return self.community + " - " + self.building + " " + self.room + ": " + self.jack
 
     def save(self, *args, **kwargs):
+        # Upper room and jack letters
         for field_name in ['room', 'jack']:
-            value = getattr(self, field_name, False)
+            value = getattr(self, field_name, None)
             if value:
                 setattr(self, field_name, value.upper())
+
+        # Replace spaces in towers with underscores
+        value = getattr(self, 'building', None)
+        if value and "Tower " in value:
+            setattr(self, 'building', value.replace("Tower ", "Tower_"))
+
         super(ResHallWired, self).save(*args, **kwargs)
 
     class Meta:
