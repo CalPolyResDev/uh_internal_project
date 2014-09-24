@@ -1,10 +1,14 @@
 Django==1.7
+
+# Until djangotoolbox is fixed
+git+https://github.com/AlexKavanaugh/djangotoolbox@patch-1
+
 git+https://code.resdev.calpoly.edu/scm/rmsc/rmsconnector.git#egg=rmsconnector==3.1.5
 git+https://code.resdev.calpoly.edu/scm/srsc/srsconnector.git@9e4ed3c#egg=srsconnector==2.2.9
 unipath==1.0
 colorama==0.3.2
 django-auth-ldap==1.2.1
-djangoajax=2.2.11
+djangoajax==2.2.11
 django-datatables-view==1.12
 ldap-groups==2.5.3
 raven==5.0.0
