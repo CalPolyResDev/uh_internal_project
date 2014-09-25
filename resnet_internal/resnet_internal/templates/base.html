@@ -316,6 +316,7 @@
 			};
 			function updateDuty(duty) {
 				ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
+					refreshDuties();
 					return true;
 				});
 				return false;

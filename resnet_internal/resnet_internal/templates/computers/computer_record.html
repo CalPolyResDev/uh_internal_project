@@ -90,22 +90,23 @@
             {% endif %}
         </tbody>
     </table>
-{% endblock %}
 
-{% block extra_script %}
-{{ block.super }}
-<script type="text/javascript">
-	function remove_pinhole(pinhole_id)  {
-		ajaxPost("{% url 'remove_uh_computer_pinhole' %}", {"pinhole_id": pinhole_id}, function(response_context) {
-			alert("A pinhole removal request has been created in your name. Please use SR#" + response_context["sr_number"] + " as a reference.")
-			$("#pinhole_" + pinhole_id).remove();
-		});
-	}
+	{% block extra_script %}
+	{{ block.super }}
+	<script type="text/javascript">
+		function remove_pinhole(pinhole_id)  {
+			ajaxPost("{% url 'remove_uh_computer_pinhole' %}", {"pinhole_id": pinhole_id}, function(response_context) {
+				alert("A pinhole removal request has been created in your name. Please use SR#" + response_context["sr_number"] + " as a reference.")
+				$("#pinhole_" + pinhole_id).remove();
+			});
+		}
 
-	function remove_domain_name(domain_name_id)  {
-		ajaxPost("{% url 'remove_uh_computer_domain_name' %}", {"domain_name_id": domain_name_id}, function(response_context) {
-			alert("A domain name removal request has been created in your name. Please use SR#" + response_context["sr_number"] + " as a reference.")
-			$("#domain_name_" + domain_name_id).remove();
-		});
-	}
+		function remove_domain_name(domain_name_id)  {
+			ajaxPost("{% url 'remove_uh_computer_domain_name' %}", {"domain_name_id": domain_name_id}, function(response_context) {
+				alert("A domain name removal request has been created in your name. Please use SR#" + response_context["sr_number"] + " as a reference.")
+				$("#domain_name_" + domain_name_id).remove();
+			});
+		}
+	</script>
+	{% endblock %}
 {% endblock %}

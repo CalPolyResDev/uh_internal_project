@@ -151,5 +151,3 @@ def update_duty(request):
     data.last_checked = datetime.datetime.now()
     data.last_user = get_user_model().objects.get(username=request.user.username)
     data.save()
-
-    return refresh_duties
