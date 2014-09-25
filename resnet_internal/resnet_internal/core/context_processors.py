@@ -31,6 +31,8 @@ def specializations(request):
         # ResNet Titles
         if request.user.is_technician:
             user_specializations.append('ResNet Technician')
+        if "aakoeppe" in request.user.username:
+            user_specializations.append('Master of Airwaves')
         if request.user.is_rn_staff:
             user_specializations.append('ResNet Staff')
         if request.user.is_developer:
