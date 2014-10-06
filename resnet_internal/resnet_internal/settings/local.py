@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = False
+DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 SESSION_COOKIE_NAME = 'RNINDevSessionID'

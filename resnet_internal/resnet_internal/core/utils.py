@@ -17,6 +17,7 @@ from django.db import DatabaseError
 from srsconnector.models import ServiceRequest
 
 from .models import DailyDuties
+from ssl import SSLEOFError
 
 logger = logging.getLogger(__name__)
 
@@ -89,28 +90,36 @@ class GetDutyData(object):
         }
         server = None
 
-        # Connect to the email server and authenticate
-        if settings.INCOMING_EMAIL['IMAP4']['USE_SSL']:
-            server = imaplib.IMAP4_SSL(settings.INCOMING_EMAIL['IMAP4']['HOST'], settings.INCOMING_EMAIL['IMAP4']['PORT'])
-        else:
-            server = imaplib.IMAP4(settings.INCOMING_EMAIL['IMAP4']['HOST'], settings.INCOMING_EMAIL['IMAP4']['PORT'])
-        server.login(settings.INCOMING_EMAIL['IMAP4']['USER'], settings.INCOMING_EMAIL['IMAP4']['PASSWORD'])
+        try:
+            # Connect to the email server and authenticate
+            if settings.INCOMING_EMAIL['IMAP4']['USE_SSL']:
+                server = imaplib.IMAP4_SSL(settings.INCOMING_EMAIL['IMAP4']['HOST'], settings.INCOMING_EMAIL['IMAP4']['PORT'])
+            else:
+                server = imaplib.IMAP4(settings.INCOMING_EMAIL['IMAP4']['HOST'], settings.INCOMING_EMAIL['IMAP4']['PORT'])
+            server.login(settings.INCOMING_EMAIL['IMAP4']['USER'], settings.INCOMING_EMAIL['IMAP4']['PASSWORD'])
 
-        # Grab the number of unread emails
-        server.select('inbox', readonly=True)  # Select the Inbox
-        r, search_data = server.search(None, "UnSeen")  # Search for unread emails
-        unread_count = len(search_data[0].split())  # Count unread emails
-        server.logout()  # Disconnect from the email server
+            # Grab the number of unread emails
+            server.select('inbox', readonly=True)  # Select the Inbox
+            r, search_data = server.search(None, "UnSeen")  # Search for unread emails
+            unread_count = len(search_data[0].split())  # Count unread emails
+            server.logout()  # Disconnect from the email server
 
-        data = DailyDuties.objects.get(name='email')
+            data = DailyDuties.objects.get(name='email')
 
-        email["count"] = unread_count
-        if data.last_checked > datetime.datetime.now() - ACCEPTABLE_LAST_CHECKED:
-            email["status_color"] = GREEN
-        else:
+            email["count"] = unread_count
+            if data.last_checked > datetime.datetime.now() - ACCEPTABLE_LAST_CHECKED:
+                email["status_color"] = GREEN
+            else:
+                email["status_color"] = RED
+            email["last_checked"] = datetime.datetime.strftime(data.last_checked, "%m/%d/%Y %H:%M%p")
+            email["last_user"] = data.last_user.get_full_name()
+
+            logger.warning("Email is back online!!!")
+        except SSLEOFError:
+            email["count"] = 0
             email["status_color"] = RED
-        email["last_checked"] = datetime.datetime.strftime(data.last_checked, "%m/%d/%Y %H:%M%p")
-        email["last_user"] = data.last_user.get_full_name()
+            email["last_checked"] = "Not sure..."
+            email["last_user"] = "email is down"
 
         return email
 
