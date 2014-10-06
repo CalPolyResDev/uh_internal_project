@@ -20,15 +20,15 @@ class Printer(Model):
     DEPARTMENT_CHOICES = [(department, department) for department in DEPARTMENTS]
     SUB_DEPARTMENT_CHOICES = [(sub_department, sub_department) for sub_department in ALL_SUB_DEPARTMENTS]
 
-    department = CharField(max_length=50, verbose_name=u'Department', choices=DEPARTMENT_CHOICES)
-    sub_department = CharField(max_length=50, verbose_name=u'Sub Department', choices=SUB_DEPARTMENT_CHOICES)
-    printer_name = CharField(max_length=60, verbose_name=u'Printer Name', unique=True)
-    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name=u'IP Address', unique=True)
-    mac_address = MACAddressField(verbose_name=u'MAC Address', unique=True)
-    model = CharField(max_length=25, verbose_name=u'Model')
-    serial_number = CharField(max_length=20, verbose_name=u'Serial Number', unique=True)
-    property_id = CharField(max_length=50, verbose_name=u'Cal Poly Property ID', unique=True)
-    description = CharField(max_length=100, verbose_name=u'Description')
+    department = CharField(max_length=50, verbose_name='Department', choices=DEPARTMENT_CHOICES)
+    sub_department = CharField(max_length=50, verbose_name='Sub Department', choices=SUB_DEPARTMENT_CHOICES)
+    printer_name = CharField(max_length=60, verbose_name='Printer Name', unique=True)
+    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address', unique=True)
+    mac_address = MACAddressField(verbose_name='MAC Address', unique=True)
+    model = CharField(max_length=25, verbose_name='Model')
+    serial_number = CharField(max_length=20, verbose_name='Serial Number', unique=True)
+    property_id = CharField(max_length=50, verbose_name='Cal Poly Property ID', unique=True)
+    description = CharField(max_length=100, verbose_name='Description')
 
     def __unicode__(self):
         return self.printer_name
@@ -41,68 +41,71 @@ class Printer(Model):
         super(Printer, self).save(*args, **kwargs)
 
     class Meta:
-        db_table = u'printer'
+        db_table = 'printer'
         managed = False
-        verbose_name = u'University Housing Printer'
+        verbose_name = 'University Housing Printer'
 
 
 class PrinterType(Model):
     """A printer used in University Housing."""
 
-    make = CharField(max_length=10, verbose_name=u'Make')
-    model = CharField(max_length=10, verbose_name=u'Model')
+    make = CharField(max_length=10, verbose_name='Make')
+    model = CharField(max_length=10, verbose_name='Model')
 
     def __unicode__(self):
         return self.make + " " + self.model
 
     class Meta:
         unique_together = ('make', 'model',)
-        db_table = u'printertype'
+        db_table = 'printertype'
         managed = False
-        verbose_name = u'Printer Type'
+        verbose_name = 'Printer Type'
 
 
 class Toner(Model):
     """A toner cartrige for a particular printer."""
 
-    color = CharField(max_length=10, verbose_name=u'Color')
-    printer = ForeignKey(PrinterType, verbose_name=u'Associated Printer')
-    quantity = PositiveIntegerField(default=0, verbose_name=u'Quantity')
-    ordered = PositiveIntegerField(default=0, verbose_name=u'Ordered')
+    color = CharField(max_length=10, verbose_name='Color')
+    printer = ForeignKey(PrinterType, verbose_name='Associated Printer')
+    quantity = PositiveIntegerField(default=0, verbose_name='Quantity')
+    ordered = PositiveIntegerField(default=0, verbose_name='Ordered')
 
     def __unicode__(self):
         return str(self.printer) + " " + str(self.color)
 
     class Meta:
         unique_together = ('color', 'printer',)
-        db_table = u'toner'
+        db_table = 'toner'
         managed = False
-        verbose_name = u'Printer Toner Cartridge'
+        verbose_name = 'Printer Toner Cartridge'
 
 
 class Part(Model):
     """A part for a particular printer."""
 
-    type = CharField(max_length=25, verbose_name=u'Type of Part')
-    printer = ForeignKey(PrinterType, verbose_name=u'Associated Printer')
-    quantity = PositiveIntegerField(default=0, verbose_name=u'Quantity')
-    ordered = PositiveIntegerField(default=0, verbose_name=u'Ordered')
+    type = CharField(max_length=25, verbose_name='Type of Part')
+    printer = ForeignKey(PrinterType, verbose_name='Associated Printer')
+    quantity = PositiveIntegerField(default=0, verbose_name='Quantity')
+    ordered = PositiveIntegerField(default=0, verbose_name='Ordered')
 
     def __unicode__(self):
         return str(self.printer) + " " + str(self.type)
 
     class Meta:
         unique_together = ('type', 'printer',)
-        db_table = u'part'
+        db_table = 'part'
         managed = False
-        verbose_name = u'Printer Part'
+        verbose_name = 'Printer Part'
+
+
+REQUEST_STATUSES = ['Open', 'Acknowledged', 'In Transit', 'Delivered']
 
 
 class Request(Model):
     """A request for toner and/or parts replacement."""
 
-    STATUSES = ['Open', 'Acknowledged', 'In Transit', 'Delivered']
-    STATUS_CHOICES = [(STATUSES.index(status), status) for status in STATUSES]
+    STATUSES = REQUEST_STATUSES
+    STATUS_CHOICES = [(REQUEST_STATUSES.index(status), status) for status in REQUEST_STATUSES]
 
     ticket_id = IntegerField(unique=True)
     date_requested = DateTimeField()
@@ -145,9 +148,9 @@ class Request(Model):
         return str(self.ticket_id) + " - " + self.STATUSES[self.status].upper()
 
     class Meta:
-        db_table = u'request'
+        db_table = 'request'
         managed = False
-        verbose_name = u'Printer Request'
+        verbose_name = 'Printer Request'
 
 
 class Request_Toner(Model):
@@ -157,10 +160,10 @@ class Request_Toner(Model):
     toner = ForeignKey(Toner)
 
     class Meta:
-        db_table = u'request_toner'
+        db_table = 'request_toner'
         managed = False
-        verbose_name = u'Printer Request Toner'
-        verbose_name_plural = u'Printer Request Toner Items'
+        verbose_name = 'Printer Request Toner'
+        verbose_name_plural = 'Printer Request Toner Items'
 
 
 class Request_Parts(Model):
@@ -170,10 +173,10 @@ class Request_Parts(Model):
     part = ForeignKey(Part)
 
     class Meta:
-        db_table = u'request_parts'
+        db_table = 'request_parts'
         managed = False
-        verbose_name = u'Printer Request Parts'
-        verbose_name_plural = u'Printer Request Parts Items'
+        verbose_name = 'Printer Request Parts'
+        verbose_name_plural = 'Printer Request Parts Items'
 
 
 class InventoryEmail(Model):
@@ -183,4 +186,4 @@ class InventoryEmail(Model):
     date_sent = DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = u'Printer Inventory Email'
+        verbose_name = 'Printer Inventory Email'

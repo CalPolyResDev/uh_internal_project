@@ -40,7 +40,7 @@ def dict_merge(base, merge):
         return merge
     result = deepcopy(base)
 
-    for key, value in merge.iteritems():
+    for key, value in merge.items():
         if key in result and isinstance(result[key], dict):
                 result[key] = dict_merge(result[key], value)
         else:
@@ -137,7 +137,7 @@ class GetDutyData(object):
                 tickets["status_color"] = RED
             tickets["last_checked"] = datetime.datetime.strftime(data.last_checked, "%m/%d/%Y %H:%M%p")
             tickets["last_user"] = data.last_user.get_full_name()
-        except DatabaseError, message:
+        except DatabaseError as message:
             logger.info(message)
             tickets["count"] = 0
             tickets["status_color"] = RED

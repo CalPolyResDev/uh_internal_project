@@ -43,7 +43,7 @@ class OnityDoorAccessView(FormView):
         onity_staff = StaffMapping.objects.get(staff_title="Housing: Information Technology Consultant")
 
         context['onity_staff_name'] = onity_staff.staff_name
-        context['onity_staff_email'] = onity_staff.staff_alias + u'@calpoly.edu'
+        context['onity_staff_email'] = onity_staff.staff_alias + '@calpoly.edu'
         context['onity_staff_extension'] = onity_staff.staff_ext
 
         return context
@@ -74,7 +74,7 @@ class SRSAccessView(FormView):
         file_reference = self.request.FILES['signed_rup'].file
 
         # Upload the RUP
-        EwizAttacher(settings_dict=settings.DATABASES[SRS_ALIAS], model=ticket, file_reference=file_reference, file_name=self.request.user.get_alias() + u'.pdf').attach_file()
+        EwizAttacher(settings_dict=settings.DATABASES[SRS_ALIAS], model=ticket, file_reference=file_reference, file_name=self.request.user.get_alias() + '.pdf').attach_file()
 
         return super(SRSAccessView, self).form_valid(form)
 

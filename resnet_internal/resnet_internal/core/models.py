@@ -24,10 +24,10 @@ class Community(Model):
         return self.name
 
     class Meta:
-        db_table = u'community'
+        db_table = 'community'
         managed = False
-        verbose_name = u'Community'
-        verbose_name_plural = u'Communities'
+        verbose_name = 'Community'
+        verbose_name_plural = 'Communities'
 
 
 class Building(Model):
@@ -40,9 +40,9 @@ class Building(Model):
         return str(self.community) + " " + self.name
 
     class Meta:
-        db_table = u'building'
+        db_table = 'building'
         managed = False
-        verbose_name = u'Building'
+        verbose_name = 'Building'
 
 
 class DailyDuties(Model):
@@ -62,30 +62,30 @@ class SiteAnnouncements(Model):
 
     class Meta:
         get_latest_by = "created"
-        verbose_name = u'Site Announcement'
+        verbose_name = 'Site Announcement'
 
 
 class StaffMapping(Model):
     """A mapping of various department staff to their respective positions."""
 
-    staff_title = CharField(max_length=35, unique=True, verbose_name=u'Staff Title')
-    staff_name = CharField(max_length=50, verbose_name=u'Staff Full Name')
-    staff_alias = CharField(max_length=8, verbose_name=u'Staff Alias')
-    staff_ext = IntegerField(max_length=4, verbose_name=u'Staff Telephone Extension')
+    staff_title = CharField(max_length=35, unique=True, verbose_name='Staff Title')
+    staff_name = CharField(max_length=50, verbose_name='Staff Full Name')
+    staff_alias = CharField(max_length=8, verbose_name='Staff Alias')
+    staff_ext = IntegerField(max_length=4, verbose_name='Staff Telephone Extension')
 
     class Meta:
-        db_table = u'staffmapping'
+        db_table = 'staffmapping'
         managed = False
-        verbose_name = u'Campus Staff Mapping'
+        verbose_name = 'Campus Staff Mapping'
 
 
 class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     """ResNet Internal User Model"""
 
-    username = CharField(max_length=30, unique=True, verbose_name=u'Username')
-    first_name = CharField(max_length=30, blank=True, verbose_name=u'First Name')
-    last_name = CharField(max_length=30, blank=True, verbose_name=u'Last Name')
-    email = EmailField(blank=True, verbose_name=u'Email Address')
+    username = CharField(max_length=30, unique=True, verbose_name='Username')
+    first_name = CharField(max_length=30, blank=True, verbose_name='First Name')
+    last_name = CharField(max_length=30, blank=True, verbose_name='Last Name')
+    email = EmailField(blank=True, verbose_name='Email Address')
 
     is_active = BooleanField(default=True)
     is_staff = BooleanField(default=False)
@@ -120,7 +120,7 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     open_links_in_frame = BooleanField(default=False)  # Link handling
 
     class Meta:
-        verbose_name = u'ResNet Internal User'
+        verbose_name = 'ResNet Internal User'
 
     def get_absolute_url(self):
         return "/users/%s/" % urlquote(self.username)

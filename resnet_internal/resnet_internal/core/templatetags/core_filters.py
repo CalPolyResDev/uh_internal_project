@@ -26,7 +26,7 @@ def keyvalue(dictionary, key):
 
 @register.filter
 def getrange(value):
-    """ Returns a list given a range value.
+    """ Returns an iterator given a range value.
 
     :param value: The length of the range to produce.
     :type value: int

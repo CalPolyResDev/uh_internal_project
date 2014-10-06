@@ -104,5 +104,5 @@ def send_delivery_confirmation(request):
 
     message += "\nHave a wonderful day!\n\nRegards,\nResNet Staff"
 
-    print "sending mail to %s" % request.requestor + "@calpoly.edu"
+    print("sending mail to %s" % request.requestor + "@calpoly.edu")
     send_mail('[ResLife Internal] Printer Request Notification', message, settings.SERVER_EMAIL, [request.requestor + "@calpoly.edu"], fail_silently=False)
