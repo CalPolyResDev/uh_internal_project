@@ -54,15 +54,15 @@ class ComputerUpdateForm(ComputerCreateForm):
 class RequestPinholeForm(Form):
 
     # Request info
-    priority = ChoiceField(label=u'Request Priority')
-    requestor_username = CharField(label=u'Requestor Alias', max_length=25, error_messages={'required': 'A valid requestor is required'})
+    priority = ChoiceField(label='Request Priority')
+    requestor_username = CharField(label='Requestor Alias', max_length=25, error_messages={'required': 'A valid requestor is required'})
 
     # Pinhole info
-    service_name = CharField(label=u'Service Name', max_length=50, error_messages={'required': 'A service name is required'})
-    inner_fw = BooleanField(label=u'Inner Firewall', required=False)
-    border_fw = BooleanField(label=u'Border Firewall', required=False)
-    tcp_ports = PortListFormField(label=u'TCP Ports', max_length=150, required=False)
-    udp_ports = PortListFormField(label=u'UDP Ports', max_length=150, required=False)
+    service_name = CharField(label='Service Name', max_length=50, error_messages={'required': 'A service name is required'})
+    inner_fw = BooleanField(label='Inner Firewall', required=False)
+    border_fw = BooleanField(label='Border Firewall', required=False)
+    tcp_ports = PortListFormField(label='TCP Ports', max_length=150, required=False)
+    udp_ports = PortListFormField(label='UDP Ports', max_length=150, required=False)
 
     def __init__(self, *args, **kwargs):
         super(RequestPinholeForm, self).__init__(*args, **kwargs)
@@ -80,11 +80,11 @@ class RequestPinholeForm(Form):
 class RequestDomainNameForm(Form):
 
     # Request info
-    priority = ChoiceField(label=u'Request Priority')
-    requestor_username = CharField(label=u'Requestor Alias', max_length=25, error_messages={'required': 'A valid requestor is required'})
+    priority = ChoiceField(label='Request Priority')
+    requestor_username = CharField(label='Requestor Alias', max_length=25, error_messages={'required': 'A valid requestor is required'})
 
     # Domain Name info
-    domain_names = DomainNameListFormFiled(label=u'Domain Name(s)', widget=Textarea, error_messages={'required': 'At least one domain name must be entered.'})
+    domain_names = DomainNameListFormFiled(label='Domain Name(s)', widget=Textarea, error_messages={'required': 'At least one domain name must be entered.'})
 
     def __init__(self, *args, **kwargs):
         super(RequestDomainNameForm, self).__init__(*args, **kwargs)

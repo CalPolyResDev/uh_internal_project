@@ -5,8 +5,6 @@ TEMPLATE_DEBUG = DEBUG
 
 SESSION_COOKIE_NAME = 'RNINDevSessionID'
 
-CONCURRENT_RANDOM_DELAY = True
-
 ALLOWED_HOSTS = [
     "localhost",
 ]
@@ -48,5 +46,4 @@ MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
 
 INSTALLED_APPS += (
     'debug_toolbar',
-    'devserver',
 )

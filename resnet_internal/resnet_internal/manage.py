@@ -18,7 +18,6 @@ def activate_env():
         error_msg = "Error: 'WORKON_HOME' is not set."
 
     if error_msg:
-        color_init()
         sys.stderr.write(Fore.RED + Style.BRIGHT + error_msg + "\n")
         sys.exit(1)
 
@@ -31,11 +30,12 @@ def activate_env():
 
     # Activate the virtual env
     # Check for Windows directory, otherwise use Linux directory
-    activate_env = virtualenv_dir.child(repo_dir, "Scripts", "activate_this.py")
-    if not activate_env.exists():
-        activate_env = virtualenv_dir.child(repo_dir, "bin", "activate_this.py")
+    activate_env = virtualenv_dir.child("test", "Scripts", "activate_this.py")
 
-    execfile(activate_env, dict(__file__=activate_env))
+    if not activate_env.exists():
+        activate_env = virtualenv_dir.child("test", "bin", "activate_this.py")
+
+    exec(compile(open(activate_env).read(), activate_env, 'exec'), dict(__file__=activate_env))
 
 if __name__ == "__main__":
 

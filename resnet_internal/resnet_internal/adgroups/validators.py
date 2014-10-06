@@ -23,5 +23,5 @@ def validate_ad_membership(alias):
     try:
         ad_group_instance = ADGroup(settings.AUTH_LDAP_BIND_DN)
         ad_group_instance._get_user_dn(alias)
-    except ObjectDoesNotExist, message:
+    except ObjectDoesNotExist as message:
         raise ValidationError(message)

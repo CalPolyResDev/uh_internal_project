@@ -28,7 +28,7 @@ csv_re = re.compile(CSV_RE, re.DOTALL)
 
 class DomainNameListFormFiled(RegexField):
     default_error_messages = {
-        'invalid': u'Domain names must be comma-separated e.g. "a.example.com, b.example.com, c.example.com".',
+        'invalid': 'Domain names must be comma-separated e.g. "a.example.com, b.example.com, c.example.com".',
     }
 
     def __init__(self, *args, **kwargs):
@@ -37,7 +37,7 @@ class DomainNameListFormFiled(RegexField):
 
 class MACAddressFormField(RegexField):
     default_error_messages = {
-        'invalid': u'Enter a valid MAC address.',
+        'invalid': 'Enter a valid MAC address.',
     }
 
     def __init__(self, *args, **kwargs):
@@ -62,15 +62,14 @@ class MACAddressField(Field):
 
 class PortListFormField(RegexField):
     default_error_messages = {
-        'invalid': u'Ports must be comma-separated with no whitespace. e.g. "22,80,443,993".',
+        'invalid': 'Ports must be comma-separated with no whitespace. e.g. "22,80,443,993".',
     }
 
     def __init__(self, *args, **kwargs):
         super(PortListFormField, self).__init__(csi_re, *args, **kwargs)
 
 
-class ListField(TextField):
-    __metaclass__ = SubfieldBase
+class ListField(TextField, metaclass=SubfieldBase):
     description = "Stores a python list"
 
     def __init__(self, *args, **kwargs):
@@ -92,7 +91,7 @@ class ListField(TextField):
         if value is None:
             return value
 
-        return unicode(value)
+        return str(value)
 
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)

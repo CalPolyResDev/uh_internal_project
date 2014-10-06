@@ -24,7 +24,7 @@ class SingleGroupEditView(FormView):
 
     template_name = "adgroups/single_group_list_edit.html"
     form_class = AddADUserForm
-    subtitle = u"AD Group Membership Editor"
+    subtitle = "AD Group Membership Editor"
 
     valid_user = True
     group_dn = ""
@@ -116,7 +116,7 @@ class ResTechListEditView(SingleGroupEditView):
     "Lists the members of the ResTech group. Modifications to this group will respectively modify the ResTech Admin group."""
 
     template_name = "adgroups/restech_list_edit.html"
-    subtitle = u"ResNet Technicians"
-    group_name = u"ResNet Technicians"
+    subtitle = "ResNet Technicians"
+    group_name = "ResNet Technicians"
     group_dn = "CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu"
     removal_method = 'remove_resnet_tech'

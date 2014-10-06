@@ -25,7 +25,7 @@ class AutoFocusAuthenticationForm(AuthenticationForm):
 
 class NavigationSettingsForm(Form):
 
-    handle_links = ChoiceField(label=u'Open links:', widget=RadioSelect)
+    handle_links = ChoiceField(label='Open links:', widget=RadioSelect)
 
     def __init__(self, *args, **kwargs):
         super(NavigationSettingsForm, self).__init__(*args, **kwargs)

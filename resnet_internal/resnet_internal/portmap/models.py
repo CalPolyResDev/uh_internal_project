@@ -17,16 +17,16 @@ class ResHallWired(Model):
     COMMUNITY_CHOICES = [(community, community) for community in COMMUNITIES]
     BUILDING_CHOICES = [(building, building) for building in ALL_BUILDINGS]
 
-    community = CharField(max_length=25, verbose_name=u'Community', choices=COMMUNITY_CHOICES)
-    building = CharField(max_length=25, verbose_name=u'Building', choices=BUILDING_CHOICES)
-    room = CharField(max_length=10, verbose_name=u'Room')
-    switch_ip = GenericIPAddressField(protocol='IPv4', verbose_name=u'Switch IP')
-    switch_name = CharField(max_length=35, verbose_name=u'Switch Name')
-    jack = CharField(max_length=5, verbose_name=u'Jack')
-    blade = PositiveSmallIntegerField(verbose_name=u'Blade')
-    port = PositiveSmallIntegerField(verbose_name=u'Port')
-    vlan = CharField(max_length=7, verbose_name=u'vLan')
-    active = BooleanField(default=True, verbose_name=u'Active')
+    community = CharField(max_length=25, verbose_name='Community', choices=COMMUNITY_CHOICES)
+    building = CharField(max_length=25, verbose_name='Building', choices=BUILDING_CHOICES)
+    room = CharField(max_length=10, verbose_name='Room')
+    switch_ip = GenericIPAddressField(protocol='IPv4', verbose_name='Switch IP')
+    switch_name = CharField(max_length=35, verbose_name='Switch Name')
+    jack = CharField(max_length=5, verbose_name='Jack')
+    blade = PositiveSmallIntegerField(verbose_name='Blade')
+    port = PositiveSmallIntegerField(verbose_name='Port')
+    vlan = CharField(max_length=7, verbose_name='vLan')
+    active = BooleanField(default=True, verbose_name='Active')
 
     def __unicode__(self):
         return self.community + " - " + self.building + " " + self.room + ": " + self.jack
@@ -46,6 +46,6 @@ class ResHallWired(Model):
         super(ResHallWired, self).save(*args, **kwargs)
 
     class Meta:
-        db_table = u'residence_halls_wired'
+        db_table = 'residence_halls_wired'
         managed = False
-        verbose_name = u'Residence Halls Wired Port'
+        verbose_name = 'Residence Halls Wired Port'

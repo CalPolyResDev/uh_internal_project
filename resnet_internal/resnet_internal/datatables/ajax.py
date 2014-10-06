@@ -116,7 +116,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         return json.dumps(self.get_options())
 
     def get_columns(self):
-        return self.column_definitions.keys()
+        return list(self.column_definitions.keys())
 
     def _get_columns_by_attribute(self, attribute, default=True, test=True):
         """ Returns a filtered list of columns that have the given attribute.

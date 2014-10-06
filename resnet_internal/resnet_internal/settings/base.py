@@ -1,4 +1,4 @@
-import ldap
+import ldap3
 import os
 
 from django.core.exceptions import ImproperlyConfigured
@@ -156,7 +156,8 @@ INCOMING_EMAIL = {
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # This configuration uses the SMTP protocol as a backend
 EMAIL_HOST = 'mail.calpoly.edu'  # The host to use for sending email. Set to empty string for localhost.
 EMAIL_PORT = 25  # The port to use. Defaul values: 25, 587
-EMAIL_USE_TLS = True  # Whether or not to use SSL (Boolean)
+#EMAIL_USE_TLS = True  # Whether or not to use SSL (Boolean)
+EMAIL_USE_SSL = True  # Whether or not to use SSL (Boolean)
 EMAIL_HOST_USER = INCOMING_EMAIL['IMAP4']['USER']  # The username to use. The full email address is what most servers require.
 EMAIL_HOST_PASSWORD = INCOMING_EMAIL['IMAP4']['PASSWORD']  # The password to use. Note that only clearText authentication is supported.
 
@@ -197,10 +198,12 @@ AUTHENTICATION_BACKENDS = (
 AUTH_LDAP_BIND_DN = get_env_variable('RESNET_INTERNAL_LDAP_USER_DN')
 AUTH_LDAP_BIND_PASSWORD = get_env_variable('RESNET_INTERNAL_LDAP_PASSWORD')
 
-AUTH_LDAP_SERVER_URI = 'ldap://ad.calpoly.edu:3268'
+AUTH_LDAP_SERVER_URI = 'ldap://ad.calpoly.edu'
+AUTH_LDAP_START_TLS = True
 
-AUTH_LDAP_USER_SEARCH = LDAPSearch('DC=ad,DC=calpoly,DC=edu', ldap.SCOPE_SUBTREE, '(&(objectClass=user)(sAMAccountName=%(user)s))')
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch('DC=ad,DC=calpoly,DC=edu', ldap.SCOPE_SUBTREE, '(objectClass=group)')
+AUTH_LDAP_USER_SEARCH = LDAPSearch('DC=ad,DC=calpoly,DC=edu', ldap3.SEARCH_SCOPE_WHOLE_SUBTREE, '(&(objectClass=user)(sAMAccountName=%(user)s))')
+AUTH_LDAP_GROUP_SEARCH = LDAPSearch('DC=ad,DC=calpoly,DC=edu', ldap3.SEARCH_SCOPE_WHOLE_SUBTREE, '(objectClass=group)')
+
 AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
 AUTH_LDAP_FIND_GROUP_PERMS = True
 
