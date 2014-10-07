@@ -45,7 +45,7 @@ sys.path.append(filepath.ancestor(2).child(project_dir))
 
 # Activate the virtual env
 activate_env = virtualenv_dir.child(repo_dir, "Scripts", "activate_this.py")
-execfile(activate_env, dict(__file__=activate_env))
+exec(compile(open(activate_env).read(), activate_env, 'exec'), dict(__file__=activate_env))
 
 import django
 from django.core.handlers.wsgi import WSGIHandler
