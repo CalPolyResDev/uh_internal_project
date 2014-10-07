@@ -147,7 +147,7 @@ class GetDutyData(object):
             tickets["last_checked"] = datetime.datetime.strftime(data.last_checked, "%m/%d/%Y %H:%M%p")
             tickets["last_user"] = data.last_user.get_full_name()
         except DatabaseError as message:
-            logger.info(message)
+            logger.exception(message)
             tickets["count"] = 0
             tickets["status_color"] = RED
             tickets["last_checked"] = datetime.datetime.strftime(datetime.datetime.now(), "%m/%d/%Y %H:%M%p")
