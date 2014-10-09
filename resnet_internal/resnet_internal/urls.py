@@ -88,7 +88,7 @@ urlpatterns = patterns('',
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
     url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^logout/$', logout, name='logout'),
-    url(r'^utils/update_building/$', update_building, name='utils_update_building'),
+    url(r'^ajax/update_building/$', update_building, name='ajax_update_building'),
     url(r'^daily_duties/refresh_duties/$', login_required(technician_access(refresh_duties)), name='daily_duties_refresh_duties'),
     url(r'^daily_duties/update_duty/$', login_required(technician_access(update_duty)), name='daily_duties_update_duty'),
     url(r'^settings/navigation/$', login_required(NavigationSettingsView.as_view()), name='navigation_settings'),
@@ -125,7 +125,7 @@ urlpatterns += patterns('',
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/rdp/$', login_required(computers_access(RDPRequestView.as_view())), name='rdp_request'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/pinhole_request/$', login_required(computer_record_modify_access(PinholeRequestView.as_view())), name='pinhole_request'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/domain_name_request/$', login_required(computer_record_modify_access(DomainNameRequestView.as_view())), name='domain_name_request'),
-    url(r'^computers/utils/update_sub_department/$', update_sub_department, name='utils_update_sub_department'),
+    url(r'^computers/ajax/update_sub_department/$', update_sub_department, name='ajax_update_sub_department'),
 )
 
 # Printer Requests
