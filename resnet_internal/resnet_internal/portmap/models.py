@@ -28,7 +28,7 @@ class ResHallWired(Model):
     vlan = CharField(max_length=7, verbose_name='vLan')
     active = BooleanField(default=True, verbose_name='Active')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.community + " - " + self.building + " " + self.room + ": " + self.jack
 
     def save(self, *args, **kwargs):

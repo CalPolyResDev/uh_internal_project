@@ -20,7 +20,7 @@ class Community(Model):
 
     name = CharField(max_length=30, verbose_name="Community Name")
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -36,7 +36,7 @@ class Building(Model):
     name = CharField(max_length=30, verbose_name="Building Name")
     community = ForeignKey(Community, verbose_name="Community")
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.community) + " " + self.name
 
     class Meta:

@@ -77,5 +77,5 @@ class Calendar(models.Model):
 
 
 # Provides a human-readable representation of an object. In this case, the name associated with the package is returned
-    def __unicode__(self):
+    def __str__(self):
         return self.Name

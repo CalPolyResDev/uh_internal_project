@@ -61,7 +61,7 @@ class Logs(models.Model):
     log_details = models.TextField(max_length=1024, verbose_name=u'Details')
 
 # Provides a human-readable representation of an object. In this case, the id of each object is returned.
-    def __unicode__(self):
+    def __str__(self):
         return self.log_details
 
 ##
@@ -77,5 +77,5 @@ class Logs(models.Model):
 #
 #
 ## Provides a human-readable representation of an object. In this case, the id of each object is returned.
-#    def __unicode__(self):
+#    def __str__(self):
 #        return self.id

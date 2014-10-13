@@ -29,7 +29,7 @@ class Computer(Model):
     dn = CharField(max_length=250, verbose_name='Distinguished Name')
     description = CharField(max_length=100, verbose_name='Description')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.computer_name
 
     def save(self, *args, **kwargs):
@@ -56,7 +56,7 @@ class Pinhole(Model):
     udp_ports = ListField(verbose_name='TCP Ports')
     sr_number = IntegerField(max_length=11, null=True, verbose_name='SR Number', db_column='ticket_id')
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Pinhole: ' + str(self.ip_address)
 
     class Meta:
@@ -72,7 +72,7 @@ class DomainName(Model):
     domain_name = CharField(max_length=100, verbose_name='Domain Name')
     sr_number = IntegerField(max_length=11, null=True, verbose_name='SR Number', db_column='ticket_id')
 
-    def __unicode__(self):
+    def __str__(self):
         return 'DNS Record: ' + str(self.ip_address)
 
     class Meta:

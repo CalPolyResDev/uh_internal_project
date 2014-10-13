@@ -30,7 +30,7 @@ class Printer(Model):
     property_id = CharField(max_length=50, verbose_name='Cal Poly Property ID', unique=True)
     description = CharField(max_length=100, verbose_name='Description')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.printer_name
 
     def save(self, *args, **kwargs):
@@ -52,7 +52,7 @@ class PrinterType(Model):
     make = CharField(max_length=10, verbose_name='Make')
     model = CharField(max_length=10, verbose_name='Model')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.make + " " + self.model
 
     class Meta:
@@ -70,7 +70,7 @@ class Toner(Model):
     quantity = PositiveIntegerField(default=0, verbose_name='Quantity')
     ordered = PositiveIntegerField(default=0, verbose_name='Ordered')
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.printer) + " " + str(self.color)
 
     class Meta:
@@ -88,7 +88,7 @@ class Part(Model):
     quantity = PositiveIntegerField(default=0, verbose_name='Quantity')
     ordered = PositiveIntegerField(default=0, verbose_name='Ordered')
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.printer) + " " + str(self.type)
 
     class Meta:
@@ -144,7 +144,7 @@ class Request(Model):
             parts_m2m.part = part
             parts_m2m.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.ticket_id) + " - " + self.STATUSES[self.status].upper()
 
     class Meta:
