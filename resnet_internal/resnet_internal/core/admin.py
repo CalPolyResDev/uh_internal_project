@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Community, Building, SiteAnnouncements, StaffMapping, ResNetInternalUser
+from .models import Community, Building, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser
 
 
 class SiteAnnouncementsAdmin(admin.ModelAdmin):
@@ -9,6 +9,10 @@ class SiteAnnouncementsAdmin(admin.ModelAdmin):
 
 class StaffMappingAdmin(admin.ModelAdmin):
     list_display = ('staff_title', 'staff_alias', 'staff_name')
+
+
+class TechFlairAdmin(admin.ModelAdmin):
+    list_display = ('tech', 'flair')
 
 
 class ResNetInternalUserAdmin(admin.ModelAdmin):
@@ -23,4 +27,5 @@ admin.site.register(Community, admin.ModelAdmin)
 admin.site.register(Building, admin.ModelAdmin)
 admin.site.register(SiteAnnouncements, SiteAnnouncementsAdmin)
 admin.site.register(StaffMapping, StaffMappingAdmin)
+admin.site.register(TechFlair, TechFlairAdmin)
 admin.site.register(ResNetInternalUser, ResNetInternalUserAdmin)

@@ -79,6 +79,17 @@ class StaffMapping(Model):
         verbose_name = 'Campus Staff Mapping'
 
 
+class TechFlair(Model):
+    """A mapping of users to custom flair."""
+
+    tech = ForeignKey("ResNetInternalUser", verbose_name='Technician')
+    flair = CharField(max_length=30, unique=True, verbose_name='Flair')
+
+    class Meta:
+        verbose_name = 'Tech Flair'
+        verbose_name_plural = 'Tech Flair'
+
+
 class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     """ResNet Internal User Model"""
 

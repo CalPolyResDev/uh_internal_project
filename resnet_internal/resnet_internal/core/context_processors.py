@@ -6,6 +6,8 @@
 
 """
 
+from .models import TechFlair
+
 
 def specializations(request):
     """Adds the user's specialization titles and display name to each context request."""
@@ -31,8 +33,14 @@ def specializations(request):
         # ResNet Titles
         if request.user.is_technician:
             user_specializations.append('ResNet Technician')
-        if "aakoeppe" in request.user.username:
-            user_specializations.append('Master of Airwaves')
+
+        try:
+            tech = TechFlair.objects.get(tech=request.user)
+        except TechFlair.DoesNotExist:
+            pass
+        else:
+            user_specializations.append(tech.flair)
+
         if request.user.is_rn_staff:
             user_specializations.append('ResNet Staff')
         if request.user.is_developer:
