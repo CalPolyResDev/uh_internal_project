@@ -156,13 +156,13 @@ INCOMING_EMAIL = {
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # This configuration uses the SMTP protocol as a backend
 EMAIL_HOST = 'mail.calpoly.edu'  # The host to use for sending email. Set to empty string for localhost.
 EMAIL_PORT = 25  # The port to use. Defaul values: 25, 587
-#EMAIL_USE_TLS = True  # Whether or not to use SSL (Boolean)
-EMAIL_USE_SSL = True  # Whether or not to use SSL (Boolean)
+EMAIL_USE_TLS = True  # Whether or not to use SSL (Boolean)
 EMAIL_HOST_USER = INCOMING_EMAIL['IMAP4']['USER']  # The username to use. The full email address is what most servers require.
 EMAIL_HOST_PASSWORD = INCOMING_EMAIL['IMAP4']['PASSWORD']  # The password to use. Note that only clearText authentication is supported.
 
 # Set the server's email address (for sending emails only)
 SERVER_EMAIL = 'ResDev Mail Relay Server <resdev@calpoly.edu>'
+DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
 # ======================================================================================================== #
 #                                              Access Permissions                                          #

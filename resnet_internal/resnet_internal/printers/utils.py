@@ -90,7 +90,7 @@ def send_replenishment_email():
         email = InventoryEmail(email=message)
         email.save()
 
-        send_mail('[ResNet Internal] Low Inventory Notification', message, settings.SERVER_EMAIL, [assistant_coord_email], fail_silently=False)
+        send_mail(subject='[ResNet Internal] Low Inventory Notification', message=message, recipient_list=[assistant_coord_email])
 
 
 def send_delivery_confirmation(request):
@@ -105,4 +105,4 @@ def send_delivery_confirmation(request):
     message += "\nHave a wonderful day!\n\nRegards,\nResNet Staff"
 
     print("sending mail to %s" % request.requestor + "@calpoly.edu")
-    send_mail('[ResLife Internal] Printer Request Notification', message, settings.SERVER_EMAIL, [request.requestor + "@calpoly.edu"], fail_silently=False)
+    send_mail(subject='[ResLife Internal] Printer Request Notification', message=message, recipient_list=[request.requestor + "@calpoly.edu"])
