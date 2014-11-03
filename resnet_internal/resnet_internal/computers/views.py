@@ -15,6 +15,7 @@ from django.core.urlresolvers import reverse, reverse_lazy
 from django.http.response import HttpResponseRedirect, HttpResponse
 from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
+from django.utils.encoding import smart_str
 
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
@@ -61,7 +62,7 @@ class ComputerRecordsView(TemplateView):
             socket_lookup = False
 
             try:
-                response = subprocess.check_output(["nslookup", ip_address], stderr=subprocess.STDOUT)
+                response = smart_str(subprocess.check_output(["nslookup", ip_address], stderr=subprocess.STDOUT))
                 dns_record = response.split("Name:    ")[-1].split("\r\n")[0]
             except (OSError, WindowsError):
                 logger.error("This server does not have the 'nslookup' binary.")

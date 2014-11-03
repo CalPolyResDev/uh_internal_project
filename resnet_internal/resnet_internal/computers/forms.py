@@ -74,6 +74,9 @@ class RequestPinholeForm(Form):
 
         if cleaned_data["tcp_ports"] == "" and cleaned_data["udp_ports"] == "":
             raise ValidationError("At least one TCP or UDP port must be entered.")
+
+        if cleaned_data["inner_fw"] is False and cleaned_data["border_fw"] is False:
+            raise ValidationError("At least one firewall must be selected.")
         return cleaned_data
 
 
