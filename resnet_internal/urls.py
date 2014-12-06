@@ -31,9 +31,9 @@ from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_d
 from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer, change_request_status, update_part_inventory, update_toner_inventory
 from .apps.portmap.ajax import PopulateResidenceHallWiredPorts, UpdateResidenceHallWiredPort, change_port_status
 
-from resnet_internal.settings.base import (technician_access_test, staff_access_test, printers_access_test, printers_modify_access_test,
-                                           portmap_access_test, portmap_modify_access_test, computers_access_test, computers_modify_access_test,
-                                           computer_record_modify_access_test)
+from .settings.base import (technician_access_test, staff_access_test, printers_access_test, printers_modify_access_test,
+                            portmap_access_test, portmap_modify_access_test, computers_access_test, computers_modify_access_test,
+                            computer_record_modify_access_test)
 
 
 def permissions_check(test_func, raise_exception=True):

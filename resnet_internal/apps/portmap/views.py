@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.portmap.views
+.. module:: resnet_internal.apps.portmap.views
    :synopsis: ResNet Internal Residence Halls Port Map Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
@@ -10,7 +10,7 @@
 
 from django.core.urlresolvers import reverse_lazy
 
-from resnet_internal.datatables.views import DatatablesView
+from ..datatables.views import DatatablesView
 
 from .models import ResHallWired
 from .forms import ResHallWiredPortCreateForm

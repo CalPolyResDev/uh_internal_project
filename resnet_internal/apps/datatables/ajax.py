@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.datatables.ajax
+.. module:: resnet_internal.apps.datatables.ajax
    :synopsis: ResNet Internal Datatable Ajax Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
@@ -21,7 +21,7 @@ from django.views.generic.edit import ModelFormMixin, ProcessFormView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django_ajax.mixin import AJAXMixin
 
-from resnet_internal.core.utils import dict_merge
+from ..core.utils import dict_merge
 
 logger = logging.getLogger(__name__)
 

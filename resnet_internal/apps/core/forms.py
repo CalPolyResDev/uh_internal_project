@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.core.forms
+.. module:: resnet_internal.apps.core.forms
    :synopsis: ResNet Internal Core Forms.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

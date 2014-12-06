@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.datatables.views
+.. module:: resnet_internal.apps.datatables.views
    :synopsis: ResNet Internal Residence Halls Datatable Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
@@ -11,7 +11,7 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.views.generic.edit import CreateView
 
-from resnet_internal.datatables.ajax import RNINDatatablesPopulateView
+from ..datatables.ajax import RNINDatatablesPopulateView
 
 
 class DatatablesView(CreateView):

@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.computers.models
+.. module:: resnet_internal.apps.computers.models
    :synopsis: ResNet Internal Computer Index Models.
 
 .. moduleauthor:: Thomas Willson <tewillso@calpoly.edu>

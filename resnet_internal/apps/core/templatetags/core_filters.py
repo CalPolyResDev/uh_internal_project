@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.core.templatetags
+.. module:: resnet_internal.apps.core.templatetags
    :synopsis: ResNet Internal Core Template Tags and Filters.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.printers.utils
+.. module:: resnet_internal.apps.printers.utils
    :synopsis: ResNet Internal Printer Request Utilities.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
@@ -8,10 +8,9 @@
 
 import datetime
 
-from django.conf import settings
 from django.core.mail import send_mail
 
-from resnet_internal.core.models import StaffMapping
+from ..core.models import StaffMapping
 from .models import Request, Toner, Part, InventoryEmail
 
 INVENTORY_LOW_CUTOFF = 5

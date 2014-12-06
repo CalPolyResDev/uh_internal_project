@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.printers.templatetags
+.. module:: resnet_internal.apps.printers.templatetags
    :synopsis: ResNet Internal Printer Template Tags and Filters.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

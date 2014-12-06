@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.computers.routers
+.. module:: resnet_internal.apps.computers.routers
    :synopsis: ResNet Internal Computer Index Database Routers.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

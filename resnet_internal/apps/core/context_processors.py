@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.core.context_processors
+.. module:: resnet_internal.apps.core.context_processors
    :synopsis: ResNet Internal Core Context Processors.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

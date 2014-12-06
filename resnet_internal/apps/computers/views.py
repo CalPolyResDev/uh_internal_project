@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.computers.views
+.. module:: resnet_internal.apps.computers.views
    :synopsis: ResNet Internal Computer Index Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
@@ -19,7 +19,7 @@ from django.utils.encoding import smart_str
 
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
-from resnet_internal.datatables.views import DatatablesView
+from ..datatables.views import DatatablesView
 
 from .forms import ComputerCreateForm, RequestPinholeForm, RequestDomainNameForm
 from .models import Computer, Pinhole, DomainName

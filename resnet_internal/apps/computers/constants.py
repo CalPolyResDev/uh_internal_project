@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.computers.constants
+.. module:: resnet_internal.apps.computers.constants
    :synopsis: ResNet Internal Computer Index Constants.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

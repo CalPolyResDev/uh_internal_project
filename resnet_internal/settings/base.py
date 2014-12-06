@@ -129,10 +129,10 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = (
-    'resnet_internal.core.routers.CommonRouter',
-    'resnet_internal.computers.routers.ComputersRouter',
-    'resnet_internal.portmap.routers.PortmapRouter',
-    'resnet_internal.printers.routers.PrintersRouter',
+    'resnet_internal.apps.core.routers.CommonRouter',
+    'resnet_internal.apps.computers.routers.ComputersRouter',
+    'resnet_internal.apps.portmap.routers.PortmapRouter',
+    'resnet_internal.apps.printers.routers.PrintersRouter',
     'rmsconnector.routers.RMSRouter',
     'srsconnector.routers.SRSRouter',
 )
@@ -264,7 +264,7 @@ SECRET_KEY = get_env_variable('RESNET_INTERNAL_SECRET_KEY')
 PROJECT_DIR = Path(__file__).parents[2]
 
 # The directory that will hold user-uploaded files.
-MEDIA_ROOT = PROJECT_DIR.joinpath("media")
+MEDIA_ROOT = str(PROJECT_DIR.joinpath("media").resolve())
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a trailing slash.
 MEDIA_URL = '/media/'
@@ -272,14 +272,14 @@ MEDIA_URL = '/media/'
 # The directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
-STATIC_ROOT = PROJECT_DIR.joinpath("static")
+STATIC_ROOT = str(PROJECT_DIR.joinpath("static").resolve())
 
 # URL prefix for static files. Make sure to use a trailing slash.
 STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    PROJECT_DIR.joinpath("resnet_internal", "core", "static"),
+    str(PROJECT_DIR.joinpath("resnet_internal", "static").resolve()),
 )
 
 # List of finder classes that know how to find static files in various locations.
@@ -290,7 +290,7 @@ STATICFILES_FINDERS = (
 )
 
 TEMPLATE_DIRS = (
-    PROJECT_DIR.joinpath("resnet_internal", "templates"),
+    str(PROJECT_DIR.joinpath("resnet_internal", "templates").resolve()),
 )
 
 # List of callables that know how to import templates from various sources.
@@ -311,7 +311,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
-    'resnet_internal.core.context_processors.specializations',
+    'resnet_internal.apps.core.context_processors.specializations',
     'django.contrib.messages.context_processors.messages',
 )
 
@@ -337,16 +337,16 @@ INSTALLED_APPS = (
     'rmsconnector',
     'srsconnector',
     'django_ewiz',
-    'resnet_internal.core',
-    'resnet_internal.core.templatetags.__init__.default_app_config',
-    'resnet_internal.datatables',
-    'resnet_internal.datatables.templatetags.__init__.default_app_config',
-    'resnet_internal.adgroups',
-    'resnet_internal.orientation',
-    'resnet_internal.computers',
-    'resnet_internal.portmap',
-    'resnet_internal.printers',
-    'resnet_internal.printers.templatetags.__init__.default_app_config',
+    'resnet_internal.apps.core',
+    'resnet_internal.apps.core.templatetags.__init__.default_app_config',
+    'resnet_internal.apps.datatables',
+    'resnet_internal.apps.datatables.templatetags.__init__.default_app_config',
+    'resnet_internal.apps.adgroups',
+    'resnet_internal.apps.orientation',
+    'resnet_internal.apps.computers',
+    'resnet_internal.apps.portmap',
+    'resnet_internal.apps.printers',
+    'resnet_internal.apps.printers.templatetags.__init__.default_app_config',
 )
 
 # ======================================================================================================== #

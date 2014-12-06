@@ -13,7 +13,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 
-from resnet_internal.datatables.views import DatatablesView
+from ..datatables.views import DatatablesView
 
 from .forms import PrinterCreateForm, TonerCountForm, PartCountForm
 from .models import Printer, Request, Toner, Part

@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.core.routers
+.. module:: resnet_internal.apps.core.routers
    :synopsis: ResNet Internal Core Database Routers.
 
 .. moduleauthor:: Kyle Dodson <kdodson@caloply.edu>

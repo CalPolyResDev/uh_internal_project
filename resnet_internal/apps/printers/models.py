@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.printers.models
+.. module:: resnet_internal.apps.printers.models
    :synopsis: ResNet Internal Printer Request Models.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
@@ -10,8 +10,8 @@ from django.db.models import (Model, CharField, ForeignKey, ManyToManyField, Pos
                               IntegerField, DateTimeField, GenericIPAddressField)
 from django.db.models.fields import TextField
 
-from resnet_internal.computers.fields import MACAddressField
-from resnet_internal.computers.constants import DEPARTMENTS, ALL_SUB_DEPARTMENTS
+from ..computers.fields import MACAddressField
+from ..computers.constants import DEPARTMENTS, ALL_SUB_DEPARTMENTS
 
 
 class Printer(Model):

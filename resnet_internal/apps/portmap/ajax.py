@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.portmap.ajax
+.. module:: resnet_internal.apps.portmap.ajax
    :synopsis: ResNet Internal Residence Halls Port Map AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
@@ -18,8 +18,8 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 from django_ajax.decorators import ajax
 from rmsconnector.utils import Resident
 
-from resnet_internal.settings.base import portmap_modify_access_test
-from resnet_internal.datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
+from ...settings.base import portmap_modify_access_test
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
 from .models import ResHallWired
 from .forms import ResHallWiredPortUpdateForm
 

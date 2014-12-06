@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.portmap.routers
+.. module:: resnet_internal.apps.portmap.routers
    :synopsis: ResNet Internal Core Portmap Routers.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

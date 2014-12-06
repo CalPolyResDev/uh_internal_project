@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.computers.ajax
+.. module:: resnet_internal.apps.computers.ajax
    :synopsis: ResNet Internal Computer Index AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
@@ -17,9 +17,9 @@ from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
-from resnet_internal.core.models import StaffMapping
-from resnet_internal.settings.base import computers_modify_access_test
-from resnet_internal.datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
+from ..core.models import StaffMapping
+from ...settings.base import computers_modify_access_test
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
 from .models import Computer, Pinhole, DomainName
 from .constants import (CORE, HOUSING_ADMINISTRATION, HOUSING_SERVICES, RESIDENTIAL_LIFE_AND_EDUCATION,
                         CORE_SUB_DEPARTMENTS, HOUSING_ADMINISTRATION_SUB_DEPARTMENTS, HOUSING_SERVICES_SUB_DEPARTMENTS,

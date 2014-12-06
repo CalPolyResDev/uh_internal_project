@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.printers.routers
+.. module:: resnet_internal.apps.printers.routers
    :synopsis: ResNet Internal Printer Request Database Routers.
 
 .. moduleauthor:: Kyle Dodson <kdodson@caloply.edu>

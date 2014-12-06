@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.orientation.forms
+.. module:: resnet_internal.apps.orientation.forms
    :synopsis: ResNet Internal Orientation Forms.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

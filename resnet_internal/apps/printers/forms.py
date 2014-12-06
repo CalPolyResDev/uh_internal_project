@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.printers.forms
+.. module:: resnet_internal.apps.printers.forms
    :synopsis: ResNet Internal Printer Request Forms.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

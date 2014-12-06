@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.portmap.models
+.. module:: resnet_internal.apps.portmap.models
    :synopsis: ResNet Internal Residence Halls Port Map Models.
 
    Major credit to Kyle Fast for saving a couple months' worth of work entering database info.

@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.core.models
+.. module:: resnet_internal.apps.core.models
    :synopsis: ResNet Internal Core Models.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.printers.ajax
+.. module:: resnet_internal.apps.printers.ajax
    :synopsis: ResNet Internal Printers AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
@@ -15,8 +15,8 @@ from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from srsconnector.models import STATUS_CHOICES, PrinterRequest
 
-from resnet_internal.settings.base import printers_modify_access_test
-from resnet_internal.datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
+from ...settings.base import printers_modify_access_test
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
 from .models import Printer, Request, Toner, Part
 from .forms import PrinterUpdateForm
 from .utils import can_fulfill_request, send_replenishment_email, send_delivery_confirmation

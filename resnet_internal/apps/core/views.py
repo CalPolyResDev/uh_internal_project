@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.core.views
+.. module:: resnet_internal.apps.core.views
    :synopsis: ResNet Internal Core Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

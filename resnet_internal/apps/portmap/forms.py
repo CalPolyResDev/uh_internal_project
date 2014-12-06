@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.portmap.forms
+.. module:: resnet_internal.apps.portmap.forms
    :synopsis: ResNet Internal Portmap Forms.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

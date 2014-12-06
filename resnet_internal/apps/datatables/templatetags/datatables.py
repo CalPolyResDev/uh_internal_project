@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.datatables.templatetags
+.. module:: resnet_internal.apps.datatables.templatetags
    :synopsis: ResNet Internal Datatables Template Tags and Filters.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
@@ -9,7 +9,7 @@ import logging
 
 from django.template import Context, loader, Library, Node, TemplateSyntaxError
 from django.core.exceptions import ImproperlyConfigured
-from resnet_internal.datatables.ajax import RNINDatatablesPopulateView
+from ..ajax import RNINDatatablesPopulateView
 
 logger = logging.getLogger(__name__)
 register = Library()

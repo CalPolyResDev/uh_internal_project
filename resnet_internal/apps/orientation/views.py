@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.orientation.views
+.. module:: resnet_internal.apps.orientation.views
    :synopsis: ResNet Internal Orientation Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
@@ -15,7 +15,7 @@ from django.views.generic import TemplateView
 from django_ewiz import EwizAttacher
 from srsconnector.settings import ALIAS as SRS_ALIAS
 
-from resnet_internal.core.models import StaffMapping
+from ..core.models import StaffMapping
 from .forms import SRSUploadForm, OnityEmailForm
 
 

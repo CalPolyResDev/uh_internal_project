@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.core.utils
+.. module:: resnet_internal.apps.core.utils
    :synopsis: ResNet Internal Core Utilities.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
