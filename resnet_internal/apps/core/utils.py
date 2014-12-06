@@ -54,12 +54,20 @@ def dict_merge(base, merge):
 class GetDutyData(object):
     """ Utility for gathering daily duty data."""
 
+    server = None
+
+    def _init_mail_connection(self):
+        # Connect to the email server and authenticate
+        if settings.INCOMING_EMAIL['IMAP4']['USE_SSL']:
+            context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
+            context.set_ciphers("RC4-MD5")
+            self.server = imaplib.IMAP4_SSL(host=settings.INCOMING_EMAIL['IMAP4']['HOST'], port=settings.INCOMING_EMAIL['IMAP4']['PORT'], ssl_context=context)
+        else:
+            self.server = imaplib.IMAP4(host=settings.INCOMING_EMAIL['IMAP4']['HOST'], port=settings.INCOMING_EMAIL['IMAP4']['PORT'])
+        self.server.login(user=settings.INCOMING_EMAIL['IMAP4']['USER'], password=settings.INCOMING_EMAIL['IMAP4']['PASSWORD'])
+
     def get_messages(self):
-        """Checks the current number of voicemail messages.
-
-        An API for this has not been discovered yet; For now this method always returns zero.
-
-        """
+        """Checks the current number of voicemail messages."""
 
         messages = {
             "count": None,
@@ -89,37 +97,28 @@ class GetDutyData(object):
             "last_checked": None,
             "last_user": None
         }
-        server = None
 
         try:
-            # Connect to the email server and authenticate
-            if settings.INCOMING_EMAIL['IMAP4']['USE_SSL']:
-                context = ssl.SSLContext(ssl.PROTOCOL_TLSv1).set_ciphers("RC4-MD5")
-                server = imaplib.IMAP4_SSL(host=settings.INCOMING_EMAIL['IMAP4']['HOST'], port=settings.INCOMING_EMAIL['IMAP4']['PORT'], ssl_context=context)
-            else:
-                server = imaplib.IMAP4(host=settings.INCOMING_EMAIL['IMAP4']['HOST'], port=settings.INCOMING_EMAIL['IMAP4']['PORT'])
-            server.login(user=settings.INCOMING_EMAIL['IMAP4']['USER'], password=settings.INCOMING_EMAIL['IMAP4']['PASSWORD'])
-
+            self._init_mail_connection()
+        except (SSLError, SSLEOFError):
+            email["count"] = 0
+            email["status_color"] = RED
+            email["last_checked"] = datetime.datetime.strftime(datetime.datetime.now(), "%m/%d/%Y %H:%M%p")
+            email["last_user"] = "Connection Error!"
+        else:
             # Grab the number of unread emails
-            server.select('inbox', readonly=True)  # Select the Inbox
-            r, search_data = server.search(None)  # Search for unread emails
-            unread_count = len(search_data[0].split())  # Count unread emails
-            server.logout()  # Disconnect from the email server
+            r, count = self.server.select('inbox', readonly=True)  # Select the Inbox, grab the count
+            self.server.logout()  # Disconnect from the email server
 
             data = DailyDuties.objects.get(name='email')
 
-            email["count"] = unread_count
+            email["count"] = int(count[0])
             if data.last_checked > datetime.datetime.now() - ACCEPTABLE_LAST_CHECKED:
                 email["status_color"] = GREEN
             else:
                 email["status_color"] = RED
             email["last_checked"] = datetime.datetime.strftime(data.last_checked, "%m/%d/%Y %H:%M%p")
             email["last_user"] = data.last_user.get_full_name()
-        except (SSLError, SSLEOFError) as message:
-            email["count"] = 0
-            email["status_color"] = RED
-            email["last_checked"] = datetime.datetime.strftime(datetime.datetime.now(), "%m/%d/%Y %H:%M%p")
-            email["last_user"] = "Connection Error!"
 
         return email
 
