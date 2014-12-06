@@ -17,24 +17,23 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic import RedirectView
 
-from .adgroups.views import ResTechListEditView
-from .core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, PhoneInstructionsView, handler500
-from .orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
-from .computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
-from .printers.views import RequestsListView, InventoryView, OnOrderView, PrintersView
-from .portmap.views import ResidenceHallWiredPortsView
+from .apps.adgroups.views import ResTechListEditView
+from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, PhoneInstructionsView, handler500
+from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
+from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
+from .apps.printers.views import RequestsListView, InventoryView, OnOrderView, PrintersView
+from .apps.portmap.views import ResidenceHallWiredPortsView
 
-from .adgroups.ajax import remove_resnet_tech
-from .core.ajax import update_building, refresh_duties, update_duty
-from .orientation.ajax import complete_task, complete_orientation
-from .computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
-from .printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
-from .portmap.ajax import PopulateResidenceHallWiredPorts, UpdateResidenceHallWiredPort, change_port_status
+from .apps.adgroups.ajax import remove_resnet_tech
+from .apps.core.ajax import update_building, refresh_duties, update_duty
+from .apps.orientation.ajax import complete_task, complete_orientation
+from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
+from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer, change_request_status, update_part_inventory, update_toner_inventory
+from .apps.portmap.ajax import PopulateResidenceHallWiredPorts, UpdateResidenceHallWiredPort, change_port_status
 
 from resnet_internal.settings.base import (technician_access_test, staff_access_test, printers_access_test, printers_modify_access_test,
                                            portmap_access_test, portmap_modify_access_test, computers_access_test, computers_modify_access_test,
                                            computer_record_modify_access_test)
-from resnet_internal.printers.ajax import change_request_status, update_part_inventory, update_toner_inventory
 
 
 def permissions_check(test_func, raise_exception=True):
