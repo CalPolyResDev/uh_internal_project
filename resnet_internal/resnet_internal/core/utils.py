@@ -6,8 +6,9 @@
 
 """
 
-import datetime
+import ssl
 import imaplib
+import datetime
 import logging
 from copy import deepcopy
 
@@ -17,7 +18,7 @@ from django.db import DatabaseError
 from srsconnector.models import ServiceRequest
 
 from .models import DailyDuties
-from ssl import SSLEOFError
+from ssl import SSLError, SSLEOFError
 
 logger = logging.getLogger(__name__)
 
@@ -93,14 +94,15 @@ class GetDutyData(object):
         try:
             # Connect to the email server and authenticate
             if settings.INCOMING_EMAIL['IMAP4']['USE_SSL']:
-                server = imaplib.IMAP4_SSL(settings.INCOMING_EMAIL['IMAP4']['HOST'], settings.INCOMING_EMAIL['IMAP4']['PORT'])
+                context = ssl.SSLContext(ssl.PROTOCOL_TLSv1).set_ciphers("RC4-MD5")
+                server = imaplib.IMAP4_SSL(host=settings.INCOMING_EMAIL['IMAP4']['HOST'], port=settings.INCOMING_EMAIL['IMAP4']['PORT'], ssl_context=context)
             else:
-                server = imaplib.IMAP4(settings.INCOMING_EMAIL['IMAP4']['HOST'], settings.INCOMING_EMAIL['IMAP4']['PORT'])
-            server.login(settings.INCOMING_EMAIL['IMAP4']['USER'], settings.INCOMING_EMAIL['IMAP4']['PASSWORD'])
+                server = imaplib.IMAP4(host=settings.INCOMING_EMAIL['IMAP4']['HOST'], port=settings.INCOMING_EMAIL['IMAP4']['PORT'])
+            server.login(user=settings.INCOMING_EMAIL['IMAP4']['USER'], password=settings.INCOMING_EMAIL['IMAP4']['PASSWORD'])
 
             # Grab the number of unread emails
             server.select('inbox', readonly=True)  # Select the Inbox
-            r, search_data = server.search(None, "UnSeen")  # Search for unread emails
+            r, search_data = server.search(None)  # Search for unread emails
             unread_count = len(search_data[0].split())  # Count unread emails
             server.logout()  # Disconnect from the email server
 
@@ -113,13 +115,11 @@ class GetDutyData(object):
                 email["status_color"] = RED
             email["last_checked"] = datetime.datetime.strftime(data.last_checked, "%m/%d/%Y %H:%M%p")
             email["last_user"] = data.last_user.get_full_name()
-
-            logger.warning("Email is back online!!!")
-        except SSLEOFError:
+        except (SSLError, SSLEOFError) as message:
             email["count"] = 0
             email["status_color"] = RED
-            email["last_checked"] = "Not sure..."
-            email["last_user"] = "email is down"
+            email["last_checked"] = datetime.datetime.strftime(datetime.datetime.now(), "%m/%d/%Y %H:%M%p")
+            email["last_user"] = "Connection Error!"
 
         return email
 
