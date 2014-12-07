@@ -69,24 +69,37 @@ class GetDutyData(object):
     def get_messages(self):
         """Checks the current number of voicemail messages."""
 
-        messages = {
+        voicemail = {
             "count": None,
             "status_color": None,
             "last_checked": None,
             "last_user": None
         }
 
-        data = DailyDuties.objects.get(name='messages')
-
-        messages["count"] = 0
-        if data.last_checked > datetime.datetime.now() - ACCEPTABLE_LAST_CHECKED:
-            messages["status_color"] = GREEN
+        try:
+            if not self.server:
+                self._init_mail_connection()
+        except (SSLError, SSLEOFError):
+            voicemail["count"] = 0
+            voicemail["status_color"] = RED
+            voicemail["last_checked"] = datetime.datetime.strftime(datetime.datetime.now(), "%m/%d/%Y %H:%M%p")
+            voicemail["last_user"] = "Connection Error!"
         else:
-            messages["status_color"] = RED
-        messages["last_checked"] = datetime.datetime.strftime(data.last_checked, "%m/%d/%Y %H:%M%p")
-        messages["last_user"] = data.last_user.get_full_name()
+            data = DailyDuties.objects.get(name='messages')
 
-        return messages
+            r, count = self.server.select('voicemail', readonly=True)
+            self.server.logout()
+
+            # Select the Inbox, get the message count
+            voicemail["count"] = int(count[0])
+            if data.last_checked > datetime.datetime.now() - ACCEPTABLE_LAST_CHECKED:
+                voicemail["status_color"] = GREEN
+            else:
+                voicemail["status_color"] = RED
+            voicemail["last_checked"] = datetime.datetime.strftime(data.last_checked, "%m/%d/%Y %H:%M%p")
+            voicemail["last_user"] = data.last_user.get_full_name()
+
+        return voicemail
 
     def get_email(self):
         """Checks the current number of unread email messages."""
@@ -99,18 +112,19 @@ class GetDutyData(object):
         }
 
         try:
-            self._init_mail_connection()
+            if not self.server:
+                self._init_mail_connection()
         except (SSLError, SSLEOFError):
             email["count"] = 0
             email["status_color"] = RED
             email["last_checked"] = datetime.datetime.strftime(datetime.datetime.now(), "%m/%d/%Y %H:%M%p")
             email["last_user"] = "Connection Error!"
         else:
-            # Grab the number of unread emails
-            r, count = self.server.select('inbox', readonly=True)  # Select the Inbox, grab the count
-            self.server.logout()  # Disconnect from the email server
-
             data = DailyDuties.objects.get(name='email')
+
+            # Select the Inbox, get the message count
+            r, count = self.server.select('inbox', readonly=True)
+            self.server.logout()
 
             email["count"] = int(count[0])
             if data.last_checked > datetime.datetime.now() - ACCEPTABLE_LAST_CHECKED:

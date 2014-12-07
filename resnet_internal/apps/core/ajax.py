@@ -79,7 +79,7 @@ def refresh_duties(request):
     email_dict = GetDutyData().get_email()
     tickets_dict = GetDutyData().get_tickets()
 
-    if messages_dict["count"] > 0:
+    if messages_dict["count"] >= 0:
         message_count = ' <b>(' + str(messages_dict["count"]) + ')</b>'
     else:
         message_count = ''
@@ -89,14 +89,14 @@ def refresh_duties(request):
     else:
         email_count = ''
 
-    if tickets_dict["count"] > 0:
+    if tickets_dict["count"] >= 0:
         ticket_count = ' <b>(' + str(tickets_dict["count"]) + ')</b>'
     else:
         ticket_count = ''
 
     duties_html = """
     <h2 class="center">Daily Duties</h2>
-    <h3><a href='""" + reverse('phone_instructions') + """' class="popup_frame" style="cursor:pointer;" onclick="updateDuty('messages')">Check Messages""" + message_count + """</a></h3>
+    <h3><a href='""" + reverse('phone_instructions') + """' class="popup_frame" style="cursor:pointer;" onclick="updateDuty('messages')">Check Voicemail""" + message_count + """</a></h3>
     <p>
         Last Checked:
         <br />
