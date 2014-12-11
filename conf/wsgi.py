@@ -41,7 +41,7 @@ def activate_env():
     site.addsitedir(str(virtualenv_home.joinpath(repo_name, "Lib", "site-packages")))
 
     # Add the app's directory to the PYTHONPATH
-    sys.path.append(str(filepath.parent))
+    sys.path.append(str(filepath.parents[1]))
 
     # Add environment variables
     try:
