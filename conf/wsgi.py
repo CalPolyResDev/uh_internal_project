@@ -38,14 +38,14 @@ def activate_env():
     repo_name = filepath.parents[1].stem
 
     # Add the site-packages of the chosen virtualenv to work with
-    site.addsitedir(virtualenv_home.child(repo_name, "Lib", "site-packages"))
+    site.addsitedir(str(virtualenv_home.joinpath(repo_name, "Lib", "site-packages")))
 
     # Add the app's directory to the PYTHONPATH
     sys.path.append(str(filepath.parent))
 
     # Add environment variables
     try:
-        with open(str(project_home, repo_name, '.env')) as f:
+        with open(str(Path(project_home, repo_name, '.env').resolve())) as f:
             content = f.read()
     except IOError:
         content = ''
@@ -64,12 +64,12 @@ def activate_env():
 
     # Activate the virtual env
     # Check for Windows directory, otherwise use Linux directory
-    activate_env = virtualenv_home.child(repo_name, "Scripts", "activate_this.py")
+    activate_env = virtualenv_home.joinpath(repo_name, "Scripts", "activate_this.py")
 
     if not activate_env.exists():
-        activate_env = virtualenv_home.child(repo_name, "bin", "activate_this.py")
+        activate_env = virtualenv_home.joinpath(repo_name, "bin", "activate_this.py")
 
-    exec(compile(open(activate_env).read(), activate_env, 'exec'), dict(__file__=activate_env))
+    exec(compile(open(str(activate_env)).read(), str(activate_env), 'exec'), dict(__file__=str(activate_env)))
 
 activate_env()
 
