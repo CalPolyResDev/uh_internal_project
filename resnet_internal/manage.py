@@ -37,7 +37,7 @@ def activate_env():
     repo_name = filepath.parents[1].stem
 
     # Add the app's directory to the PYTHONPATH
-    sys.path.append(str(filepath.parent))
+    sys.path.append(str(filepath.parents[1]))
 
     # Add environment variables
     try:
