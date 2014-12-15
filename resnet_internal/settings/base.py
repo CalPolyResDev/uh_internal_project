@@ -1,10 +1,10 @@
 import ldap3
 import os
+from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
 
 from django_auth_ldap.config import LDAPSearch, NestedActiveDirectoryGroupType
-from pathlib import Path
 
 
 def get_env_variable(name):
@@ -123,7 +123,7 @@ DATABASES = {
         'NAME': 'Calpoly2',
         'USER': 'resnetapi@calpoly.edu',
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_SRS_PASSWORD'),
-        'HOST': 'calpoly.enterprisewizard.com/ewws/',
+        'HOST': 'srs.calpoly.edu/ewws/',
         'PORT': '443',
     },
 }
