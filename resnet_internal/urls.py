@@ -12,10 +12,11 @@ import logging
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
 from django.conf.urls.static import static
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic import RedirectView
+from django.views.defaults import server_error, permission_denied, page_not_found
 
 from .apps.adgroups.views import ResTechListEditView
 from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, PhoneInstructionsView, handler500
@@ -81,7 +82,7 @@ handler500 = handler500
 logger = logging.getLogger(__name__)
 
 # Core
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$', IndexView.as_view(), name='home'),
     url(r'^favicon\.ico$', RedirectView.as_view(url='%simages/icons/favicon.ico' % settings.STATIC_URL), name='favicon'),
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
@@ -94,26 +95,26 @@ urlpatterns = patterns('',
     url(r'^message/$', login_required(technician_access(PhoneInstructionsView.as_view())), name='phone_instructions'),
     url(r'^(?P<mode>frame|external|link_handler)/(?P<key>\b[a-zA-Z0-9_]*\b)/$', login_required(link_handler), name='link_handler'),
     url(r'^(?P<mode>frame|external|link_handler)/(?P<key>cisco)/(?P<ip>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(link_handler), name='link_handler_cisco'),
-)
+]
 
 # ResNet Technician Orientation
-urlpatterns += patterns('',
+urlpatterns += [
     url(r'^orientation/$', login_required(technician_access(ChecklistView.as_view())), name='orientation_checklist'),
     url(r'^orientation/payroll/$', login_required(technician_access(PayrollView.as_view())), name='orientation_payroll'),
     url(r'^orientation/onity/$', login_required(technician_access(OnityDoorAccessView.as_view())), name='orientation_onity'),
     url(r'^orientation/srs/$', login_required(technician_access(SRSAccessView.as_view())), name='orientation_srs'),
     url(r'^orientation/complete_task/$', login_required(technician_access(complete_task)), name='orientation_complete_task'),
     url(r'^orientation/complete_orientation/$', login_required(technician_access(complete_orientation)), name='orientation_complete'),
-)
+]
 
 # AD Group management
-urlpatterns += patterns('',
+urlpatterns += [
     url(r'^manage/technicians/$', login_required(staff_access(ResTechListEditView.as_view())), name='restech_list_edit'),
     url(r'^manage/technicians/remove/$', login_required(staff_access(remove_resnet_tech)), name='remove_resnet_tech'),
-)
+]
 
 # Univeristy Housing Computer Index
-urlpatterns += patterns('',
+urlpatterns += [
     url(r'^computers/$', login_required(computers_access(ComputersView.as_view())), name='uh_computers'),
     url(r'^computers/populate/$', login_required(computers_access(PopulateComputers.as_view())), name='populate_uh_computers'),
     url(r'^computers/update/$', login_required(computers_modify_access(UpdateComputer.as_view())), name='update_uh_computer'),
@@ -125,40 +126,40 @@ urlpatterns += patterns('',
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/pinhole_request/$', login_required(computer_record_modify_access(PinholeRequestView.as_view())), name='pinhole_request'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/domain_name_request/$', login_required(computer_record_modify_access(DomainNameRequestView.as_view())), name='domain_name_request'),
     url(r'^computers/ajax/update_sub_department/$', update_sub_department, name='ajax_update_sub_department'),
-)
+]
 
 # Printer Requests
-urlpatterns += patterns('',
+urlpatterns += [
     url(r'^printers/requests/list/', login_required(technician_access(RequestsListView.as_view())), name='printer_request_list'),
     url(r'^printers/requests/view_inventory/', login_required(technician_access(InventoryView.as_view())), name='printer_inventory'),
     url(r'^printers/requests/view_ordered/', login_required(technician_access(OnOrderView.as_view())), name='printer_ordered_items'),
     url(r'^printers/requests/change_status/', login_required(technician_access(change_request_status)), name='change_printer_request_status'),
     url(r'^printers/requests/toner/update_inventory/', login_required(technician_access(update_toner_inventory)), name='update_printer_toner_inventory'),
     url(r'^printers/requests/parts/update_inventory/', login_required(technician_access(update_part_inventory)), name='update_printer_part_inventory'),
-)
+]
 
 # Univeristy Housing Printer Index
-urlpatterns += patterns('',
+urlpatterns += [
     url(r'^printers/$', login_required(printers_access(PrintersView.as_view())), name='uh_printers'),
     url(r'^printers/populate/$', login_required(printers_access(PopulatePrinters.as_view())), name='populate_uh_printers'),
     url(r'^printers/update/$', login_required(printers_access(UpdatePrinter.as_view())), name='update_uh_printer'),
     url(r'^printers/remove/$', login_required(printers_modify_access(remove_printer)), name='remove_uh_printer'),
-)
+]
 
 # Residence Halls Wired Port Map
-urlpatterns += patterns('',
+urlpatterns += [
     url(r'^portmap/$', login_required(portmap_access(ResidenceHallWiredPortsView.as_view())), name='residence_halls_wired_ports'),
     url(r'^portmap/populate/$', login_required(portmap_access(PopulateResidenceHallWiredPorts.as_view())), name='populate_residence_halls_wired_ports'),
     url(r'^portmap/update/$', login_required(portmap_access(UpdateResidenceHallWiredPort.as_view())), name='update_residence_halls_wired_port'),
     url(r'^portmap/change_status/$', login_required(portmap_modify_access(change_port_status)), name='change_residence_halls_wired_port_status'),
-)
+]
 
 # Raise errors on purpose
-urlpatterns += patterns('',
-    url(r'^500/$', 'django.views.defaults.server_error'),
-    url(r'^403/$', 'django.views.defaults.permission_denied'),
-    url(r'^404/$', 'django.views.defaults.page_not_found'),
-)
+urlpatterns += [
+    url(r'^500/$', server_error),
+    url(r'^403/$', permission_denied),
+    url(r'^404/$', page_not_found),
+]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
