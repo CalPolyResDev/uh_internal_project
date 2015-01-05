@@ -11,6 +11,7 @@ import imaplib
 import datetime
 import logging
 from copy import deepcopy
+from ssl import SSLError, SSLEOFError
 
 from django.conf import settings
 from django.db import DatabaseError
@@ -18,7 +19,8 @@ from django.db import DatabaseError
 from srsconnector.models import ServiceRequest
 
 from .models import DailyDuties
-from ssl import SSLError, SSLEOFError
+from ..printers.models import Request as PrinterRequest, REQUEST_STATUSES
+
 
 logger = logging.getLogger(__name__)
 
@@ -65,6 +67,28 @@ class GetDutyData(object):
         else:
             self.server = imaplib.IMAP4(host=settings.INCOMING_EMAIL['IMAP4']['HOST'], port=settings.INCOMING_EMAIL['IMAP4']['PORT'])
         self.server.login(user=settings.INCOMING_EMAIL['IMAP4']['USER'], password=settings.INCOMING_EMAIL['IMAP4']['PASSWORD'])
+
+    def get_printer_requests(self):
+        """Checks the current number of printer requests."""
+
+        printer_requests = {
+            "count": None,
+            "status_color": None,
+            "last_checked": None,
+            "last_user": None
+        }
+
+        data = DailyDuties.objects.get(name='printerrequests')
+
+        printer_requests["count"] = PrinterRequest.objects.filter(status=REQUEST_STATUSES.index("Open")).count()
+        if data.last_checked > datetime.datetime.now() - ACCEPTABLE_LAST_CHECKED:
+            printer_requests["status_color"] = GREEN
+        else:
+            printer_requests["status_color"] = RED
+        printer_requests["last_checked"] = datetime.datetime.strftime(data.last_checked, "%m/%d/%Y %H:%M%p")
+        printer_requests["last_user"] = data.last_user.get_full_name()
+
+        return printer_requests
 
     def get_messages(self):
         """Checks the current number of voicemail messages."""

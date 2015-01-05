@@ -1,10 +1,10 @@
 import ldap3
 import os
+from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
 
 from django_auth_ldap.config import LDAPSearch, NestedActiveDirectoryGroupType
-from pathlib import Path
 
 
 def get_env_variable(name):
@@ -123,7 +123,7 @@ DATABASES = {
         'NAME': 'Calpoly2',
         'USER': 'resnetapi@calpoly.edu',
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_SRS_PASSWORD'),
-        'HOST': 'calpoly.enterprisewizard.com/ewws/',
+        'HOST': 'srs.calpoly.edu/ewws/',
         'PORT': '443',
     },
 }
@@ -195,6 +195,8 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+AUTH_USER_MODEL = 'core.ResNetInternalUser'
+
 AUTH_LDAP_BIND_DN = get_env_variable('RESNET_INTERNAL_LDAP_USER_DN')
 AUTH_LDAP_BIND_PASSWORD = get_env_variable('RESNET_INTERNAL_LDAP_PASSWORD')
 
@@ -214,8 +216,6 @@ AUTH_LDAP_USER_ATTR_MAP = {
     'last_name': 'sn',
     'email': 'mail',
 }
-
-AUTH_USER_MODEL = 'core.ResNetInternalUser'
 
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     'is_net_admin': 'StateHRDept - IS-ITS-Networks (132900 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu',
@@ -243,6 +243,13 @@ LDAP_GROUPS_BIND_PASSWORD = get_env_variable('RESNET_INTERNAL_LDAP_PASSWORD')
 
 LDAP_GROUPS_USER_LOOKUP_ATTRIBUTE = 'sAMAccountName'
 LDAP_GROUPS_ATTRIBUTE_LIST = ['displayName', 'sAMAccountName', 'distinguishedName']
+
+# ======================================================================================================== #
+#                                            SSH Configuration                                             #
+# ======================================================================================================== #
+
+RESNET_SWITCH_SSH_USER = get_env_variable('RESNET_INTERNAL_LDAP_USER_DN')
+RESNET_SWITCH_SSH_PASSWORD = get_env_variable('RESNET_INTERNAL_LDAP_PASSWORD')
 
 # ======================================================================================================== #
 #                                      Session/Security Configuration                                      #
@@ -408,6 +415,11 @@ LOGGING = {
         },
         'django_datatables_view': {
             'level': 'INFO',
+            'handlers': ['sentry'],
+            'propagate': True,
+        },
+        'paramiko': {
+            'level': 'WARNING',
             'handlers': ['sentry'],
             'propagate': True,
         },

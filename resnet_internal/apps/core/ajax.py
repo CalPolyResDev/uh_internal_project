@@ -75,9 +75,15 @@ def update_building(request):
 def refresh_duties(request):
 
     # Load data dicts
+    printer_requests_dict = GetDutyData().get_printer_requests()
     messages_dict = GetDutyData().get_messages()
     email_dict = GetDutyData().get_email()
     tickets_dict = GetDutyData().get_tickets()
+
+    if printer_requests_dict["count"] >= 0:
+        printer_request_count = ' <b>(' + str(printer_requests_dict["count"]) + ')</b>'
+    else:
+        printer_request_count = ''
 
     if messages_dict["count"] >= 0:
         message_count = ' <b>(' + str(messages_dict["count"]) + ')</b>'
@@ -96,6 +102,14 @@ def refresh_duties(request):
 
     duties_html = """
     <h2 class="center">Daily Duties</h2>
+    <h3><a href='""" + reverse('printer_request_list') + """' style="cursor:pointer;" onclick="updateDuty('printerrequests')">Check Printer Requests""" + printer_request_count + """</a></h3>
+    <p>
+        Last Checked:
+        <br />
+        <font color='""" + printer_requests_dict["status_color"] + """'>""" + printer_requests_dict["last_checked"] + """</font>
+        <br />
+        (""" + printer_requests_dict["last_user"] + """)
+    </p>
     <h3><a href='""" + reverse('phone_instructions') + """' class="popup_frame" style="cursor:pointer;" onclick="updateDuty('messages')">Check Voicemail""" + message_count + """</a></h3>
     <p>
         Last Checked:
