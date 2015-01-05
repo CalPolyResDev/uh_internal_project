@@ -8,15 +8,20 @@
 """
 
 import logging
+import time
 from collections import OrderedDict
 
 from django.db.models import Q
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.views.decorators.http import require_POST
+from django.conf import settings
+from django.utils.encoding import smart_str
 
 from django_ajax.decorators import ajax
 from rmsconnector.utils import Resident
+from paramiko import SSHClient, AutoAddPolicy
 
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
@@ -50,13 +55,13 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
 
     extra_options = {
         "language": {
-            "lengthMenu": 'Display <select>'+
-                '<option value="50">50</option>'+
-                '<option value="100">100</option>'+
-                '<option value="250">250</option>'+
-                '<option value="500">500</option>'+
-                '<option value="1000">1000</option>'+
-                '<option value="-1">All</option>'+
+            "lengthMenu": 'Display <select>' +
+                '<option value="50">50</option>' +
+                '<option value="100">100</option>' +
+                '<option value="250">250</option>' +
+                '<option value="500">500</option>' +
+                '<option value="1000">1000</option>' +
+                '<option value="-1">All</option>' +
                 '</select> records:',
             "search": "Filter records: (Use ?pinhole and/or ?domain to narrow results.)",
         },
@@ -138,6 +143,7 @@ class UpdateResidenceHallWiredPort(BaseDatatablesUpdateView):
 
 
 @ajax
+@require_POST
 def change_port_status(request):
     """ Activates or Deactivates a port in the portmap.
 
@@ -150,10 +156,48 @@ def change_port_status(request):
     port_id = request.POST["port_id"]
 
     port_instance = ResHallWired.objects.get(id=port_id)
-    if port_instance.active:
-        port_instance.active = False
+
+    # Set up paramiko ssh client
+    ssh_client = SSHClient()
+    ssh_client.set_missing_host_key_policy(AutoAddPolicy())
+    ssh_client.connect(str(port_instance.switch_ip), username=settings.RESNET_SWITCH_SSH_USER, password=settings.RESNET_SWITCH_SSH_PASSWORD, allow_agent=False, look_for_keys=False)
+    ssh_shell = ssh_client.invoke_shell()
+
+    if ssh_shell.get_transport().is_active():
+        ssh_shell.send('conf t\n')
+        time.sleep(.5)
+        ssh_shell.send('interface Gi' + str(port_instance.blade) + '/' + str(port_instance.port) + '\n')
+        time.sleep(.5)
     else:
-        port_instance.active = True
-    port_instance.save()
+        raise IOError('Lost connection to switch {switch}.'.format(switch=port_instance.switch_ip))
+
+    if ssh_shell.get_transport().is_active():
+        if port_instance.active:
+            ssh_shell.send('shutdown\n')
+            time.sleep(.5)
+        else:
+            ssh_shell.send('no shutdown\n')
+            time.sleep(.5)
+
+        buffer_size = 1024
+        stderr = ""
+
+        # Pull stderr from the buffer
+        while ssh_shell.recv_stderr_ready():
+            stderr += smart_str(ssh_shell.recv_stderr(buffer_size))
+
+        # Attempt to parse errors
+        if stderr:
+            raise IOError(stderr)
+        else:
+            # An error did not occur.
+            port_instance.active = not port_instance.active
+            port_instance.save()
+    else:
+        raise IOError('Lost connection to switch {switch}.'.format(switch=port_instance.switch_ip))
+
+    # Close ssh connection(s)
+    ssh_shell.close()
+    ssh_client.close()
 
     return redraw_row(request, PopulateResidenceHallWiredPorts, port_id)
