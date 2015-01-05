@@ -9,7 +9,6 @@
 
 import logging
 import time
-import socket
 from collections import OrderedDict
 
 from django.db.models import Q
@@ -18,17 +17,16 @@ from django.core.urlresolvers import reverse_lazy
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.views.decorators.http import require_POST
 from django.conf import settings
+from django.utils.encoding import smart_str
 
 from django_ajax.decorators import ajax
 from rmsconnector.utils import Resident
-
-import paramiko
+from paramiko import SSHClient, AutoAddPolicy
 
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
 from .models import ResHallWired
 from .forms import ResHallWiredPortUpdateForm
-from paramiko.ssh_exception import SSHException
 
 logger = logging.getLogger(__name__)
 
@@ -57,13 +55,13 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
 
     extra_options = {
         "language": {
-            "lengthMenu": 'Display <select>'+
-                '<option value="50">50</option>'+
-                '<option value="100">100</option>'+
-                '<option value="250">250</option>'+
-                '<option value="500">500</option>'+
-                '<option value="1000">1000</option>'+
-                '<option value="-1">All</option>'+
+            "lengthMenu": 'Display <select>' +
+                '<option value="50">50</option>' +
+                '<option value="100">100</option>' +
+                '<option value="250">250</option>' +
+                '<option value="500">500</option>' +
+                '<option value="1000">1000</option>' +
+                '<option value="-1">All</option>' +
                 '</select> records:',
             "search": "Filter records: (Use ?pinhole and/or ?domain to narrow results.)",
         },
@@ -154,38 +152,16 @@ def change_port_status(request):
 
     """
 
-    # ALEX: I am putting try/except statements that simply print the general error
-    #       message for the given error, so if you want to setup actual logging and
-    #       anything else I missed then feel free. I was just unsure of what needed
-    #       to get done to set that all up.
-    #       It is possible to obtain the output from the server and then parse that to
-    #       tell if the command worked as intended which I can implement with some
-    #       more time. 
-
     # Pull post parameters
     port_id = request.POST["port_id"]
 
     port_instance = ResHallWired.objects.get(id=port_id)
 
-    print ('switch_ip:', port_instance.switch_ip)
-    print ('port:', port_instance.port)
-    print ('blade:', port_instance.blade)
-
     # Set up paramiko ssh client
-    try:
-        ssh_client = paramiko.SSHClient()
-        ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh_client.connect(str(port_instance.switch_ip), username='resnetapi', password='PASSWORD GOES HERE', allow_agent=False, look_for_keys=False)
-    except paramiko.AuthenticationException:
-        print ('Error authenticating with the server')
-    except (paramiko.SSHException, socket.error):
-        print ('Error connecting to server')
-
-    # Set up paramiko ssh shell (needed to send multiple commands before client closes itself
-    try:
-        ssh_shell = ssh_client.invoke_shell()
-    except paramiko.SSHException:
-        print ('Error connecting to server')
+    ssh_client = SSHClient()
+    ssh_client.set_missing_host_key_policy(AutoAddPolicy())
+    ssh_client.connect(str(port_instance.switch_ip), username=settings.RESNET_SWITCH_SSH_USER, password=settings.RESNET_SWITCH_SSH_PASSWORD, allow_agent=False, look_for_keys=False)
+    ssh_shell = ssh_client.invoke_shell()
 
     if ssh_shell.get_transport().is_active():
         ssh_shell.send('conf t\n')
@@ -193,20 +169,32 @@ def change_port_status(request):
         ssh_shell.send('interface Gi' + str(port_instance.blade) + '/' + str(port_instance.port) + '\n')
         time.sleep(.5)
     else:
-        print ('Error: connection to server lost')
+        raise IOError('Lost connection to switch {switch}.'.format(switch=port_instance.switch_ip))
 
     if ssh_shell.get_transport().is_active():
         if port_instance.active:
             ssh_shell.send('shutdown\n')
             time.sleep(.5)
-            port_instance.active = False
         else:
             ssh_shell.send('no shutdown\n')
             time.sleep(.5)
-            port_instance.active = True
+
+        buffer_size = 1024
+        stderr = ""
+
+        # Pull stderr from the buffer
+        while ssh_shell.recv_stderr_ready():
+            stderr += smart_str(ssh_shell.recv_stderr(buffer_size))
+
+        # Attempt to parse errors
+        if ssh_shell.recv_stderr_ready():
+            raise IOError(stderr)
+        else:
+            # An error did not occur.
+            port_instance.active = not port_instance.active
+            port_instance.save()
     else:
-        print ('Error: connection to server lost')
-    port_instance.save()
+        raise IOError('Lost connection to switch {switch}.'.format(switch=port_instance.switch_ip))
 
     # Close ssh connection(s)
     ssh_shell.close()
