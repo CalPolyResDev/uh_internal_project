@@ -7,6 +7,7 @@
 
 """
 
+import shlex
 import logging
 import time
 from collections import OrderedDict
@@ -63,7 +64,7 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
                 '<option value="1000">1000</option>' +
                 '<option value="-1">All</option>' +
                 '</select> records:',
-            "search": "Filter records: (Use ?pinhole and/or ?domain to narrow results.)",
+            "search": "Filter records: (Use ?alias to narrow results.)",
         },
     }
 
@@ -105,7 +106,10 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
         searchable_columns = self.get_searchable_columns()
 
         if search_parameters:
-            params = search_parameters.split(" ")
+            try:
+                params = shlex.split(search_parameters)
+            except ValueError:
+                params = search_parameters.split(" ")
             columnQ = Q()
             paramQ = Q()
 

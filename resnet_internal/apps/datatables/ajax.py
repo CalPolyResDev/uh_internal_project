@@ -6,6 +6,7 @@
 
 """
 
+import shlex
 import json
 import logging
 from collections import OrderedDict
@@ -184,7 +185,10 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         searchable_columns = self.get_searchable_columns()
 
         if search_parameters:
-            params = search_parameters.split(" ")
+            try:
+                params = shlex.split(search_parameters)
+            except ValueError:
+                params = search_parameters.split(" ")
             columnQ = Q()
             paramQ = Q()
 
