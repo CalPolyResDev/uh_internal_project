@@ -187,7 +187,7 @@ def change_port_status(request):
             stderr += smart_str(ssh_shell.recv_stderr(buffer_size))
 
         # Attempt to parse errors
-        if ssh_shell.recv_stderr_ready():
+        if stderr:
             raise IOError(stderr)
         else:
             # An error did not occur.
