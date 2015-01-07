@@ -52,7 +52,7 @@ def refresh_duties(request):
 
     duties_html = """
     <h2 class="center">Daily Duties</h2>
-    <h3><a href='""" + reverse('printer_request_list') + """' style="cursor:pointer;" onclick="updateDuty('printerrequests')">Check Printer Requests""" + printer_request_count + """</a></h3>
+    <h3><a style="cursor:pointer;" onclick="updateDuty('printerrequests', '""" + reverse('printer_request_list') + """', '_self')">Check Printer Requests""" + printer_request_count + """</a></h3>
     <p>
         Last Checked:
         <br />
@@ -60,7 +60,7 @@ def refresh_duties(request):
         <br />
         (""" + printer_requests_dict["last_user"] + """)
     </p>
-    <h3><a href='""" + reverse('phone_instructions') + """' class="popup_frame" style="cursor:pointer;" onclick="updateDuty('messages')">Check Voicemail""" + message_count + """</a></h3>
+    <h3><a href='""" + reverse('phone_instructions') + """' class="popup_frame" style="cursor:pointer;" onclick="updateDuty('messages', '', '_self')">Check Voicemail""" + message_count + """</a></h3>
     <p>
         Last Checked:
         <br />
@@ -68,7 +68,7 @@ def refresh_duties(request):
         <br />
         (""" + messages_dict["last_user"] + """)
     </p>
-    <h3><a href="/external/zimbra/" style="cursor:pointer;" target="_blank" onclick="updateDuty('email')">Check Email""" + email_count + """</a></h3>
+    <h3><a style="cursor:pointer;" onclick="updateDuty('email', '/external/zimbra/', '_blank')">Check Email""" + email_count + """</a></h3>
     <p>
         Last Checked:
         <br />
@@ -76,7 +76,7 @@ def refresh_duties(request):
         <br />
         (""" + email_dict["last_user"] + """)
     </p>
-    <h3><a href="/link_handler/srs/" style="cursor:pointer;" class="handler_link" onclick="updateDuty('tickets')">Check Tickets""" + ticket_count + """</a></h3>
+    <h3><a style="cursor:pointer;" onclick="updateDuty('tickets', '/link_handler/srs/', 'handler')">Check Tickets""" + ticket_count + """</a></h3>
     <p>
         Last Checked:
         <br />
