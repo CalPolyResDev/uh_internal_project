@@ -133,6 +133,7 @@ DATABASE_ROUTERS = (
     'resnet_internal.apps.computers.routers.ComputersRouter',
     'resnet_internal.apps.portmap.routers.PortmapRouter',
     'resnet_internal.apps.printers.routers.PrintersRouter',
+    'resnet_internal.apps.printerrequests.routers.PrinterRequestsRouter',
     'rmsconnector.routers.RMSRouter',
     'srsconnector.routers.SRSRouter',
 )
@@ -354,7 +355,8 @@ INSTALLED_APPS = (
     'resnet_internal.apps.computers',
     'resnet_internal.apps.portmap',
     'resnet_internal.apps.printers',
-    'resnet_internal.apps.printers.templatetags.__init__.default_app_config',
+    'resnet_internal.apps.printerrequests',
+    'resnet_internal.apps.printerrequests.templatetags.__init__.default_app_config',
 )
 
 # ======================================================================================================== #
