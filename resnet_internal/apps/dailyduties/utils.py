@@ -14,12 +14,11 @@ from ssl import SSLError, SSLEOFError
 
 from django.conf import settings
 from django.db import DatabaseError
-from django.db.models.query_utils import Q
 
 from srsconnector.models import ServiceRequest
 
 from .models import DailyDuties
-from ..printers.models import Request as PrinterRequest, REQUEST_STATUSES
+from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 
 logger = logging.getLogger(__name__)
 

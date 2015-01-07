@@ -22,7 +22,8 @@ from .apps.adgroups.views import ResTechListEditView
 from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, PhoneInstructionsView, handler500
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
-from .apps.printers.views import RequestsListView, InventoryView, OnOrderView, PrintersView
+from .apps.printers.views import PrintersView
+from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
 from .apps.portmap.views import ResidenceHallWiredPortsView
 
 from .apps.adgroups.ajax import remove_resnet_tech
@@ -30,7 +31,8 @@ from .apps.core.ajax import update_building
 from .apps.dailyduties.ajax import refresh_duties, update_duty
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
-from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer, change_request_status, update_part_inventory, update_toner_inventory
+from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
+from .apps.printerrequests.ajax import change_request_status, update_part_inventory, update_toner_inventory
 from .apps.portmap.ajax import PopulateResidenceHallWiredPorts, UpdateResidenceHallWiredPort, change_port_status
 
 from .settings.base import (technician_access_test, staff_access_test, printers_access_test, printers_modify_access_test,
