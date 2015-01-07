@@ -14,6 +14,7 @@ from ssl import SSLError, SSLEOFError
 
 from django.conf import settings
 from django.db import DatabaseError
+from django.db.models.query_utils import Q
 
 from srsconnector.models import ServiceRequest
 
@@ -135,7 +136,7 @@ class GetDutyData(object):
 
         return email
 
-    def get_tickets(self):
+    def get_tickets(self, user):
         """Checks the current number of queued SRS tickets."""
 
         tickets = {
@@ -146,12 +147,14 @@ class GetDutyData(object):
         }
 
         try:
-            open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).count()
-            api_tickets = ServiceRequest.objects.filter(assigned_person="ResnetAPI").count()
+            # If ORs were possible with SRS, this would be a lot cleaner...
+            total_open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(status=8).count()
+            assigned_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(status=8).exclude(assigned_person="").count()
+            my_assigned_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET", assigned_person=str(user.get_full_name())).exclude(status=4).exclude(status=8).count()
 
             data = DailyDuties.objects.get(name='tickets')
 
-            tickets["count"] = open_tickets - api_tickets
+            tickets["count"] = (total_open_tickets - assigned_tickets) + my_assigned_tickets
             if data.last_checked > datetime.datetime.now() - ACCEPTABLE_LAST_CHECKED:
                 tickets["status_color"] = GREEN
             else:

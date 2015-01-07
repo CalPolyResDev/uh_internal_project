@@ -28,7 +28,7 @@ def refresh_duties(request):
     printer_requests_dict = GetDutyData().get_printer_requests()
     messages_dict = GetDutyData().get_messages()
     email_dict = GetDutyData().get_email()
-    tickets_dict = GetDutyData().get_tickets()
+    tickets_dict = GetDutyData().get_tickets(request.user)
 
     if printer_requests_dict["count"] >= 0:
         printer_request_count = ' <b>(' + str(printer_requests_dict["count"]) + ')</b>'
