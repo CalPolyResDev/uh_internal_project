@@ -1,6 +1,6 @@
 """
-.. module:: resnet_internal.apps.printers.routers
-   :synopsis: ResNet Internal Printer Index Database Routers.
+.. module:: resnet_internal.apps.printerrequests.routers
+   :synopsis: ResNet Internal Printer Request Database Routers.
 
 .. moduleauthor:: Kyle Dodson <kdodson@caloply.edu>
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
@@ -8,12 +8,12 @@
 """
 
 
-class PrintersRouter(object):
+class PrinterRequestsRouter(object):
     """Routes all printer models to the correct database."""
 
     ALIAS = "printers"
-    APP_NAME = "printers"
-    MODELS = ('printer',)
+    APP_NAME = "printerrequests"
+    MODELS = ('printertype', 'toner', 'part', 'request', 'request_toner', 'request_parts')
 
     def _app(self, model):
         """ A shortcut to retrieve the provided model's application label.

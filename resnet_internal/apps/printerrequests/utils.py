@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.apps.printers.utils
+.. module:: resnet_internal.apps.printerrequests.utils
    :synopsis: ResNet Internal Printer Request Utilities.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
