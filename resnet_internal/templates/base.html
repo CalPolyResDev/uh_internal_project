@@ -320,9 +320,26 @@
 				});
 				return false;
 			};
-			function updateDuty(duty) {
+			function updateDuty(duty, redirect_url, target) {
 				ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
-					refreshDuties();
+				    if (target == 'handler') {
+				        if ("{{ request.user.open_links_in_frame }}" == "True") {
+				            window.open(redirect_url, '_self');
+				        }
+				        else {
+				            window.open(redirect_url, '_blank');
+				            refreshDuties();
+				        }
+				    }
+				    else if (target == '_self') {
+				        if (redirect_url != "") {
+				            window.open(redirect_url, '_self');
+				        }
+				    }
+				    else if (target == '_blank') {
+				        window.open(redirect_url, '_blank');
+				        refreshDuties();
+				    }
 					return true;
 				});
 				return false;
