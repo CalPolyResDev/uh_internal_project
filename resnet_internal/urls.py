@@ -26,7 +26,8 @@ from .apps.printers.views import RequestsListView, InventoryView, OnOrderView, P
 from .apps.portmap.views import ResidenceHallWiredPortsView
 
 from .apps.adgroups.ajax import remove_resnet_tech
-from .apps.core.ajax import update_building, refresh_duties, update_duty
+from .apps.core.ajax import update_building
+from .apps.dailyduties.ajax import refresh_duties, update_duty
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
 from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer, change_request_status, update_part_inventory, update_toner_inventory
