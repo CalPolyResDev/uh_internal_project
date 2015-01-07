@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 class RequestsListView(ListView):
     """Lists all open printer requests and supplies a form to modify the request status."""
 
-    template_name = "printers/viewrequests.html"
+    template_name = "printerrequests/viewrequests.html"
 
     def get_queryset(self):
         return Request.objects.exclude(status=Request.STATUSES.index('Delivered'))
@@ -29,7 +29,7 @@ class RequestsListView(ListView):
 class InventoryView(TemplateView):
     """Lists inventory for both parts and toner."""
 
-    template_name = "printers/viewinventory.html"
+    template_name = "printerrequests/viewinventory.html"
     toner_form = TonerCountForm
     part_form = PartCountForm
 
@@ -64,4 +64,4 @@ class InventoryView(TemplateView):
 class OnOrderView(InventoryView):
     """Lists order counts for both parts and toner."""
 
-    template_name = "printers/viewordered.html"
+    template_name = "printerrequests/viewordered.html"
