@@ -9,7 +9,6 @@
 import re
 
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
-from django.conf import settings
 from django.db.models import Model, CharField, IntegerField, TextField, DateTimeField, ForeignKey, EmailField, NullBooleanField, BooleanField
 from django.utils.http import urlquote
 from django.core.mail import send_mail
@@ -43,14 +42,6 @@ class Building(Model):
         db_table = 'building'
         managed = False
         verbose_name = 'Building'
-
-
-class DailyDuties(Model):
-    """Daily Duties Information"""
-
-    name = CharField(max_length=15, unique=True, verbose_name='Duty Name')
-    last_checked = DateTimeField(verbose_name='Last DateTime Checked')
-    last_user = ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Last User to Check')
 
 
 class SiteAnnouncements(Model):

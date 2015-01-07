@@ -346,6 +346,7 @@ INSTALLED_APPS = (
     'django_ewiz',
     'resnet_internal.apps.core',
     'resnet_internal.apps.core.templatetags.__init__.default_app_config',
+    'resnet_internal.apps.dailyduties',
     'resnet_internal.apps.datatables',
     'resnet_internal.apps.datatables.templatetags.__init__.default_app_config',
     'resnet_internal.apps.adgroups',
