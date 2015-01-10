@@ -113,21 +113,12 @@ class PopulateComputers(RNINDatatablesPopulateView):
         self.write_permissions = computers_modify_access_test(user)
 
     def render_column(self, row, column):
-
         if column == 'department':
             department_instance = getattr(row, column)
             department_id = department_instance.id
             value = department_instance.name
 
-            editable_block = "<select class='editbox'>"
-
-            for department in Department.objects.all():
-                if department.id == int(department_id):
-                    editable_block += """<option value='{id}' selected='selected'>{name}</option>""".format(id=department.id, name=department.name)
-                else:
-                    editable_block += """<option value='{id}'>{name}</option>""".format(id=department.id, name=department.name)
-
-            editable_block += """</select>"""
+            editable_block = self.format_select_block(queryset=Department.objects.all(), value_field="id", text_field="name", value_match=department_id)
 
             return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
         elif column == 'sub_department':
@@ -146,15 +137,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
             sub_department_id = sub_department_instance.id
             value = sub_department_instance.name
 
-            editable_block = "<select class='editbox'>"
-
-            for sub_department in valid_sub_departments:
-                if sub_department.id == int(sub_department_id):
-                    editable_block += """<option value='{id}' selected='selected'>{name}</option>""".format(id=sub_department.id, name=sub_department.name)
-                else:
-                    editable_block += """<option value='{id}'>{name}</option>""".format(id=sub_department.id, name=sub_department.name)
-
-            editable_block += """</select>"""
+            editable_block = self.format_select_block(queryset=valid_sub_departments, value_field="id", text_field="name", value_match=sub_department_id)
 
             return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
         elif column == 'ip_address':

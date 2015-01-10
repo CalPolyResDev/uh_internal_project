@@ -76,6 +76,17 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     link_block_template = """<a href='{link_url}' onclick='{onclick_action}' target='{link_target}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
     icon_template = """<img src='{icon_url}' style='padding-left:5px;' align='top' width='16' height='16' border='0' />"""
 
+    def format_select_block(self, queryset, value_field, text_field, value_match):
+        choices = []
+
+        for entry in queryset:
+            if getattr(entry, value_field) == value_match:
+                choices.append("<option value='{value}' selected='selected'>{text}</option>".format(value=getattr(entry, value_field), text=getattr(entry, text_field)))
+            else:
+                choices.append("<option value='{value}'>{text}</option>".format(value=getattr(entry, value_field), text=getattr(entry, text_field)))
+
+        return """<select class='editbox'>{choices}</select>""".format(choices="".join(choices))
+
     def initialize(self, *args, **kwargs):
         super(RNINDatatablesPopulateView, self).initialize(*args, **kwargs)
 

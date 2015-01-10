@@ -88,14 +88,6 @@ DATABASES = {
         'HOST': 'data.resdev.calpoly.edu',
         'PORT': '3306',
     },
-    'computers': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'computers',
-        'USER': 'computers',
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_COMPUTERS_PASSWORD'),
-        'HOST': 'data.resdev.calpoly.edu',
-        'PORT': '3306',
-    },
     'portmap': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'portmap',
@@ -133,7 +125,6 @@ DATABASES = {
 DATABASE_ROUTERS = (
     'resnet_internal.apps.core.routers.CommonRouter',
     'resnet_internal.apps.portmap.routers.PortmapRouter',
-    'resnet_internal.apps.printers.routers.PrintersRouter',
     'resnet_internal.apps.printerrequests.routers.PrinterRequestsRouter',
     'rmsconnector.routers.RMSRouter',
     'srsconnector.routers.SRSRouter',
