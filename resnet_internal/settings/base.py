@@ -132,7 +132,6 @@ DATABASES = {
 
 DATABASE_ROUTERS = (
     'resnet_internal.apps.core.routers.CommonRouter',
-    'resnet_internal.apps.computers.routers.ComputersRouter',
     'resnet_internal.apps.portmap.routers.PortmapRouter',
     'resnet_internal.apps.printers.routers.PrintersRouter',
     'resnet_internal.apps.printerrequests.routers.PrinterRequestsRouter',

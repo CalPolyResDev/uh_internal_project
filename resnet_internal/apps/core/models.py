@@ -9,13 +9,15 @@
 import re
 
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
-from django.db.models import Model, CharField, IntegerField, TextField, DateTimeField, ForeignKey, EmailField, NullBooleanField, BooleanField
+from django.db.models.base import Model
+from django.db.models.fields import CharField, IntegerField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField
+from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.utils.http import urlquote
 from django.core.mail import send_mail
 
 
 class Community(Model):
-    """Housing Community."""
+    """University Housing Community."""
 
     name = CharField(max_length=30, verbose_name="Community Name")
 
@@ -25,12 +27,12 @@ class Community(Model):
     class Meta:
         db_table = 'community'
         managed = False
-        verbose_name = 'Community'
-        verbose_name_plural = 'Communities'
+        verbose_name = 'UH Community'
+        verbose_name_plural = 'UH Communities'
 
 
 class Building(Model):
-    """Housing Building."""
+    """University Housing Building."""
 
     name = CharField(max_length=30, verbose_name="Building Name")
     community = ForeignKey(Community, verbose_name="Community")
@@ -41,7 +43,32 @@ class Building(Model):
     class Meta:
         db_table = 'building'
         managed = False
-        verbose_name = 'Building'
+        verbose_name = 'UH Building'
+
+
+class SubDepartment(Model):
+    """University Housing Sub Departments."""
+
+    name = CharField(max_length=50, verbose_name='Sub Department Name')
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'UH Sub Department'
+
+
+class Department(Model):
+    """University Housing Departments."""
+
+    name = CharField(max_length=50, verbose_name='Department Name')
+    sub_departments = ManyToManyField(SubDepartment)
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'UH Department'
 
 
 class SiteAnnouncements(Model):

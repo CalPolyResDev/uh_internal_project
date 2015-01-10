@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Community, Building, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser
+from .models import Community, Building, Department, SubDepartment, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser
 
 
 class SiteAnnouncementsAdmin(admin.ModelAdmin):
@@ -25,6 +25,8 @@ class ResNetInternalUserAdmin(admin.ModelAdmin):
 
 admin.site.register(Community, admin.ModelAdmin)
 admin.site.register(Building, admin.ModelAdmin)
+admin.site.register(Department, admin.ModelAdmin)
+admin.site.register(SubDepartment, admin.ModelAdmin)
 admin.site.register(SiteAnnouncements, SiteAnnouncementsAdmin)
 admin.site.register(StaffMapping, StaffMappingAdmin)
 admin.site.register(TechFlair, TechFlairAdmin)

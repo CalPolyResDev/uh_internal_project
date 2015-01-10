@@ -141,7 +141,18 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         return self.get_columns()
 
     def get_searchable_columns(self):
-        return self._get_columns_by_attribute("searchable")
+        """Get searchable columns and handle realated fields."""
+
+        searchable_columns = self._get_columns_by_attribute("searchable")
+        related_columns = self._get_columns_by_attribute("related", default=False)
+
+        for column_name in searchable_columns:
+            # If the column is related, append the lookup field to the column name
+            if column_name in related_columns:
+                related_column_name = column_name + "__" + self.column_definitions[column_name]["lookup_field"]
+                searchable_columns[searchable_columns.index(column_name)] = related_column_name
+
+        return searchable_columns
 
     def get_editable_columns(self):
         return self._get_columns_by_attribute("editable")
@@ -160,7 +171,8 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         """
 
-        value = smart_str(getattr(row, column))
+        value = getattr(row, column)
+        value = smart_str(value) if value else ""
 
         if column in self.get_editable_columns() and self.get_write_permissions():
             editable_block = self.editable_block_template.format(value=value)
