@@ -18,13 +18,10 @@ from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
-from ..core.models import StaffMapping
+from ..core.models import StaffMapping, Department
 from ...settings.base import computers_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
 from .models import Computer, Pinhole, DomainName
-from .constants import (CORE, HOUSING_ADMINISTRATION, HOUSING_SERVICES, RESIDENTIAL_LIFE_AND_EDUCATION,
-                        CORE_SUB_DEPARTMENTS, HOUSING_ADMINISTRATION_SUB_DEPARTMENTS, HOUSING_SERVICES_SUB_DEPARTMENTS,
-                        RESIDENTIAL_LIFE_AND_EDUCATION_SUB_DEPARTMENTS)
 from .forms import ComputerUpdateForm
 
 logger = logging.getLogger(__name__)
@@ -35,40 +32,40 @@ logger = logging.getLogger(__name__)
 def update_sub_department(request):
     """ Update sub-department drop-down choices based on the department chosen.
 
-    :param department: The department for which to display sub-department choices.
-    :type department: str
+    :param department_id: The department for which to display sub-department choices.
+    :type department_id: str
 
-    :param sub_department_selection: The sub_department selected before form submission.
-    :type sub_department_selection: str
+    :param sub_department_selection_id (optional): The sub_department selected before form submission.
+    :type sub_department_selection_id (optional): str
+
+    :param css_target (optional): The target of which to replace inner HTML. Defaults to #id_sub_department.
+    :type css_target (optional): str
 
     """
 
     # Pull post parameters
-    department = request.POST.get("department", None)
-    sub_department_selection = request.POST.get("sub_department_selection", None)
+    department_id = request.POST.get("department_id", None)
+    sub_department_selection_id = request.POST.get("sub_department_selection_id", None)
+    css_target = request.POST.get("css_target", '#id_sub_department')
 
-    sub_department_options = {
-        CORE: [(sub_department, sub_department) for sub_department in CORE_SUB_DEPARTMENTS],
-        HOUSING_ADMINISTRATION: [(sub_department, sub_department) for sub_department in HOUSING_ADMINISTRATION_SUB_DEPARTMENTS],
-        HOUSING_SERVICES: [(sub_department, sub_department) for sub_department in HOUSING_SERVICES_SUB_DEPARTMENTS],
-        RESIDENTIAL_LIFE_AND_EDUCATION: [(sub_department, sub_department) for sub_department in RESIDENTIAL_LIFE_AND_EDUCATION_SUB_DEPARTMENTS],
-    }
     choices = []
 
     # Add options iff a department is selected
-    if department:
-        for value, label in sub_department_options[str(department)]:
-            if sub_department_selection and value == sub_department_selection:
-                choices.append("<option value='%s' selected='selected'>%s</option>" % (value, label))
+    if department_id:
+        department_instance = Department.objects.get(id=int(department_id))
+
+        for sub_department in department_instance.sub_departments.all():
+            if sub_department_selection_id and sub_department.id == int(sub_department_selection_id):
+                choices.append("<option value='{id}' selected='selected'>{name}</option>".format(id=sub_department.id, name=sub_department.name))
             else:
-                choices.append("<option value='%s'>%s</option>" % (value, label))
+                choices.append("<option value='{id}'>{name}</option>".format(id=sub_department.id, name=sub_department.name))
     else:
         logger.warning("A department wasn't passed via POST.")
-        choices.append("<option value='%s'>%s</option>" % ("", "---------"))
+        choices.append("<option value='{id}'>{name}</option>".format(id="", name="---------"))
 
     data = {
         'inner-fragments': {
-            '#id_sub_department': ''.join(choices)
+            css_target: ''.join(choices)
         },
     }
 
@@ -87,8 +84,8 @@ class PopulateComputers(RNINDatatablesPopulateView):
 
     column_definitions = OrderedDict()
     column_definitions["id"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "ID"}
-    column_definitions["department"] = {"width": "225px", "type": "string", "title": "Department"}
-    column_definitions["sub_department"] = {"width": "225px", "type": "string", "title": "Sub Department"}
+    column_definitions["department"] = {"width": "225px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
+    column_definitions["sub_department"] = {"width": "225px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
     column_definitions["computer_name"] = {"width": "150px", "type": "string", "title": "Computer Name"}
     column_definitions["mac_address"] = {"width": "150px", "type": "mac-address", "editable": False, "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "ip-address", "title": "IP Address"}
@@ -116,8 +113,34 @@ class PopulateComputers(RNINDatatablesPopulateView):
         self.write_permissions = computers_modify_access_test(user)
 
     def render_column(self, row, column):
+        if column == 'department':
+            department_instance = getattr(row, column)
+            department_id = department_instance.id
+            value = department_instance.name
 
-        if column == 'ip_address':
+            editable_block = self.format_select_block(queryset=Department.objects.all(), value_field="id", text_field="name", value_match=department_id)
+
+            return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+        elif column == 'sub_department':
+            department_instance = getattr(row, "department")
+            sub_department_instance = getattr(row, column)
+            valid_sub_departments = department_instance.sub_departments.all()
+
+            # Check to make sure the current value is acceptable for the selected department.
+            # If it isn't, set it to the first valid one
+            if sub_department_instance not in valid_sub_departments:
+                sub_department_instance.id = valid_sub_departments[0].id
+                sub_department_instance.name = valid_sub_departments[0].name
+                sub_department_instance.save()
+
+            department_id = department_instance.id
+            sub_department_id = sub_department_instance.id
+            value = sub_department_instance.name
+
+            editable_block = self.format_select_block(queryset=valid_sub_departments, value_field="id", text_field="name", value_match=sub_department_id)
+
+            return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+        elif column == 'ip_address':
             value = getattr(row, column)
 
             try:

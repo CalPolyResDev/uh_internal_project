@@ -14,8 +14,8 @@ from django.forms.fields import RegexField
 from django.db.models import Field, SubfieldBase, TextField
 
 # MAC Address
-MAC_RE = r'^([0-9a-fA-F]{2}([:]?|$)){6}$'
-mac_re = re.compile(MAC_RE)
+MAC_RE = r'^([0-9A-F]{2}[:]){5}([0-9A-F]{2})$'
+mac_re = re.compile(MAC_RE, re.IGNORECASE)
 
 # Comma separated integers (list of ports)
 CSI_RE = r'^(\d+(,\d+)*)?$'

@@ -26,6 +26,7 @@ from paramiko import SSHClient, AutoAddPolicy
 
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
+from ..core.models import Community
 from .models import ResHallWired
 from .forms import ResHallWiredPortUpdateForm
 
@@ -43,8 +44,8 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
 
     column_definitions = OrderedDict()
     column_definitions["id"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "ID"}
-    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community"}
-    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building"}
+    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "related": True, "lookup_field": "name"}
+    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "related": True, "lookup_field": "name"}
     column_definitions["room"] = {"width": "50px", "type": "string", "editable": False, "title": "Room"}
     column_definitions["switch_ip"] = {"width": "150px", "type": "ip-address", "title": "Switch IP"}
     column_definitions["switch_name"] = {"width": "100px", "type": "string", "title": "Switch Name"}

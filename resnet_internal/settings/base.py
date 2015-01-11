@@ -65,6 +65,8 @@ USE_L10N = True
 
 ROOT_URLCONF = 'resnet_internal.urls'
 
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
 # ======================================================================================================== #
 #                                          Database Configuration                                          #
 # ======================================================================================================== #
@@ -83,22 +85,6 @@ DATABASES = {
         'NAME': 'common',
         'USER': 'common',
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_COMMON_PASSWORD'),
-        'HOST': 'data.resdev.calpoly.edu',
-        'PORT': '3306',
-    },
-    'computers': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'computers',
-        'USER': 'computers',
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_COMPUTERS_PASSWORD'),
-        'HOST': 'data.resdev.calpoly.edu',
-        'PORT': '3306',
-    },
-    'portmap': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'portmap',
-        'USER': 'portmap',
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_PORTMAP_PASSWORD'),
         'HOST': 'data.resdev.calpoly.edu',
         'PORT': '3306',
     },
@@ -130,9 +116,6 @@ DATABASES = {
 
 DATABASE_ROUTERS = (
     'resnet_internal.apps.core.routers.CommonRouter',
-    'resnet_internal.apps.computers.routers.ComputersRouter',
-    'resnet_internal.apps.portmap.routers.PortmapRouter',
-    'resnet_internal.apps.printers.routers.PrintersRouter',
     'resnet_internal.apps.printerrequests.routers.PrinterRequestsRouter',
     'rmsconnector.routers.RMSRouter',
     'srsconnector.routers.SRSRouter',
