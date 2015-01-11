@@ -15,6 +15,7 @@ from django.conf.urls.static import static
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.staticfiles.templatetags.staticfiles import static as staticfiles
 from django.views.generic import RedirectView
 from django.views.defaults import server_error, permission_denied, page_not_found
 
@@ -87,7 +88,7 @@ logger = logging.getLogger(__name__)
 # Core
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='home'),
-    url(r'^favicon\.ico$', RedirectView.as_view(url='%simages/icons/favicon.ico' % settings.STATIC_URL), name='favicon'),
+    url(r'^favicon\.ico$', RedirectView.as_view(url=staticfiles('images/icons/favicon.ico')), name='favicon'),
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
     url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^logout/$', logout, name='logout'),
