@@ -193,7 +193,7 @@ AUTH_LDAP_GROUP_SEARCH = LDAPSearch('DC=ad,DC=calpoly,DC=edu', ldap3.SEARCH_SCOP
 AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
 AUTH_LDAP_FIND_GROUP_PERMS = True
 
-AUTH_LDAP_REQUIRE_GROUP = 'CN=resnetinternal,OU=Websites,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu'
+AUTH_LDAP_REQUIRE_GROUP = 'CN=resnetinternal,OU=Websites,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu'
 
 AUTH_LDAP_USER_ATTR_MAP = {
     'first_name': 'givenName',
@@ -204,8 +204,8 @@ AUTH_LDAP_USER_ATTR_MAP = {
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     'is_net_admin': 'StateHRDept - IS-ITS-Networks (132900 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu',
     'is_telecom': 'StateHRDept - IS-ITS-Telecommunications (133100 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu',
-    'is_tag': 'CN=UH-TAG,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu',
-    'is_tag_readonly': 'CN=UH-TAG-READONLY,OU=User Groups,OU=Websites,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu',
+    'is_tag': 'CN=UH-TAG,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
+    'is_tag_readonly': 'CN=UH-TAG-READONLY,OU=User Groups,OU=Websites,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
 
     'is_technician': 'CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
     'is_rn_staff': 'CN=UH-RN-Staff,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
