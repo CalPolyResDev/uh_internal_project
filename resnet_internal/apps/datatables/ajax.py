@@ -149,7 +149,18 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         return columns
 
     def get_order_columns(self):
-        return self.get_columns()
+        """Get searchable columns and handle realated fields."""
+
+        columns = self.get_columns()
+        related_columns = self._get_columns_by_attribute("related", default=False)
+
+        for column_name in columns:
+            # If the column is related, append the lookup field to the column name
+            if column_name in related_columns:
+                related_column_name = column_name + "__" + self.column_definitions[column_name]["lookup_field"]
+                columns[columns.index(column_name)] = related_column_name
+
+        return columns
 
     def get_searchable_columns(self):
         """Get searchable columns and handle realated fields."""

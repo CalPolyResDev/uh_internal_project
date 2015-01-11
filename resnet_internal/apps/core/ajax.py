@@ -11,10 +11,8 @@ import logging
 from django.views.decorators.http import require_POST
 
 from django_ajax.decorators import ajax
-from rmsconnector.constants import (SIERRA_MADRE, YOSEMITE, SOUTH_MOUNTAIN, NORTH_MOUNTAIN,
-                                    CERRO_VISTA, POLY_CANYON_VILLAGE, SIERRA_MADRE_BUILDINGS, YOSEMITE_BUILDINGS,
-                                    SOUTH_MOUNTAIN_BUILDINGS, NORTH_MOUNTAIN_BUILDINGS, CERRO_VISTA_BUILDINGS,
-                                    POLY_CANYON_VILLAGE_BUILDINGS)
+
+from ..core.models import Community
 
 logger = logging.getLogger(__name__)
 
@@ -24,41 +22,40 @@ logger = logging.getLogger(__name__)
 def update_building(request):
     """ Update building drop-down choices based on the community chosen.
 
-    :param community: The community for which to display building choices.
-    :type community: str
-    :param building_selection: The building selected before form submission.
-    :type building_selection: str
+    :param community_id: The community for which to display building choices.
+    :type community_id: str
+
+    :param building_selection_id (optional): The building selected before form submission.
+    :type building_selection_id (optional): str
+
+    :param css_target (optional): The target of which to replace inner HTML. Defaults to #id_sub_department.
+    :type css_target (optional): str
 
     """
 
     # Pull post parameters
-    community = request.POST.get("community", None)
-    building_selection = request.POST.get("building_selection", None)
+    community_id = request.POST.get("community_id", None)
+    building_selection_id = request.POST.get("building_selection_id", None)
+    css_target = request.POST.get("css_target", '#id_sub_department')
 
-    building_options = {
-        SIERRA_MADRE: [(building, building) for building in SIERRA_MADRE_BUILDINGS],
-        YOSEMITE: [(building, building) for building in YOSEMITE_BUILDINGS],
-        SOUTH_MOUNTAIN: [(building, building) for building in SOUTH_MOUNTAIN_BUILDINGS],
-        NORTH_MOUNTAIN: [(building, building) for building in NORTH_MOUNTAIN_BUILDINGS],
-        CERRO_VISTA: [(building, building) for building in CERRO_VISTA_BUILDINGS],
-        POLY_CANYON_VILLAGE: [(building, building) for building in POLY_CANYON_VILLAGE_BUILDINGS],
-    }
     choices = []
 
-    # Add options iff a building is selected
-    if community:
-        for value, label in building_options[str(community)]:
-            if building_selection and value == building_selection:
-                choices.append("<option value='%s' selected='selected'>%s</option>" % (value, label))
+    # Add options iff a department is selected
+    if community_id:
+        community_instance = Community.objects.get(id=int(community_id))
+
+        for building in community_instance.buildings.all():
+            if building_selection_id and building.id == int(building_selection_id):
+                choices.append("<option value='{id}' selected='selected'>{name}</option>".format(id=building.id, name=building.name))
             else:
-                choices.append("<option value='%s'>%s</option>" % (value, label))
+                choices.append("<option value='{id}'>{name}</option>".format(id=building.id, name=building.name))
     else:
-        logger.debug("A building wasn't passed via POST.")
-        choices.append("<option value='%s'>%s</option>" % ("", "---------"))
+        logger.warning("A department wasn't passed via POST.")
+        choices.append("<option value='{id}'>{name}</option>".format(id="", name="---------"))
 
     data = {
         'inner-fragments': {
-            '#id_building': ''.join(choices),
+            css_target: ''.join(choices)
         },
     }
 

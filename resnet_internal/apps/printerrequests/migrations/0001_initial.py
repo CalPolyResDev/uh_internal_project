@@ -20,8 +20,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 'verbose_name': 'Printer Part',
-                'db_table': 'part',
                 'managed': False,
+                'db_table': 'part',
             },
             bases=(models.Model,),
         ),
@@ -34,8 +34,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 'verbose_name': 'Printer Type',
-                'db_table': 'printertype',
                 'managed': False,
+                'db_table': 'printertype',
             },
             bases=(models.Model,),
         ),
@@ -52,8 +52,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 'verbose_name': 'Printer Request',
-                'db_table': 'request',
                 'managed': False,
+                'db_table': 'request',
             },
             bases=(models.Model,),
         ),
@@ -64,9 +64,9 @@ class Migration(migrations.Migration):
             ],
             options={
                 'verbose_name': 'Printer Request Parts',
-                'verbose_name_plural': 'Printer Request Parts Items',
-                'db_table': 'request_parts',
                 'managed': False,
+                'db_table': 'request_parts',
+                'verbose_name_plural': 'Printer Request Parts Items',
             },
             bases=(models.Model,),
         ),
@@ -77,9 +77,9 @@ class Migration(migrations.Migration):
             ],
             options={
                 'verbose_name': 'Printer Request Toner',
-                'verbose_name_plural': 'Printer Request Toner Items',
-                'db_table': 'request_toner',
                 'managed': False,
+                'db_table': 'request_toner',
+                'verbose_name_plural': 'Printer Request Toner Items',
             },
             bases=(models.Model,),
         ),
@@ -93,8 +93,8 @@ class Migration(migrations.Migration):
             ],
             options={
                 'verbose_name': 'Printer Toner Cartridge',
-                'db_table': 'toner',
                 'managed': False,
+                'db_table': 'toner',
             },
             bases=(models.Model,),
         ),

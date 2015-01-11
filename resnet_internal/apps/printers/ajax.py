@@ -32,8 +32,8 @@ class PopulatePrinters(RNINDatatablesPopulateView):
 
     column_definitions = OrderedDict()
     column_definitions["id"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "ID"}
-    column_definitions["department"] = {"width": "225px", "type": "string", "title": "Department"}
-    column_definitions["sub_department"] = {"width": "225px", "type": "string", "title": "Sub Department"}
+    column_definitions["department"] = {"width": "225px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
+    column_definitions["sub_department"] = {"width": "225px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
     column_definitions["printer_name"] = {"width": "150px", "type": "string", "title": "Printer Name"}
     column_definitions["mac_address"] = {"width": "150px", "type": "mac-address", "editable": False, "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "ip-address", "title": "IP Address"}

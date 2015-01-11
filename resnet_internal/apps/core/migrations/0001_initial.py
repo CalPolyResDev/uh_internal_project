@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from __future__ import unicode_literals
 
 from django.db import models, migrations
 import django.utils.timezone
@@ -14,13 +14,29 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name='StaffMapping',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
+                ('staff_title', models.CharField(max_length=35, verbose_name='Staff Title', unique=True)),
+                ('staff_name', models.CharField(max_length=50, verbose_name='Staff Full Name')),
+                ('staff_alias', models.CharField(max_length=8, verbose_name='Staff Alias')),
+                ('staff_ext', models.IntegerField(max_length=4, verbose_name='Staff Telephone Extension')),
+            ],
+            options={
+                'verbose_name': 'Campus Staff Mapping',
+                'db_table': 'staffmapping',
+                'managed': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
             name='ResNetInternalUser',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(default=django.utils.timezone.now, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
-                ('username', models.CharField(unique=True, max_length=30, verbose_name='Username')),
+                ('last_login', models.DateTimeField(verbose_name='last login', default=django.utils.timezone.now)),
+                ('is_superuser', models.BooleanField(verbose_name='superuser status', help_text='Designates that this user has all permissions without explicitly assigning them.', default=False)),
+                ('username', models.CharField(max_length=30, verbose_name='Username', unique=True)),
                 ('first_name', models.CharField(max_length=30, verbose_name='First Name', blank=True)),
                 ('last_name', models.CharField(max_length=30, verbose_name='Last Name', blank=True)),
                 ('email', models.EmailField(max_length=75, verbose_name='Email Address', blank=True)),
@@ -39,8 +55,8 @@ class Migration(migrations.Migration):
                 ('payroll_complete', models.BooleanField(default=False)),
                 ('orientation_complete', models.BooleanField(default=False)),
                 ('open_links_in_frame', models.BooleanField(default=False)),
-                ('groups', models.ManyToManyField(related_query_name='user', related_name='user_set', to='auth.Group', blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of his/her group.', verbose_name='groups')),
-                ('user_permissions', models.ManyToManyField(related_query_name='user', related_name='user_set', to='auth.Permission', blank=True, help_text='Specific permissions for this user.', verbose_name='user permissions')),
+                ('groups', models.ManyToManyField(blank=True, to='auth.Group', verbose_name='groups', related_name='user_set', help_text='The groups this user belongs to. A user will get all permissions granted to each of his/her group.', related_query_name='user')),
+                ('user_permissions', models.ManyToManyField(blank=True, to='auth.Permission', verbose_name='user permissions', related_name='user_set', help_text='Specific permissions for this user.', related_query_name='user')),
             ],
             options={
                 'verbose_name': 'ResNet Internal User',
@@ -48,40 +64,58 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='DailyDuties',
+            name='Department',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(unique=True, max_length=15, verbose_name=b'Duty Name')),
-                ('last_checked', models.DateTimeField(verbose_name=b'Last DateTime Checked')),
-                ('last_user', models.ForeignKey(verbose_name=b'Last User to Check', to=settings.AUTH_USER_MODEL)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
+                ('name', models.CharField(max_length=50, verbose_name='Department Name')),
             ],
             options={
+                'verbose_name': 'University Housing Department',
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='SiteAnnouncements',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('title', models.CharField(max_length=150, verbose_name=b'Title')),
-                ('description', models.TextField(verbose_name=b'Description')),
-                ('created', models.DateTimeField(verbose_name=b'Entry Creation Date')),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
+                ('title', models.CharField(max_length=150, verbose_name='Title')),
+                ('description', models.TextField(verbose_name='Description')),
+                ('created', models.DateTimeField(verbose_name='Entry Creation Date')),
             ],
             options={
-                'get_latest_by': 'created',
                 'verbose_name': 'Site Announcement',
+                'get_latest_by': 'created',
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='StaffMapping',
+            name='SubDepartment',
             fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
+                ('name', models.CharField(max_length=50, verbose_name='Sub Department Name')),
             ],
             options={
-                'verbose_name': 'Campus Staff Mapping',
-                'db_table': 'staffmapping',
-                'managed': False,
+                'verbose_name': 'University Housing Sub Department',
             },
             bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='TechFlair',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
+                ('flair', models.CharField(max_length=30, verbose_name='Flair', unique=True)),
+                ('tech', models.ForeignKey(verbose_name='Technician', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'verbose_name': 'Tech Flair',
+                'verbose_name_plural': 'Tech Flair',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='department',
+            name='sub_departments',
+            field=models.ManyToManyField(to='core.SubDepartment'),
+            preserve_default=True,
         ),
     ]

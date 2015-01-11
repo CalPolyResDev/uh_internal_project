@@ -16,9 +16,9 @@ class Migration(migrations.Migration):
             name='DailyDuties',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=15, verbose_name='Duty Name', unique=True)),
+                ('name', models.CharField(max_length=15, unique=True, verbose_name='Duty Name')),
                 ('last_checked', models.DateTimeField(verbose_name='Last DateTime Checked')),
-                ('last_user', models.ForeignKey(verbose_name='Last User to Check', to=settings.AUTH_USER_MODEL)),
+                ('last_user', models.ForeignKey(to=settings.AUTH_USER_MODEL, verbose_name='Last User to Check')),
             ],
             options={
             },

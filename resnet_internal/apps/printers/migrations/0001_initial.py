@@ -8,20 +8,20 @@ import resnet_internal.apps.computers.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0007_auto_20150109_1149'),
+        ('core', '0001_initial'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='Printer',
             fields=[
-                ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
-                ('printer_name', models.CharField(max_length=60, unique=True, verbose_name='Printer Name')),
-                ('ip_address', models.GenericIPAddressField(unique=True, verbose_name='IP Address', protocol='IPv4')),
-                ('mac_address', resnet_internal.apps.computers.fields.MACAddressField(max_length=17, unique=True, verbose_name='MAC Address')),
+                ('id', models.AutoField(auto_created=True, primary_key=True, verbose_name='ID', serialize=False)),
+                ('printer_name', models.CharField(max_length=60, verbose_name='Printer Name', unique=True)),
+                ('ip_address', models.GenericIPAddressField(protocol='IPv4', verbose_name='IP Address', unique=True)),
+                ('mac_address', resnet_internal.apps.computers.fields.MACAddressField(max_length=17, verbose_name='MAC Address', unique=True)),
                 ('model', models.CharField(max_length=25, verbose_name='Model')),
-                ('serial_number', models.CharField(max_length=20, unique=True, null=True, verbose_name='Serial Number', blank=True, default=None)),
-                ('property_id', models.CharField(max_length=50, unique=True, null=True, verbose_name='Cal Poly Property ID', blank=True, default=None)),
+                ('serial_number', models.CharField(max_length=20, blank=True, null=True, default=None, verbose_name='Serial Number', unique=True)),
+                ('property_id', models.CharField(max_length=50, blank=True, null=True, default=None, verbose_name='Cal Poly Property ID', unique=True)),
                 ('description', models.CharField(max_length=100, verbose_name='Description')),
                 ('department', models.ForeignKey(verbose_name='Department', to='core.Department')),
                 ('sub_department', models.ForeignKey(verbose_name='Sub Department', to='core.SubDepartment')),

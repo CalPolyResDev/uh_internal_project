@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db import connection, transaction
 
 from .models import Community, Building, Department, SubDepartment, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser
 
@@ -31,3 +32,18 @@ admin.site.register(SiteAnnouncements, SiteAnnouncementsAdmin)
 admin.site.register(StaffMapping, StaffMappingAdmin)
 admin.site.register(TechFlair, TechFlairAdmin)
 admin.site.register(ResNetInternalUser, ResNetInternalUserAdmin)
+
+
+def sync_rms_data():
+    cursor = connection.cursor()
+
+    # Purge Building and Community Data
+    Building.objects.all().delete()
+    Community.objects.all().delete()
+
+    # Copy data from master to slave
+    cursor.execute("INSERT INTO resnet_internal.core_building SELECT * FROM common.core_building")
+    cursor.execute("INSERT INTO resnet_internal.core_community SELECT * FROM common.core_community")
+    cursor.execute("INSERT INTO resnet_internal.core_community_buildings SELECT * FROM common.core_community_buildings")
+
+    transaction.commit()

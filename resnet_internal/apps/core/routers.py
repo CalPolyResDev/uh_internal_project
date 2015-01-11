@@ -2,18 +2,21 @@
 .. module:: resnet_internal.apps.core.routers
    :synopsis: ResNet Internal Core Database Routers.
 
-.. moduleauthor:: Kyle Dodson <kdodson@caloply.edu>
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
 
 
 class CommonRouter(object):
-    """Routes all common models to the correct database."""
+    """
+    Routes all common models to the correct database.
+
+    Credit for _app and _mod methods: Kyle Dodson <kdodson@caloply.edu>
+    """
 
     ALIAS = "common"
     APP_NAME = "core"
-    MODELS = ('staffmapping', 'community', 'building')
+    MODELS = ('staffmapping')
 
     def _app(self, model):
         """ A shortcut to retrieve the provided model's application label.
@@ -49,14 +52,4 @@ class CommonRouter(object):
 
         if self._app(model) == self.APP_NAME and self._mod(model) in self.MODELS:
             return self.ALIAS
-        return None
-
-    def allow_relation(self, obj1, obj2, **hints):
-        """Provides no constraints on relationships."""
-
-        return None
-
-    def allow_syncdb(self, db, model):
-        """Provides no constraints on table synchronization."""
-
         return None
