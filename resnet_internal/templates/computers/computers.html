@@ -129,12 +129,12 @@
 	}
 
 	$("#id_department").change(function () {
-		ajaxPost("{% url 'ajax_update_sub_department' %}", {'department': $(this).val()});
+		ajaxPost("{% url 'ajax_update_sub_department' %}", {'department_id': $(this).val()});
 	});
 
 	{% if form.sub_department.value %}
 	$(document).ready(function () {
-		ajaxPost("{% url 'ajax_update_sub_department' %}", {'department': '{{ form.department.value }}', 'sub_department_selection': '{{ form.sub_department.value }}'});
+		ajaxPost("{% url 'ajax_update_sub_department' %}", {'department_id': '{{ form.department.value }}', 'sub_department_selection_id': '{{ form.sub_department.value }}'});
 	});
 	{% endif %}
 </script>

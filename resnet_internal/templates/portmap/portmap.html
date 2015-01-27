@@ -124,12 +124,12 @@
 	}
 
 	$("#id_community").change(function () {
-		ajaxPost("{% url 'ajax_update_building' %}", {'community': $(this).val()});
+		ajaxPost("{% url 'ajax_update_building' %}", {'community_id': $(this).val()});
 	});
 
 	{% if form.building.value %}
 	$(document).ready(function () {
-		ajaxPost("{% url 'ajax_update_building' %}", {'community': '{{ form.community.value }}', 'building_selection': '{{ form.building.value }}'});
+		ajaxPost("{% url 'ajax_update_building' %}", {'community_id': '{{ form.community.value }}', 'building_selection_id': '{{ form.building.value }}'});
 	});
 	{% endif %}
 </script>
