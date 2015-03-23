@@ -40,6 +40,7 @@ class PopulatePrinters(RNINDatatablesPopulateView):
     column_definitions["model"] = {"width": "100px", "type": "string", "title": "Model"}
     column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
+    column_definitions["location"] = {"width": "225px", "type": "string", "title": "Location"}
     column_definitions["description"] = {"width": "225px", "type": "string", "className": "edit_trigger", "title": "Description"}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
