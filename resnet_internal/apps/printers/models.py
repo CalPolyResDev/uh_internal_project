@@ -25,7 +25,7 @@ class Printer(Model):
     model = CharField(max_length=25, verbose_name='Model')
     serial_number = CharField(max_length=20, verbose_name='Serial Number', blank=True, null=True, unique=True, default=None)
     property_id = CharField(max_length=50, verbose_name='Cal Poly Property ID', blank=True, null=True, unique=True, default=None)
-    location = CharField(max_length=100, verbose_name='Location')
+    location = CharField(max_length=100, verbose_name='Location', blank=True, null=True)
     description = CharField(max_length=100, verbose_name='Description')
 
     def __str__(self):
@@ -35,6 +35,11 @@ class Printer(Model):
         """Uppercase field names on save."""
 
         for field_name in ['printer_name', 'mac_address', 'serial_number', 'property_id']:
+            value = getattr(self, field_name, None)
+            if value:
+                setattr(self, field_name, value.upper())
+
+        for field_name in ['serial_number', 'property_id']:
             value = getattr(self, field_name, None)
             if value:
                 setattr(self, field_name, value.upper())
