@@ -35,10 +35,10 @@ class PopulatePrinters(RNINDatatablesPopulateView):
     column_definitions["department"] = {"width": "225px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
     column_definitions["sub_department"] = {"width": "225px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
     column_definitions["printer_name"] = {"width": "150px", "type": "string", "title": "Printer Name"}
-    column_definitions["mac_address"] = {"width": "150px", "type": "mac-address", "editable": False, "title": "MAC Address"}
+    column_definitions["mac_address"] = {"width": "150px", "type": "mac-address", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "ip-address", "title": "IP Address"}
-    column_definitions["model"] = {"width": "100px", "type": "string", "editable": False, "title": "Model"}
-    column_definitions["serial_number"] = {"width": "100px", "type": "string", "editable": False, "title": "Serial Number"}
+    column_definitions["model"] = {"width": "100px", "type": "string", "title": "Model"}
+    column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
     column_definitions["description"] = {"width": "225px", "type": "string", "className": "edit_trigger", "title": "Description"}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}

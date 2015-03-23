@@ -87,11 +87,11 @@ class PopulateComputers(RNINDatatablesPopulateView):
     column_definitions["department"] = {"width": "225px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
     column_definitions["sub_department"] = {"width": "225px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
     column_definitions["computer_name"] = {"width": "150px", "type": "string", "title": "Computer Name"}
-    column_definitions["mac_address"] = {"width": "150px", "type": "mac-address", "editable": False, "title": "MAC Address"}
+    column_definitions["mac_address"] = {"width": "150px", "type": "mac-address", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "ip-address", "title": "IP Address"}
     column_definitions["RDP"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "RDP"}
-    column_definitions["model"] = {"width": "100px", "type": "string", "editable": False, "title": "Model"}
-    column_definitions["serial_number"] = {"width": "100px", "type": "string", "editable": False, "title": "Serial Number"}
+    column_definitions["model"] = {"width": "100px", "type": "string", "title": "Model"}
+    column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
     column_definitions["dn"] = {"width": "225px", "type": "string", "title": "Distinguished Name"}
     column_definitions["description"] = {"width": "225px", "type": "string", "className": "edit_trigger", "title": "Description"}

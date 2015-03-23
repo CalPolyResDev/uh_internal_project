@@ -29,4 +29,4 @@ class PrinterCreateForm(ModelForm):
 class PrinterUpdateForm(PrinterCreateForm):
 
     class Meta:
-        fields = ['id', 'department', 'sub_department', 'printer_name', 'ip_address', 'property_id', 'description']
+        fields = ['id', 'department', 'sub_department', 'printer_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'description']
