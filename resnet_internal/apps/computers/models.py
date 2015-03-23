@@ -25,6 +25,7 @@ class Computer(Model):
     model = CharField(max_length=25, verbose_name='Model')
     serial_number = CharField(max_length=20, verbose_name='Serial Number', blank=True, null=True, unique=True, default=None)
     property_id = CharField(max_length=50, verbose_name='Cal Poly Property ID', blank=True, null=True, unique=True, default=None)
+    location = CharField(max_length=100, verbose_name='Location')
     dn = CharField(max_length=250, verbose_name='Distinguished Name')
     description = CharField(max_length=100, verbose_name='Description')
 
@@ -52,7 +53,7 @@ class Pinhole(Model):
     inner_fw = BooleanField(default=None, verbose_name='Inner Firewall')
     border_fw = BooleanField(default=None, verbose_name='Border Firewall')
     tcp_ports = ListField(verbose_name='TCP Ports')
-    udp_ports = ListField(verbose_name='TCP Ports')
+    udp_ports = ListField(verbose_name='UDP Ports')
     sr_number = IntegerField(max_length=11, null=True, verbose_name='SR Number', db_column='ticket_id')
 
     def __str__(self):
