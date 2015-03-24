@@ -42,8 +42,12 @@
 	height: 20px;
 }
 
-#printer_index td div, #computer_index td div {
+#printer_index td div {
     height: 50px;
+}
+
+#computer_index td div {
+    height: 64px;
 }
 
 .margin_fix .display_data {
