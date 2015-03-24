@@ -20,7 +20,7 @@ class Computer(Model):
     department = ForeignKey(Department, verbose_name='Department')
     sub_department = ForeignKey(SubDepartment, verbose_name='Sub Department')
     computer_name = CharField(max_length=25, verbose_name='Computer Name', unique=True)
-    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address', unique=True)
+    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address', blank=True, null=True, unique=True)
     mac_address = MACAddressField(verbose_name='MAC Address', unique=True)
     model = CharField(max_length=25, verbose_name='Model')
     serial_number = CharField(max_length=20, verbose_name='Serial Number', blank=True, null=True, unique=True, default=None)
@@ -28,6 +28,8 @@ class Computer(Model):
     location = CharField(max_length=100, verbose_name='Location', blank=True, null=True)
     dn = CharField(max_length=250, verbose_name='Distinguished Name')
     description = CharField(max_length=100, verbose_name='Description')
+
+    dhcp = BooleanField(default=False)
 
     def __str__(self):
         return self.computer_name
@@ -44,6 +46,16 @@ class Computer(Model):
             value = getattr(self, field_name, None)
             if value:
                 setattr(self, field_name, value.upper())
+
+        if not self.ip_address:
+            self.ip_address = None
+            self.dhcp = True
+        else:
+            self.dhcp = False
+
+        if self.dhcp:
+            self.ip_address = None
+
         super(Computer, self).save(*args, **kwargs)
 
     class Meta:

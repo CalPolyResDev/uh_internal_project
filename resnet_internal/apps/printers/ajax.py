@@ -81,6 +81,12 @@ class PopulatePrinters(RNINDatatablesPopulateView):
             editable_block = self.format_select_block(queryset=valid_sub_departments, value_field="id", text_field="name", value_match=sub_department_id)
 
             return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+        elif column == 'ip_address':
+            value = getattr(row, column)
+            value = value if value else "DHCP"
+
+            editable_block = self.editable_block_template.format(value=value if value != "DHCP" else "")
+            return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
         elif column == 'remove':
             onclick = "confirm_remove({id});return false;".format(id=row.id)
             link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="", link_style="color:red; cursor:pointer;", link_text="Remove")

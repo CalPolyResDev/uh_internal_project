@@ -143,11 +143,12 @@ class PopulateComputers(RNINDatatablesPopulateView):
             return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
         elif column == 'ip_address':
             value = getattr(row, column)
+            value = value if value else "DHCP"
 
             try:
                 record_url = reverse('view_uh_computer_record', kwargs={'ip_address': row.ip_address})
             except NoReverseMatch:
-                editable_block = self.editable_block_template.format(value=value)
+                editable_block = self.editable_block_template.format(value=value if value != "DHCP" else "")
                 return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
             else:
                 editable_block = self.editable_block_template.format(value=value)
