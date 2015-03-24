@@ -7,8 +7,10 @@
 """
 
 from collections import OrderedDict
+import shlex
 
 from django.core.urlresolvers import reverse_lazy
+from django.db.models.query_utils import Q
 from django.views.decorators.http import require_POST
 
 from django_ajax.decorators import ajax
@@ -94,6 +96,33 @@ class PopulatePrinters(RNINDatatablesPopulateView):
             return self.base_column_template.format(id=row.id, class_name="", column=column, value="", link_block=link_block, inline_images="", editable_block="")
         else:
             return super(PopulatePrinters, self).render_column(row, column)
+
+    def filter_queryset(self, qs):
+        search_parameters = self.request.GET.get('search[value]', None)
+        searchable_columns = self.get_searchable_columns()
+
+        if search_parameters:
+            try:
+                params = shlex.split(search_parameters)
+            except ValueError:
+                params = search_parameters.split(" ")
+            columnQ = Q()
+            paramQ = Q()
+
+            for param in params:
+                if param != "":
+                    if param.lower() == "dhcp":
+                        columnQ |= Q(dhcp=True)
+                    else:
+                        for searchable_column in searchable_columns:
+                            columnQ |= Q(**{searchable_column + "__icontains": param})
+
+                    paramQ.add(columnQ, Q.AND)
+                    columnQ = Q()
+            if paramQ:
+                qs = qs.filter(paramQ)
+
+        return qs
 
 
 class UpdatePrinter(BaseDatatablesUpdateView):

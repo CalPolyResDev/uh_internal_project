@@ -211,8 +211,11 @@ class PopulateComputers(RNINDatatablesPopulateView):
 
             for param in params:
                 if param != "" and not (param == "?pinhole" or param == "?domain"):
-                    for searchable_column in searchable_columns:
-                        columnQ |= Q(**{searchable_column + "__icontains": param})
+                    if param.lower() == "dhcp":
+                        columnQ |= Q(dhcp=True)
+                    else:
+                        for searchable_column in searchable_columns:
+                            columnQ |= Q(**{searchable_column + "__icontains": param})
 
                     paramQ.add(columnQ, Q.AND)
                     columnQ = Q()
