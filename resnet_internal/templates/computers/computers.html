@@ -72,7 +72,9 @@
 	                        {{ form.mac_address }}
 	                    </p>
 	                    <p>
-	                        <label for="id_ip_address">{{ form.ip_address.label }}</label>
+	                        <label for="id_ip_address">{{ form.ip_address.label }}</label>&nbsp;
+	                        <input type="radio" name="dhcp" value="static" checked>&nbsp;Static&nbsp;
+                            <input type="radio" name="dhcp" value="dynamic">&nbsp;Dynamic&nbsp;
 	                        {{ form.ip_address }}
 	                    </p>
 	                    <p>
@@ -87,6 +89,10 @@
 	                        <label for="id_property_id">{{ form.property_id.label }}</label>
 	                        {{ form.property_id }}
 	                    </p>
+	                    <p>
+                            <label for="id_location">{{ form.location.label }}</label>
+                            {{ form.location }}
+                        </p>
 	                    <p>
 	                        <label for="id_dn">{{ form.dn.label }}</label>
 	                        {{ form.dn }}
@@ -117,6 +123,7 @@
    			ajaxPost("{% url 'remove_uh_computer' %}", {"computer_id": computer_id}, function(response_context) {
 				if (response_context["success"]) {
 					$("#"+ computer_id).closest("tr").remove();
+					return true;
 				}
 				else {
 					alert(response_context["error_message"]);
@@ -137,6 +144,16 @@
 		ajaxPost("{% url 'ajax_update_sub_department' %}", {'department_id': '{{ form.department.value }}', 'sub_department_selection_id': '{{ form.sub_department.value }}'});
 	});
 	{% endif %}
+	
+	$('input[type=radio][name=dhcp]').change(function() {
+        if (this.value == 'static') {
+            $("#id_ip_address").show();
+        }
+        else {
+            $("#id_ip_address").hide();
+            $("#id_ip_address").val("");
+        }
+    });
 </script>
 {% endif %}
 {% endblock %}
