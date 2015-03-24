@@ -46,9 +46,7 @@ class ComputerCreateForm(ModelForm):
 
 
 class ComputerUpdateForm(ComputerCreateForm):
-
-    class Meta:
-        fields = ['id', 'department', 'sub_department', 'computer_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'location', 'dn', 'description']
+    pass
 
 
 class RequestPinholeForm(Form):
