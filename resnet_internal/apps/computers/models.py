@@ -7,7 +7,7 @@
 """
 
 from django.db.models.base import Model
-from django.db.models.fields import BooleanField, CharField, IntegerField, GenericIPAddressField
+from django.db.models.fields import BooleanField, CharField, IntegerField, GenericIPAddressField, DateField
 from django.db.models.fields.related import ForeignKey
 
 from ..core.models import Department, SubDepartment
@@ -26,6 +26,7 @@ class Computer(Model):
     serial_number = CharField(max_length=20, verbose_name='Serial Number', blank=True, null=True, unique=True, default=None)
     property_id = CharField(max_length=50, verbose_name='Cal Poly Property ID', blank=True, null=True, unique=True, default=None)
     location = CharField(max_length=100, verbose_name='Location', blank=True, null=True)
+    date_purchased = DateField(verbose_name='Date Purchased')
     dn = CharField(max_length=250, verbose_name='Distinguished Name')
     description = CharField(max_length=100, verbose_name='Description')
 
@@ -44,8 +45,8 @@ class Computer(Model):
 
         for field_name in ['serial_number', 'property_id']:
             value = getattr(self, field_name, None)
-            if value:
-                setattr(self, field_name, value.upper())
+            if not value:
+                setattr(self, field_name, None)
 
         if not self.ip_address:
             self.ip_address = None

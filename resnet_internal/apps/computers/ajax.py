@@ -9,12 +9,14 @@
 import shlex
 import logging
 from collections import OrderedDict
+from datetime import datetime
 
 from django.db.models import Q
 from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.views.decorators.http import require_POST
 
+from dateutil.relativedelta import relativedelta
 from django_ajax.decorators import ajax
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
@@ -25,6 +27,10 @@ from .models import Computer, Pinhole, DomainName
 from .forms import ComputerUpdateForm
 
 logger = logging.getLogger(__name__)
+
+OLD_YEARS = 3
+OLDER_YEARS = 4
+REPLACE_YEARS = 5
 
 
 @ajax
@@ -94,13 +100,14 @@ class PopulateComputers(RNINDatatablesPopulateView):
     column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
     column_definitions["location"] = {"width": "225px", "type": "string", "title": "Location"}
+    column_definitions["date_purchased"] = {"width": "100px", "type": "string", "searchable": False, "title": "Date Purchased"}
     column_definitions["dn"] = {"width": "225px", "type": "string", "title": "Distinguished Name"}
     column_definitions["description"] = {"width": "225px", "type": "string", "className": "edit_trigger", "title": "Description"}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
         "language": {
-            "search": "Filter records: (Use ?pinhole and/or ?domain to narrow results.)",
+            "search": "Filter records: (Use ?pinhole, ?domain, ?dhcp, and/or ?replace to narrow results.) ",
         },
     }
 
@@ -113,15 +120,33 @@ class PopulateComputers(RNINDatatablesPopulateView):
     def _initialize_write_permissions(self, user):
         self.write_permissions = computers_modify_access_test(user)
 
-    def render_column(self, row, column):
+    def render_column(self, row, column, class_names=[]):
+        class_names = []
+
+        # Add colors
+        if row.date_purchased:
+            old_delta = datetime.now() - relativedelta(years=OLD_YEARS)
+            older_delta = datetime.now() - relativedelta(years=OLDER_YEARS)
+            replace_delta = datetime.now() - relativedelta(years=REPLACE_YEARS)
+
+            puchase_datetime = datetime.fromordinal(row.date_purchased.toordinal())
+
+            if puchase_datetime <= replace_delta:
+                class_names.append("replace")
+            elif puchase_datetime <= older_delta and puchase_datetime > replace_delta:
+                class_names.append("older")
+            elif puchase_datetime <= old_delta and puchase_datetime > older_delta:
+                class_names.append("old")
+
         if column == 'department':
             department_instance = getattr(row, column)
             department_id = department_instance.id
             value = department_instance.name
 
             editable_block = self.format_select_block(queryset=Department.objects.all(), value_field="id", text_field="name", value_match=department_id)
+            class_names.append("editable")
 
-            return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
         elif column == 'sub_department':
             department_instance = getattr(row, "department")
             sub_department_instance = getattr(row, column)
@@ -139,8 +164,9 @@ class PopulateComputers(RNINDatatablesPopulateView):
             value = sub_department_instance.name
 
             editable_block = self.format_select_block(queryset=valid_sub_departments, value_field="id", text_field="name", value_match=sub_department_id)
+            class_names.append("editable")
 
-            return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
         elif column == 'ip_address':
             value = getattr(row, column)
             value = value if value else "DHCP"
@@ -149,9 +175,13 @@ class PopulateComputers(RNINDatatablesPopulateView):
                 record_url = reverse('view_uh_computer_record', kwargs={'ip_address': row.ip_address})
             except NoReverseMatch:
                 editable_block = self.editable_block_template.format(value=value if value != "DHCP" else "")
-                return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+                class_names.append("editable")
+
+                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
             else:
                 editable_block = self.editable_block_template.format(value=value)
+                class_names.append("editable")
+
                 link_block = self.link_block_template.format(link_url=record_url, onclick_action="", link_target="", link_class_name="popup_frame", link_style="", link_text=value)
 
                 pinholes = self.icon_template.format(icon_url=static('images/icons/pinholes.png'))
@@ -167,27 +197,28 @@ class PopulateComputers(RNINDatatablesPopulateView):
                     if has_domain_names:
                         inline_images = inline_images + domain_names
 
-                return self.base_column_template.format(id=row.id, class_name="editable", column=column, value="", link_block=link_block, inline_images=inline_images, editable_block=editable_block)
+                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=link_block, inline_images=inline_images, editable_block=editable_block)
         elif column == 'RDP':
             try:
                 rdp_file_url = reverse('rdp_request', kwargs={'ip_address': row.ip_address})
             except NoReverseMatch:
-                return self.base_column_template.format(id=row.id, class_name="", column=column, value="", link_block="", inline_images="", editable_block="")
+                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block="", inline_images="", editable_block="")
             else:
                 rdp_icon = self.icon_template.format(icon_url=static('images/icons/rdp.png'))
                 link_block = self.link_block_template.format(link_url=rdp_file_url, onclick_action="", link_target="", link_class_name="", link_style="", link_text=rdp_icon)
-                return self.base_column_template.format(id=row.id, class_name="", column=column, value="", link_block=link_block, inline_images="", editable_block="")
+                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=link_block, inline_images="", editable_block="")
         elif column == 'remove':
             onclick = "confirm_remove({id});return false;".format(id=row.id)
             link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="", link_style="color:red; cursor:pointer;", link_text="Remove")
 
-            return self.base_column_template.format(id=row.id, class_name="", column=column, value="", link_block=link_block, inline_images="", editable_block="")
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=link_block, inline_images="", editable_block="")
         else:
-            return super(PopulateComputers, self).render_column(row, column)
+            return super(PopulateComputers, self).render_column(row, column, class_names)
 
     def filter_queryset(self, qs):
         search_parameters = self.request.GET.get('search[value]', None)
         searchable_columns = self.get_searchable_columns()
+        flags = ["?pinhole", "?domain", "?dhcp", "?old", "?older", "?replace"]
 
         if search_parameters:
             try:
@@ -197,7 +228,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
             columnQ = Q()
             paramQ = Q()
 
-            # Check for pinhole / domain flags
+            # Check for flags
             for param in params:
                 if param[:1] == '?':
                     flag = param[1:]
@@ -208,14 +239,19 @@ class PopulateComputers(RNINDatatablesPopulateView):
                     elif flag == "domain":
                         domain_name_ip_list = DomainName.objects.values_list('ip_address', flat=True).distinct()
                         qs = qs.filter(ip_address__in=domain_name_ip_list)
+                    elif flag == "dhcp":
+                        qs = qs.filter(dhcp=True)
+                    elif flag == "old":
+                        qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLD_YEARS))
+                    elif flag == "older":
+                        qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLDER_YEARS))
+                    elif flag == "replace":
+                        qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=REPLACE_YEARS))
 
             for param in params:
-                if param != "" and not (param == "?pinhole" or param == "?domain"):
-                    if param.lower() == "dhcp":
-                        columnQ |= Q(dhcp=True)
-                    else:
-                        for searchable_column in searchable_columns:
-                            columnQ |= Q(**{searchable_column + "__icontains": param})
+                if param != "" and param not in flags:
+                    for searchable_column in searchable_columns:
+                        columnQ |= Q(**{searchable_column + "__icontains": param})
 
                     paramQ.add(columnQ, Q.AND)
                     columnQ = Q()
