@@ -27,15 +27,23 @@
 	border: none;
 }
 
-#residence_halls_wired_port_map td {
+#residence_halls_wired_port_map td, #printer_index td, #computer_index td {
 	padding: 0 !important;
 }
 
+#residence_halls_wired_port_map td div, #printer_index td div, #computer_index td div {
+    padding: 4px;
+    text-align: middle;
+    overflow: hidden;
+}
+
 #residence_halls_wired_port_map td div {
-	padding: 4px;
 	line-height: 20px;
 	height: 20px;
-	text-align: middle;
+}
+
+#printer_index td div, #computer_index td div {
+    height: 50px;
 }
 
 .margin_fix .display_data {
@@ -63,6 +71,18 @@
 
 .disabled a {
 	color: rgb(100,100,100);
+}
+
+.old {
+    background-color: rgb(255,226,77);
+}
+
+.older {
+    background-color: rgb(255,151,77);
+}
+
+.replace {
+    background-color: rgb(255,107,77);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
@@ -251,19 +271,53 @@ tr.even td.sorting_3 {
 }
 
 /*
+ * Sorting classes for columns
+ */
+
+td.sorting_1 div.old {
+    background-color: rgb(255,222,52);
+}
+td.sorting_2 div.old {
+    background-color: rgb(255,222,52);
+}
+td.sorting_3 div.old {
+    background-color: rgb(255,222,52);
+}
+
+td.sorting_1 div.older {
+    background-color: rgb(255,136,52);
+}
+td.sorting_2 div.older {
+    background-color: rgb(255,136,52);
+}
+td.sorting_3 div.older {
+    background-color: rgb(255,136,52);
+}
+
+td.sorting_1 div.replace {
+    background-color: rgb(255,86,52);
+}
+td.sorting_2 div.replace {
+    background-color: rgb(255,86,52);
+}
+td.sorting_3 div.replace {
+    background-color: rgb(255,86,52);
+}
+
+/*
  * Custom Row Highlighting
  *
  */
 
-table.dataTable tr:hover {
+table.dataTable tr:hover, table.dataTable tr:hover td div {
     background-color: #86BC7D;
 }
 
-table.dataTable tr:hover td.edit_trigger {
-	background: url('/static/images/datatables/edit.png') right no-repeat;
+table.dataTable tr:hover td.edit_trigger div.display_data {
+	background: url('/static/images/datatables/edit.png') right no-repeat !important;
 	cursor:pointer;
 }
 
-tr:hover td.sorting_1, tr:hover td.sorting_2, tr:hover td.sorting_3 {
+tr:hover td.sorting_1, tr:hover td.sorting_2, tr:hover td.sorting_3, tr:hover td.sorting_1 div, tr:hover td.sorting_2 div, tr:hover td.sorting_3 div {
 	background-color: #86BC7D;
 }

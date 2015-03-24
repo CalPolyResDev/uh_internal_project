@@ -63,7 +63,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
     base_column_template = """
         <div id='{id}' class='{class_name}' column='{column}'>
-        <div class='display_data'>
+        <div class='display_data' title='{value}'>
             {value}
             {link_block}
             {inline_images}
@@ -182,7 +182,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     def get_ip_address_columns(self):
         return self._get_columns_by_attribute("type", "", "ip-address")
 
-    def render_column(self, row, column):
+    def render_column(self, row, column, class_names=[]):
         """Renders columns with customized HTML.
 
         :param row: A dictionary containing row data.
@@ -198,9 +198,11 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         if column in self.get_editable_columns() and self.get_write_permissions():
             editable_block = self.editable_block_template.format(value=value)
-            return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+            class_names.append("editable")
+
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
         else:
-            return self.base_column_template.format(id=row.id, class_name="", column=column, value=value, link_block="", inline_images="", editable_block="")
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block="")
 
     def filter_queryset(self, qs):
         """ Filters the QuerySet by submitted search parameters.

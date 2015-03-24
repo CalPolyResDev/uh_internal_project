@@ -9,6 +9,7 @@ colorama==0.3.2
 
 hg+https://kavanaugh_development@bitbucket.org/kavanaugh_development/django-auth-ldap@python3-ldap
 
+python-dateutil==2.4.1
 djangoajax==2.2.12
 django-datatables-view==1.12
 ldap-groups==4.0.0
