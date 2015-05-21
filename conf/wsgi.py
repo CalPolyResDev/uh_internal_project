@@ -5,7 +5,7 @@ import site
 import re
 
 from colorama import init as color_init
-from colorama import Fore, Style
+from termcolor import colored
 from pathlib import Path
 
 
@@ -22,21 +22,22 @@ def get_env_variable(name):
     try:
         return os.environ[name]
     except KeyError:
-        error_msg = "Error: The %s environment variable is not set!" % name
+        error_msg = "Error: The {variable_name} environment variable is not set!\n".format(variable_name=name)
         color_init()
-        sys.stderr.write(Fore.RED + Style.BRIGHT + error_msg + "\n")
+        sys.stderr.write(colored(text=error_msg, color='red', attrs=['bold']))
         sys.exit(1)
 
 
 def activate_env():
     """ Activates the virtual environment for this project."""
 
-    virtualenv_home = Path(get_env_variable('WORKON_HOME'))
+    virtualenv_home = Path(get_env_variable("WORKON_HOME"))
     project_home = Path(get_env_variable("PROJECT_HOME"))
 
     filepath = Path(__file__).resolve()
-    repo_name = filepath.parents[1].stem
+    repo_name = filepath.parents[1].name
     project_name = repo_name.split("_project")[0]
+    repo_parent = filepath.parents[2]
 
     # Add the site-packages of the chosen virtualenv to work with
     site.addsitedir(str(virtualenv_home.joinpath(repo_name, "Lib", "site-packages")))
@@ -47,7 +48,11 @@ def activate_env():
 
     # Add environment variables
     try:
-        with open(str(Path(project_home, repo_name, '.env').resolve())) as f:
+        if repo_parent == project_home:
+            env_path = str(Path(project_home, repo_name, '.env').resolve())
+        else:
+            env_path = str(Path(project_home, repo_parent.name, repo_name, '.env').resolve())
+        with open(env_path) as f:
             content = f.read()
     except IOError:
         content = ''
