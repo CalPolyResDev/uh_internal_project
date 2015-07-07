@@ -1,6 +1,6 @@
 Django==1.7.7
 
-djangotoolbox==1.6.2  # TODO: Add a patch to fix cPickle issue eventually
+git+https://github.com/django-nonrel/djangotoolbox
 
 git+https://code.resdev.calpoly.edu/scm/rmsc/rmsconnector
 git+https://code.resdev.calpoly.edu/scm/srsc/srsconnector
