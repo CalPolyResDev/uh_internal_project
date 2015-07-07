@@ -128,7 +128,7 @@ DATABASE_ROUTERS = (
 # Incoming email settings
 INCOMING_EMAIL = {
     'IMAP4': {  # IMAP4 is currently the only supported protocol. It must be included.
-        'HOST': 'mail.calpoly.edu',  # The host to use for receiving email. Set to empty string for localhost.
+        'HOST': 'outlook.office365.com',  # The host to use for receiving email. Set to empty string for localhost.
         'PORT': 993,  # The port to use. Set to empty string for default values: 143, 993(SSL).
         'USE_SSL': True,  # Whether or not to use SSL (Boolean)
         'USER': get_env_variable('RESNET_INTERNAL_EMAIL_IN_USERNAME'),  # The username to use. The full email address is what most servers require.
@@ -138,7 +138,7 @@ INCOMING_EMAIL = {
 
 # Outgoing email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # This configuration uses the SMTP protocol as a backend
-EMAIL_HOST = 'mail.calpoly.edu'  # The host to use for sending email. Set to empty string for localhost.
+EMAIL_HOST = 'outlook.office365.com'  # The host to use for sending email. Set to empty string for localhost.
 EMAIL_PORT = 25  # The port to use. Defaul values: 25, 587
 EMAIL_USE_TLS = True  # Whether or not to use SSL (Boolean)
 EMAIL_HOST_USER = INCOMING_EMAIL['IMAP4']['USER']  # The username to use. The full email address is what most servers require.

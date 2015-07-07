@@ -86,7 +86,7 @@ class GetDutyData(object):
         else:
             data = DailyDuties.objects.get(name='messages')
 
-            r, count = self.server.select('voicemail', readonly=True)
+            r, count = self.server.select('Voicemails', readonly=True)
             self.server.logout()
 
             # Select the Inbox, get the message count
@@ -122,7 +122,7 @@ class GetDutyData(object):
             data = DailyDuties.objects.get(name='email')
 
             # Select the Inbox, get the message count
-            r, count = self.server.select('inbox', readonly=True)
+            r, count = self.server.select('Inbox', readonly=True)
             self.server.logout()
 
             email["count"] = int(count[0])
