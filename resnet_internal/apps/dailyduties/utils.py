@@ -36,9 +36,7 @@ class GetDutyData(object):
     def _init_mail_connection(self):
         # Connect to the email server and authenticate
         if settings.INCOMING_EMAIL['IMAP4']['USE_SSL']:
-            context = ssl.SSLContext(ssl.PROTOCOL_TLSv1)
-            context.set_ciphers("RC4-MD5")
-            self.server = imaplib.IMAP4_SSL(host=settings.INCOMING_EMAIL['IMAP4']['HOST'], port=settings.INCOMING_EMAIL['IMAP4']['PORT'], ssl_context=context)
+            self.server = imaplib.IMAP4_SSL(host=settings.INCOMING_EMAIL['IMAP4']['HOST'], port=settings.INCOMING_EMAIL['IMAP4']['PORT'])
         else:
             self.server = imaplib.IMAP4(host=settings.INCOMING_EMAIL['IMAP4']['HOST'], port=settings.INCOMING_EMAIL['IMAP4']['PORT'])
         self.server.login(user=settings.INCOMING_EMAIL['IMAP4']['USER'], password=settings.INCOMING_EMAIL['IMAP4']['PASSWORD'])
