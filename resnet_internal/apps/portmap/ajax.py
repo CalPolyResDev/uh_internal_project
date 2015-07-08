@@ -78,7 +78,10 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
     def _initialize_write_permissions(self, user):
         self.write_permissions = portmap_modify_access_test(user)
 
-    def render_column(self, row, column, class_names=[]):
+    def render_column(self, row, column, class_names=None):
+        if not class_names:
+            class_names = []
+
         if not row.active:
             class_names.append("disabled")
 

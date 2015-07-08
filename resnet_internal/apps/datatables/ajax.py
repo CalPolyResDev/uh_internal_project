@@ -182,7 +182,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     def get_ip_address_columns(self):
         return self._get_columns_by_attribute("type", "", "ip-address")
 
-    def render_column(self, row, column, class_names=[]):
+    def render_column(self, row, column, class_names=None):
         """Renders columns with customized HTML.
 
         :param row: A dictionary containing row data.
@@ -192,6 +192,9 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         :returns: The HTML to be displayed for this column.
 
         """
+
+        if not class_names:
+            class_names = []
 
         value = getattr(row, column)
         value = smart_str(value) if value else ""

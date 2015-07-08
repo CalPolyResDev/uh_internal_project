@@ -120,8 +120,9 @@ class PopulateComputers(RNINDatatablesPopulateView):
     def _initialize_write_permissions(self, user):
         self.write_permissions = computers_modify_access_test(user)
 
-    def render_column(self, row, column, class_names=[]):
-        class_names = []
+    def render_column(self, row, column, class_names=None):
+        if not class_names:
+            class_names = []
 
         # Add colors
         if row.date_purchased:
