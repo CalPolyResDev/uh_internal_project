@@ -7,6 +7,7 @@
 
 """
 
+import shlex
 import logging
 import time
 from collections import OrderedDict
@@ -25,6 +26,7 @@ from paramiko import SSHClient, AutoAddPolicy
 
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
+from ..core.models import Community
 from .models import ResHallWired
 from .forms import ResHallWiredPortUpdateForm
 
@@ -42,8 +44,8 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
 
     column_definitions = OrderedDict()
     column_definitions["id"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "ID"}
-    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community"}
-    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building"}
+    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "related": True, "lookup_field": "name"}
+    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "related": True, "lookup_field": "name"}
     column_definitions["room"] = {"width": "50px", "type": "string", "editable": False, "title": "Room"}
     column_definitions["switch_ip"] = {"width": "150px", "type": "ip-address", "title": "Switch IP"}
     column_definitions["switch_name"] = {"width": "100px", "type": "string", "title": "Switch Name"}
@@ -63,7 +65,7 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
                 '<option value="1000">1000</option>' +
                 '<option value="-1">All</option>' +
                 '</select> records:',
-            "search": "Filter records: (Use ?pinhole and/or ?domain to narrow results.)",
+            "search": "Filter records: (Use ?alias to narrow results.)",
         },
     }
 
@@ -76,36 +78,48 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
     def _initialize_write_permissions(self, user):
         self.write_permissions = portmap_modify_access_test(user)
 
-    def render_column(self, row, column):
+    def render_column(self, row, column, class_names=None):
+        if not class_names:
+            class_names = []
+
+        if not row.active:
+            class_names.append("disabled")
+
         if column == 'switch_ip':
             value = getattr(row, column)
 
             ip_url = "/external/cisco/{ip_address}/".format(ip_address=value)
 
             editable_block = self.editable_block_template.format(value=value)
+            class_names.append("editable")
+
             link_block = self.link_block_template.format(link_url=ip_url, onclick_action="", link_target="_blank", link_class_name="", link_style="", link_text=value)
             inline_images = self.icon_template.format(icon_url=static('images/icons/cisco.gif'))
 
-            return self.base_column_template.format(id=row.id, class_name="editable" if getattr(row, 'active') else "disabled",
-                                                    column=column, value="", link_block=link_block, inline_images=inline_images, editable_block=editable_block)
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=link_block, inline_images=inline_images, editable_block=editable_block)
         elif column == 'active':
             onclick = "confirm_status_change({id});return false;".format(id=row.id)
             link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="", link_style="color:red; cursor:pointer;", link_text="Deactivate" if getattr(row, column) else "Activate")
 
-            return self.base_column_template.format(id=row.id, class_name="" if getattr(row, column) else "disabled", column=column, value="", link_block=link_block, inline_images="", editable_block="")
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=link_block, inline_images="", editable_block="")
         elif column in self.get_editable_columns() and self.get_write_permissions():
             value = getattr(row, column)
             editable_block = self.editable_block_template.format(value=value)
-            return self.base_column_template.format(id=row.id, class_name="editable" if getattr(row, 'active') else "disabled", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+            class_names.append("editable")
+
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
         else:
-            return self.base_column_template.format(id=row.id, class_name="" if getattr(row, 'active') else "disabled", column=column, value=getattr(row, column), link_block="", inline_images="", editable_block="")
+            return super(PopulateResidenceHallWiredPorts, self).render_column(row, column, class_names)
 
     def filter_queryset(self, qs):
         search_parameters = self.request.GET.get('search[value]', None)
         searchable_columns = self.get_searchable_columns()
 
         if search_parameters:
-            params = search_parameters.split(" ")
+            try:
+                params = shlex.split(search_parameters)
+            except ValueError:
+                params = search_parameters.split(" ")
             columnQ = Q()
             paramQ = Q()
 

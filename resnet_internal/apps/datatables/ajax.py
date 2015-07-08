@@ -6,6 +6,7 @@
 
 """
 
+import shlex
 import json
 import logging
 from collections import OrderedDict
@@ -62,7 +63,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
     base_column_template = """
         <div id='{id}' class='{class_name}' column='{column}'>
-        <div class='display_data'>
+        <div class='display_data' title='{value}'>
             {value}
             {link_block}
             {inline_images}
@@ -74,6 +75,17 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     editable_block_template = """<input type='text' class='editbox' value='{value}' />"""
     link_block_template = """<a href='{link_url}' onclick='{onclick_action}' target='{link_target}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
     icon_template = """<img src='{icon_url}' style='padding-left:5px;' align='top' width='16' height='16' border='0' />"""
+
+    def format_select_block(self, queryset, value_field, text_field, value_match):
+        choices = []
+
+        for entry in queryset:
+            if getattr(entry, value_field) == value_match:
+                choices.append("<option value='{value}' selected='selected'>{text}</option>".format(value=getattr(entry, value_field), text=getattr(entry, text_field)))
+            else:
+                choices.append("<option value='{value}'>{text}</option>".format(value=getattr(entry, value_field), text=getattr(entry, text_field)))
+
+        return """<select class='editbox'>{choices}</select>""".format(choices="".join(choices))
 
     def initialize(self, *args, **kwargs):
         super(RNINDatatablesPopulateView, self).initialize(*args, **kwargs)
@@ -137,10 +149,32 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         return columns
 
     def get_order_columns(self):
-        return self.get_columns()
+        """Get searchable columns and handle realated fields."""
+
+        columns = self.get_columns()
+        related_columns = self._get_columns_by_attribute("related", default=False)
+
+        for column_name in columns:
+            # If the column is related, append the lookup field to the column name
+            if column_name in related_columns:
+                related_column_name = column_name + "__" + self.column_definitions[column_name]["lookup_field"]
+                columns[columns.index(column_name)] = related_column_name
+
+        return columns
 
     def get_searchable_columns(self):
-        return self._get_columns_by_attribute("searchable")
+        """Get searchable columns and handle realated fields."""
+
+        searchable_columns = self._get_columns_by_attribute("searchable")
+        related_columns = self._get_columns_by_attribute("related", default=False)
+
+        for column_name in searchable_columns:
+            # If the column is related, append the lookup field to the column name
+            if column_name in related_columns:
+                related_column_name = column_name + "__" + self.column_definitions[column_name]["lookup_field"]
+                searchable_columns[searchable_columns.index(column_name)] = related_column_name
+
+        return searchable_columns
 
     def get_editable_columns(self):
         return self._get_columns_by_attribute("editable")
@@ -148,7 +182,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     def get_ip_address_columns(self):
         return self._get_columns_by_attribute("type", "", "ip-address")
 
-    def render_column(self, row, column):
+    def render_column(self, row, column, class_names=None):
         """Renders columns with customized HTML.
 
         :param row: A dictionary containing row data.
@@ -159,13 +193,19 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         """
 
-        value = smart_str(getattr(row, column))
+        if not class_names:
+            class_names = []
+
+        value = getattr(row, column)
+        value = smart_str(value) if value else ""
 
         if column in self.get_editable_columns() and self.get_write_permissions():
             editable_block = self.editable_block_template.format(value=value)
-            return self.base_column_template.format(id=row.id, class_name="editable", column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+            class_names.append("editable")
+
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
         else:
-            return self.base_column_template.format(id=row.id, class_name="", column=column, value=value, link_block="", inline_images="", editable_block="")
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block="")
 
     def filter_queryset(self, qs):
         """ Filters the QuerySet by submitted search parameters.
@@ -184,7 +224,10 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         searchable_columns = self.get_searchable_columns()
 
         if search_parameters:
-            params = search_parameters.split(" ")
+            try:
+                params = shlex.split(search_parameters)
+            except ValueError:
+                params = search_parameters.split(" ")
             columnQ = Q()
             paramQ = Q()
 

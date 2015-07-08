@@ -28,21 +28,6 @@
         {% endif %}
         <div class="clear"></div>
         <table id="printer_index">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Department</th>
-                    <th>Sub Department</th>
-                    <th>Printer Name</th>
-                    <th>MAC Address</th>
-                    <th>IP Address</th>
-                    <th>Model</th>
-                    <th>Serial Number</th>
-                    <th>Property ID</th>
-                    <th>Description</th>
-                    <th>&nbsp;</th>
-                </tr>
-            </thead>
             <tfoot>
                 <tr>
                     <th></th>
@@ -87,8 +72,10 @@
 	                        {{ form.mac_address }}
 	                    </p>
 	                    <p>
-	                        <label for="id_ip_address">{{ form.ip_address.label }}</label>
-	                        {{ form.ip_address }}
+                            <label for="id_ip_address">{{ form.ip_address.label }}</label>&nbsp;
+                            <input type="radio" name="dhcp" value="static" checked>&nbsp;Static&nbsp;
+                            <input type="radio" name="dhcp" value="dynamic">&nbsp;Dynamic&nbsp;
+                            {{ form.ip_address }}
 	                    </p>
 	                    <p>
 	                        <label for="id_model">{{ form.model.label }}</label>
@@ -102,6 +89,14 @@
 	                        <label for="id_property_id">{{ form.property_id.label }}</label>
 	                        {{ form.property_id }}
 	                    </p>
+	                    <p>
+                            <label for="id_location">{{ form.location.label }}</label>
+                            {{ form.location }}
+                        </p>
+                        <p>
+                            <label for="id_date_purchased">{{ form.date_purchased.label }}</label>
+                            {{ form.date_purchased }}
+                        </p>
 	                    <p>
 	                        <label for="id_description">{{ form.description.label }}</label>
 	                        {{ form.description }}
@@ -141,14 +136,24 @@
 	}
 
 	$("#id_department").change(function () {
-		ajaxPost("{% url 'ajax_update_sub_department' %}", {'department': $(this).val()});
+		ajaxPost("{% url 'ajax_update_sub_department' %}", {'department_id': $(this).val()});
 	});
 
 	{% if form.sub_department.value %}
 	$(document).ready(function () {
-		ajaxPost("{% url 'ajax_update_sub_department' %}", {'department': '{{ form.department.value }}', 'sub_department_selection': '{{ form.sub_department.value }}'});
+		ajaxPost("{% url 'ajax_update_sub_department' %}", {'department_id': '{{ form.department.value }}', 'sub_department_selection_id': '{{ form.sub_department.value }}'});
 	});
 	{% endif %}
+
+    $('input[type=radio][name=dhcp]').change(function() {
+        if (this.value == 'static') {
+            $("#id_ip_address").show();
+        }
+        else {
+            $("#id_ip_address").hide();
+            $("#id_ip_address").val("");
+        }
+    });
 </script>
 {% endif %}
 {% endblock %}

@@ -1,5 +1,5 @@
 """
-.. module:: resnet_internal.apps.printers.routers
+.. module:: resnet_internal.apps.printerrequests.routers
    :synopsis: ResNet Internal Printer Request Database Routers.
 
 .. moduleauthor:: Kyle Dodson <kdodson@caloply.edu>
@@ -8,12 +8,12 @@
 """
 
 
-class PrintersRouter(object):
+class PrinterRequestsRouter(object):
     """Routes all printer models to the correct database."""
 
     ALIAS = "printers"
-    APP_NAME = "printers"
-    MODELS = ('printer', 'printertype', 'toner', 'part', 'request', 'request_toner', 'request_parts')
+    APP_NAME = "printerrequests"
+    MODELS = ('printertype', 'toner', 'part', 'request', 'request_toner', 'request_parts')
 
     def _app(self, model):
         """ A shortcut to retrieve the provided model's application label.
@@ -27,15 +27,15 @@ class PrintersRouter(object):
         return model._meta.app_label
 
     def _mod(self, model):
-        """ A shortcut to retrieve the provided model's module name, a lower-cased version of its object name.
+        """ A shortcut to retrieve the provided model's name, a lower-cased version of its object name.
 
         :param model: A model instance from which to retrieve information.
         :type model: model
-        :returns: The provided model's module name.
+        :returns: The provided model's name.
 
         """
 
-        return model._meta.module_name
+        return model._meta.model_name
 
     def db_for_read(self, model, **hints):
         """Routes database read requests to the database only if the requested model belongs to a model in this application's MODELS list."""

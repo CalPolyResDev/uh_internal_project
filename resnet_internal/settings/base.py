@@ -65,6 +65,8 @@ USE_L10N = True
 
 ROOT_URLCONF = 'resnet_internal.urls'
 
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
 # ======================================================================================================== #
 #                                          Database Configuration                                          #
 # ======================================================================================================== #
@@ -86,22 +88,6 @@ DATABASES = {
         'HOST': 'data.resdev.calpoly.edu',
         'PORT': '3306',
     },
-    'computers': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'computers',
-        'USER': 'computers',
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_COMPUTERS_PASSWORD'),
-        'HOST': 'data.resdev.calpoly.edu',
-        'PORT': '3306',
-    },
-    'portmap': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'portmap',
-        'USER': 'portmap',
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_PORTMAP_PASSWORD'),
-        'HOST': 'data.resdev.calpoly.edu',
-        'PORT': '3306',
-    },
     'printers': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'printers',
@@ -112,11 +98,9 @@ DATABASES = {
     },
     'rms': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'mercprd',
+        'NAME': 'mercprd.db.calpoly.edu:1521/mercprd',
         'USER': get_env_variable('RESNET_INTERNAL_DB_RMS_USERNAME'),
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_RMS_PASSWORD'),
-        'HOST': 'mercprd.db.calpoly.edu',
-        'PORT': '1521',
     },
     'srs': {
         'ENGINE': 'django_ewiz',
@@ -130,9 +114,7 @@ DATABASES = {
 
 DATABASE_ROUTERS = (
     'resnet_internal.apps.core.routers.CommonRouter',
-    'resnet_internal.apps.computers.routers.ComputersRouter',
-    'resnet_internal.apps.portmap.routers.PortmapRouter',
-    'resnet_internal.apps.printers.routers.PrintersRouter',
+    'resnet_internal.apps.printerrequests.routers.PrinterRequestsRouter',
     'rmsconnector.routers.RMSRouter',
     'srsconnector.routers.SRSRouter',
 )
@@ -144,7 +126,7 @@ DATABASE_ROUTERS = (
 # Incoming email settings
 INCOMING_EMAIL = {
     'IMAP4': {  # IMAP4 is currently the only supported protocol. It must be included.
-        'HOST': 'mail.calpoly.edu',  # The host to use for receiving email. Set to empty string for localhost.
+        'HOST': 'outlook.office365.com',  # The host to use for receiving email. Set to empty string for localhost.
         'PORT': 993,  # The port to use. Set to empty string for default values: 143, 993(SSL).
         'USE_SSL': True,  # Whether or not to use SSL (Boolean)
         'USER': get_env_variable('RESNET_INTERNAL_EMAIL_IN_USERNAME'),  # The username to use. The full email address is what most servers require.
@@ -209,7 +191,7 @@ AUTH_LDAP_GROUP_SEARCH = LDAPSearch('DC=ad,DC=calpoly,DC=edu', ldap3.SEARCH_SCOP
 AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
 AUTH_LDAP_FIND_GROUP_PERMS = True
 
-AUTH_LDAP_REQUIRE_GROUP = 'CN=resnetinternal,OU=Websites,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu'
+AUTH_LDAP_REQUIRE_GROUP = 'CN=resnetinternal,OU=Websites,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu'
 
 AUTH_LDAP_USER_ATTR_MAP = {
     'first_name': 'givenName',
@@ -220,8 +202,8 @@ AUTH_LDAP_USER_ATTR_MAP = {
 AUTH_LDAP_USER_FLAGS_BY_GROUP = {
     'is_net_admin': 'StateHRDept - IS-ITS-Networks (132900 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu',
     'is_telecom': 'StateHRDept - IS-ITS-Telecommunications (133100 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu',
-    'is_tag': 'CN=UH-TAG,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu',
-    'is_tag_readonly': 'CN=UH-TAG-READONLY,OU=User Groups,OU=Websites,OU=Groups,OU=UH,OU=Delegated,DC=ad,DC=calpoly,DC=edu',
+    'is_tag': 'CN=UH-TAG,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
+    'is_tag_readonly': 'CN=UH-TAG-READONLY,OU=User Groups,OU=Websites,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
 
     'is_technician': 'CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
     'is_rn_staff': 'CN=UH-RN-Staff,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
@@ -347,6 +329,7 @@ INSTALLED_APPS = (
     'paramiko',
     'resnet_internal.apps.core',
     'resnet_internal.apps.core.templatetags.__init__.default_app_config',
+    'resnet_internal.apps.dailyduties',
     'resnet_internal.apps.datatables',
     'resnet_internal.apps.datatables.templatetags.__init__.default_app_config',
     'resnet_internal.apps.adgroups',
@@ -354,7 +337,8 @@ INSTALLED_APPS = (
     'resnet_internal.apps.computers',
     'resnet_internal.apps.portmap',
     'resnet_internal.apps.printers',
-    'resnet_internal.apps.printers.templatetags.__init__.default_app_config',
+    'resnet_internal.apps.printerrequests',
+    'resnet_internal.apps.printerrequests.templatetags.__init__.default_app_config',
 )
 
 # ======================================================================================================== #
