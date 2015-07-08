@@ -98,11 +98,9 @@ DATABASES = {
     },
     'rms': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'mercprd',
+        'NAME': 'mercprd.db.calpoly.edu:1521/mercprd',
         'USER': get_env_variable('RESNET_INTERNAL_DB_RMS_USERNAME'),
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_RMS_PASSWORD'),
-        'HOST': 'mercprd.db.calpoly.edu',
-        'PORT': '1521',
     },
     'srs': {
         'ENGINE': 'django_ewiz',
