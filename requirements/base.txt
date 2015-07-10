@@ -10,7 +10,7 @@ termcolor==1.1.0
 #hg+https://kavanaugh_development@bitbucket.org/kavanaugh_development/django-auth-ldap@python3-ldap
 
 python-dateutil==2.4.2
-djangoajax==2.2.12
+djangoajax==2.2.15
 django-datatables-view==1.12.1
 ldap-groups==4.1.0
 raven==5.4.0
