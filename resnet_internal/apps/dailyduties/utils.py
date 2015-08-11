@@ -5,14 +5,11 @@
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
-
-import ssl
-import imaplib, email
+import imaplib
+import email
 import datetime
 import logging
-import re
 from ssl import SSLError, SSLEOFError
-from operator import itemgetter
 
 from django.conf import settings
 from django.db import DatabaseError
@@ -35,6 +32,77 @@ class GetDutyData(object):
     """ Utility for gathering daily duty data."""
 
     server = None
+
+    class VoicemailUtilities:
+        def parse_message_id(self, messagedata):
+            return messagedata.strip().split("<")[1].rstrip(">")
+
+        def get_message_body(self, messagenum):
+            data = self.server.fetch(messagenum, 'BODY[1]')[1]
+            return data[0][1].decode()
+
+        def get_message_nums(self):
+            data = self.server.search(None, 'ALL')[1]
+            return data[0].split()
+
+        def get_message_uuids(self, messageNums):
+            messageIDs = []
+            count = 0
+            for num in messageNums:
+                data = self.server.fetch(num, '(BODY[HEADER.FIELDS (MESSAGE-ID)])')[1]
+                messageIDs[count] = self.parse_message_id(data)
+                ++count
+            return (count, messageIDs)
+
+        def get_messagenum_for_uuid(self, uuid):
+            messageNums = self.get_message_nums()
+            messageUUIDs = self.get_message_uuids(messageNums)
+            messageNum = None
+            for i in range(0, messageUUIDs.length - 1):
+                if messageUUIDs[i] == uuid:
+                    messageNum = messageNums[i]
+                    break
+            return messageNum
+
+        def get_attachment(self, messagenum):
+            data = self.server.fetch(messagenum, '(RFC822)')[1]
+            m = email.message_from_string(data[0][1])
+
+            if not m.get_content_maintype() == 'multipart':
+                raise ValueError('Not a Valid Voicemail Message: No attachment')
+
+            for part in m.walk():
+                if part.get_content_maintype() == 'multipart':
+                    continue
+                if part.get('Content-Disposition') is None:
+                    continue
+
+                filename = part.get_filename()
+                fileData = part.get_payload(decode=True)
+                return (filename, ContentFile(fileData))
+
+        def get_attachment_uuid(self, messageuuid):
+            if self.server is None:
+                self._init_mail_connection()
+            self.server.select('Voicemails', readonly=True)
+
+            messageNum = self.get_messagenum_for_uuid(messageuuid)
+
+            if messageNum is None:
+                raise ValueError('Unable to retrieve voicemail message attachment because message uuid could not be found.')
+
+            return self.get_attachment(messageNum)
+
+        def delete_message(self, messageUUID):
+            if self.server is None:
+                self._init_mail_connection()
+            self.server.select('Voicemails', readonly=False)
+
+            messageNum = self.get_messagenum_for_uuid(messageUUID)
+            result = self.server.copy(messageNum, 'Archives/Voicemails')
+            if (result == 'OK'):
+                self.server.store(messageNum, '+FLAGS', '\\Deleted')
+                self.server.expunge()
 
     def _init_mail_connection(self):
         # Connect to the email server and authenticate
@@ -65,38 +133,16 @@ class GetDutyData(object):
         printer_requests["last_user"] = data.last_user.get_full_name()
 
         return printer_requests
-    
+
     def get_voicemail(self):
         """Checks the current number of voicemail messages."""
+
         voicemail = {
             "count": None,
             "status_color": None,
             "last_checked": None,
-            "last_user": None
+            "last_user": None,
         }
-
-
-        def parse_message_id(messagedata):
-            return messagedata.strip().split("<")[1].rstrip(">")
-        def get_message_body(messagenum):
-            typ, data = self.server.fetch(messagenum, 'BODY[1]')
-            return data[0][1].decode()
-        def get_attachment(messagenum):
-            result, data = self.server.fetch(messagenum, '(RFC822)')
-            m = email.message_from_string(data[0][1])
-            
-            if not m.get_content_maintype() == 'multipart': 
-                return None
-            
-            for part in m.walk():
-                if part.get_content_maintype() == 'multipart':
-                    continue
-                if part.get('Contnent-Disposition') is None:
-                    continue
-
-                filename = part.get_filename()
-                fileData = part.get_payload(decode=True)
-                return (filename, fileData)
 
         try:
             if not self.server:
@@ -107,43 +153,34 @@ class GetDutyData(object):
             voicemail["last_checked"] = datetime.datetime.strftime(datetime.datetime.now(), "%m/%d/%Y %H:%M%p")
             voicemail["last_user"] = "Connection Error!"
         else:
-            # Select the Inbox, get the message count
+            # Select the Voicemail Mailbox, get the message count
+            count = self.server.select('Voicemails', readonly=True)[1]
+
+            messageNums = self.VoicemailUtilities.get_message_nums()
+            count, messageIDs = self.VoicemailUtilities.get_message_uuids(messageNums)
+            VoicemailMessage.objects.all().delete()
+
+            for i in range(0, messageIDs.length - 1):
+                msgText = self.VoicemailUtilities.get_message_body(messageNums[i])
+                dateString = msgText[27:41]
+                fromIdx = msgText.find('from')
+                fromString = msgText[fromIdx + 5:msgText.find('.', fromIdx)]
+                date = datetime.datetime.strptime(dateString, "%H:%M %m-%d-%y")
+
+                newMsg = VoicemailMessage()
+                newMsg.date = date
+                newMsg.sender = fromString
+                newMsg.uuid = messageIDs[i]
+                newMsg.save()
+
             data = DailyDuties.objects.get(name='messages')
-            voicemail["count"] = int(count[0])
+            voicemail["count"] = count
             if data.last_checked > datetime.datetime.now() - ACCEPTABLE_LAST_CHECKED:
                 voicemail["status_color"] = GREEN
             else:
                 voicemail["status_color"] = RED
             voicemail["last_checked"] = datetime.datetime.strftime(data.last_checked, "%m/%d/%Y %H:%M%p")
             voicemail["last_user"] = data.last_user.get_full_name()
-            
-            typ, data = self.server.search(None, 'ALL')
-            
-            messageIDs = []
-            messageNums = data[0].split()
-            count = 0
-            for num in messageNums:
-                typ, data = self.server.fetch(num, '(BODY[HEADER.FIELDS (MESSAGE-ID)])')
-                messageIDs[count] = parse_message_id(data)
-                ++count
-            
-            for i in range(0, messageIDs.length - 1):
-                if not VoicemailMessage.objects.filter(imap_uuid = messageIDs[i]).exists():
-                    msgText = get_message_body(messageNums[i])
-                    dateString = msgText[27:41]
-                    fromIdx = msgText.find('from')
-                    fromString = msgText[fromIdx+5:msgText.find('.', fromIdx)]
-                    date = datetime.datetime.strptime(dateString, "%H:%M %m-%d-%y")
-                    
-                    attachment = get_attachment(messageNums[i])
-                    if attachment == None: #Invalid Voicemail Email
-                        continue
-                    aFile = ContentFile(attachment[1])
-
-                    newMsg = VoicemailMessage(imap_uuid=messageIDs[i], sender=fromString, date=date)
-                    newMsg.attachment.save(attachment[0], aFile)
-                    newMsg.save()
-
         return voicemail
 
     def get_messages(self):
@@ -167,7 +204,7 @@ class GetDutyData(object):
         else:
             data = DailyDuties.objects.get(name='messages')
 
-            r, count = self.server.select('Voicemails', readonly=True)
+            count = self.server.select('Voicemails', readonly=True)[1]
             self.server.logout()
 
             # Select the Inbox, get the message count
@@ -203,7 +240,7 @@ class GetDutyData(object):
             data = DailyDuties.objects.get(name='email')
 
             # Select the Inbox, get the message count
-            r, count = self.server.select('Inbox', readonly=True)
+            count = self.server.select('Inbox', readonly=True)[1]
             self.server.logout()
 
             email["count"] = int(count[0])

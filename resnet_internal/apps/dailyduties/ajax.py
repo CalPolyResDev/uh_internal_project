@@ -6,17 +6,20 @@
 
 """
 
-import datetime
 import logging
 
-from django.core.urlresolvers import reverse
+from collections import OrderedDict
+from datetime import datetime
+
+from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_POST
 
 from django_ajax.decorators import ajax
 
-from .models import DailyDuties
+from .models import DailyDuties, VoicemailMessage
 from .utils import GetDutyData
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
 
 logger = logging.getLogger(__name__)
 
@@ -115,3 +118,80 @@ def update_duty(request):
     data.last_checked = datetime.datetime.now()
     data.last_user = get_user_model().objects.get(username=request.user.username)
     data.save()
+
+
+class PopulateVoicemails(RNINDatatablesPopulateView):
+    """Renders the voicemail list."""
+
+    table_name = "voicemail_list"
+    data_source = reverse_lazy('populate_voicemails')
+    update_source = reverse_lazy('update_voicemails')
+    model = VoicemailMessage
+
+    column_definitions = OrderedDict()
+    column_definitions["uuid"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "UUID"}
+    column_definitions["sender"] = {"width": "225px", "searchable": False, "type": "string", "title": "Sender", "editable": False}
+    column_definitions["date"] = {"width": "100px", "type": "string", "searchable": False, "title": "Date"}
+    column_definitions["message"] = {"width": "100px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "Message"}
+    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "Remove"}
+
+
+    def get_options(self):
+        if self.get_write_permissions():
+            self.column_definitions["remove"] = {"width": "50px", "type": "string", "searchable": False, "orderable": False, "editable": False, "title": "&nbsp;"}
+
+        return super(PopulateVoicemails, self).get_options()
+
+    def _initialize_write_permissions(self, user):
+        self.write_permissions = False
+
+    def render_column(self, row, column, class_names=None):
+        if not class_names:
+            class_names = []
+
+        if column == 'message':
+            try:
+                audio_file_url = reverse_lazy('vm_attachment_request', kwargs={'uuid': row.uuid})
+            except NoReverseMatch:
+                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block="", inline_images="", editable_block="")
+            else:
+                audio_player = self.audio_template.format(link_url=audio_file_url, media_type="audio/wav")
+                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=audio_player, link_block="", inline_images="", editable_block="")
+        elif column == 'remove':
+            onclick = "confirm_remove({id});return false;".format(id=row.uuid)
+            link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="", link_style="color:red; cursor:pointer;", link_text="Remove")
+
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=link_block, inline_images="", editable_block="")
+        else:
+            return super(PopulateVoicemails, self).render_column(row, column, class_names)
+
+
+class UpdateVoicemails(BaseDatatablesUpdateView):
+    model = VoicemailMessage
+    populate_class = PopulateVoicemails
+
+
+@ajax
+@require_POST
+def remove_vm(request):
+    """ Removes computers from the computer index if no pinhole/domain name records are associated with it.
+
+    :param vm_uuid: The vm's id.
+    :type vm_uuid: int
+
+    """
+
+    # Pull post parameters
+    vm_uuid = request.POST["vm_uuid"]
+
+    context = {}
+    context["success"] = True
+    context["error_message"] = None
+    context["vm_uuid"] = vm_uuid
+
+    dailyDuty = GetDutyData()
+    dailyDuty.VoicemailUtilities.delete_message(vm_uuid)
+    
+    VoicemailMessage.objects.get(uuid=vm_uuid).delete()
+    
+    return context

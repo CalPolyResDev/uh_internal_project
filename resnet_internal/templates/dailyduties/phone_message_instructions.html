@@ -1,0 +1,34 @@
+{% extends "base_frame.html" %}
+{% load core_user_tests %}
+{% load datatables %}
+
+{% block meta %}
+{{ block.super }}
+{% datatables_script %}
+{% endblock %}
+
+{% block subtitle %} | ResNet Voicemail Message Listing{% endblock %}
+
+{% block content %}
+<div id="content-2col">
+    <div id="content">
+        <div id="splashOuter">
+            <!--<div id="splash"></div>-->
+        </div>
+        <div id="topContent">
+            <h1>ResNet Voicmail Message Listing</h1>
+        </div>
+        <div class="clear"></div>
+        <table id="voicemail_list">
+            <tfoot>
+                <tr>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="clear"></div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+{{ block.super }}
