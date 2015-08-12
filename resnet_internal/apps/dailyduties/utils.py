@@ -20,7 +20,8 @@ from .models import DailyDuties
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from django.core.files.base import ContentFile
 from email.parser import HeaderParser
-from email.utils import parseaddr
+
+from flanker import mime
 
 logger = logging.getLogger(__name__)
 
@@ -81,9 +82,9 @@ class VoicemailManager(EmailConnectionMixin):
     def get_attachment(self, messagenum):
         data = self.server.fetch(messagenum, '(RFC822)')
         print(str(data[1][0][1]))
-        voicemail_message = email.message_from_string(str(data[1][0][1]))
+        voicemail_message = mime.from_string(str(data[1][0][1]))
 
-        for part in voicemail_message.walk():
+        for part in voicemail_message.parts:
             if part.get_content_maintype() == 'multipart':
                 continue
             if part.get('Content-Disposition') is None:
