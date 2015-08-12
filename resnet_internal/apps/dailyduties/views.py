@@ -6,7 +6,7 @@
 
 """
 
-from resnet_internal.apps.dailyduties.utils import GetDutyData, VoicemailManager
+from resnet_internal.apps.dailyduties.utils import VoicemailManager
 
 from django.views.generic.base import TemplateView
 from django.http.response import HttpResponse
@@ -27,7 +27,7 @@ class VoicemailAttachmentRequestView(TemplateView):
 
     def render_to_response(self, context, **response_kwargs):
         voicemail = VoicemailManager()
-        filedata = voicemail.get_attachment_uuid(context["uuid"])[1]
+        filedata = voicemail.get_attachment_uuid(self.kwargs["uuid"])[1]
 
         response = HttpResponse(content_type='audio/wav')
         response.write(filedata)
