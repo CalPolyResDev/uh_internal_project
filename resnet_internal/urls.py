@@ -27,8 +27,8 @@ from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequest
 from .apps.printers.views import PrintersView
 from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
 from .apps.portmap.views import ResidenceHallWiredPortsView
-from .apps.dailyduties.ajax import PopulateVoicemails, UpdateVoicemails, remove_vm
-from .apps.dailyduties.views import VMAttachmentRequestView
+from .apps.dailyduties.ajax import remove_voicemail
+from .apps.dailyduties.views import VoicemailAttachmentRequestView
 
 from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.core.ajax import update_building
@@ -103,13 +103,12 @@ urlpatterns = [
 
 # Daily Duties
 urlpatterns += [
-    url(r'^dailyduties/populate/$', login_required(technician_access(PopulateVoicemails.as_view())), name='populate_voicemails'),
-    url(r'^dailyduties/update/$', login_required(technician_access(UpdateVoicemails.as_view())), name='update_voicemails'),
     url(r'^message/$', login_required(technician_access(PhoneInstructionsView.as_view())), name='phone_instructions'),
     url(r'^daily_duties/refresh_duties/$', login_required(technician_access(refresh_duties)), name='daily_duties_refresh_duties'),
     url(r'^daily_duties/update_duty/$', login_required(technician_access(update_duty)), name='daily_duties_update_duty'),
-    url(r'^daily_duties/vm/$', login_required(technician_access(VMAttachmentRequestView.as_view())), name='vm_attachment_request'),
-    url(r'^daily_duties/remove_vm/$', login_required(technician_access(remove_vm)), name='vm_remove'),
+    url(r"^daily_duties/voicemail/$", login_required(technician_access(VoicemailAttachmentRequestView.as_view())), name='voicemail_attachment_request'),
+    url(r"^daily_duties/remove_voicemail/$", login_required(technician_access(remove_voicemail)), name='remove_voicemail'),
+    #url(r"^daily_duties/remove_voicemail/(?P<uuid>[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)", login_required(technician_access(remove_voicemail)), name='remove_voicemail'),
 ]
 
 # ResNet Technician Orientation

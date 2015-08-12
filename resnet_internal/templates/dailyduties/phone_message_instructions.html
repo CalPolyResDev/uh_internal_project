@@ -1,34 +1,44 @@
 {% extends "base_frame.html" %}
 {% load core_user_tests %}
-{% load datatables %}
 
-{% block meta %}
-{{ block.super }}
-{% datatables_script %}
-{% endblock %}
-
-{% block subtitle %} | ResNet Voicemail Message Listing{% endblock %}
+{% block subtitle %} | ResNet Voicemail Messages{% endblock %}
 
 {% block content %}
-<div id="content-2col">
-    <div id="content">
-        <div id="splashOuter">
-            <!--<div id="splash"></div>-->
-        </div>
-        <div id="topContent">
-            <h1>ResNet Voicmail Message Listing</h1>
-        </div>
-        <div class="clear"></div>
-        <table id="voicemail_list">
-            <tfoot>
-                <tr>
-                    <th></th>
+    <h1>ResNet Voicemail Messages</h1>
+
+    <table class="dataTable">
+        <tbody>
+            <tr>
+                <th scope="col" width="12.5%">Date</th>
+                <th scope="col" width="12.5%">Sender</th>
+                <th scope="col" width="20%">Play Voicemail</th>
+                <th scope="col" width="20%">Remove</th>
+            </tr>
+            {% if voicemails %}
+                {% for voicemail in voicemails %}
+                <tr id="voicemail_{{ voicemail.uuid }}">
+                    <td>{{ voicemail.date }}</td>
+                    <td>{{ voicemail.sender }}</td>
+                    <td><audio controls><source src="{% url 'voicemail_attachment_request' %}?uuid={{ voicemail.uuid }}" type='audio/wav'/><p>Please use any browser other than IE.</p></audio></td>
+                    <td>{% if request.user|technician_access %}<a style="color:red; cursor:pointer;" onclick="remove_voicemail('{{ voicemail.uuid }}')">Remove</a>{% endif %}</td>
                 </tr>
-            </tfoot>
-        </table>
-        <div class="clear"></div>
-    </div>
-</div>
-{% endblock %}
+                {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="6">There are not currently any voicemails.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
 {% block extra_script %}
 {{ block.super }}
+<script type="text/javascript">
+    function remove_voicemail(uuid)  {
+        ajaxPost("{% url 'remove_voicemail' %}", {"uuid": uuid}, function(response_context) {
+            $("#voicemail_" + uuid).remove();
+        });
+    }
+</script>
+{% endblock %}
+{% endblock %}

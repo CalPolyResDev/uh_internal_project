@@ -6,29 +6,28 @@
 
 """
 
-from resnet_internal.apps.datatables.views import DatatablesView
-from resnet_internal.apps.dailyduties.ajax import PopulateVoicemails
-from resnet_internal.apps.dailyduties.models import VoicemailMessage
-from resnet_internal.apps.dailyduties.utils import GetDutyData
+from resnet_internal.apps.dailyduties.utils import GetDutyData, VoicemailManager
 
-from django.core.urlresolvers import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.http.response import HttpResponse
 
 
-class PhoneInstructionsView(DatatablesView):
-    template_name = "core/phone_message_instructions.html"
-    form_class = None
-    populate_class = PopulateVoicemails
-    model = VoicemailMessage
-    success_url = reverse_lazy('uh_voicemails')
+class PhoneInstructionsView(TemplateView):
+    template_name = "dailyduties/phone_message_instructions.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super(PhoneInstructionsView, self).get_context_data(**kwargs)
+        
+        voicemail = VoicemailManager()
+        context["voicemails"] = voicemail.get_all_voicemail()
+        return context
 
 
-class VMAttachmentRequestView(TemplateView):
+class VoicemailAttachmentRequestView(TemplateView):
 
     def render_to_response(self, context, **response_kwargs):
-        dutyData = GetDutyData()
-        filedata = dutyData.VoicemailUtilities.get_attachment_uuid(context["uuid"])[1]
+        voicemail = VoicemailManager()
+        filedata = voicemail.get_attachment_uuid(context["uuid"])[1]
 
         response = HttpResponse(content_type='audio/wav')
         response.write(filedata)
