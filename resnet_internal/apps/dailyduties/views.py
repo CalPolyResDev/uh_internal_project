@@ -9,7 +9,7 @@
 from resnet_internal.apps.dailyduties.utils import VoicemailManager
 
 from django.views.generic.base import TemplateView
-from django.http.response import HttpResponse
+from django.http.response import FileResponse
 
 
 class PhoneInstructionsView(TemplateView):
@@ -18,19 +18,27 @@ class PhoneInstructionsView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(PhoneInstructionsView, self).get_context_data(**kwargs)
         
-        voicemail = VoicemailManager()
-        context["voicemails"] = voicemail.get_all_voicemail()
+        with VoicemailManager() as voicemail_manager:
+            context["voicemails"] = voicemail_manager.get_all_voicemail()
+        
         return context
 
 
 class VoicemailAttachmentRequestView(TemplateView):
 
     def render_to_response(self, context, **response_kwargs):
-        voicemail = VoicemailManager()
-        filedata = voicemail.get_attachment_uuid(self.kwargs["uuid"])[1]
+        uuid = self.kwargs["uuid"]
+        print('Voicemail Requested: ' + uuid)
+        
+        with VoicemailManager() as voicemail_manager:
+            filedata = voicemail_manager.get_attachment_uuid(uuid)[1]
 
-        response = HttpResponse(content_type='audio/wav')
-        response.write(filedata)
-        response['Content-Length'] = filedata.length
+        print('Size: ' + str(filedata.size))
+        response = FileResponse(filedata, content_type='audio/wav')
+        #response.write(filedata)
+        #response['Content-Disposition'] = 'attachment; filename=' + uuid + '.wav'
+        # response['Content-Length'] = filedata.size
+        
+        print(str(response))
 
         return response

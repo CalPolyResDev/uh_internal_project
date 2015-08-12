@@ -21,8 +21,6 @@ from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from django.core.files.base import ContentFile
 from email.parser import HeaderParser
 
-from flanker import mime
-
 logger = logging.getLogger(__name__)
 
 GREEN = "#060"
@@ -44,6 +42,19 @@ class EmailConnectionMixin(object):
 
 class VoicemailManager(EmailConnectionMixin):
     server = None
+    
+    def __init__(self, *args, **kwargs):
+        super(VoicemailManager, self).__init__(*args, **kwargs)
+        if self.server is None:
+            self._init_mail_connection()
+    
+    def __enter__(self):
+        if self.server is None:
+            self._init_mail_connection()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.server.logout()
     
     def parse_message_id(self, messagedata):
         hp = HeaderParser()
@@ -81,10 +92,10 @@ class VoicemailManager(EmailConnectionMixin):
 
     def get_attachment(self, messagenum):
         data = self.server.fetch(messagenum, '(RFC822)')
-        print(str(data[1][0][1]))
-        voicemail_message = mime.from_string(str(data[1][0][1]))
-
-        for part in voicemail_message.parts:
+        voicemail_message = email.message_from_bytes(data[1][0][1])
+        
+        for part in voicemail_message.walk():
+            
             if part.get_content_maintype() == 'multipart':
                 continue
             if part.get('Content-Disposition') is None:
@@ -92,15 +103,12 @@ class VoicemailManager(EmailConnectionMixin):
             
             filename = part.get_filename()
             fileData = part.get_payload(decode=True)
-            
-            print(fileData)
+
             return (filename, ContentFile(fileData))
         
         raise ValueError('Not a Valid Voicemail Message: No attachment.')
 
     def get_attachment_uuid(self, messageuuid):
-        if self.server is None:
-            self._init_mail_connection()
         self.server.select('Voicemails', readonly=True)
 
         messageNum = self.get_messagenum_for_uuid(messageuuid)
@@ -112,8 +120,6 @@ class VoicemailManager(EmailConnectionMixin):
         return self.get_attachment(messageNum)
 
     def delete_message(self, messageUUID):
-        if self.server is None:
-            self._init_mail_connection()
         self.server.select('Voicemails', readonly=False)
 
         messageNum = self.get_messagenum_for_uuid(messageUUID)
@@ -126,34 +132,27 @@ class VoicemailManager(EmailConnectionMixin):
         """Get the voicemail messages."""
         voicemail = []
         
-        try:
-            if not self.server:
-                self._init_mail_connection()
+        # Select the Voicemail Mailbox, get the message count
+        self.server.select('Voicemails', readonly=True)
 
-        except (SSLError, SSLEOFError):
-            voicemail = [{"date": datetime.time(), "sender": "Connection Error", "uuid": "Error!"}]
-        else:
-            # Select the Voicemail Mailbox, get the message count
-            self.server.select('Voicemails', readonly=True)
+        message_nums = self.get_message_nums()
+        message_ids = self.get_message_uuids(message_nums)[1]
 
-            message_nums = self.get_message_nums()
-            message_ids = self.get_message_uuids(message_nums)[1]
+        for i in range(0, len(message_ids) - 1):
+            msg_text = self.get_message_body(message_nums[i])
+            date_string = msg_text[27:41]
+            from_idx = msg_text.find('from')
+            from_string = msg_text[from_idx + 5:msg_text.find('.', from_idx)]
+            date = datetime.strptime(date_string, "%H:%M %m-%d-%y")
 
-            for i in range(0, len(message_ids) - 1):
-                msg_text = self.get_message_body(message_nums[i])
-                date_string = msg_text[27:41]
-                from_idx = msg_text.find('from')
-                from_string = msg_text[from_idx + 5:msg_text.find('.', from_idx)]
-                date = datetime.strptime(date_string, "%H:%M %m-%d-%y")
+            new_msg = {
+                "date": date,
+                "sender": from_string,
+                "uuid": message_ids[i],
+                "url": "daily_duties/voicemail/" + message_ids[i]
+            }
 
-                new_msg = {
-                    "date": date,
-                    "sender": from_string,
-                    "uuid": message_ids[i],
-                    "url": "daily_duties/voicemail/" + message_ids[i]
-                }
-
-                voicemail.append(new_msg)
+            voicemail.append(new_msg)
         
         return voicemail
 

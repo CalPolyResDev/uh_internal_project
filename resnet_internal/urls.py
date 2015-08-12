@@ -106,7 +106,7 @@ urlpatterns += [
     url(r'^message/$', login_required(technician_access(PhoneInstructionsView.as_view())), name='phone_instructions'),
     url(r'^daily_duties/refresh_duties/$', login_required(technician_access(refresh_duties)), name='daily_duties_refresh_duties'),
     url(r'^daily_duties/update_duty/$', login_required(technician_access(update_duty)), name='daily_duties_update_duty'),
-    url(r"^daily_duties/voicemail/$", login_required(technician_access(VoicemailAttachmentRequestView.as_view())), name='voicemail_attachment_request'),
+    url(r"^daily_duties/voicemail/(?P<uuid>[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)/$", login_required(technician_access(VoicemailAttachmentRequestView.as_view())), name='voicemail_attachment_request'),
     url(r"^daily_duties/remove_voicemail/$", login_required(technician_access(remove_voicemail)), name='remove_voicemail'),
     #url(r"^daily_duties/remove_voicemail/(?P<uuid>[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)", login_required(technician_access(remove_voicemail)), name='remove_voicemail'),
 ]
