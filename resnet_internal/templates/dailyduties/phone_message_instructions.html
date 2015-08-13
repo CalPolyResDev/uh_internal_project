@@ -1,5 +1,6 @@
 {% extends "base_frame.html" %}
 {% load core_user_tests %}
+{% load staticfiles %}
 
 {% block subtitle %} | ResNet Voicemail Messages{% endblock %}
 
@@ -20,16 +21,16 @@
                     <td>{{ voicemail.date }}</td>
                     <td>{{ voicemail.sender }}</td>
                     <td><audio controls autobuffer preload='none'><source src="{% url 'voicemail_attachment_request' voicemail.uuid %}" type='audio/wav'/><p>Please use any browser other than IE.</p></audio></td>
-                    <td>{% if request.user|technician_access %}<a style="color:red; cursor:pointer;" onclick="remove_voicemail('{{ voicemail.uuid }}'); var spinner = document.getElementById('spinner_' + '{{ voicemail.uuid }}'); spinner.style.display = 'inline';">Archive</a>
+                    <td>{% if request.user|technician_access %}<a id="archive_{{ voicemail.uuid }}" style="color:red; cursor:pointer;" onclick="remove_voicemail('{{ voicemail.uuid }}');">Archive</a>
                         <div id="spinner_{{ voicemail.uuid }}" class="spinner" style="display:none;">
-                            <img id="img-spinner" src="/static/images/spinner.gif" alt="Loading"/ height="15">
+                            <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
                         </div>{% endif %}
                     </td>
                 </tr>
                 {% endfor %}
             {% else %}
             <tr>
-                <td colspan="6">There are not currently any voicemails.</td>
+                <td colspan="4" style="text-align: center;">There are not currently any voicemails.</td>
             </tr>
             {% endif %}
         </tbody>
@@ -39,6 +40,13 @@
 {{ block.super }}
 <script type="text/javascript">
     function remove_voicemail(uuid)  {
+        //Cannot use JQuery here: $ signs and other character in UUID break the query
+        var archive_link = document.getElementById('archive_' + uuid);
+        archive_link.style.display = 'none';
+        
+        var spinner = document.getElementById('spinner_' + uuid); 
+        spinner.style.display = 'block';
+        
         ajaxPost("{% url 'remove_voicemail' %}", {"uuid": uuid}, function(response_context) {
             var row = document.getElementById('voicemail_' + uuid.toString());
             row.parentNode.removeChild(row);
