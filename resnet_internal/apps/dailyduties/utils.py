@@ -10,6 +10,7 @@ import email
 from datetime import datetime, timedelta
 import logging
 from ssl import SSLError, SSLEOFError
+from operator import itemgetter
 
 from django.conf import settings
 from django.db import DatabaseError
@@ -74,13 +75,17 @@ class VoicemailManager(EmailConnectionMixin):
         return message_set
     
     def get_message_set_length(self, message_set):
-        return len(message_set.decode('utf-8').split(',')) - 1
+        return len(message_set.decode('utf-8').split(','))
     
     def get_message_bodies(self, message_set):
         data = self.server.fetch(message_set, 'BODY[1]')[1]
         
+        print(str(data))
+        
         message_bodies = []
-        for i in range(0, self.get_message_set_length(message_set) - 1):
+        for i in range(0, self.get_message_set_length(message_set)):
+            print(i)
+            print(data[i*2][1])
             message_bodies.append(data[i * 2][1].decode('utf-8'))
         
         return message_bodies
@@ -92,10 +97,12 @@ class VoicemailManager(EmailConnectionMixin):
     def get_message_uuids(self, message_set):
         data = self.server.fetch(message_set, '(BODY[HEADER.FIELDS (MESSAGE-ID)])')[1]
         message_uuids = []
-        count = 0
-        for i in range(0, self.get_message_set_length(message_set) - 1):
+        print(data)
+        
+        for i in range(0, self.get_message_set_length(message_set)):
             message_uuids.append(self.parse_message_id(data[i * 2][1].decode('utf-8')))
-            ++count
+            print(i)
+            print(data[i*2][1])
             
         return message_uuids
 
@@ -104,7 +111,7 @@ class VoicemailManager(EmailConnectionMixin):
         message_uuids = self.get_message_uuids(self.build_message_set(message_nums))
 
         message_num = None
-        for i in range(0, len(message_uuids) - 1):
+        for i in range(0, len(message_uuids)):
             if message_uuids[i] == uuid:
                 message_num = message_nums[i]
                 break
@@ -154,7 +161,7 @@ class VoicemailManager(EmailConnectionMixin):
 
     def get_all_voicemail(self):
         """Get the voicemail messages."""
-        voicemail = []
+        voicemails = []
 
         self.server.select('Voicemails', readonly=True)
 
@@ -163,7 +170,7 @@ class VoicemailManager(EmailConnectionMixin):
         
         message_bodies = self.get_message_bodies(self.build_message_set(message_nums))
 
-        for i in range(0, len(message_ids) - 1):
+        for i in range(0, len(message_ids)):
             msg_text = message_bodies[i]
             date_string = msg_text[27:41]
             from_idx = msg_text.find('from')
@@ -177,9 +184,10 @@ class VoicemailManager(EmailConnectionMixin):
                 "url": "daily_duties/voicemail/" + message_ids[i]
             }
 
-            voicemail.append(new_msg)
+            voicemails.append(new_msg)
         
-        return voicemail
+        voicemails.sort(key=itemgetter('date'), reverse=True)
+        return voicemails
 
 
 class GetDutyData(EmailConnectionMixin):
