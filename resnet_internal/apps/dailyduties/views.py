@@ -28,17 +28,10 @@ class VoicemailAttachmentRequestView(TemplateView):
 
     def render_to_response(self, context, **response_kwargs):
         uuid = self.kwargs["uuid"]
-        print('Voicemail Requested: ' + uuid)
         
         with VoicemailManager() as voicemail_manager:
             filedata = voicemail_manager.get_attachment_uuid(uuid)[1]
 
-        print('Size: ' + str(filedata.size))
         response = FileResponse(filedata, content_type='audio/wav')
-        #response.write(filedata)
-        #response['Content-Disposition'] = 'attachment; filename=' + uuid + '.wav'
-        # response['Content-Length'] = filedata.size
-        
-        print(str(response))
 
         return response
