@@ -97,13 +97,13 @@ class VoicemailManager(EmailConnectionMixin):
             
         return message_uuids
 
-    def _get_messagenum_for_uuid(self, uuid):
+    def _get_messagenum_for_uuid(self, message_uuid):
         message_nums = self._get_message_nums()
         message_uuids = self._get_message_uuids(self._build_message_set(message_nums))
 
         message_num = None
         for i in range(0, len(message_uuids)):
-            if message_uuids[i] == uuid:
+            if message_uuids[i] == message_uuid:
                 message_num = message_nums[i]
                 break
         return message_num
@@ -171,7 +171,7 @@ class VoicemailManager(EmailConnectionMixin):
             message = {
                 "date": date,
                 "sender": from_string,
-                "uuid": message_ids[message_index],
+                "message_uuid": message_ids[message_index],
                 "url": "daily_duties/voicemail/" + message_ids[message_index]
             }
 

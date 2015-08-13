@@ -29,14 +29,14 @@ class PhoneInstructionsView(TemplateView):
 class VoicemailAttachmentRequestView(TemplateView):
 
     def render_to_response(self, context, **response_kwargs):
-        uuid = self.kwargs["uuid"]
-        cached_filedata = cache.get('voicemail:' + uuid)
+        message_uuid = self.kwargs["message_uuid"]
+        cached_filedata = cache.get('voicemail:' + message_uuid)
         response = HttpResponse()
         
         if (cached_filedata is None):
             with VoicemailManager() as voicemail_manager:
-                    filedata = voicemail_manager.get_attachment_uuid(uuid)[1]
-            cache.set('voicemail:' + uuid, filedata, 7200)
+                    filedata = voicemail_manager.get_attachment_uuid(message_uuid)[1]
+            cache.set('voicemail:' + message_uuid, filedata, 7200)
         else:
             filedata = cached_filedata
          
