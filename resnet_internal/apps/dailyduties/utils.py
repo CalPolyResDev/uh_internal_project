@@ -56,28 +56,48 @@ class VoicemailManager(EmailConnectionMixin):
     def __exit__(self, exc_type, exc_value, traceback):
         self.server.logout()
     
-    def parse_message_id(self, messagedata):
-        hp = HeaderParser()
-        header_string = str(messagedata[0][1])
-        message_id = header_string.split('<')[1].rsplit('>')[0]
-        return message_id
+    def parse_message_id(self, message_id_string):
+        return message_id_string.split('<')[1].rsplit('>')[0]
 
     def get_message_body(self, messagenum):
         data = self.server.fetch(messagenum, 'BODY[1]')[1]
         return data[0][1].decode()
+    
+    def build_message_set(self, message_nums):
+        message_set_string = ''
+        for message_num in message_nums:
+            message_set_string = message_set_string + ',' + message_num.decode('utf_8')
+        
+        message_set_string = message_set_string.split(',', 1)[1]
+        message_set = bytes(message_set_string, 'utf-8')
+        
+        return message_set
+    
+    def get_message_set_length(self, message_set):
+        return len(message_set.decode('utf-8').split(',')) - 1
+    
+    def get_message_bodies(self, message_set):
+        data = self.server.fetch(message_set, 'BODY[1]')[1]
+        
+        message_bodies = []
+        for i in range(0, self.get_message_set_length(message_set) - 1):
+            message_bodies.append(data[i * 2][1].decode('utf-8'))
+        
+        return message_bodies
 
     def get_message_nums(self):
         data = self.server.search(None, 'ALL')[1]
         return data[0].split()
 
-    def get_message_uuids(self, messageNums):
-        messageIDs = []
+    def get_message_uuids(self, message_set):
+        data = self.server.fetch(message_set, '(BODY[HEADER.FIELDS (MESSAGE-ID)])')[1]
+        message_uuids = []
         count = 0
-        for num in messageNums:
-            data = self.server.fetch(num, '(BODY[HEADER.FIELDS (MESSAGE-ID)])')[1]
-            messageIDs.append(self.parse_message_id(data))
+        for i in range(0, self.get_message_set_length(message_set) - 1):
+            message_uuids.append(self.parse_message_id(data[i * 2][1].decode('utf-8')))
             ++count
-        return (count, messageIDs)
+            
+        return message_uuids
 
     def get_messagenum_for_uuid(self, uuid):
         messageNums = self.get_message_nums()
@@ -131,15 +151,16 @@ class VoicemailManager(EmailConnectionMixin):
     def get_all_voicemail(self):
         """Get the voicemail messages."""
         voicemail = []
-        
-        # Select the Voicemail Mailbox, get the message count
+
         self.server.select('Voicemails', readonly=True)
 
         message_nums = self.get_message_nums()
-        message_ids = self.get_message_uuids(message_nums)[1]
+        message_ids = self.get_message_uuids(self.build_message_set(message_nums))
+        
+        message_bodies = self.get_message_bodies(self.build_message_set(message_nums))
 
         for i in range(0, len(message_ids) - 1):
-            msg_text = self.get_message_body(message_nums[i])
+            msg_text = message_bodies[i]
             date_string = msg_text[27:41]
             from_idx = msg_text.find('from')
             from_string = msg_text[from_idx + 5:msg_text.find('.', from_idx)]
