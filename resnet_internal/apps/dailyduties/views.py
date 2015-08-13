@@ -15,7 +15,7 @@ from django.core.cache import cache
 
 
 class PhoneInstructionsView(TemplateView):
-    template_name = "dailyduties/phone_message_instructions.html"
+    template_name = "dailyduties/voicemail_list.html"
     
     def get_context_data(self, **kwargs):
         context = super(PhoneInstructionsView, self).get_context_data(**kwargs)
