@@ -85,7 +85,7 @@ class StaffMapping(Model):
     staff_title = CharField(max_length=35, unique=True, verbose_name='Staff Title')
     staff_name = CharField(max_length=50, verbose_name='Staff Full Name')
     staff_alias = CharField(max_length=8, verbose_name='Staff Alias')
-    staff_ext = IntegerField(max_length=4, verbose_name='Staff Telephone Extension')
+    staff_ext = IntegerField(verbose_name='Staff Telephone Extension')
 
     class Meta:
         db_table = 'staffmapping'
