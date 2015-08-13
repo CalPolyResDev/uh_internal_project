@@ -128,16 +128,15 @@ def remove_voicemail(request):
     :type vm_uuid: int
 
     """
-
     # Pull post parameters
-    uuid = request.POST["uuid"]
+    message_uuid = request.POST["message_uuid"]
 
     context = {}
     context["success"] = True
     context["error_message"] = None
-    context["uuid"] = uuid
+    context["uuid"] = message_uuid
 
     voicemail_manager = VoicemailManager()
-    voicemail_manager.delete_message(uuid)
+    voicemail_manager.delete_message(message_uuid)
     
     return context

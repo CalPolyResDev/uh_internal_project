@@ -8,7 +8,7 @@
 
 from django.conf import settings
 from django.db.models import Model, ForeignKey
-from django.db.models.fields import CharField, DateTimeField, DateField
+from django.db.models.fields import CharField, DateTimeField
 
 
 class DailyDuties(Model):
