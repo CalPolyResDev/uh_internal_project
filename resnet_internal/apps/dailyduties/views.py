@@ -5,6 +5,7 @@
 .. moduleauthor:: Thomas Willson <thomas.willson@icloud.com>
 
 """
+import regex
 
 from resnet_internal.apps.dailyduties.utils import VoicemailManager
 
@@ -29,12 +30,12 @@ class VoicemailAttachmentRequestView(TemplateView):
 
     def render_to_response(self, context, **response_kwargs):
         uuid = self.kwargs["uuid"]
-        cached_filedata = cache.get('vm_' + uuid)
+        cached_filedata = cache.get('voicemail:' + uuid)
         
         if (cached_filedata is None):
             with VoicemailManager() as voicemail_manager:
                     filedata = voicemail_manager.get_attachment_uuid(uuid)[1]
-            cache.set('vm_' + uuid, filedata, 7200)
+            cache.set('voicemail:' + uuid, filedata, 7200)
             print('Saving to Cache')
         else:
             filedata = cached_filedata
@@ -47,18 +48,23 @@ class VoicemailAttachmentRequestView(TemplateView):
                 print(key + ': ' + value)
          
         # Safari Media Player does not like its range requests
-        # ignored so handle this in a primitive way.
-        if self.request.META['HTTP_RANGE'] == 'bytes=0-1':
-            response.write([b'\xDE\xAD'])
-            response_length = 2
+        # ignored so handle this.
+        if self.request.META['HTTP_RANGE']:
+            http_range_regex = regex.compile('bytes=(\d*)-(\d*)$')
+            regex_match = http_range_regex.match(self.request.META['HTTP_RANGE'])
+            response_start = int(regex_match.groups()[0])
+            response_end = int(regex_match.groups()[1] if len(regex_match.groups()[1]) > 0 else (len(filedata) - 1))
         else:
-            response.write(filedata)
-            response_length = len(filedata)
+            response_start = 0
+            response_end = len(filedata) - 1
+            
+        print('Response Length Actual: ' + str(len(filedata[response_start:response_end+1])))
 
+        response.write(filedata[response_start:response_end+1])
         response["Accept-Ranges"] = 'bytes'
-        response["Content-Length"] = response_length
+        response["Content-Length"] = response_end - response_start + 1
         response["Content-Type"] = 'audio/wav'
-        response["Content-Range"] = 'bytes 0-' + str(response_length - 1) + '/' + str(len(filedata))
+        response["Content-Range"] = 'bytes ' + str(response_start) + '-' + str(response_end) + '/' + str(len(filedata))
         
         print(response.serialize_headers())
 
