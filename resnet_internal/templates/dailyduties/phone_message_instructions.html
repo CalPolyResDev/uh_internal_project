@@ -36,7 +36,8 @@
 <script type="text/javascript">
     function remove_voicemail(uuid)  {
         ajaxPost("{% url 'remove_voicemail' %}", {"uuid": uuid}, function(response_context) {
-            $("#voicemail_" + uuid).remove();
+            var row = document.getElementById('voicemail_' + uuid.toString());
+            row.parentNode.removeChild(row);
         });
     }
 </script>

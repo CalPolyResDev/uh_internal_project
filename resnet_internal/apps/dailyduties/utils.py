@@ -140,13 +140,17 @@ class VoicemailManager(EmailConnectionMixin):
         return self.get_attachment(messageNum)
 
     def delete_message(self, messageUUID):
+        print('Removing Message: ' + messageUUID)
         self.server.select('Voicemails', readonly=False)
 
         messageNum = self.get_messagenum_for_uuid(messageUUID)
+        print('Message Num: ' + str(messageNum))
         result = self.server.copy(messageNum, 'Archives/Voicemails')
-        if (result == 'OK'):
+        if (result[0] == 'OK'):
             self.server.store(messageNum, '+FLAGS', '\\Deleted')
             self.server.expunge()
+        else:
+            print('Copy Failed: ' + str(result))
 
     def get_all_voicemail(self):
         """Get the voicemail messages."""
