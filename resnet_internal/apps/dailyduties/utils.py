@@ -100,15 +100,15 @@ class VoicemailManager(EmailConnectionMixin):
         return message_uuids
 
     def get_messagenum_for_uuid(self, uuid):
-        messageNums = self.get_message_nums()
-        messageUUIDs = self.get_message_uuids(messageNums)[1]
+        message_nums = self.get_message_nums()
+        message_uuids = self.get_message_uuids(self.build_message_set(message_nums))
 
-        messageNum = None
-        for i in range(0, len(messageUUIDs) - 1):
-            if messageUUIDs[i] == uuid:
-                messageNum = messageNums[i]
+        message_num = None
+        for i in range(0, len(message_uuids) - 1):
+            if message_uuids[i] == uuid:
+                message_num = message_nums[i]
                 break
-        return messageNum
+        return message_num
 
     def get_attachment(self, messagenum):
         data = self.server.fetch(messagenum, '(RFC822)')
