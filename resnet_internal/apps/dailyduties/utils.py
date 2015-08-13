@@ -67,10 +67,10 @@ class VoicemailManager(EmailConnectionMixin):
         for message_num in message_nums:
             message_set_string = message_set_string + ',' + message_num.decode('utf_8')
         
-        message_set_string = message_set_string.split(',', 1)[1]
+        message_set_string = message_set_string.split(',', 1)[-1]
         message_set = bytes(message_set_string, 'utf-8')
         
-        return message_set
+        return message_set if message_set else None
     
     def _get_message_set_length(self, message_set):
         return len(message_set.decode('utf-8').split(','))
@@ -153,10 +153,13 @@ class VoicemailManager(EmailConnectionMixin):
         voicemails = []
 
         self.server.select('Voicemails', readonly=True)
-
         message_nums = self._get_message_nums()
-        message_ids = self._get_message_uuids(self._build_message_set(message_nums))
         
+        # Check for empty inbox
+        if not message_nums:
+            return None
+        
+        message_ids = self._get_message_uuids(self._build_message_set(message_nums))
         message_bodies = self._get_message_bodies(self._build_message_set(message_nums))
 
         for message_index in range(0, len(message_ids)):
