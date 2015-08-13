@@ -124,7 +124,7 @@ class VoicemailManager(EmailConnectionMixin):
             filename = part.get_filename()
             fileData = part.get_payload(decode=True)
 
-            return (filename, ContentFile(fileData))
+            return (filename, fileData)
         
         raise ValueError('Not a Valid Voicemail Message: No attachment.')
 

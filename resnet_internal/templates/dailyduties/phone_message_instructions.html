@@ -19,7 +19,7 @@
                 <tr id="voicemail_{{ voicemail.uuid }}">
                     <td>{{ voicemail.date }}</td>
                     <td>{{ voicemail.sender }}</td>
-                    <td><audio controls preload='none'><source src="{% url 'voicemail_attachment_request' voicemail.uuid %}" type='audio/wav'/><p>Please use any browser other than IE.</p></audio></td>
+                    <td><audio controls autobuffer preload='none'><source src="{% url 'voicemail_attachment_request' voicemail.uuid %}" type='audio/wav'/><p>Please use any browser other than IE.</p></audio></td>
                     <td>{% if request.user|technician_access %}<a style="color:red; cursor:pointer;" onclick="remove_voicemail('{{ voicemail.uuid }}')">Archive</a>{% endif %}</td>
                 </tr>
                 {% endfor %}
