@@ -168,7 +168,7 @@ class VoicemailManager(EmailConnectionMixin):
             date_string = msg_text[27:41]
             from_idx = msg_text.find('from')
             from_string = msg_text[from_idx + 5:msg_text.find('.', from_idx)]
-            date = datetime.strptime(date_string, "%H:%M %m-%d-%y")
+            date = datetime.strftime(datetime.strptime(date_string, "%H:%M %m-%d-%y"), "%Y-%m-%d %H:%M")
 
             new_msg = {
                 "date": date,

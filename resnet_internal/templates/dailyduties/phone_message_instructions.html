@@ -9,10 +9,10 @@
     <table class="dataTable">
         <tbody>
             <tr>
-                <th scope="col" width="12.5%">Date</th>
-                <th scope="col" width="12.5%">Sender</th>
-                <th scope="col" width="20%">Play Voicemail</th>
-                <th scope="col" width="20%">Archive</th>
+                <th scope="col">Date</th>
+                <th scope="col">Sender</th>
+                <th scope="col">Play Voicemail</th>
+                <th scope="col">Archive</th>
             </tr>
             {% if voicemails %}
                 {% for voicemail in voicemails %}
@@ -20,7 +20,11 @@
                     <td>{{ voicemail.date }}</td>
                     <td>{{ voicemail.sender }}</td>
                     <td><audio controls autobuffer preload='none'><source src="{% url 'voicemail_attachment_request' voicemail.uuid %}" type='audio/wav'/><p>Please use any browser other than IE.</p></audio></td>
-                    <td>{% if request.user|technician_access %}<a style="color:red; cursor:pointer;" onclick="remove_voicemail('{{ voicemail.uuid }}')">Archive</a>{% endif %}</td>
+                    <td>{% if request.user|technician_access %}<a style="color:red; cursor:pointer;" onclick="remove_voicemail('{{ voicemail.uuid }}'); var spinner = document.getElementById('spinner_' + '{{ voicemail.uuid }}'); spinner.style.display = 'inline';">Archive</a>
+                        <div id="spinner_{{ voicemail.uuid }}" class="spinner" style="display:none;">
+                            <img id="img-spinner" src="/static/images/spinner.gif" alt="Loading"/ height="15">
+                        </div>{% endif %}
+                    </td>
                 </tr>
                 {% endfor %}
             {% else %}
