@@ -10,7 +10,7 @@ from resnet_internal.apps.dailyduties.utils import VoicemailManager
 
 from django.views.generic.base import TemplateView
 from django.http.response import HttpResponse
-from django.utils.encoding import force_bytes
+from django.core.cache import cache
 
 
 class PhoneInstructionsView(TemplateView):
@@ -29,8 +29,16 @@ class VoicemailAttachmentRequestView(TemplateView):
 
     def render_to_response(self, context, **response_kwargs):
         uuid = self.kwargs["uuid"]
-        with VoicemailManager() as voicemail_manager:
-                filedata = voicemail_manager.get_attachment_uuid(uuid)[1]
+        cached_filedata = cache.get('vm_' + uuid)
+        
+        if (cached_filedata is None):
+            with VoicemailManager() as voicemail_manager:
+                    filedata = voicemail_manager.get_attachment_uuid(uuid)[1]
+            cache.set('vm_' + uuid, filedata, 7200)
+            print('Saving to Cache')
+        else:
+            filedata = cached_filedata
+            print('Loading from Cache')
 
         response = HttpResponse()
         
