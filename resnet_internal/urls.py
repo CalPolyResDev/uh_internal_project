@@ -97,7 +97,7 @@ urlpatterns = [
     url(r'^settings/navigation/$', login_required(NavigationSettingsView.as_view()), name='navigation_settings'),
     url(r'^(?P<mode>frame|external|link_handler)/(?P<key>\b[a-zA-Z0-9_]*\b)/$', login_required(link_handler), name='link_handler'),
     url(r'^(?P<mode>frame|external|link_handler)/(?P<key>cisco)/(?P<ip>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(link_handler), name='link_handler_cisco'),
-    url(r'^core/network_status/update/$', login_required(technician_access(update_network_status)), name='core_update_network_status'),
+    url(r'^core/network_status/update/$', update_network_status, name='core_update_network_status'),
 ]
 
 # Daily Duties

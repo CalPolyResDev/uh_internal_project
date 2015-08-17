@@ -37,10 +37,9 @@
     {% block extra_script %}
     <script type="text/javascript">
         $(document).ready(function() {
-            {% if request.user.is_authenticated %}refreshNetworkStatus();{% endif %}
+            refreshNetworkStatus();
         });
     </script>
-    {% if request.user.is_authenticated %}
     <script type="text/javascript">
         function refreshNetworkStatus() {
             ajaxGet("{% url 'core_update_network_status' %}", function(response_context) {
@@ -49,6 +48,5 @@
             return false;
         };
     </script>
-    {% endif %}
     {% endblock %}
  {% endblock %}
