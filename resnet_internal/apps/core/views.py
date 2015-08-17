@@ -140,10 +140,6 @@ class NavigationSettingsView(FormView):
         return render_to_response('core/settings/close_window.html', context_instance=RequestContext(self.request))
 
 
-class PhoneInstructionsView(TemplateView):
-    template_name = "core/phone_message_instructions.html"
-
-
 class LoginView(FormView):
     """
 

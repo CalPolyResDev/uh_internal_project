@@ -6,8 +6,9 @@
 
 """
 
-import datetime
 import logging
+
+from datetime import datetime
 
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
@@ -16,7 +17,7 @@ from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
 from .models import DailyDuties
-from .utils import GetDutyData
+from .utils import GetDutyData, VoicemailManager
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +61,7 @@ def refresh_duties(request):
         <br />
         (""" + printer_requests_dict["last_user"] + """)
     </p>
-    <h3><a href='""" + reverse('phone_instructions') + """' class="popup_frame" style="cursor:pointer;" onclick="updateDuty('messages', '', '_self')">Check Voicemail""" + message_count + """</a></h3>
+    <h3><a href='""" + reverse('voicemail_list') + """' class="popup_frame" style="cursor:pointer;" onclick="updateDuty('messages', '', '_self')">Check Voicemail""" + message_count + """</a></h3>
     <p>
         Last Checked:
         <br />
@@ -112,6 +113,29 @@ def update_duty(request):
     duty = request.POST["duty"]
 
     data = DailyDuties.objects.get(name=duty)
-    data.last_checked = datetime.datetime.now()
+    data.last_checked = datetime.now()
     data.last_user = get_user_model().objects.get(username=request.user.username)
     data.save()
+
+
+@ajax
+@require_POST
+def remove_voicemail(request):
+    """ Removes computers from the computer index if no pinhole/domain name records are associated with it.
+
+    :param message_uuid: The voicemail's uuid.
+    :type message_uuid: int
+
+    """
+    # Pull post parameters
+    message_uuid = request.POST["message_uuid"]
+
+    context = {}
+    context["success"] = True
+    context["error_message"] = None
+    context["message_uuid"] = message_uuid
+
+    with VoicemailManager() as voicemail_manager:
+        voicemail_manager.delete_message(message_uuid)
+    
+    return context
