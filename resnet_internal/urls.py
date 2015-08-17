@@ -21,18 +21,16 @@ from django.views.defaults import server_error, permission_denied, page_not_foun
 
 from .apps.adgroups.views import ResTechListEditView
 from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, handler500
-from .apps.dailyduties.views import VoicemailListView
+from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
 from .apps.printers.views import PrintersView
 from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
 from .apps.portmap.views import ResidenceHallWiredPortsView
-from .apps.dailyduties.ajax import remove_voicemail
-from .apps.dailyduties.views import VoicemailAttachmentRequestView
 
 from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.core.ajax import update_building
-from .apps.dailyduties.ajax import refresh_duties, update_duty
+from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
 from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
