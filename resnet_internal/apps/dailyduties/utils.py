@@ -14,6 +14,7 @@ from operator import itemgetter
 
 from django.conf import settings
 from django.db import DatabaseError
+from django.utils.encoding import smart_text, smart_bytes
 
 from srsconnector.models import ServiceRequest
 
@@ -60,27 +61,27 @@ class VoicemailManager(EmailConnectionMixin):
 
     def _get_message_body(self, message_number):
         data = self.server.fetch(message_number, 'BODY[1]')[1]
-        return data[0][1].decode()
+        return smart_text(data[0][1])
     
     def _build_message_set(self, message_numbers):
         message_set_string = ''
         for message_number in message_numbers:
-            message_set_string = message_set_string + ',' + message_number.decode('utf_8')
+            message_set_string = message_set_string + ',' + smart_text(message_number)
         
         message_set_string = message_set_string.split(',', 1)[-1]
-        message_set = bytes(message_set_string, 'utf-8')
+        message_set = smart_bytes(message_set_string)
         
         return message_set if message_set else None
     
     def _get_message_set_length(self, message_set):
-        return len(message_set.decode('utf-8').split(','))
+        return len(smart_text(message_set).split(','))
     
     def _get_message_bodies(self, message_set):
         data = self.server.fetch(message_set, 'BODY[1]')[1]
         
         message_bodies = []
         for message_index in range(0, self._get_message_set_length(message_set)):
-            message_bodies.append(data[message_index * 2][1].decode('utf-8'))
+            message_bodies.append(smart_text(data[message_index * 2][1]))
         
         return message_bodies
 
@@ -93,7 +94,7 @@ class VoicemailManager(EmailConnectionMixin):
         message_uuids = []
         
         for message_index in range(0, self._get_message_set_length(message_set)):
-            message_uuids.append(self._parse_message_id(data[message_index * 2][1].decode('utf-8')))
+            message_uuids.append(self._parse_message_id(smart_text(data[message_index * 2][1])))
             
         return message_uuids
 
