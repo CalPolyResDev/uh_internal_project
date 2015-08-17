@@ -21,7 +21,7 @@ class VoicemailListView(TemplateView):
         context = super(VoicemailListView, self).get_context_data(**kwargs)
         
         with VoicemailManager() as voicemail_manager:
-            context["voicemails"] = voicemail_manager.get_all_voicemail()
+            context["voicemails"] = voicemail_manager.get_all_voicemail_messages()
         
         return context
 

@@ -148,7 +148,7 @@ class VoicemailManager(EmailConnectionMixin):
         else:
             print('Copy Failed: ' + str(imap_query_result))
 
-    def get_all_voicemail(self):
+    def get_all_voicemail_messages(self):
         """Get the voicemail messages."""
         voicemails = []
 
