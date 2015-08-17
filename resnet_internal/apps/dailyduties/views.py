@@ -46,7 +46,7 @@ class VoicemailAttachmentRequestView(TemplateView):
             http_range_regex = regex.compile('bytes=(\d*)-(\d*)$')
             regex_match = http_range_regex.match(self.request.META['HTTP_RANGE'])
             response_start = int(regex_match.groups()[0])
-            response_end = int(regex_match.groups()[1] if len(regex_match.groups()[1]) > 0 else (len(filedata) - 1))
+            response_end = int(regex_match.groups()[1] if regex_match.groups()[1] else (len(filedata) - 1))
         else:
             response_start = 0
             response_end = len(filedata) - 1
