@@ -21,7 +21,7 @@ from django.views.defaults import server_error, permission_denied, page_not_foun
 
 from .apps.adgroups.views import ResTechListEditView
 from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, handler500
-from .apps.dailyduties.views import PhoneInstructionsView
+from .apps.dailyduties.views import VoicemailListView
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
 from .apps.printers.views import PrintersView
@@ -103,7 +103,7 @@ urlpatterns = [
 
 # Daily Duties
 urlpatterns += [
-    url(r'^message/$', login_required(technician_access(PhoneInstructionsView.as_view())), name='phone_instructions'),
+    url(r'^message/$', login_required(technician_access(VoicemailListView.as_view())), name='phone_instructions'),
     url(r'^daily_duties/refresh_duties/$', login_required(technician_access(refresh_duties)), name='daily_duties_refresh_duties'),
     url(r'^daily_duties/update_duty/$', login_required(technician_access(update_duty)), name='daily_duties_update_duty'),
     url(r"^daily_duties/voicemail/(?P<message_uuid>[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)/$", login_required(technician_access(VoicemailAttachmentRequestView.as_view())), name='voicemail_attachment_request'),

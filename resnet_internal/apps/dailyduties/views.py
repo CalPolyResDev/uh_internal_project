@@ -14,11 +14,11 @@ from django.http.response import HttpResponse
 from django.core.cache import cache
 
 
-class PhoneInstructionsView(TemplateView):
+class VoicemailListView(TemplateView):
     template_name = "dailyduties/voicemail_list.html"
     
     def get_context_data(self, **kwargs):
-        context = super(PhoneInstructionsView, self).get_context_data(**kwargs)
+        context = super(VoicemailListView, self).get_context_data(**kwargs)
         
         with VoicemailManager() as voicemail_manager:
             context["voicemails"] = voicemail_manager.get_all_voicemail()
