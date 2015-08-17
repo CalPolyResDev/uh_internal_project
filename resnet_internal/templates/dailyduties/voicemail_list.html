@@ -36,22 +36,22 @@
         </tbody>
     </table>
 
-{% block extra_script %}
-{{ block.super }}
-<script type="text/javascript">
-    function remove_voicemail(message_uuid)  {
-        //Cannot use JQuery here: $ signs and other character in UUID break the query
-        var archive_link = document.getElementById('archive_' + message_uuid);
-        archive_link.style.display = 'none';
-        
-        var spinner = document.getElementById('spinner_' + message_uuid); 
-        spinner.style.display = 'block';
-        
-        ajaxPost("{% url 'remove_voicemail' %}", {"message_uuid": message_uuid}, function(response_context) {
-            var row = document.getElementById('voicemail_' + message_uuid.toString());
-            row.parentNode.removeChild(row);
-        });
-    }
-</script>
-{% endblock %}
+    {% block extra_script %}
+    {{ block.super }}
+    <script type="text/javascript">
+        function remove_voicemail(message_uuid)  {
+            //Cannot use JQuery here: $ signs and other character in UUID break the query
+            var archive_link = document.getElementById('archive_' + message_uuid);
+            archive_link.style.display = 'none';
+            
+            var spinner = document.getElementById('spinner_' + message_uuid); 
+            spinner.style.display = 'block';
+            
+            ajaxPost("{% url 'remove_voicemail' %}", {"message_uuid": message_uuid}, function(response_context) {
+                var row = document.getElementById('voicemail_' + message_uuid.toString());
+                row.parentNode.removeChild(row);
+            });
+        }
+    </script>
+    {% endblock %}
 {% endblock %}
