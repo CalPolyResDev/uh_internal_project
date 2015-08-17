@@ -20,7 +20,12 @@
                 <tr id="voicemail_{{ voicemail.message_uuid }}">
                     <td>{{ voicemail.date }}</td>
                     <td>{{ voicemail.sender }}</td>
-                    <td><audio controls autobuffer preload='none'><source src="{% url 'voicemail_attachment_request' voicemail.message_uuid %}" type='audio/wav'/><p>Please use any browser other than IE.</p></audio></td>
+                    <td>
+                        <audio controls autobuffer preload='none'>
+                            <source src="{% url 'voicemail_attachment_request' voicemail.message_uuid %}" type='audio/wav'/>
+                            <p>Please use any browser other than IE.</p>
+                        </audio>
+                    </td>
                     <td>{% if request.user|technician_access %}<a id="archive_{{ voicemail.message_uuid }}" style="color:red; cursor:pointer;" onclick="remove_voicemail('{{ voicemail.message_uuid }}');">Archive</a>
                         <div id="spinner_{{ voicemail.message_uuid }}" class="spinner" style="display:none;">
                             <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
