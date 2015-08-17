@@ -62,7 +62,7 @@ def refresh_duties(request):
         <br />
         (""" + printer_requests_dict["last_user"] + """)
     </p>
-    <h3><a href='""" + reverse('phone_instructions') + """' class="popup_frame" style="cursor:pointer;" onclick="updateDuty('messages', '', '_self')">Check Voicemail""" + message_count + """</a></h3>
+    <h3><a href='""" + reverse('voicemail_list') + """' class="popup_frame" style="cursor:pointer;" onclick="updateDuty('messages', '', '_self')">Check Voicemail""" + message_count + """</a></h3>
     <p>
         Last Checked:
         <br />

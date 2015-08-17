@@ -103,7 +103,7 @@ urlpatterns = [
 
 # Daily Duties
 urlpatterns += [
-    url(r'^message/$', login_required(technician_access(VoicemailListView.as_view())), name='phone_instructions'),
+    url(r'^daily_duties/voicemail_list/$', login_required(technician_access(VoicemailListView.as_view())), name='voicemail_list'),
     url(r'^daily_duties/refresh_duties/$', login_required(technician_access(refresh_duties)), name='daily_duties_refresh_duties'),
     url(r'^daily_duties/update_duty/$', login_required(technician_access(update_duty)), name='daily_duties_update_duty'),
     url(r"^daily_duties/voicemail/(?P<message_uuid>[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)/$", login_required(technician_access(VoicemailAttachmentRequestView.as_view())), name='voicemail_attachment_request'),
