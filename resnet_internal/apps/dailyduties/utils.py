@@ -97,7 +97,7 @@ class VoicemailManager(EmailConnectionMixin):
             
         return message_uuids
 
-    def _get_messagenum_for_uuid(self, message_uuid):
+    def _get_message_number_for_uuid(self, message_uuid):
         message_numbers = self._get_message_numbers()
         message_uuids = self._get_message_uuids(self._build_message_set(message_numbers))
 
@@ -129,7 +129,7 @@ class VoicemailManager(EmailConnectionMixin):
     def get_attachment_by_uuid(self, message_uuid):
         self.server.select('Voicemails', readonly=True)
 
-        message_number = self._get_messagenum_for_uuid(message_uuid)
+        message_number = self._get_message_number_for_uuid(message_uuid)
 
         if not message_number:
             raise ValueError('Unable to retrieve voicemail message attachment because message uuid could not be found.')
@@ -139,7 +139,7 @@ class VoicemailManager(EmailConnectionMixin):
     def delete_message(self, message_uuid):
         self.server.select('Voicemails', readonly=False)
 
-        message_number = self._get_messagenum_for_uuid(message_uuid)
+        message_number = self._get_message_number_for_uuid(message_uuid)
         
         imap_query_result = self.server.copy(message_number, 'Archives/Voicemails')
         if (imap_query_result[0] == 'OK'):
