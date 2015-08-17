@@ -75,7 +75,6 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     editable_block_template = """<input type='text' class='editbox' value='{value}' />"""
     link_block_template = """<a href='{link_url}' onclick='{onclick_action}' target='{link_target}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
     icon_template = """<img src='{icon_url}' style='padding-left:5px;' align='top' width='16' height='16' border='0' />"""
-    audio_template = """<audio controls><source src='{link_url}' type='{media_type}'>Please use anything other than IE.</audio>"""
 
     def format_select_block(self, queryset, value_field, text_field, value_match):
         choices = []

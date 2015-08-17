@@ -14,6 +14,7 @@ from operator import itemgetter
 
 from django.conf import settings
 from django.db import DatabaseError
+from django.utils.encoding import smart_text, smart_bytes
 
 from srsconnector.models import ServiceRequest
 
@@ -58,33 +59,33 @@ class VoicemailManager(EmailConnectionMixin):
     def _parse_message_id(self, message_id_string):
         return message_id_string.split('<')[1].rsplit('>')[0]
 
-    def _get_message_body(self, message_num):
-        data = self.server.fetch(message_num, 'BODY[1]')[1]
-        return data[0][1].decode()
+    def _get_message_body(self, message_number):
+        data = self.server.fetch(message_number, 'BODY[1]')[1]
+        return smart_text(data[0][1])
     
-    def _build_message_set(self, message_nums):
+    def _build_message_set(self, message_numbers):
         message_set_string = ''
-        for message_num in message_nums:
-            message_set_string = message_set_string + ',' + message_num.decode('utf_8')
+        for message_number in message_numbers:
+            message_set_string = message_set_string + ',' + smart_text(message_number)
         
         message_set_string = message_set_string.split(',', 1)[-1]
-        message_set = bytes(message_set_string, 'utf-8')
+        message_set = smart_bytes(message_set_string)
         
         return message_set if message_set else None
     
     def _get_message_set_length(self, message_set):
-        return len(message_set.decode('utf-8').split(','))
+        return len(smart_text(message_set).split(','))
     
     def _get_message_bodies(self, message_set):
         data = self.server.fetch(message_set, 'BODY[1]')[1]
         
         message_bodies = []
         for message_index in range(0, self._get_message_set_length(message_set)):
-            message_bodies.append(data[message_index * 2][1].decode('utf-8'))
+            message_bodies.append(smart_text(data[message_index * 2][1]))
         
         return message_bodies
 
-    def _get_message_nums(self):
+    def _get_message_numbers(self):
         data = self.server.search(None, 'ALL')[1]
         return data[0].split()
 
@@ -93,23 +94,23 @@ class VoicemailManager(EmailConnectionMixin):
         message_uuids = []
         
         for message_index in range(0, self._get_message_set_length(message_set)):
-            message_uuids.append(self._parse_message_id(data[message_index * 2][1].decode('utf-8')))
+            message_uuids.append(self._parse_message_id(smart_text(data[message_index * 2][1])))
             
         return message_uuids
 
-    def _get_messagenum_for_uuid(self, message_uuid):
-        message_nums = self._get_message_nums()
-        message_uuids = self._get_message_uuids(self._build_message_set(message_nums))
+    def _get_message_number_for_uuid(self, message_uuid):
+        message_numbers = self._get_message_numbers()
+        message_uuids = self._get_message_uuids(self._build_message_set(message_numbers))
 
-        message_num = None
-        for i in range(0, len(message_uuids)):
-            if message_uuids[i] == message_uuid:
-                message_num = message_nums[i]
-                break
-        return message_num
+        message_number = None
+        
+        if message_uuid in message_uuids:
+            message_number = message_numbers[message_uuids.index(message_uuid)]
+        
+        return message_number
 
-    def _get_attachment(self, message_num):
-        data = self.server.fetch(message_num, '(RFC822)')
+    def _get_attachment_by_message_number(self, message_number):
+        data = self.server.fetch(message_number, '(RFC822)')
         voicemail_message = email.message_from_bytes(data[1][0][1])
         
         for part in voicemail_message.walk():
@@ -120,50 +121,49 @@ class VoicemailManager(EmailConnectionMixin):
                 continue
             
             filename = part.get_filename()
-            fileData = part.get_payload(decode=True)
+            file_data = part.get_payload(decode=True)
 
-            return (filename, fileData)
+            return (filename, file_data)
         
         raise ValueError('Not a Valid Voicemail Message: No attachment.')
 
-    def get_attachment_uuid(self, message_uuid):
+    def get_attachment_by_uuid(self, message_uuid):
         self.server.select('Voicemails', readonly=True)
 
-        message_num = self._get_messagenum_for_uuid(message_uuid)
+        message_number = self._get_message_number_for_uuid(message_uuid)
 
-        if message_num is None:
+        if not message_number:
             raise ValueError('Unable to retrieve voicemail message attachment because message uuid could not be found.')
 
-        return self._get_attachment(message_num)
+        return self._get_attachment_by_message_number(message_number)
 
     def delete_message(self, message_uuid):
         self.server.select('Voicemails', readonly=False)
 
-        message_num = self._get_messagenum_for_uuid(message_uuid)
+        message_number = self._get_message_number_for_uuid(message_uuid)
         
-        imap_query_result = self.server.copy(message_num, 'Archives/Voicemails')
+        imap_query_result = self.server.copy(message_number, 'Archives/Voicemails')
         if (imap_query_result[0] == 'OK'):
-            self.server.store(message_num, '+FLAGS', '\\Deleted')
+            self.server.store(message_number, '+FLAGS', '\\Deleted')
             self.server.expunge()
         else:
             print('Copy Failed: ' + str(imap_query_result))
 
-    def get_all_voicemail(self):
+    def get_all_voicemail_messages(self):
         """Get the voicemail messages."""
         voicemails = []
 
         self.server.select('Voicemails', readonly=True)
-        message_nums = self._get_message_nums()
+        message_numbers = self._get_message_numbers()
         
         # Check for empty inbox
-        if not message_nums:
+        if not message_numbers:
             return None
         
-        message_ids = self._get_message_uuids(self._build_message_set(message_nums))
-        message_bodies = self._get_message_bodies(self._build_message_set(message_nums))
+        message_uuids = self._get_message_uuids(self._build_message_set(message_numbers))
+        message_bodies = self._get_message_bodies(self._build_message_set(message_numbers))
 
-        for message_index in range(0, len(message_ids)):
-            message_body = message_bodies[message_index]
+        for message_uuid, message_body in zip(message_uuids, message_bodies):
             date_string = message_body[27:41]
             
             from_idx = message_body.find('from')
@@ -174,8 +174,8 @@ class VoicemailManager(EmailConnectionMixin):
             message = {
                 "date": date,
                 "sender": from_string,
-                "message_uuid": message_ids[message_index],
-                "url": "daily_duties/voicemail/" + message_ids[message_index]
+                "message_uuid": message_uuid,
+                "url": "daily_duties/voicemail/" + message_uuid
             }
 
             voicemails.append(message)
