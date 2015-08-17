@@ -124,8 +124,8 @@ def update_duty(request):
 def remove_voicemail(request):
     """ Removes computers from the computer index if no pinhole/domain name records are associated with it.
 
-    :param vm_uuid: The vm's id.
-    :type vm_uuid: int
+    :param message_uuid: The voicemail's uuid.
+    :type message_uuid: int
 
     """
     # Pull post parameters
