@@ -30,15 +30,15 @@ class VoicemailAttachmentRequestView(TemplateView):
 
     def render_to_response(self, context, **response_kwargs):
         message_uuid = self.kwargs["message_uuid"]
-        cached_filedata = cache.get('voicemail:' + message_uuid)
+        cached_file_data = cache.get('voicemail:' + message_uuid)
         response = HttpResponse()
         
-        if not cached_filedata:
+        if not cached_file_data:
             with VoicemailManager() as voicemail_manager:
                     filedata = voicemail_manager.get_attachment_by_uuid(message_uuid)[1]
             cache.set('voicemail:' + message_uuid, filedata, 7200)
         else:
-            filedata = cached_filedata
+            filedata = cached_file_data
          
         # Safari Media Player does not like its range requests ignored so handle this.
         if self.request.META['HTTP_RANGE']:
