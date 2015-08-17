@@ -31,7 +31,7 @@ from .apps.dailyduties.ajax import remove_voicemail
 from .apps.dailyduties.views import VoicemailAttachmentRequestView
 
 from .apps.adgroups.ajax import remove_resnet_tech
-from .apps.core.ajax import update_building
+from .apps.core.ajax import update_building, update_network_status
 from .apps.dailyduties.ajax import refresh_duties, update_duty
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
@@ -99,6 +99,7 @@ urlpatterns = [
     url(r'^settings/navigation/$', login_required(NavigationSettingsView.as_view()), name='navigation_settings'),
     url(r'^(?P<mode>frame|external|link_handler)/(?P<key>\b[a-zA-Z0-9_]*\b)/$', login_required(link_handler), name='link_handler'),
     url(r'^(?P<mode>frame|external|link_handler)/(?P<key>cisco)/(?P<ip>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(link_handler), name='link_handler_cisco'),
+    url(r'^core/network_status/update/$', login_required(technician_access(update_network_status)), name='core_update_network_status'),
 ]
 
 # Daily Duties
