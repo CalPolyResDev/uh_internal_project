@@ -159,11 +159,10 @@ class VoicemailManager(EmailConnectionMixin):
         if not message_nums:
             return None
         
-        message_ids = self._get_message_uuids(self._build_message_set(message_nums))
+        message_uuids = self._get_message_uuids(self._build_message_set(message_nums))
         message_bodies = self._get_message_bodies(self._build_message_set(message_nums))
 
-        for message_index in range(0, len(message_ids)):
-            message_body = message_bodies[message_index]
+        for message_uuid, message_body in zip(message_uuids, message_bodies):
             date_string = message_body[27:41]
             
             from_idx = message_body.find('from')
@@ -174,8 +173,8 @@ class VoicemailManager(EmailConnectionMixin):
             message = {
                 "date": date,
                 "sender": from_string,
-                "message_uuid": message_ids[message_index],
-                "url": "daily_duties/voicemail/" + message_ids[message_index]
+                "message_uuid": message_uuid,
+                "url": "daily_duties/voicemail/" + message_uuid
             }
 
             voicemails.append(message)
