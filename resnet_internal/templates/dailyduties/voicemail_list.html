@@ -40,7 +40,7 @@
     {{ block.super }}
     <script type="text/javascript">
         function remove_voicemail(message_uuid)  {
-            //Cannot use JQuery here: $ signs and other character in UUID break the query
+            // Cannot use JQuery here: $ signs and other character in UUID break the query
             var archive_link = document.getElementById('archive_' + message_uuid);
             archive_link.style.display = 'none';
             
