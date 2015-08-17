@@ -108,7 +108,7 @@ class VoicemailManager(EmailConnectionMixin):
                 break
         return message_number
 
-    def _fetch_attachment(self, message_number):
+    def _get_attachment_by_message_number(self, message_number):
         data = self.server.fetch(message_number, '(RFC822)')
         voicemail_message = email.message_from_bytes(data[1][0][1])
         
@@ -126,7 +126,7 @@ class VoicemailManager(EmailConnectionMixin):
         
         raise ValueError('Not a Valid Voicemail Message: No attachment.')
 
-    def get_attachment_uuid(self, message_uuid):
+    def get_attachment_by_uuid(self, message_uuid):
         self.server.select('Voicemails', readonly=True)
 
         message_number = self._get_messagenum_for_uuid(message_uuid)
@@ -134,7 +134,7 @@ class VoicemailManager(EmailConnectionMixin):
         if not message_number:
             raise ValueError('Unable to retrieve voicemail message attachment because message uuid could not be found.')
 
-        return self._fetch_attachment(message_number)
+        return self._get_attachment_by_message_number(message_number)
 
     def delete_message(self, message_uuid):
         self.server.select('Voicemails', readonly=False)
