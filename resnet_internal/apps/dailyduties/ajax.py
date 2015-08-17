@@ -17,8 +17,7 @@ from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
 from .models import DailyDuties
-from .utils import GetDutyData
-from resnet_internal.apps.dailyduties.utils import VoicemailManager
+from .utils import GetDutyData, VoicemailManager
 
 logger = logging.getLogger(__name__)
 
