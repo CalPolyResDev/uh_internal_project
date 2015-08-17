@@ -7,11 +7,11 @@
 """
 import regex
 
-from resnet_internal.apps.dailyduties.utils import VoicemailManager
-
 from django.views.generic.base import TemplateView
 from django.http.response import HttpResponse
 from django.core.cache import cache
+
+from .utils import VoicemailManager
 
 
 class VoicemailListView(TemplateView):
