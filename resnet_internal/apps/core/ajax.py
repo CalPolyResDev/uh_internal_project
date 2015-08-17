@@ -7,9 +7,9 @@
 """
 
 import logging
+from operator import itemgetter
 
 from django.views.decorators.http import require_POST
-
 from django_ajax.decorators import ajax
 
 from ..core.models import Community
@@ -68,7 +68,7 @@ def update_network_status(request):
     network_reachability_tester = NetworkReachabilityTester()
     
     network_reachability = network_reachability_tester.get_network_device_reachability()
-    print(network_reachability)
+    network_reachability.sort(key=itemgetter('status'))
     
     response_html = """
     <table class="dataTable">
@@ -87,7 +87,7 @@ def update_network_status(request):
                     <td>""" + reachability_result['display_name'] + """</td>
                     <td>""" + reachability_result['dns_name'] + """</td>
                     <td>""" + reachability_result['ip_address'] + """</td>
-                    <td>""" + ("OK" if reachability_result['status'] else "DOWN") + """</td>
+                    <td style='color:""" + ("green" if reachability_result['status'] else "red") + ";'>" + ("UP" if reachability_result['status'] else "DOWN") + """</td>
                 </tr>"""
     
     response_html += """

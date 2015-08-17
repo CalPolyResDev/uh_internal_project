@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class NetworkReachabilityTester:
 
     def _is_system_reachable(self, system_ip_address):
-        response = os.system("ping -c 1 -t 1" + system_ip_address)
+        response = os.system("ping -c 1 -t 1 " + system_ip_address)
         return True if response == 0 else False
     
     def get_network_device_reachability(self):
