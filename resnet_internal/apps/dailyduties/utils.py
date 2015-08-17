@@ -102,10 +102,10 @@ class VoicemailManager(EmailConnectionMixin):
         message_uuids = self._get_message_uuids(self._build_message_set(message_numbers))
 
         message_number = None
-        for i in range(0, len(message_uuids)):
-            if message_uuids[i] == message_uuid:
-                message_number = message_numbers[i]
-                break
+        
+        if message_uuid in message_uuids:
+            message_number = message_numbers[message_uuids.index(message_uuid)]
+        
         return message_number
 
     def _get_attachment_by_message_number(self, message_number):
