@@ -97,8 +97,7 @@ def update_network_status(request):
     template = Template(raw_response)
     context = RequestContext(request, {'network_reachability': network_reachability})
     response_html = template.render(context)
-    
-    print(response_html)
+
     data = {
         'inner-fragments': {
             '#network_status_response': response_html
