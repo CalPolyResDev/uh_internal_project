@@ -42,7 +42,11 @@
         </div>
         <div id="column3" style="max-width: 50%;">
           <h2>Ticket Summary</h2>
-          <p id="tickets_response">Loading...</p>
+          {% if request.user.is_authenticated %}
+            <p id="tickets_response">Loading...</p>
+          {% else %}
+            <p>Please login to view tickets.</p>
+          {% endif %}
         </div>
         <div class="clear"></div>
       </div>
