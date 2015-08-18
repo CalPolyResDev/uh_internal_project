@@ -1,5 +1,6 @@
 {% extends "base_frame.html" %}
 {% load core_user_tests %}
+{% load core_filters %}
 {% load staticfiles %}
 
 {% block subtitle %} | Ticket Summary{% endblock %}
@@ -7,13 +8,26 @@
 {% block content %}
     <h1>Ticket Summary</h1>
     {% if ticket %}
-        <p><strong>Name:</strong> {{ ticket.requestor_full_name }}
-        <br /><strong>Username:</strong> {{ ticket.requestor_username }}
-        <br /><strong>Status:</strong> {{ ticket.status }}
-        <br /><strong>Date Created:</strong> {{ ticket.date_created }}
-        <br /><strong>Assigned Team:</strong> {{ ticket.assigned_team }}
-        <br /><strong>Summary:</strong> {{ ticket.summary }}
-        <br /><br /><strong>Description:</strong> {{ ticket.description }}</p>
+        <table>
+            <tr>
+                <td style="vertical-align: text-top;">
+                    <strong>Name:</strong> {{ ticket.requestor_full_name }}
+                    <br /><strong>Username:</strong> {{ ticket.requestor_username }}
+                    <br /><strong>Status:</strong> {{ ticket.status }}
+                    <br /><strong>Date Created:</strong> {{ ticket.date_created }}
+                    <br /><strong>Assigned Team:</strong> {{ ticket.assigned_team }}
+                    <br /><strong>Summary:</strong> {{ ticket.summary }}
+                </td>
+                <td style="vertical-align: text-top;">
+                    <strong>Phone:</strong> {{ ticket.requestor_phone }}
+                    <br /><strong>Dorm Address:</strong> {{ ticket.requestor_housing_address }}
+                    <br /><strong>Department:</strong> {{ ticket.requestor_department }}
+                    <br /><strong>Building:</strong> {{ ticket.requestor_building }}
+                    <br /><strong>Room:</strong> {{ ticket.requestor_room }}
+                </td>
+            </tr>
+        </table>
+        <p><strong>Description:</strong> {{ ticket.description|convertTextDOSlinebreaks|linebreaksbr }}</p>
     {% else %}
         <p>Could not retrieve ticket.</p>
     {% endif %}
