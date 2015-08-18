@@ -10,13 +10,12 @@ import logging
 from operator import itemgetter
 
 from django.views.decorators.http import require_POST
-from django_ajax.decorators import ajax
-from django.templatetags.static import static
 from django.template import Template, RequestContext
+
+from django_ajax.decorators import ajax
 
 from ..core.models import Community
 from ..core.utils import NetworkReachabilityTester, get_ticket_list
-from django.core.urlresolvers import reverse
 
 logger = logging.getLogger(__name__)
 
@@ -68,9 +67,7 @@ def update_building(request):
 
 @ajax
 def update_network_status(request):
-    network_reachability_tester = NetworkReachabilityTester()
-    
-    network_reachability = network_reachability_tester.get_network_device_reachability()
+    network_reachability = NetworkReachabilityTester.get_network_device_reachability()
     network_reachability.sort(key=itemgetter('status', 'display_name'))
     
     raw_response = """
