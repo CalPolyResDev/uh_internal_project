@@ -64,7 +64,7 @@ class ComputerRecordsView(TemplateView):
             try:
                 response = smart_str(subprocess.check_output(["nslookup", ip_address], stderr=subprocess.STDOUT))
                 dns_record = response.split("Name:    ")[-1].split("\r\n")[0]
-            except (OSError, WindowsError):
+            except OSError:
                 logger.error("This server does not have the 'nslookup' binary.")
                 socket_lookup = True
                 subprocess_error = True

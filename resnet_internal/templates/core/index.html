@@ -25,7 +25,7 @@
         <h2>Network Usage</h2>
         <div id="network_usage_box" class="contentBox">
           <h3>Pretty graphs & stuff.</h3>
-          <p id="network_usage_content">Loading...</p>
+          <p id="network_usage_content">Coming Soon</p>
         </div>
         </div>
       <div id="columns" style="max-width: 100%">
@@ -47,32 +47,22 @@
         <div class="clear"></div>
       </div>
     </div>
-   {% block extra_script %}
-     {{ block.super }}
-        <script type="text/javascript">
-            $(document).ready(function() {
-                refreshNetworkStatus();
-                {% if request.user.is_authenticated %}
-                getTickets();
-                {% endif %}
-            });
-        </script>
-        <script type="text/javascript">
-            function refreshNetworkStatus() {
-                ajaxGet("{% url 'core_update_network_status' %}", function(response_context) {
-                    return true;
-                });
-                return false;
+  </div>
+    {% block extra_script %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            refresh_network_status();
+            get_tickets();
+        });
+
+        function refresh_network_status() {
+            ajaxGet("{% url 'core_update_network_status' %}");
+        };
+        {% if request.user.is_authenticated %}
+            function get_tickets() {
+                ajaxGet("{% url 'core_get_tickets' %}");
             };
-            
-            {% if request.user.is_authenticated %}
-                function getTickets() {
-                    ajaxGet("{% url 'core_get_tickets' %}", function(response_context) {
-                        return true;
-                    });
-                    return false;
-                };
-            {% endif %}
-        </script>
+        {% endif %}
+    </script>
     {% endblock %}
  {% endblock %}

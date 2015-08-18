@@ -137,5 +137,5 @@ def remove_voicemail(request):
 
     with VoicemailManager() as voicemail_manager:
         voicemail_manager.delete_message(message_uuid)
-    
+
     return context

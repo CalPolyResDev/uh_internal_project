@@ -5,7 +5,8 @@
 .. moduleauthor:: Thomas Willson <thomas.willson@icloud.com>
 
 """
-import regex
+
+import re
 
 from django.views.generic.base import TemplateView
 from django.http.response import HttpResponse
@@ -16,13 +17,13 @@ from .utils import VoicemailManager
 
 class VoicemailListView(TemplateView):
     template_name = "dailyduties/voicemail_list.html"
-    
+
     def get_context_data(self, **kwargs):
         context = super(VoicemailListView, self).get_context_data(**kwargs)
-        
+
         with VoicemailManager() as voicemail_manager:
             context["voicemails"] = voicemail_manager.get_all_voicemail_messages()
-        
+
         return context
 
 
@@ -32,17 +33,17 @@ class VoicemailAttachmentRequestView(TemplateView):
         message_uuid = self.kwargs["message_uuid"]
         cached_file_data = cache.get('voicemail:' + message_uuid)
         response = HttpResponse()
-        
+
         if not cached_file_data:
             with VoicemailManager() as voicemail_manager:
                 filedata = voicemail_manager.get_attachment_by_uuid(message_uuid)[1]
             cache.set('voicemail:' + message_uuid, filedata, 7200)
         else:
             filedata = cached_file_data
-         
+
         # Safari Media Player does not like its range requests ignored so handle this.
         if self.request.META['HTTP_RANGE']:
-            http_range_regex = regex.compile('bytes=(\d*)-(\d*)$')
+            http_range_regex = re.compile('bytes=(\d*)-(\d*)$')
             regex_match = http_range_regex.match(self.request.META['HTTP_RANGE'])
             response_start = int(regex_match.groups()[0])
             response_end = int(regex_match.groups()[1] if regex_match.groups()[1] else (len(filedata) - 1))
