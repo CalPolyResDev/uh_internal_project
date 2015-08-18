@@ -10,7 +10,7 @@ import logging
 import os
 from copy import deepcopy
 
-from resnet_internal.apps.core.models import NetworkDevice
+from .models import NetworkDevice
 
 logger = logging.getLogger(__name__)
 
