@@ -37,15 +37,11 @@
     {% block extra_script %}
     <script type="text/javascript">
         $(document).ready(function() {
-            refreshNetworkStatus();
+            refresh_network_status();
         });
-    </script>
-    <script type="text/javascript">
-        function refreshNetworkStatus() {
-            ajaxGet("{% url 'core_update_network_status' %}", function(response_context) {
-                return true;
-            });
-            return false;
+
+        function refresh_network_status() {
+            ajaxGet("{% url 'core_update_network_status' %}");
         };
     </script>
     {% endblock %}
