@@ -113,10 +113,8 @@ def update_network_status(request):
 
 @ajax
 def get_tickets(request):
-    print('Here')
-    tickets = get_ticket_list(request.user)
-    
-    response_html = """
+    raw_response = """
+        {% load static %}
         <table class="dataTable">
             <tbody>
                 <tr>
@@ -124,23 +122,26 @@ def get_tickets(request):
                     <th scope="col">Name</th>
                     <th scope="col">Status</th>
                     <th scope="col">Summary</th>
-                </tr>"""
-                
-    for ticket in tickets:
-        response_html += """
-            <tr id="ticket_""" + ticket.ticket_id + """">
-                <td><a href='""" + reverse('core_ticket_summary', kwargs={'ticket_id': ticket.ticket_id}) + """' class="popup_frame" style="cursor:pointer;">
-                    <img src='""" + static('images/srs_view_button.gif') + """'></a></td>
-                <td>""" + ticket.requestor_full_name + """</td>
-                <td>""" + ticket.status + """</td>
-                <td>""" + ticket.summary + """</td>
-            </tr>"""
-
-    response_html += """
+                </tr>
+                {% for ticket in tickets %}
+                <tr id="ticket_{{ ticket.ticket_id }}">
+                    <td>
+                        <a href="{% url 'core_ticket_summary' ticket_id=ticket.ticket_id %}" class="popup_frame" style="cursor:pointer;">
+                            <img src="{% static 'images/srs_view_button.gif' %}">
+                        </a>
+                    </td>
+                    <td>{{ ticket.requestor_full_name }}</td>
+                    <td>{{ ticket.status }}</td>
+                    <td>{{ ticket.summary }}</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>"""
-        
-    print(response_html)
+
+    tickets = get_ticket_list(request.user)
+    template = Template(raw_response)
+    context = RequestContext(request, {'tickets': tickets})
+    response_html = template.render(context)
 
     data = {
         'inner-fragments': {
