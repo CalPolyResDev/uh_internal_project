@@ -39,7 +39,8 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     options = {
         "order": [[1, "asc"], [2, "asc"], [3, "asc"]],
         "language": {
-            "lengthMenu": 'Display <select>' +
+            "lengthMenu":
+                'Display <select>' +
                 '<option value="25">25</option>' +
                 '<option value="50">50</option>' +
                 '<option value="100">100</option>' +

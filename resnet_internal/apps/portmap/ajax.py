@@ -26,7 +26,6 @@ from paramiko import SSHClient, AutoAddPolicy
 
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
-from ..core.models import Community
 from .models import ResHallWired
 from .forms import ResHallWiredPortUpdateForm
 
@@ -57,7 +56,8 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
 
     extra_options = {
         "language": {
-            "lengthMenu": 'Display <select>' +
+            "lengthMenu":
+                'Display <select>' +
                 '<option value="50">50</option>' +
                 '<option value="100">100</option>' +
                 '<option value="250">250</option>' +
