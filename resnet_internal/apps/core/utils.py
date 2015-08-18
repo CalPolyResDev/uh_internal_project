@@ -73,6 +73,6 @@ def get_ticket_list(user):
                     'date_created': ticket.date_created,
                     } for ticket in ticket_queryset)
     
-    tickets = sorted(tickets, key=itemgetter('date_created'))
+    tickets = sorted(tickets, key=itemgetter('date_created'), reverse=True)
     
     return tickets
