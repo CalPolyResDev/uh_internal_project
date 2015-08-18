@@ -53,7 +53,9 @@
     <script type="text/javascript">
         $(document).ready(function() {
             refresh_network_status();
+            {% if request.user.is_authenticated %}
             get_tickets();
+            {% endif %}
         });
 
         function refresh_network_status() {
