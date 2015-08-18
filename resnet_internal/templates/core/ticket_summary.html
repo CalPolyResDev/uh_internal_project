@@ -1,0 +1,23 @@
+{% extends "base_frame.html" %}
+{% load core_user_tests %}
+{% load staticfiles %}
+
+{% block subtitle %} | Ticket Summary{% endblock %}
+
+{% block content %}
+    <h1>Ticket Summary</h1>
+    {% if ticket %}
+        <p><strong>Name:</strong> {{ ticket.requestor_full_name }}
+        <br /><strong>Username:</strong> {{ ticket.requestor_username }}
+        <br /><strong>Status:</strong> {{ ticket.status }}
+        <br /><strong>Date Created:</strong> {{ ticket.date_created }}
+        <br /><strong>Assigned Team:</strong> {{ ticket.assigned_team }}
+        <br /><strong>Summary:</strong> {{ ticket.summary }}
+        <br /><br /><strong>Description:</strong> {{ ticket.description }}</p>
+    {% else %}
+        <p>Could not retrieve ticket.</p>
+    {% endif %}
+    {% block extra_script %}
+    {{ block.super }}
+    {% endblock %}
+{% endblock %}
