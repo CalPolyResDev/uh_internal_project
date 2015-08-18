@@ -17,11 +17,13 @@ logger = logging.getLogger(__name__)
 
 class NetworkReachabilityTester:
 
-    def _is_system_reachable(self, system_ip_address):
+    @staticmethod
+    def _is_system_reachable(system_ip_address):
         response = os.system("ping -c 1 -t 1 " + system_ip_address)
         return True if response == 0 else False
     
-    def get_network_device_reachability(self):
+    @staticmethod
+    def get_network_device_reachability():
         reachability_responses = []
         
         network_devices = NetworkDevice.objects.all()
@@ -30,7 +32,7 @@ class NetworkReachabilityTester:
             reachability_responses.append({'display_name': network_device.display_name,
                                            'dns_name': network_device.dns_name,
                                            'ip_address': network_device.ip_address,
-                                           'status': self._is_system_reachable(network_device.ip_address),
+                                           'status': NetworkReachabilityTester._is_system_reachable(network_device.ip_address),
                                            })
         return reachability_responses
 
