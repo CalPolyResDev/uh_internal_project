@@ -9,7 +9,7 @@
 import logging
 import os
 from copy import deepcopy
-from itertools import chain
+from operator import itemgetter
 
 from srsconnector.models import ServiceRequest
 
@@ -64,11 +64,15 @@ def dict_merge(base, merge):
 
 
 def get_ticket_list(user):
-    print('Here')
-    unassigned_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(status=8)
-    assigned_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET", assigned_person=str(user.get_full_name())).exclude(status=4).exclude(status=8)
-
-    ticket_list = list(chain(unassigned_tickets, assigned_tickets))
-    ticket_list.sort(key=lambda ticket: ticket.date_created, reverse=True)
+    ticket_queryset = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(status=8)
     
-    return ticket_list
+    tickets = list({'ticket_id': ticket.ticket_id,
+                    'requestor_full_name': ticket.requestor_full_name,
+                    'status': ticket.status,
+                    'summary': ticket.summary,
+                    'date_created': ticket.date_created,
+                    } for ticket in ticket_queryset)
+    
+    tickets = sorted(tickets, key=itemgetter('date_created'))
+    
+    return tickets
