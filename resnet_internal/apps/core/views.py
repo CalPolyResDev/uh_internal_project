@@ -21,6 +21,7 @@ from django.template.context import RequestContext
 
 from .forms import NavigationSettingsForm, AutoFocusAuthenticationForm
 from .models import SiteAnnouncements
+from srsconnector.models import ServiceRequest
 
 
 def link_handler(request, mode, key, ip=""):
@@ -201,3 +202,17 @@ def handler500(request):
     template = loader.get_template('500.html')
 
     return HttpResponseServerError(template.render(RequestContext(request)))
+
+
+class TicketSummaryView(TemplateView):
+    template_name = 'core/ticket_summary.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TicketSummaryView, self).get_context_data(**kwargs)
+        
+        ticket_id = kwargs['ticket_id']
+        
+        context['ticket'] = ServiceRequest.objects.get(ticket_id=ticket_id)
+        
+        return context
+

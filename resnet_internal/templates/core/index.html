@@ -1,4 +1,18 @@
 {% extends "base.html" %}
+{% block meta %}
+{{ block.super }}
+    <style>
+    #columns #column1, .columns .column1 {
+        width: 20%;
+    }
+    #columns #column2, .columns .column2 {
+        width: 40%;
+    }
+    #columns #column3, .columns .column3 {
+        width: 40%;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
   <div id="content-2col">
@@ -14,7 +28,7 @@
           <p id="network_usage_content">Loading...</p>
         </div>
         </div>
-      <div id="columns">
+      <div id="columns" style="max-width: 100%">
         <div id="column1">
           <h2>General Site Announcements</h2>
           {% for announcement in announcements %}
@@ -22,31 +36,43 @@
           <p>{% autoescape off %}{{ announcement.description }}{% endautoescape %}</p>
           {% endfor %}
         </div>
-        <div id="column2">
+        <div id="column2" style="max-width: 33%;">
           <h2>Network Status</h2>
           <p id="network_status_response">Loading...</p>
         </div>
-        <div id="column3">
-          <h2>Recent Tickets</h2>
-          <p>Coming Soon...</p>
+        <div id="column3" style="max-width: 50%;">
+          <h2>Ticket Summary</h2>
+          <p id="tickets_response">Loading...</p>
         </div>
         <div class="clear"></div>
       </div>
     </div>
-  </div>
-    {% block extra_script %}
-    <script type="text/javascript">
-        $(document).ready(function() {
-            refreshNetworkStatus();
-        });
-    </script>
-    <script type="text/javascript">
-        function refreshNetworkStatus() {
-            ajaxGet("{% url 'core_update_network_status' %}", function(response_context) {
-                return true;
+   {% block extra_script %}
+     {{ block.super }}
+        <script type="text/javascript">
+            $(document).ready(function() {
+                refreshNetworkStatus();
+                {% if request.user.is_authenticated %}
+                getTickets();
+                {% endif %}
             });
-            return false;
-        };
-    </script>
+        </script>
+        <script type="text/javascript">
+            function refreshNetworkStatus() {
+                ajaxGet("{% url 'core_update_network_status' %}", function(response_context) {
+                    return true;
+                });
+                return false;
+            };
+            
+            {% if request.user.is_authenticated %}
+                function getTickets() {
+                    ajaxGet("{% url 'core_get_tickets' %}", function(response_context) {
+                        return true;
+                    });
+                    return false;
+                };
+            {% endif %}
+        </script>
     {% endblock %}
  {% endblock %}

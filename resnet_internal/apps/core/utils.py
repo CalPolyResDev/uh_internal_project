@@ -9,6 +9,9 @@
 import logging
 import os
 from copy import deepcopy
+from itertools import chain
+
+from srsconnector.models import ServiceRequest
 
 from resnet_internal.apps.core.models import NetworkDevice
 
@@ -56,3 +59,14 @@ def dict_merge(base, merge):
             result[key] = deepcopy(value)
 
     return result
+
+
+def get_ticket_list(user):
+    print('Here')
+    unassigned_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(status=8)
+    assigned_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET", assigned_person=str(user.get_full_name())).exclude(status=4).exclude(status=8)
+
+    ticket_list = list(chain(unassigned_tickets, assigned_tickets))
+    ticket_list.sort(key=lambda ticket: ticket.date_created, reverse=True)
+    
+    return ticket_list
