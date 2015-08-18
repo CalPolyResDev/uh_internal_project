@@ -70,25 +70,41 @@ def update_network_status(request):
     network_reachability = network_reachability_tester.get_network_device_reachability()
     network_reachability.sort(key=itemgetter('status', 'display_name'))
     
-    response_html = """
-    <table class="dataTable">
-        <tbody>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">DNS Address</th>
-                <th scope="col">IP Address</th>
-                <th scope="col">Status</th>
-            </tr>"""
+    if request.user.is_authenticated():
+        response_html = """
+        <table class="dataTable">
+            <tbody>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">DNS Address</th>
+                    <th scope="col">IP Address</th>
+                    <th scope="col">Status</th>
+                </tr>"""
+    else:
+        response_html = """
+        <table class="dataTable">
+            <tbody>
+                <tr>
+                    <th scope="col">Name</th>
+                    <th scope="col">Status</th>
+                </tr>"""
 
     for reachability_result in network_reachability:
         print(reachability_result)
-        response_html += """
-                <tr id="reachability_""" + reachability_result['dns_name'] + """">
-                    <td>""" + reachability_result['display_name'] + """</td>
-                    <td>""" + reachability_result['dns_name'] + """</td>
-                    <td>""" + reachability_result['ip_address'] + """</td>
-                    <td style='color:""" + ("green" if reachability_result['status'] else "red") + ";'>" + ("UP" if reachability_result['status'] else "DOWN") + """</td>
-                </tr>"""
+        if request.user.is_authenticated():
+            response_html += """
+                    <tr id="reachability_""" + reachability_result['dns_name'] + """">
+                        <td>""" + reachability_result['display_name'] + """</td>
+                        <td>""" + reachability_result['dns_name'] + """</td>
+                        <td>""" + reachability_result['ip_address'] + """</td>
+                        <td style='color:""" + ("green" if reachability_result['status'] else "red") + ";'>" + ("UP" if reachability_result['status'] else "DOWN") + """</td>
+                    </tr>"""
+        else:
+            response_html += """
+                    <tr id="reachability_""" + reachability_result['dns_name'] + """">
+                        <td>""" + reachability_result['display_name'] + """</td>
+                        <td style='color:""" + ("green" if reachability_result['status'] else "red") + ";'>" + ("UP" if reachability_result['status'] else "DOWN") + """</td>
+                    </tr>"""
     
     response_html += """
         </tbody>
