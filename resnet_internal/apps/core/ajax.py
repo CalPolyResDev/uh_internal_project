@@ -86,7 +86,7 @@ def update_network_status(request):
                 <tr id="reachability_{% ">
                         <td>{{ reachability_result.display_name }}</td>
                         <td>{{ reachability_result.dns_name }}</td>
-                        <td>{{ reachability_result.ip_address }}}</td>
+                        <td>{{ reachability_result.ip_address }}</td>
                         <td style='color:{% if reachability_result.status %}green;'>UP{% else %}red;'>DOWN{% endif %}</td>
                 </tr>
                 {% endfor %}
