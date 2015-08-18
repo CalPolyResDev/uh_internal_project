@@ -11,6 +11,7 @@ from operator import itemgetter
 
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
+from django.template import Template, RequestContext
 
 from ..core.models import Community
 from ..core.utils import NetworkReachabilityTester
@@ -70,46 +71,32 @@ def update_network_status(request):
     network_reachability = network_reachability_tester.get_network_device_reachability()
     network_reachability.sort(key=itemgetter('status', 'display_name'))
     
-    if request.user.is_authenticated():
-        response_html = """
+    raw_response = """
         <table class="dataTable">
             <tbody>
                 <tr>
                     <th scope="col">Name</th>
+                    {% if request.user.is_authenticated %}
                     <th scope="col">DNS Address</th>
                     <th scope="col">IP Address</th>
+                    {% endif %}
                     <th scope="col">Status</th>
-                </tr>"""
-    else:
-        response_html = """
-        <table class="dataTable">
-            <tbody>
-                <tr>
-                    <th scope="col">Name</th>
-                    <th scope="col">Status</th>
-                </tr>"""
+                </tr>
+                {% for reachability_result in network_reachability %}
+                <tr id="reachability_{% ">
+                        <td>{{ reachability_result.display_name }}</td>
+                        <td>{{ reachability_result.dns_name }}</td>
+                        <td>{{ reachability_result.ip_address }}}</td>
+                        <td style='color:{% if reachability_result.status %}green;'>UP{% else %}red;'>DOWN{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        """
 
-    for reachability_result in network_reachability:
-        print(reachability_result)
-        if request.user.is_authenticated():
-            response_html += """
-                    <tr id="reachability_""" + reachability_result['dns_name'] + """">
-                        <td>""" + reachability_result['display_name'] + """</td>
-                        <td>""" + reachability_result['dns_name'] + """</td>
-                        <td>""" + reachability_result['ip_address'] + """</td>
-                        <td style='color:""" + ("green" if reachability_result['status'] else "red") + ";'>" + ("UP" if reachability_result['status'] else "DOWN") + """</td>
-                    </tr>"""
-        else:
-            response_html += """
-                    <tr id="reachability_""" + reachability_result['dns_name'] + """">
-                        <td>""" + reachability_result['display_name'] + """</td>
-                        <td style='color:""" + ("green" if reachability_result['status'] else "red") + ";'>" + ("UP" if reachability_result['status'] else "DOWN") + """</td>
-                    </tr>"""
-    
-    response_html += """
-        </tbody>
-    </table>
-    """
+    template = Template(raw_response)
+    context = RequestContext(request, {'network_reachability': network_reachability})
+    response_html = template.render(context)
     
     print(response_html)
     data = {
