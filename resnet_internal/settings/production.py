@@ -1,4 +1,4 @@
-from .base import *
+from .base import *  # noqa @PydevCodeAnalysisIgnore
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
@@ -13,5 +13,7 @@ SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
 ALLOWED_HOSTS = [
+    'dev.resdev.calpoly.edu',
+    'prod.resdev.calpoly.edu',
     '.internal.resnet.calpoly.edu',
 ]
