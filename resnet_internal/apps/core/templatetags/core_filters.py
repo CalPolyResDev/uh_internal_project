@@ -95,28 +95,3 @@ def divide(value, arg):
     """
 
     return value / arg
-
-
-@register.filter
-def fixSRSLineBreaks(value):
-    """Replaces DOS line breaks with unix line breaks.
-    
-    :param value: The string to modify.
-    :type value: string
-    :returns: The resulting string after line break replacment.
-    
-    """
-    
-    return value.replace('\\r\\n', '\n')
-
-@register.filter
-def formatSRSPhoneNumber(value):
-    """Removes escaping and slashes
-    
-    :param value: The string to modify.
-    :type value: string
-    :returns: The resulting string after phone number formatting.
-    
-    """
-    
-    return '(' + value.replace('\/', ') ')
