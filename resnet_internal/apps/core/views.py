@@ -6,6 +6,7 @@
 
 """
 
+from datetime import datetime
 
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -213,6 +214,17 @@ class TicketSummaryView(TemplateView):
         ticket_id = kwargs['ticket_id']
         
         context['ticket'] = ServiceRequest.objects.get(ticket_id=ticket_id)
+        
+        time_difference = (datetime.today() - context['ticket'].date_updated).total_seconds() / 86400
+        
+        if time_difference < 3:
+            context['date_display_class'] = 'text-success'
+        elif time_difference < 7:
+            context['date_display_class'] = 'text-info'
+        elif time_difference < 14:
+            context['date_display_class'] = 'text-warning'
+        else:
+            context['date_display_class'] = 'text-danger'
         
         return context
 

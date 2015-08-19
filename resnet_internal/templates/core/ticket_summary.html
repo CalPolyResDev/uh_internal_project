@@ -1,33 +1,70 @@
 {% extends "base_frame.html" %}
-{% load core_user_tests %}
-{% load core_filters %}
-{% load staticfiles %}
-
 {% block subtitle %} | Ticket Summary{% endblock %}
 
 {% block content %}
-    <h1>Ticket Summary</h1>
+    <h1>Summary: {{ ticket.summary }}</h1>
     {% if ticket %}
+        <h3>Details:</h3>
         <table>
             <tr>
-                <td style="vertical-align: text-top;">
-                    <strong>Name:</strong> {{ ticket.requestor_full_name }}
-                    <br /><strong>Username:</strong> {{ ticket.requestor_username }}
-                    <br /><strong>Status:</strong> {{ ticket.status }}
-                    <br /><strong>Date Created:</strong> {{ ticket.date_created }}
-                    <br /><strong>Assigned Team:</strong> {{ ticket.assigned_team }}
-                    <br /><strong>Summary:</strong> {{ ticket.summary }}
+                <td style="vertical-align: text-top; text-align: right;">
+                    <strong>Name:</strong>
+                    <br /><strong>Username:</strong>
+                    <br /><strong>Status:</strong>
+                    <br /><strong>Date Created:</strong>
+                    <br /><strong>Last Updated:</strong>
+                    <br /><strong>Assigned Team:</strong>
+                    <br />
                 </td>
                 <td style="vertical-align: text-top;">
-                    <strong>Phone:</strong> {{ ticket.requestor_phone }}
-                    <br /><strong>Dorm Address:</strong> {{ ticket.requestor_housing_address }}
-                    <br /><strong>Department:</strong> {{ ticket.requestor_department }}
-                    <br /><strong>Building:</strong> {{ ticket.requestor_building }}
-                    <br /><strong>Room:</strong> {{ ticket.requestor_room }}
+                    {{ ticket.requestor_full_name }}
+                    <br />{{ ticket.requestor_username }}
+                    <br />{{ ticket.status }}
+                    <br />{{ ticket.date_created }}
+                    <br /><span class="{{ date_display_class }}">{{ ticket.date_updated }}</span>
+                    <br />{{ ticket.assigned_team }}
+                </td>
+                <td style="vertical-align: text-top; text-align: right;">
+                    <strong>Phone:</strong>
+                    <br /><strong>Dorm Address:</strong>
+                    <br /><strong>Department:</strong>
+                    <br /><strong>Building:</strong>
+                    <br /><strong>Room:</strong>
+                    <br />
+                </td>
+                <td style="vertical-align: text-top;">
+                    {{ ticket.formatted_requestor_phone }}
+                    <br />{{ ticket.requestor_housing_address }}
+                    <br />{{ ticket.requestor_department }}
+                    <br />{{ ticket.requestor_building }}
+                    <br />{{ ticket.requestor_room }}
                 </td>
             </tr>
         </table>
-        <p><strong>Description:</strong> {{ ticket.description|convertTextDOSlinebreaks|linebreaksbr }}</p>
+        <p><h3>Description:</h3> {{ ticket.formatted_description|linebreaksbr }}</p>
+        <table>
+            <tr>
+                <td style="vertical-align: text-top; width: 50%;">
+                    <p><h3>Requestor Notes:</h3>
+                        {% for note in ticket.requestor_notification_dict %}
+                                <strong>[{{ note.first_name }} {{ note.last_name }} {{ note.timestamp }}]</strong>
+                                <br /><br />{{ note.message|linebreaksbr }}
+                                <br /><br />
+                        {% endfor %}
+                    </p>
+                </td>
+                <td style="vertical-align: text-top; width: 50%;">
+                    <p><h3>Work Log:</h3>
+                        {% for note in ticket.work_log_dict %}
+                                <strong>[{{ note.first_name }} {{ note.last_name }} {{ note.timestamp }}]</strong>
+                                <br /><br />{{ note.message|linebreaksbr }}
+                                <br /><br />
+                        {% endfor %}
+                    </p>
+                </td>
+            </tr>
+        </table>
+        
     {% else %}
         <p>Could not retrieve ticket.</p>
     {% endif %}
