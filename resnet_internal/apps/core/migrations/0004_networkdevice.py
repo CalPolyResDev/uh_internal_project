@@ -20,9 +20,4 @@ class Migration(migrations.Migration):
                 ('ip_address', models.IPAddressField(verbose_name='IP Address')),
             ],
         ),
-        migrations.AlterField(
-            model_name='networkdevice',
-            name='ip_address',
-            field=models.GenericIPAddressField(verbose_name='IP Address', protocol='IPv4'),
-        ),
     ]
