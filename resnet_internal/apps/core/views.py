@@ -20,9 +20,10 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
+from srsconnector.models import ServiceRequest
+
 from .forms import NavigationSettingsForm, AutoFocusAuthenticationForm
 from .models import SiteAnnouncements
-from srsconnector.models import ServiceRequest
 
 
 def link_handler(request, mode, key, ip=""):
