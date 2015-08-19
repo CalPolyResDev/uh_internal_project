@@ -7,9 +7,34 @@
 """
 
 import logging
+import os
 from copy import deepcopy
 
+from .models import NetworkDevice
+
 logger = logging.getLogger(__name__)
+
+
+class NetworkReachabilityTester:
+
+    @staticmethod
+    def _is_device_reachable(ip_address):
+        response = os.system("ping -c 1 -t 1 " + ip_address)
+        return True if response == 0 else False
+    
+    @staticmethod
+    def get_network_device_reachability():
+        reachability_responses = []
+        
+        network_devices = NetworkDevice.objects.all()
+        
+        for network_device in network_devices:
+            reachability_responses.append({'display_name': network_device.display_name,
+                                           'dns_name': network_device.dns_name,
+                                           'ip_address': network_device.ip_address,
+                                           'status': NetworkReachabilityTester._is_device_reachable(network_device.ip_address),
+                                           })
+        return reachability_responses
 
 
 def dict_merge(base, merge):

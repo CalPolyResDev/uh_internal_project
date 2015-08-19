@@ -7,12 +7,15 @@
 """
 
 import logging
+from operator import itemgetter
 
 from django.views.decorators.http import require_POST
+from django.template import Template, RequestContext
 
 from django_ajax.decorators import ajax
 
 from ..core.models import Community
+from ..core.utils import NetworkReachabilityTester
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +59,49 @@ def update_building(request):
     data = {
         'inner-fragments': {
             css_target: ''.join(choices)
+        },
+    }
+
+    return data
+
+
+@ajax
+def update_network_status(request):
+    network_reachability = NetworkReachabilityTester.get_network_device_reachability()
+    network_reachability.sort(key=itemgetter('status', 'display_name'))
+    
+    raw_response = """
+        <table class="dataTable">
+            <tbody>
+                <tr>
+                    <th scope="col">Name</th>
+                    {% if request.user.is_authenticated %}
+                    <th scope="col">DNS Address</th>
+                    <th scope="col">IP Address</th>
+                    {% endif %}
+                    <th scope="col">Status</th>
+                </tr>
+                {% for reachability_result in network_reachability %}
+                <tr id="reachability_{% ">
+                        <td>{{ reachability_result.display_name }}</td>
+                        {% if request.user.is_authenticated %}
+                        <td>{{ reachability_result.dns_name }}</td>
+                        <td>{{ reachability_result.ip_address }}</td>
+                        {% endif %}
+                        <td style='color:{% if reachability_result.status %}green;'>UP{% else %}red;'>DOWN{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        """
+
+    template = Template(raw_response)
+    context = RequestContext(request, {'network_reachability': network_reachability})
+    response_html = template.render(context)
+
+    data = {
+        'inner-fragments': {
+            '#network_status_response': response_html
         },
     }
 
