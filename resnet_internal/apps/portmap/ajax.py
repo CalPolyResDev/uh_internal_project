@@ -88,15 +88,10 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
         if column == 'switch_ip':
             value = getattr(row, column)
 
-            ip_url = "/external/cisco/{ip_address}/".format(ip_address=value)
-
             editable_block = self.editable_block_template.format(value=value)
             class_names.append("editable")
 
-            link_block = self.link_block_template.format(link_url=ip_url, onclick_action="", link_target="_blank", link_class_name="", link_style="", link_text=value)
-            inline_images = self.icon_template.format(icon_url=static('images/icons/cisco.gif'))
-
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=link_block, inline_images=inline_images, editable_block=editable_block)
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
         elif column == 'active':
             onclick = "confirm_status_change({id});return false;".format(id=row.id)
             link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="", link_style="color:red; cursor:pointer;", link_text="Deactivate" if getattr(row, column) else "Activate")

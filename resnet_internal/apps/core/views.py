@@ -47,14 +47,6 @@ def link_handler(request, mode, key, ip=""):
     elif key == "devices":
         subtitle = "Device Pass Through"
         source = "https://housingservices.calpoly.edu/guests/device/add/"
-    # Cisco View
-    elif key == "cisco":
-        subtitle = "Cisco View Switch Manager"
-        # Check if a specific ip was passed in
-        if ip != '':
-            source = "http://cp-cw-01.cp-calpoly.edu:1741/CVng/chassis.do?deviceip=" + ip + "&adhoc=yes"
-        else:
-            source = "http://cp-cw-01.cp-calpoly.edu:1741/CVng/chassis.do?action=-1/"
     # Aruba ClearPass
     elif key == "aruba":
         subtitle = "Aruba ClearPass"
@@ -74,10 +66,6 @@ def link_handler(request, mode, key, ip=""):
     elif key == "ac_airwaves_s":
         subtitle = "Aruba AirWaves Secondary"
         source = "https://resnetairwaves2.netadm.calpoly.edu"
-    # CCA Manager
-    elif key == "ccamgr":
-        subtitle = "CCA Manager"
-        source = "https://ccamgr.calpoly.edu/admin/"
     # ResLife Internal
     elif key == "reslife":
         subtitle = "ResLife Interal"
