@@ -40,7 +40,7 @@ def refresh_duties(request):
             Last Checked:
             <font color='""" + daily_duty_dict["status_color"] + """'>""" + daily_duty_dict["last_checked"] + """</font>
             <br />
-            (""" + daily_duty_dict["last_user"] + """)
+            (<span style='text-align: center;'>""" + daily_duty_dict["last_user"] + """</span>)
             """
         return popover_html
 
