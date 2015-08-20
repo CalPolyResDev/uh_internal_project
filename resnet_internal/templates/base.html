@@ -9,6 +9,7 @@
 		<meta name="keywords" content="Resnet Internal" />
 		<meta name="description" content="Residential Networking Services Internal Tools" />
 		<link href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'css/bootstrap_tooltip.css' %}" rel="stylesheet" type="text/css" />
 		<link href="{% static 'common/css/cp_screen_3.4.css' %}" rel="stylesheet" type="text/css" media="screen" />
 		<link href="{% static 'common/css/cp_print_3.4.css' %}" rel="stylesheet" type="text/css" media="print" />
 		<link href="{% static 'css/screen.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
@@ -19,6 +20,7 @@
 		<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
 		<script type="text/javascript" src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'fancybox/jquery.fancybox.pack.js' %}?v=2.1.5"></script>
+        <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
 		{% block meta %}
 		<script type="text/javascript">
             $(document).ready(function() {
@@ -97,7 +99,7 @@
 						<a href="/link_handler/portal/" class="handler_link"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
 					</li>
 					<li>
-						<a href="/link_handler/srs/" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" />SRS Ticket Manager</a>
+						<a href="/link_handler/srs/" id="srs_ticket_count" title="Loading..." data-toggle="tooltip" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" />SRS Ticket Manager</a>
 					</li>
 					<li>
 						<a href="/link_handler/advocate/" class="handler_link"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
@@ -307,6 +309,7 @@
                 }
             };
             $(document).ready(function() {
+                $('[data-toggle="tooltip"]').tooltip() // Init tooltips
                 update_link_targets("{{ request.user.open_links_in_frame }}");
                 {% if request.user.is_authenticated %}refreshDuties();{% endif %}
             });
