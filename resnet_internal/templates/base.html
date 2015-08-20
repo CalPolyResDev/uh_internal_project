@@ -95,12 +95,18 @@
 				{% if request.user|technician_access %}
 				<h2>Technician Tools</h2>
 				<ul>
+				    <li>
+                        <a href="/link_handler/email/" id="email_link" title="Loading..." data-toggle="tooltip" class="handler_link"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" />Email</a>
+                    </li>
 					<li>
 						<a href="/link_handler/portal/" class="handler_link"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
 					</li>
 					<li>
-						<a href="/link_handler/srs/" id="srs_ticket_count" title="Loading..." data-toggle="tooltip" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" />SRS Ticket Manager</a>
+						<a href="/link_handler/srs/" id="srs_ticket_link" title="Loading..." data-toggle="tooltip" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" />SRS Ticket Manager</a>
 					</li>
+					<li>
+                        <a href="/dailyduties/voicemail_list/" id="voicemail_link" title="Loading..." data-toggle="tooltip" class="handler_link"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" />Voicemail</a>
+                    </li>
 					<li>
 						<a href="/link_handler/advocate/" class="handler_link"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
 					</li>
@@ -199,7 +205,7 @@
 				<h2>Equipment</h2>
 				<ul>
 					<li>
-						<a href="{% url 'printer_request_list' %}"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" />Printer Requests</a>
+						<a href="{% url 'printer_request_list' %}" id="printer_request_link" title="Loading..." data-toggle="tooltip"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" />Printer Requests</a>
 					</li>
 					<ul>
 						<li>

@@ -32,9 +32,9 @@ def link_handler(request, mode, key, ip=""):
         subtitle = "My Cal Poly Portal"
         source = "https://myportal.calpoly.edu/f/u17l1s6/normal/render.uP"
     # Email
-    elif key == "zimbra":
-        subtitle = "Zimbra Email"
-        source = "https://connect.calpoly.edu/zimbra/preauth.jsp"
+    elif key == "email":
+        subtitle = "Office365 Email"
+        source = "https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=calpoly.edu&wreply=https%3A%2F%2Foutlook.office365.com"
     # SRS Ticket Manager
     elif key == "srs":
         subtitle = "SRS Ticket Manager"
