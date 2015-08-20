@@ -8,6 +8,7 @@
 
 import logging
 import os
+from sys import platform
 from copy import deepcopy
 from operator import itemgetter
 
@@ -22,7 +23,7 @@ class NetworkReachabilityTester:
 
     @staticmethod
     def _is_device_reachable(ip_address):
-        response = os.system("ping -c 1 -t 1 " + ip_address)
+        response = os.system("ping -c 1 -t 1 " + ip_address) if platform == 'darwin' else os.system("ping -c 1 -w 1 " + ip_address)
         return True if response == 0 else False
     
     @staticmethod
