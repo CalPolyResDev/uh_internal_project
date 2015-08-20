@@ -30,10 +30,15 @@ def refresh_duties(request):
     email_dict = GetDutyData().get_email()
     tickets_dict = GetDutyData().get_tickets(request.user)
     
-    printer_requests_text = 'Printer Requests (' + str(printer_requests_dict['count']) + ')'
-    voicemail_text = 'Voicemail (' + str(voicemail_dict['count']) + ')'
-    email_text = 'Email (' + str(email_dict['count']) + ')'
-    ticket_text = 'Ticket Manager (' + str(tickets_dict['count']) + ')'
+    def duty_dict_to_link_text(daily_duty_dict, name):
+        return_string = name
+
+        if daily_duty_dict['count'] > 10:
+            return_string += ' <strong class="text-danger">(' + str(daily_duty_dict['count']) + ')</strong>'
+        elif daily_duty_dict['count'] > 0:
+            return_string += ' <strong>(' + str(daily_duty_dict['count']) + ')</strong>'
+
+        return return_string
     
     def duty_dict_to_popover_html(daily_duty_dict):
         popover_html = """
@@ -46,10 +51,10 @@ def refresh_duties(request):
 
     data = {
         'inner-fragments': {
-            '#printer_requests_text': printer_requests_text,
-            '#voicemail_text': voicemail_text,
-            '#email_text': email_text,
-            '#ticket_text': ticket_text,
+            '#printer_requests_text': duty_dict_to_link_text(printer_requests_dict, 'Printer Requests'),
+            '#voicemail_text': duty_dict_to_link_text(voicemail_dict, 'Voicemail'),
+            '#email_text': duty_dict_to_link_text(email_dict, 'Email'),
+            '#ticket_text': duty_dict_to_link_text(tickets_dict, 'Ticket Manager'),
         },
         'printer_requests_content': duty_dict_to_popover_html(printer_requests_dict),
         'voicemail_content': duty_dict_to_popover_html(voicemail_dict),

@@ -108,7 +108,7 @@
 						<a href="/link_handler/srs/" id="srs_ticket_link" onclick="updateDuty('tickets', '')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
 					</li>
 					<li>
-                        <a id="voicemail_link" onclick="updateDuty('messages', '{% url 'voicemail_list' %}')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
+                        <a style="cursor: pointer;" id="voicemail_link" onclick="updateDuty('messages', '{% url 'voicemail_list' %}')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
                     </li>
 					<li>
 						<a href="/link_handler/advocate/" class="handler_link"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
@@ -202,7 +202,7 @@
 				<h2>Equipment</h2>
 				<ul>
 					<li>
-						<a id="printer_request_link" onclick="updateDuty('printerrequests', '{% url 'printer_request_list' %}')" title="Printer Requests" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" /><span id="printer_requests_text">Printer Requests</span></a>
+						<a style="cursor: pointer;" id="printer_request_link" onclick="updateDuty('printerrequests', '{% url 'printer_request_list' %}')" title="Printer Requests" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" /><span id="printer_requests_text">Printer Requests</span></a>
 					</li>
 					<ul>
 						<li>

@@ -214,4 +214,3 @@ class TicketSummaryView(TemplateView):
             context['date_display_class'] = 'text-danger'
         
         return context
-

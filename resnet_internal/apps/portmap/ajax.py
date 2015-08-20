@@ -15,7 +15,6 @@ from collections import OrderedDict
 from django.db.models import Q
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
-from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.views.decorators.http import require_POST
 from django.conf import settings
 from django.utils.encoding import smart_str
@@ -85,13 +84,6 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
         if not row.active:
             class_names.append("disabled")
 
-        if column == 'switch_ip':
-            value = getattr(row, column)
-
-            editable_block = self.editable_block_template.format(value=value)
-            class_names.append("editable")
-
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
         elif column == 'active':
             onclick = "confirm_status_change({id});return false;".format(id=row.id)
             link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="", link_style="color:red; cursor:pointer;", link_text="Deactivate" if getattr(row, column) else "Activate")
