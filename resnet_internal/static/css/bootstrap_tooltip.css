@@ -161,7 +161,8 @@
   margin-left: -10px;
 }
 .popover-title {
-  padding: 8px 14px;
+  padding: 8px 8px;
+  text-align: center;
   margin: 0;
   font-size: 14px;
   background-color: #f7f7f7;

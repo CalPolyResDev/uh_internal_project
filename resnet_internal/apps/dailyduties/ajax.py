@@ -10,7 +10,6 @@ import logging
 
 from datetime import datetime
 
-from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_POST
 
@@ -27,14 +26,23 @@ def refresh_duties(request):
 
     # Load data dicts
     printer_requests_dict = GetDutyData().get_printer_requests()
-    messages_dict = GetDutyData().get_messages()
+    voicemail_dict = GetDutyData().get_messages()
     email_dict = GetDutyData().get_email()
     tickets_dict = GetDutyData().get_tickets(request.user)
     
     printer_requests_text = 'Printer Requests (' + str(printer_requests_dict['count']) + ')'
-    voicemail_text = 'Voicemail (' + str(messages_dict['count']) + ')'
+    voicemail_text = 'Voicemail (' + str(voicemail_dict['count']) + ')'
     email_text = 'Email (' + str(email_dict['count']) + ')'
     ticket_text = 'Ticket Manager (' + str(tickets_dict['count']) + ')'
+    
+    def duty_dict_to_popover_html(daily_duty_dict):
+        popover_html = """
+            Last Checked:
+            <font color='""" + daily_duty_dict["status_color"] + """'>""" + daily_duty_dict["last_checked"] + """</font>
+            <br />
+            (""" + daily_duty_dict["last_user"] + """)
+            """
+        return popover_html
 
     data = {
         'inner-fragments': {
@@ -43,10 +51,10 @@ def refresh_duties(request):
             '#email_text': email_text,
             '#ticket_text': ticket_text,
         },
-        'printer_requests_dict': printer_requests_dict,
-        'messages_dict': messages_dict,
-        'email_dict': email_dict,
-        'tickets_dict': tickets_dict,
+        'printer_requests_content': duty_dict_to_popover_html(printer_requests_dict),
+        'voicemail_content': duty_dict_to_popover_html(voicemail_dict),
+        'email_content': duty_dict_to_popover_html(email_dict),
+        'tickets_content': duty_dict_to_popover_html(tickets_dict),
     }
 
     return data

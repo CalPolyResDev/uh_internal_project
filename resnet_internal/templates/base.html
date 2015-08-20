@@ -36,7 +36,9 @@
                     openEffect  : 'none',
                     closeEffect : 'none',
                 });
-                $('[data-toggle="popover"]').popover()
+                $('[data-toggle="popover"]').popover({
+                    html: true,
+                });
             });
         </script>
 		{% endblock %}
@@ -277,7 +279,10 @@
 			function refreshDuties() {
 				ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
 					update_link_targets("{{ request.user.open_links_in_frame }}");
-					
+					$("#email_link").attr('data-content', response_context.email_content);
+					$("#srs_ticket_link").attr('data-content', response_context.tickets_content);
+					$("#voicemail_link").attr('data-content', response_context.voicemail_content);
+					$("#printer_request_link").attr('data-content', response_context.printer_requests_content);
 				});
 			};
 			function updateDuty(duty, redirect_url, target) {
