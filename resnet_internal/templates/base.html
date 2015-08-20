@@ -105,7 +105,7 @@
 						<a href="/link_handler/srs/" id="srs_ticket_link" title="Loading..." data-toggle="tooltip" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" />SRS Ticket Manager</a>
 					</li>
 					<li>
-                        <a href="/dailyduties/voicemail_list/" id="voicemail_link" title="Loading..." data-toggle="tooltip" class="handler_link"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" />Voicemail</a>
+                        <a href="{% url 'voicemail_list' %}" id="voicemail_link" title="Loading..." data-toggle="tooltip"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" />Voicemail</a>
                     </li>
 					<li>
 						<a href="/link_handler/advocate/" class="handler_link"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
