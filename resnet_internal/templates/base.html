@@ -36,6 +36,7 @@
                     openEffect  : 'none',
                     closeEffect : 'none',
                 });
+                $('[data-toggle="popover"]').popover()
             });
         </script>
 		{% endblock %}
@@ -267,7 +268,6 @@
                 }
             };
             $(document).ready(function() {
-                $('[data-toggle="popover"]').popover() // Init popovers
                 update_link_targets("{{ request.user.open_links_in_frame }}");
                 {% if request.user.is_authenticated %}refreshDuties();{% endif %}
             });

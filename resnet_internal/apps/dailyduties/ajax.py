@@ -43,6 +43,10 @@ def refresh_duties(request):
             '#email_text': email_text,
             '#ticket_text': ticket_text,
         },
+        'printer_requests_dict': printer_requests_dict,
+        'messages_dict': messages_dict,
+        'email_dict': email_dict,
+        'tickets_dict': tickets_dict,
     }
 
     return data
