@@ -96,16 +96,16 @@
 				<h2>Technician Tools</h2>
 				<ul>
 				    <li>
-                        <a href="/link_handler/email/" id="email_link" title="Loading..." data-toggle="tooltip" class="handler_link"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" />Email</a>
+                        <a href="/link_handler/email/" id="email_link" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
                     </li>
 					<li>
 						<a href="/link_handler/portal/" class="handler_link"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
 					</li>
 					<li>
-						<a href="/link_handler/srs/" id="srs_ticket_link" title="Loading..." data-toggle="tooltip" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" />SRS Ticket Manager</a>
+						<a href="/link_handler/srs/" id="srs_ticket_link" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
 					</li>
 					<li>
-                        <a href="{% url 'voicemail_list' %}" id="voicemail_link" title="Loading..." data-toggle="tooltip"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" />Voicemail</a>
+                        <a href="{% url 'voicemail_list' %}" id="voicemail_link" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
                     </li>
 					<li>
 						<a href="/link_handler/advocate/" class="handler_link"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
@@ -199,7 +199,7 @@
 				<h2>Equipment</h2>
 				<ul>
 					<li>
-						<a href="{% url 'printer_request_list' %}" id="printer_request_link" title="Loading..." data-toggle="tooltip"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" />Printer Requests</a>
+						<a href="{% url 'printer_request_list' %}" id="printer_request_link" title="Printer Requests" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" /><span id="printer_requests_text">Printer Requests</span></a>
 					</li>
 					<ul>
 						<li>
@@ -309,7 +309,7 @@
                 }
             };
             $(document).ready(function() {
-                $('[data-toggle="tooltip"]').tooltip() // Init tooltips
+                $('[data-toggle="popover"]').popover() // Init popovers
                 update_link_targets("{{ request.user.open_links_in_frame }}");
                 {% if request.user.is_authenticated %}refreshDuties();{% endif %}
             });

@@ -30,69 +30,18 @@ def refresh_duties(request):
     messages_dict = GetDutyData().get_messages()
     email_dict = GetDutyData().get_email()
     tickets_dict = GetDutyData().get_tickets(request.user)
-
-    if printer_requests_dict["count"] >= 0:
-        printer_request_count = ' <b>(' + str(printer_requests_dict["count"]) + ')</b>'
-    else:
-        printer_request_count = ''
-
-    if messages_dict["count"] >= 0:
-        message_count = ' <b>(' + str(messages_dict["count"]) + ')</b>'
-    else:
-        message_count = ''
-
-    if email_dict["count"] >= 0:
-        email_count = ' <b>(' + str(email_dict["count"]) + ')</b>'
-    else:
-        email_count = ''
-
-    if tickets_dict["count"] >= 0:
-        ticket_count = ' <b>(' + str(tickets_dict["count"]) + ')</b>'
-    else:
-        ticket_count = ''
-
-    duties_html = """
-    <h2 class="center">Daily Duties</h2>
-    <h3><a style="cursor:pointer;" onclick="updateDuty('printerrequests', '""" + reverse('printer_request_list') + """', '_self')">Check Printer Requests""" + printer_request_count + """</a></h3>
-    <p>
-        Last Checked:
-        <br />
-        <font color='""" + printer_requests_dict["status_color"] + """'>""" + printer_requests_dict["last_checked"] + """</font>
-        <br />
-        (""" + printer_requests_dict["last_user"] + """)
-    </p>
-    <h3><a href='""" + reverse('voicemail_list') + """' class="popup_frame" style="cursor:pointer;" onclick="updateDuty('messages', '', '_self')">Check Voicemail""" + message_count + """</a></h3>
-    <p>
-        Last Checked:
-        <br />
-        <font color='""" + messages_dict["status_color"] + """'>""" + messages_dict["last_checked"] + """</font>
-        <br />
-        (""" + messages_dict["last_user"] + """)
-    </p>
-    <h3><a style="cursor:pointer;" onclick="updateDuty('email', '/external/zimbra/', '_blank')">Check Email""" + email_count + """</a></h3>
-    <p>
-        Last Checked:
-        <br />
-        <font color='""" + email_dict["status_color"] + """'>""" + email_dict["last_checked"] + """</font>
-        <br />
-        (""" + email_dict["last_user"] + """)
-    </p>
-    <h3><a style="cursor:pointer;" onclick="updateDuty('tickets', '/link_handler/srs/', 'handler')">Check Tickets""" + ticket_count + """</a></h3>
-    <p>
-        Last Checked:
-        <br />
-        <font color='""" + tickets_dict["status_color"] + """'>""" + tickets_dict["last_checked"] + """</font>
-        <br />
-        (""" + tickets_dict["last_user"] + """)
-    </p>
-    <h3></h3>
-    <p>
-        Note: Times update upon click of task title link.
-    </p>"""
+    
+    printer_requests_text = 'Printer Requests (' + str(printer_requests_dict['count']) + ')'
+    voicemail_text = 'Voicemail (' + str(messages_dict['count']) + ')'
+    email_text = 'Email (' + str(email_dict['count']) + ')'
+    ticket_text = 'Ticket Manager (' + str(tickets_dict['count']) + ')'
 
     data = {
         'inner-fragments': {
-            '#dailyDuties': duties_html
+            '#printer_requests_text': printer_requests_text,
+            '#voicemail_text': voicemail_text,
+            '#email_text': email_text,
+            '#ticket_text': ticket_text,
         },
     }
 
