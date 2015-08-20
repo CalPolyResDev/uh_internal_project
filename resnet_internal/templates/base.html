@@ -220,48 +220,6 @@
                     </li>
                 </ul>
                 {% endif %}
-
-				{% if request.user|technician_access %}
-				<!-- Begin Daily Duties Widget -->
-				<div id="navcontent1">
-					<div class="gold" id="dailyDuties">
-						<h2 class="center">Daily Duties</h2>
-						<h3>Check Printer Requests</h3>
-                        <p>
-                            Last Checked:
-                            <br />
-                            <font color="#900">retrieving data...</font>
-                            <br />
-                        </p>
-						<h3>Check Voicemail</h3>
-						<p>
-							Last Checked:
-							<br />
-							<font color="#900">retrieving data...</font>
-							<br />
-						</p>
-						<h3>Check Email</h3>
-						<p>
-							Last Checked:
-							<br />
-							<font color="#900">retrieving data...</font>
-							<br />
-						</p>
-						<h3>Check Tickets</h3>
-						<p>
-							Last Checked:
-							<br />
-							<font color="#900">retrieving data...</font>
-							<br />
-						</p>
-						<h3></h3>
-						<p>
-							Note: Times update upon click of task title link.
-						</p>
-					</div>
-				</div>
-				<!-- End Daily Duties Widget -->
-				{% endif %}
 			</div>
 			<!-- End Navigation Bar -->
 			{% endif %}
@@ -319,9 +277,8 @@
 			function refreshDuties() {
 				ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
 					update_link_targets("{{ request.user.open_links_in_frame }}");
-					return true;
+					
 				});
-				return false;
 			};
 			function updateDuty(duty, redirect_url, target) {
 				ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
