@@ -325,6 +325,7 @@ INSTALLED_APPS = (
     'rmsconnector',
     'srsconnector',
     'django_ewiz',
+    'paramiko',
     'resnet_internal.apps.core',
     'resnet_internal.apps.core.templatetags.__init__.default_app_config',
     'resnet_internal.apps.dailyduties',
