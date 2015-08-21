@@ -112,7 +112,7 @@ def update_network_status(request):
 @ajax
 def get_tickets(request):
     raw_response = """
-        {% load static %}
+        {% load staticfiles %}
         <table class="dataTable">
             <tbody>
                 <tr>
