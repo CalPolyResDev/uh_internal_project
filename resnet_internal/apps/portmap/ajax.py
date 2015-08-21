@@ -84,7 +84,7 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
         if not row.active:
             class_names.append("disabled")
 
-        elif column == 'active':
+        if column == 'active':
             onclick = "confirm_status_change({id});return false;".format(id=row.id)
             link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="", link_style="color:red; cursor:pointer;", link_text="Deactivate" if getattr(row, column) else "Activate")
 
