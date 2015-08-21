@@ -56,20 +56,11 @@
     {{ block.super }}
     <script type="text/javascript">
         $(document).ready(function() {
-            refresh_network_status();
+            ajaxGet("{% url 'core_update_network_status' %}");
             {% if request.user.is_authenticated %}
-            get_tickets();
+            ajaxGet("{% url 'core_get_tickets' %}");
             {% endif %}
         });
-
-        function refresh_network_status() {
-            ajaxGet("{% url 'core_update_network_status' %}");
-        };
-        {% if request.user.is_authenticated %}
-            function get_tickets() {
-                ajaxGet("{% url 'core_get_tickets' %}");
-            };
-        {% endif %}
     </script>
     {% endblock %}
  {% endblock %}
