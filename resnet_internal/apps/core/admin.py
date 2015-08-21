@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import connection, transaction
 
-from .models import Community, Building, Department, SubDepartment, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser
+from .models import Community, Building, Department, SubDepartment, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser, NetworkDevice
 
 
 class SiteAnnouncementsAdmin(admin.ModelAdmin):
@@ -14,6 +14,11 @@ class StaffMappingAdmin(admin.ModelAdmin):
 
 class TechFlairAdmin(admin.ModelAdmin):
     list_display = ('tech', 'flair')
+
+    
+class NetworkDeviceAdmin(admin.ModelAdmin):
+    list_display = ('display_name', 'dns_name', 'ip_address')
+    list_filter = ('display_name', 'dns_name')
 
 
 class ResNetInternalUserAdmin(admin.ModelAdmin):
@@ -32,6 +37,7 @@ admin.site.register(SiteAnnouncements, SiteAnnouncementsAdmin)
 admin.site.register(StaffMapping, StaffMappingAdmin)
 admin.site.register(TechFlair, TechFlairAdmin)
 admin.site.register(ResNetInternalUser, ResNetInternalUserAdmin)
+admin.site.register(NetworkDevice, NetworkDeviceAdmin)
 
 
 def sync_rms_data():

@@ -6,6 +6,7 @@
 
 """
 
+from datetime import datetime
 
 from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -19,6 +20,8 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 
+from srsconnector.models import ServiceRequest
+
 from .forms import NavigationSettingsForm, AutoFocusAuthenticationForm
 from .models import SiteAnnouncements
 
@@ -29,9 +32,9 @@ def link_handler(request, mode, key, ip=""):
         subtitle = "My Cal Poly Portal"
         source = "https://myportal.calpoly.edu/f/u17l1s6/normal/render.uP"
     # Email
-    elif key == "zimbra":
-        subtitle = "Zimbra Email"
-        source = "https://connect.calpoly.edu/zimbra/preauth.jsp"
+    elif key == "email":
+        subtitle = "Office365 Email"
+        source = "https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=calpoly.edu&wreply=https%3A%2F%2Foutlook.office365.com"
     # SRS Ticket Manager
     elif key == "srs":
         subtitle = "SRS Ticket Manager"
@@ -44,14 +47,6 @@ def link_handler(request, mode, key, ip=""):
     elif key == "devices":
         subtitle = "Device Pass Through"
         source = "https://housingservices.calpoly.edu/guests/device/add/"
-    # Cisco View
-    elif key == "cisco":
-        subtitle = "Cisco View Switch Manager"
-        # Check if a specific ip was passed in
-        if ip != '':
-            source = "http://cp-cw-01.cp-calpoly.edu:1741/CVng/chassis.do?deviceip=" + ip + "&adhoc=yes"
-        else:
-            source = "http://cp-cw-01.cp-calpoly.edu:1741/CVng/chassis.do?action=-1/"
     # Aruba ClearPass
     elif key == "aruba":
         subtitle = "Aruba ClearPass"
@@ -71,10 +66,6 @@ def link_handler(request, mode, key, ip=""):
     elif key == "ac_airwaves_s":
         subtitle = "Aruba AirWaves Secondary"
         source = "https://resnetairwaves2.netadm.calpoly.edu"
-    # CCA Manager
-    elif key == "ccamgr":
-        subtitle = "CCA Manager"
-        source = "https://ccamgr.calpoly.edu/admin/"
     # ResLife Internal
     elif key == "reslife":
         subtitle = "ResLife Interal"
@@ -138,6 +129,28 @@ class NavigationSettingsView(FormView):
         user_instance.save()
 
         return render_to_response('core/settings/close_window.html', context_instance=RequestContext(self.request))
+
+
+class TicketSummaryView(TemplateView):
+    template_name = 'core/ticket_summary.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(TicketSummaryView, self).get_context_data(**kwargs)
+        ticket_id = kwargs['ticket_id']
+        context['ticket'] = ServiceRequest.objects.get(ticket_id=ticket_id)
+        
+        time_difference = (datetime.today() - context['ticket'].date_updated).total_seconds() / 86400
+        
+        if time_difference < 3:
+            context['date_display_class'] = 'text-success'
+        elif time_difference < 7:
+            context['date_display_class'] = 'text-info'
+        elif time_difference < 14:
+            context['date_display_class'] = 'text-warning'
+        else:
+            context['date_display_class'] = 'text-danger'
+        
+        return context
 
 
 class LoginView(FormView):

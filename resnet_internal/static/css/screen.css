@@ -84,3 +84,35 @@ fieldset ul {
     background-color: rgb(174, 0, 0);
     padding: 5px 0px;
 }
+
+.bg-success {
+    background-color: #dff0d8
+}
+
+.bg-info {
+    background-color: #d9edf7
+}
+
+.bg-warning {
+    background-color: #fcf8e3
+}
+
+.bg-danger {
+    background-color: #f2dede
+}
+
+.text-success {
+    color: #3c763d
+}
+
+.text-info {
+    color: #31708f
+}
+
+.text-warning {
+    color: #8a6d3b
+}
+
+.text-danger {
+    color: #a94442
+}

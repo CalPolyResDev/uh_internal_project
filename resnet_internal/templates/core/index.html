@@ -1,4 +1,18 @@
 {% extends "base.html" %}
+{% block meta %}
+{{ block.super }}
+    <style>
+    #columns #column1, .columns .column1 {
+        width: 20%;
+    }
+    #columns #column2, .columns .column2 {
+        width: 40%;
+    }
+    #columns #column3, .columns .column3 {
+        width: 40%;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
   <div id="content-2col">
@@ -8,13 +22,13 @@
       </div>
       <div id="topContent">
         <h1>Welcome to the ResNet Internal Tech Tools Site</h1>
-        <h2>Network Status</h2>
-        <div class="contentBox">
-          <h3>Pretty Graphs and Stuff will go here.</h3>
-          <p>Here is some text.</p>
+        <h2>Network Usage</h2>
+        <div id="network_usage_box" class="contentBox">
+          <h3>Pretty graphs & stuff.</h3>
+          <p id="network_usage_content">Coming Soon...</p>
         </div>
         </div>
-      <div id="columns">
+      <div id="columns" style="max-width: 100%">
         <div id="column1">
           <h2>General Site Announcements</h2>
           {% for announcement in announcements %}
@@ -22,21 +36,31 @@
           <p>{% autoescape off %}{{ announcement.description }}{% endautoescape %}</p>
           {% endfor %}
         </div>
-        <div id="column2">
-          <h2>Section With Some Stuff</h2>
-          <h3><strong>Cal Poly Organic Farm</strong></h3>
-          <p>Cal Poly's learn-by-doing tradition means that the university's  College of Agriculture produces a variety of campus-grown or  campus-made food, flowers, plants and more that are for sale throughout  the year to both the campus community and the general public.</p>
-          <p>Some  are produced as part of hands-on lessons in college classes. Others are  'Enterprise Projects,' in which the university provides money or  resources, students provide labor in design, production, packaging and  marketing under the supervision of faculty. Net proceeds from  Enterprise Projects go to pay the students involved and can be  re-invested in the project.</p>
-          <h3><strong>Cal Poly Cheese</strong></h3>
-          <p>Cal Poly Cheese is a student Enterprise Project, operating in Cal  Poly&rsquo;s historic Creamery. Students are supervised by Dairy Science  Professor Nana Farkye. Cal Poly Cheese Produces seven varieties of  gourmet cheeses; they are available for ordering through the Cal Poly  Cheese web site and at Campus Market.</p>
+        <div id="column2" style="max-width: 33%;">
+          <h2>Network Status</h2>
+          <p id="network_status_response">Loading...</p>
         </div>
-        <div id="column3">
-          <h2 class="quicklinks">Useful Links</h2>
-          <ul class="quicklinks">
-            <li><a href="https://projects.resdev.calpoly.edu/browse/RNIN" target="_blank">Project Tracker</a></li>
-          </ul></div>
+        <div id="column3" style="max-width: 50%;">
+          <h2>Ticket Summary</h2>
+          {% if request.user.is_authenticated %}
+            <p id="tickets_response">Loading...</p>
+          {% else %}
+            <p>Please log in to view tickets.</p>
+          {% endif %}
+        </div>
         <div class="clear"></div>
       </div>
     </div>
   </div>
+    {% block extra_script %}
+    {{ block.super }}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            ajaxGet("{% url 'core_update_network_status' %}");
+            {% if request.user.is_authenticated %}
+            ajaxGet("{% url 'core_get_tickets' %}");
+            {% endif %}
+        });
+    </script>
+    {% endblock %}
  {% endblock %}
