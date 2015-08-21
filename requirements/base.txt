@@ -1,4 +1,4 @@
-Django~=1.8.3
+Django~=1.8.4
 
 git+https://github.com/kavdev/djangotoolbox
 
@@ -7,7 +7,7 @@ git+https://code.its.calpoly.edu/scm/srsc/srsconnector
 colorama==0.3.3
 termcolor==1.1.0
 
-#hg+https://kavanaugh_development@bitbucket.org/kavanaugh_development/django-auth-ldap@python3-ldap
+hg+https://kavanaugh_development@bitbucket.org/kavanaugh_development/django-auth-ldap@python3-ldap
 
 python-dateutil==2.4.2
 djangoajax==2.2.15

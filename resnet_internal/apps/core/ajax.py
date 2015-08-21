@@ -8,6 +8,7 @@
 
 import logging
 from operator import itemgetter
+from datetime import datetime
 
 from django.views.decorators.http import require_POST
 from django.template import Template, RequestContext
@@ -15,7 +16,7 @@ from django.template import Template, RequestContext
 from django_ajax.decorators import ajax
 
 from ..core.models import Community
-from ..core.utils import NetworkReachabilityTester
+from ..core.utils import NetworkReachabilityTester, get_ticket_list
 
 logger = logging.getLogger(__name__)
 
@@ -105,4 +106,58 @@ def update_network_status(request):
         },
     }
 
+    return data
+
+
+@ajax
+def get_tickets(request):
+    raw_response = """
+        {% load staticfiles %}
+        <table class="dataTable">
+            <tbody>
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Summary</th>
+                </tr>
+                {% for ticket in tickets %}
+                <tr id="ticket_{{ ticket.ticket_id }}" class={{ ticket.display_class }}>
+                    <td>
+                        <a href="{% url 'core_ticket_summary' ticket_id=ticket.ticket_id %}" class="popup_frame" style="cursor:pointer;">
+                            <img src="{% static 'images/srs_view_button.gif' %}">
+                        </a>
+                    </td>
+                    <td>{{ ticket.requestor_full_name }}</td>
+                    <td>{{ ticket.status }}</td>
+                    <td>{{ ticket.summary }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>"""
+
+    tickets = get_ticket_list(request.user)
+    now = datetime.today()
+    for ticket in tickets:
+        time_difference = (now - ticket['date_updated']).total_seconds() / 86400
+        
+        if time_difference < 3:
+            ticket['display_class'] = 'bg-success'
+        elif time_difference < 7:
+            ticket['display_class'] = 'bg-info'
+        elif time_difference < 14:
+            ticket['display_class'] = 'bg-warning'
+        else:
+            ticket['display_class'] = 'bg-danger'
+
+    template = Template(raw_response)
+    context = RequestContext(request, {'tickets': tickets})
+    response_html = template.render(context)
+
+    data = {
+        'inner-fragments': {
+            '#tickets_response': response_html
+        }
+    }
+    
     return data

@@ -10,6 +10,9 @@ import logging
 import os
 from sys import platform
 from copy import deepcopy
+from operator import itemgetter
+
+from srsconnector.models import ServiceRequest
 
 from .models import NetworkDevice
 
@@ -59,3 +62,19 @@ def dict_merge(base, merge):
             result[key] = deepcopy(value)
 
     return result
+
+
+def get_ticket_list(user):
+    ticket_queryset = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(status=8)
+    
+    tickets = list({'ticket_id': ticket.ticket_id,
+                    'requestor_full_name': ticket.requestor_full_name,
+                    'status': ticket.status,
+                    'summary': ticket.summary,
+                    'date_created': ticket.date_created,
+                    'date_updated': ticket.date_updated
+                    } for ticket in ticket_queryset)
+    
+    tickets = sorted(tickets, key=itemgetter('date_created'), reverse=True)
+    
+    return tickets

@@ -20,7 +20,7 @@ from django.views.generic import RedirectView
 from django.views.defaults import server_error, permission_denied, page_not_found
 
 from .apps.adgroups.views import ResTechListEditView
-from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, handler500
+from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, handler500, TicketSummaryView
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
@@ -29,7 +29,7 @@ from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrder
 from .apps.portmap.views import ResidenceHallWiredPortsView
 
 from .apps.adgroups.ajax import remove_resnet_tech
-from .apps.core.ajax import update_building, update_network_status
+from .apps.core.ajax import update_building, update_network_status, get_tickets
 from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
@@ -98,6 +98,8 @@ urlpatterns = [
     url(r'^(?P<mode>frame|external|link_handler)/(?P<key>\b[a-zA-Z0-9_]*\b)/$', login_required(link_handler), name='link_handler'),
     url(r'^(?P<mode>frame|external|link_handler)/(?P<key>cisco)/(?P<ip>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(link_handler), name='link_handler_cisco'),
     url(r'^core/network_status/update/$', update_network_status, name='core_update_network_status'),
+    url(r'^core/tickets/list/$', login_required(technician_access(get_tickets)), name='core_get_tickets'),
+    url(r'^core/tickets/list/(?P<ticket_id>\b[0-9]*\b)/$', login_required(technician_access(TicketSummaryView.as_view())), name='core_ticket_summary'),
 ]
 
 # Daily Duties
