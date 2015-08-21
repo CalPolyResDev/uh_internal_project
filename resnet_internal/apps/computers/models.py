@@ -72,7 +72,7 @@ class Pinhole(Model):
     border_fw = BooleanField(default=None, verbose_name='Border Firewall')
     tcp_ports = ListField(verbose_name='TCP Ports')
     udp_ports = ListField(verbose_name='UDP Ports')
-    sr_number = IntegerField(max_length=11, null=True, verbose_name='SR Number', db_column='ticket_id')
+    sr_number = IntegerField(null=True, verbose_name='SR Number', db_column='ticket_id')
 
     def __str__(self):
         return 'Pinhole: ' + str(self.ip_address)
@@ -86,7 +86,7 @@ class DomainName(Model):
 
     ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address')
     domain_name = CharField(max_length=100, verbose_name='Domain Name')
-    sr_number = IntegerField(max_length=11, null=True, verbose_name='SR Number', db_column='ticket_id')
+    sr_number = IntegerField(null=True, verbose_name='SR Number', db_column='ticket_id')
 
     def __str__(self):
         return 'DNS Record: ' + str(self.ip_address)

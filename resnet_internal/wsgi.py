@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.4
+#!/usr/bin/python3.4
 import os
 import sys
 import site
@@ -80,9 +80,9 @@ def activate_env():
 
 activate_env()
 
-import django
-from django.core.handlers.wsgi import WSGIHandler
-from raven.contrib.django.raven_compat.middleware.wsgi import Sentry
+import django  # noqa
+from django.core.handlers.wsgi import WSGIHandler  # noqa
+from raven.contrib.django.raven_compat.middleware.wsgi import Sentry  # noqa
 django.setup()
 
 # Send any wsgi errors to Sentry

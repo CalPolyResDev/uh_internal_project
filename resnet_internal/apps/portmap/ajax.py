@@ -15,7 +15,6 @@ from collections import OrderedDict
 from django.db.models import Q
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
-from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.views.decorators.http import require_POST
 from django.conf import settings
 from django.utils.encoding import smart_str
@@ -26,7 +25,6 @@ from paramiko import SSHClient, AutoAddPolicy
 
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
-from ..core.models import Community
 from .models import ResHallWired
 from .forms import ResHallWiredPortUpdateForm
 
@@ -57,7 +55,8 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
 
     extra_options = {
         "language": {
-            "lengthMenu": 'Display <select>' +
+            "lengthMenu":
+                'Display <select>' +
                 '<option value="50">50</option>' +
                 '<option value="100">100</option>' +
                 '<option value="250">250</option>' +
@@ -85,18 +84,6 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
         if not row.active:
             class_names.append("disabled")
 
-        if column == 'switch_ip':
-            value = getattr(row, column)
-
-            ip_url = "/external/cisco/{ip_address}/".format(ip_address=value)
-
-            editable_block = self.editable_block_template.format(value=value)
-            class_names.append("editable")
-
-            link_block = self.link_block_template.format(link_url=ip_url, onclick_action="", link_target="_blank", link_class_name="", link_style="", link_text=value)
-            inline_images = self.icon_template.format(icon_url=static('images/icons/cisco.gif'))
-
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=link_block, inline_images=inline_images, editable_block=editable_block)
         elif column == 'active':
             onclick = "confirm_status_change({id});return false;".format(id=row.id)
             link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="", link_style="color:red; cursor:pointer;", link_text="Deactivate" if getattr(row, column) else "Activate")

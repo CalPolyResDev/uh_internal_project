@@ -9,6 +9,7 @@
 		<meta name="keywords" content="Resnet Internal" />
 		<meta name="description" content="Residential Networking Services Internal Tools" />
 		<link href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}" rel="stylesheet" type="text/css" />
+		<link href="{% static 'css/bootstrap_tooltip.css' %}" rel="stylesheet" type="text/css" />
 		<link href="{% static 'common/css/cp_screen_3.4.css' %}" rel="stylesheet" type="text/css" media="screen" />
 		<link href="{% static 'common/css/cp_print_3.4.css' %}" rel="stylesheet" type="text/css" media="print" />
 		<link href="{% static 'css/screen.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
@@ -19,6 +20,7 @@
 		<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
 		<script type="text/javascript" src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'fancybox/jquery.fancybox.pack.js' %}?v=2.1.5"></script>
+        <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
 		{% block meta %}
 		<script type="text/javascript">
             $(document).ready(function() {
@@ -33,6 +35,9 @@
                     closeClick  : false,
                     openEffect  : 'none',
                     closeEffect : 'none',
+                });
+                $('[data-toggle="popover"]').popover({
+                    html: true,
                 });
             });
         </script>
@@ -93,12 +98,18 @@
 				{% if request.user|technician_access %}
 				<h2>Technician Tools</h2>
 				<ul>
+				    <li>
+                        <a href="/link_handler/email/" id="email_link" onclick="updateDuty('email', '')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
+                    </li>
 					<li>
 						<a href="/link_handler/portal/" class="handler_link"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
 					</li>
 					<li>
-						<a href="/link_handler/srs/" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" />SRS Ticket Manager</a>
+						<a href="/link_handler/srs/" id="srs_ticket_link" onclick="updateDuty('tickets', '')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
 					</li>
+					<li>
+                        <a style="cursor: pointer;" id="voicemail_link" onclick="updateDuty('messages', '{% url 'voicemail_list' %}')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
+                    </li>
 					<li>
 						<a href="/link_handler/advocate/" class="handler_link"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
 					</li>
@@ -108,12 +119,6 @@
 					<!-- <li>
 						<a href="/link_handler/abuse/" class="handler_link"><img src="{% static 'images/icons/log.png' %}" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
 					</li> -->
-					<li>
-						<a href="/link_handler/cisco/" class="handler_link"><img src="{% static 'images/icons/cisco.gif' %}" alt="Cisco View" align="top" width="16" height="16" border="0" />Cisco View</a>
-					</li>
-					<li>
-						<a href="/link_handler/ccamgr/" class="handler_link"><img src="{% static 'images/icons/cisco.gif' %}" alt="Clean Access Manager" align="top" width="16" height="16" border="0" />CCA Manager</a>
-					</li>
 					<li>
 						<a href="/link_handler/reslife/" class="handler_link"><img src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/favicon.ico" alt="ResLife Internal" align="top" width="16" height="16" border="0">ResLife Internal</a>
 					</li>
@@ -197,7 +202,7 @@
 				<h2>Equipment</h2>
 				<ul>
 					<li>
-						<a href="{% url 'printer_request_list' %}"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" />Printer Requests</a>
+						<a style="cursor: pointer;" id="printer_request_link" onclick="updateDuty('printerrequests', '{% url 'printer_request_list' %}')" title="Printer Requests" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" /><span id="printer_requests_text">Printer Requests</span></a>
 					</li>
 					<ul>
 						<li>
@@ -218,48 +223,6 @@
                     </li>
                 </ul>
                 {% endif %}
-
-				{% if request.user|technician_access %}
-				<!-- Begin Daily Duties Widget -->
-				<div id="navcontent1">
-					<div class="gold" id="dailyDuties">
-						<h2 class="center">Daily Duties</h2>
-						<h3>Check Printer Requests</h3>
-                        <p>
-                            Last Checked:
-                            <br />
-                            <font color="#900">retrieving data...</font>
-                            <br />
-                        </p>
-						<h3>Check Voicemail</h3>
-						<p>
-							Last Checked:
-							<br />
-							<font color="#900">retrieving data...</font>
-							<br />
-						</p>
-						<h3>Check Email</h3>
-						<p>
-							Last Checked:
-							<br />
-							<font color="#900">retrieving data...</font>
-							<br />
-						</p>
-						<h3>Check Tickets</h3>
-						<p>
-							Last Checked:
-							<br />
-							<font color="#900">retrieving data...</font>
-							<br />
-						</p>
-						<h3></h3>
-						<p>
-							Note: Times update upon click of task title link.
-						</p>
-					</div>
-				</div>
-				<!-- End Daily Duties Widget -->
-				{% endif %}
 			</div>
 			<!-- End Navigation Bar -->
 			{% endif %}
@@ -308,41 +271,30 @@
             };
             $(document).ready(function() {
                 update_link_targets("{{ request.user.open_links_in_frame }}");
-                {% if request.user.is_authenticated %}refreshDuties();{% endif %}
+                {% if request.user.is_authenticated %}
+                    refreshDuties();
+                {% endif %}
             });
         </script>
         {% if request.user.is_authenticated %}
 		<script type="text/javascript">
 			function refreshDuties() {
 				ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
-					update_link_targets("{{ request.user.open_links_in_frame }}");
-					return true;
+					$("#email_link").attr('data-content', response_context.email_content);
+					$("#srs_ticket_link").attr('data-content', response_context.tickets_content);
+					$("#voicemail_link").attr('data-content', response_context.voicemail_content);
+					$("#printer_request_link").attr('data-content', response_context.printer_requests_content);
 				});
-				return false;
 			};
 			function updateDuty(duty, redirect_url, target) {
 				ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
-				    if (target == 'handler') {
-				        if ("{{ request.user.open_links_in_frame }}" == "True") {
-				            window.open(redirect_url, '_self');
-				        }
-				        else {
-				            window.open(redirect_url, '_blank');
-				            refreshDuties();
-				        }
+				    if (redirect_url) {
+				        window.open(redirect_url, '_self');
 				    }
-				    else if (target == '_self') {
-				        if (redirect_url != "") {
-				            window.open(redirect_url, '_self');
-				        }
-				    }
-				    else if (target == '_blank') {
-				        window.open(redirect_url, '_blank');
+				    else {
 				        refreshDuties();
 				    }
-					return true;
 				});
-				return false;
 			};
 		</script>
 		{% endif %}

@@ -20,7 +20,8 @@ from django.views.generic import RedirectView
 from django.views.defaults import server_error, permission_denied, page_not_found
 
 from .apps.adgroups.views import ResTechListEditView
-from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, PhoneInstructionsView, handler500
+from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, handler500, TicketSummaryView
+from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
 from .apps.printers.views import PrintersView
@@ -28,8 +29,8 @@ from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrder
 from .apps.portmap.views import ResidenceHallWiredPortsView
 
 from .apps.adgroups.ajax import remove_resnet_tech
-from .apps.core.ajax import update_building
-from .apps.dailyduties.ajax import refresh_duties, update_duty
+from .apps.core.ajax import update_building, update_network_status, get_tickets
+from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
 from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
@@ -93,12 +94,21 @@ urlpatterns = [
     url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^logout/$', logout, name='logout'),
     url(r'^ajax/update_building/$', update_building, name='ajax_update_building'),
-    url(r'^daily_duties/refresh_duties/$', login_required(technician_access(refresh_duties)), name='daily_duties_refresh_duties'),
-    url(r'^daily_duties/update_duty/$', login_required(technician_access(update_duty)), name='daily_duties_update_duty'),
     url(r'^settings/navigation/$', login_required(NavigationSettingsView.as_view()), name='navigation_settings'),
-    url(r'^message/$', login_required(technician_access(PhoneInstructionsView.as_view())), name='phone_instructions'),
     url(r'^(?P<mode>frame|external|link_handler)/(?P<key>\b[a-zA-Z0-9_]*\b)/$', login_required(link_handler), name='link_handler'),
     url(r'^(?P<mode>frame|external|link_handler)/(?P<key>cisco)/(?P<ip>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(link_handler), name='link_handler_cisco'),
+    url(r'^core/network_status/update/$', update_network_status, name='core_update_network_status'),
+    url(r'^core/tickets/list/$', login_required(technician_access(get_tickets)), name='core_get_tickets'),
+    url(r'^core/tickets/list/(?P<ticket_id>\b[0-9]*\b)/$', login_required(technician_access(TicketSummaryView.as_view())), name='core_ticket_summary'),
+]
+
+# Daily Duties
+urlpatterns += [
+    url(r'^daily_duties/voicemail_list/$', login_required(technician_access(VoicemailListView.as_view())), name='voicemail_list'),
+    url(r'^daily_duties/refresh_duties/$', login_required(technician_access(refresh_duties)), name='daily_duties_refresh_duties'),
+    url(r'^daily_duties/update_duty/$', login_required(technician_access(update_duty)), name='daily_duties_update_duty'),
+    url(r"^daily_duties/voicemail/(?P<message_uuid>[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)/$", login_required(technician_access(VoicemailAttachmentRequestView.as_view())), name='voicemail_attachment_request'),
+    url(r"^daily_duties/remove_voicemail/$", login_required(technician_access(remove_voicemail)), name='remove_voicemail'),
 ]
 
 # ResNet Technician Orientation
@@ -117,7 +127,7 @@ urlpatterns += [
     url(r'^manage/technicians/remove/$', login_required(staff_access(remove_resnet_tech)), name='remove_resnet_tech'),
 ]
 
-# Univeristy Housing Computer Index
+# University Housing Computer Index
 urlpatterns += [
     url(r'^computers/$', login_required(computers_access(ComputersView.as_view())), name='uh_computers'),
     url(r'^computers/populate/$', login_required(computers_access(PopulateComputers.as_view())), name='populate_uh_computers'),
