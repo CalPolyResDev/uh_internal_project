@@ -262,7 +262,6 @@
 	<script type="text/javascript">
 	    {% if request.user.is_authenticated %}
         function refreshDuties() {
-            console.log("here");
             ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
                 $("#email_link").attr('data-content', response_context.email_content);
                 $("#srs_ticket_link").attr('data-content', response_context.tickets_content);
