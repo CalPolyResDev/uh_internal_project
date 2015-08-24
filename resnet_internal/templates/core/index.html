@@ -53,9 +53,9 @@
     </div>
   </div>
     {% block extra_script %}
-    {{ block.super }}
     <script type="text/javascript">
         $(document).ready(function() {
+            console.log('here2.');
             ajaxGet("{% url 'core_update_network_status' %}");
             {% if request.user.is_authenticated %}
             ajaxGet("{% url 'core_get_tickets' %}");
