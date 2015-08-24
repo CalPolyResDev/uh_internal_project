@@ -15,7 +15,7 @@ class StaffMappingAdmin(admin.ModelAdmin):
 class TechFlairAdmin(admin.ModelAdmin):
     list_display = ('tech', 'flair')
 
-    
+
 class NetworkDeviceAdmin(admin.ModelAdmin):
     list_display = ('display_name', 'dns_name', 'ip_address')
     list_filter = ('display_name', 'dns_name')

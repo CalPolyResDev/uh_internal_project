@@ -29,7 +29,7 @@ def refresh_duties(request):
     voicemail_dict = GetDutyData().get_messages()
     email_dict = GetDutyData().get_email()
     tickets_dict = GetDutyData().get_tickets(request.user)
-    
+
     def duty_dict_to_link_text(daily_duty_dict, name):
         return_string = name
 
@@ -39,7 +39,7 @@ def refresh_duties(request):
             return_string += ' <strong>(' + str(daily_duty_dict['count']) + ')</strong>'
 
         return return_string
-    
+
     def duty_dict_to_popover_html(daily_duty_dict):
         popover_html = """
             Last Checked:

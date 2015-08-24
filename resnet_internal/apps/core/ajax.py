@@ -140,7 +140,7 @@ def get_tickets(request):
     now = datetime.today()
     for ticket in tickets:
         time_difference = (now - ticket['date_updated']).total_seconds() / 86400
-        
+
         if time_difference < 3:
             ticket['display_class'] = 'bg-success'
         elif time_difference < 7:
@@ -159,5 +159,5 @@ def get_tickets(request):
             '#tickets_response': response_html
         }
     }
-    
+
     return data
