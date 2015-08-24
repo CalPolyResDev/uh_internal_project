@@ -18,7 +18,6 @@ class TechFlairAdmin(admin.ModelAdmin):
 
 class NetworkDeviceAdmin(admin.ModelAdmin):
     list_display = ('display_name', 'dns_name', 'ip_address')
-    list_filter = ('display_name', 'dns_name')
 
 
 class ResNetInternalUserAdmin(admin.ModelAdmin):
