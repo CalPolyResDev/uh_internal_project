@@ -52,14 +52,15 @@
       </div>
     </div>
   </div>
-    {% block extra_script %}
-    <script type="text/javascript">
-        $(document).ready(function() {
-            ajaxGet("{% url 'core_update_network_status' %}");
-            {% if request.user.is_authenticated %}
-            ajaxGet("{% url 'core_get_tickets' %}");
-            {% endif %}
-        });
-    </script>
-    {% endblock %}
  {% endblock %}
+ 
+{% block extra_script %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        ajaxGet("{% url 'core_update_network_status' %}");
+        {% if request.user.is_authenticated %}
+        ajaxGet("{% url 'core_get_tickets' %}");
+        {% endif %}
+    });
+</script>
+{% endblock %}

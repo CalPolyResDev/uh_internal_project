@@ -289,15 +289,17 @@
             }
         };
         $(document).ready(function() {
-            update_link_targets("{{ request.user.open_links_in_frame }}");
             {% if request.user.is_authenticated %}
                 refreshDuties();
             {% endif %}
+            update_link_targets("{{ request.user.open_links_in_frame }}");
         });
     </script>
 	<noscript>
     	<div id="noscript-warning">Many applications on this website require that JavaScript be enabled. Please do so.</div>
 	</noscript>
+	{% block extra_script %}
+	{% endblock %}
 </body>
 {% endblock %}
 </html>
