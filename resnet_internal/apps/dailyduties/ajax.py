@@ -25,10 +25,11 @@ logger = logging.getLogger(__name__)
 def refresh_duties(request):
 
     # Load data dicts
-    printer_requests_dict = GetDutyData().get_printer_requests()
-    voicemail_dict = GetDutyData().get_messages()
-    email_dict = GetDutyData().get_email()
-    tickets_dict = GetDutyData().get_tickets(request.user)
+    with GetDutyData() as duty_data_manager:
+        printer_requests_dict = duty_data_manager.get_printer_requests()
+        voicemail_dict = duty_data_manager.get_messages()
+        email_dict = duty_data_manager.get_email()
+        tickets_dict = duty_data_manager.get_tickets(request.user)
 
     def duty_dict_to_link_text(daily_duty_dict, name):
         return_string = name

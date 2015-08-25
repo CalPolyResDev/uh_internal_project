@@ -31,6 +31,19 @@ ACCEPTABLE_LAST_CHECKED = timedelta(days=1)
 
 class EmailConnectionMixin(object):
 
+    def __init__(self, *args, **kwargs):
+        super(EmailConnectionMixin, self).__init__(*args, **kwargs)
+        if self.server is None:
+            self._init_mail_connection()
+
+    def __enter__(self):
+        if self.server is None:
+            self._init_mail_connection()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.server.logout()
+
     def _init_mail_connection(self):
         # Connect to the email server and authenticate
         if settings.INCOMING_EMAIL['IMAP4']['USE_SSL']:
@@ -42,19 +55,6 @@ class EmailConnectionMixin(object):
 
 class VoicemailManager(EmailConnectionMixin):
     server = None
-
-    def __init__(self, *args, **kwargs):
-        super(VoicemailManager, self).__init__(*args, **kwargs)
-        if self.server is None:
-            self._init_mail_connection()
-
-    def __enter__(self):
-        if self.server is None:
-            self._init_mail_connection()
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.server.logout()
 
     def _parse_message_id(self, message_id_string):
         return message_id_string.split('<')[1].rsplit('>')[0]
@@ -233,7 +233,6 @@ class GetDutyData(EmailConnectionMixin):
             data = DailyDuties.objects.get(name='messages')
 
             count = self.server.select('Voicemails', readonly=True)[1]
-            self.server.logout()
 
             # Select the Inbox, get the message count
             voicemail["count"] = int(count[0])
@@ -269,7 +268,6 @@ class GetDutyData(EmailConnectionMixin):
 
             # Select the Inbox, get the message count
             count = self.server.select('Inbox', readonly=True)[1]
-            self.server.logout()
 
             email["count"] = int(count[0])
             if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
