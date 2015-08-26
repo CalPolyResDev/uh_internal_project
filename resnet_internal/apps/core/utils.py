@@ -12,8 +12,6 @@ from sys import platform
 from copy import deepcopy
 from operator import itemgetter
 
-from uwsgidecorators import timer
-
 from srsconnector.models import ServiceRequest
 
 from .models import NetworkDevice
