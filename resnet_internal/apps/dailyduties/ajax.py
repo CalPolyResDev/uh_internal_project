@@ -17,7 +17,7 @@ from django.core.cache import cache
 from django_ajax.decorators import ajax
 
 from .models import DailyDuties
-from .utils import GetDutyData, VoicemailManager
+from .utils import GetDutyData, EmailManager
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +107,7 @@ def remove_voicemail(request):
     context["error_message"] = None
     context["message_uuid"] = message_uuid
 
-    with VoicemailManager() as voicemail_manager:
+    with EmailManager() as voicemail_manager:
         voicemail_manager.delete_message(message_uuid)
 
     return context

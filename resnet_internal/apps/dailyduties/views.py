@@ -12,7 +12,7 @@ from django.views.generic.base import TemplateView
 from django.http.response import HttpResponse
 from django.core.cache import cache
 
-from .utils import VoicemailManager
+from .utils import EmailManager
 
 
 class VoicemailListView(TemplateView):
@@ -21,7 +21,7 @@ class VoicemailListView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(VoicemailListView, self).get_context_data(**kwargs)
 
-        with VoicemailManager() as voicemail_manager:
+        with EmailManager() as voicemail_manager:
             context["voicemails"] = voicemail_manager.get_all_voicemail_messages()
 
         return context
@@ -35,7 +35,7 @@ class VoicemailAttachmentRequestView(TemplateView):
         response = HttpResponse()
 
         if not cached_file_data:
-            with VoicemailManager() as voicemail_manager:
+            with EmailManager() as voicemail_manager:
                 filedata = voicemail_manager.get_attachment_by_uuid(message_uuid)[1]
             cache.set('voicemail:' + message_uuid, filedata, 7200)
         else:

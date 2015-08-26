@@ -53,7 +53,7 @@ class EmailConnectionMixin(object):
         self.server.login(user=settings.INCOMING_EMAIL['IMAP4']['USER'], password=settings.INCOMING_EMAIL['IMAP4']['PASSWORD'])
 
 
-class VoicemailManager(EmailConnectionMixin):
+class EmailManager(EmailConnectionMixin):
     server = None
 
     def _parse_message_id(self, message_id_string):
