@@ -80,8 +80,3 @@ def get_ticket_list(user):
     tickets = sorted(tickets, key=itemgetter('date_created'), reverse=True)
 
     return tickets
-
-
-@timer(10)
-def uwsgi_chron_test(signum):
-    print('10 second timer fired successfully.')
