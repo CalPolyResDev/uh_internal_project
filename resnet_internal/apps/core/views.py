@@ -138,9 +138,9 @@ class TicketSummaryView(TemplateView):
         context = super(TicketSummaryView, self).get_context_data(**kwargs)
         ticket_id = kwargs['ticket_id']
         context['ticket'] = ServiceRequest.objects.get(ticket_id=ticket_id)
-        
+
         time_difference = (datetime.today() - context['ticket'].date_updated).total_seconds() / 86400
-        
+
         if time_difference < 3:
             context['date_display_class'] = 'text-success'
         elif time_difference < 7:
@@ -149,7 +149,7 @@ class TicketSummaryView(TemplateView):
             context['date_display_class'] = 'text-warning'
         else:
             context['date_display_class'] = 'text-danger'
-        
+
         return context
 
 

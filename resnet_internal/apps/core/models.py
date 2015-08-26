@@ -69,7 +69,7 @@ class Department(Model):
 
 class NetworkDevice(Model):
     """Network Infrastructure Device."""
-    
+
     display_name = CharField(max_length=100, verbose_name='Display Name')
     dns_name = CharField(max_length=75, verbose_name='DNS Name')
     ip_address = GenericIPAddressField(verbose_name='IP Address', protocol='IPv4')
