@@ -1,8 +1,9 @@
 {% extends "base_frame.html" %}
+{% load core_filters %}
 {% block subtitle %} | Ticket Summary{% endblock %}
 
 {% block content %}
-    <h1>Summary: {{ ticket.summary }}</h1>
+    <h1>Summary: {{ ticket.summary|clean_srs_escapes }}</h1>
     {% if ticket %}
         <h3>Details:</h3>
         <table>
