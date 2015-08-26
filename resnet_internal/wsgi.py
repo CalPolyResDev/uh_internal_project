@@ -84,6 +84,7 @@ import django  # noqa
 from django.core.handlers.wsgi import WSGIHandler  # noqa
 from raven.contrib.django.raven_compat.middleware.wsgi import Sentry  # noqa
 django.setup()
+from resnet_internal.apps.core import utils   # noqa
 
 # Send any wsgi errors to Sentry
 application = Sentry(WSGIHandler())
