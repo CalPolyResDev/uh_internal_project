@@ -83,5 +83,5 @@ def get_ticket_list(user):
 
 
 @timer(10)
-def uwsgi_chron_test():
+def uwsgi_chron_test(signum):
     print('10 second timer fired successfully.')
