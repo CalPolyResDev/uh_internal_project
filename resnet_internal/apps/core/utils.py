@@ -12,6 +12,8 @@ from sys import platform
 from copy import deepcopy
 from operator import itemgetter
 
+from uwsgidecorators import timer
+
 from srsconnector.models import ServiceRequest
 
 from .models import NetworkDevice
@@ -78,3 +80,8 @@ def get_ticket_list(user):
     tickets = sorted(tickets, key=itemgetter('date_created'), reverse=True)
 
     return tickets
+
+
+@timer(10)
+def uwsgi_chron_test():
+    print('10 second timer fired successfully.')
