@@ -2,44 +2,41 @@
 {% load core_user_tests %}
 {% load staticfiles %}
 
-{% block subtitle %} | ResNet Voicemail Messages{% endblock %}
+{% block subtitle %} | Email{% endblock %}
 
 {% block content %}
     <div id="content">
-        <h1>ResNet Voicemail Messages</h1>
-    
-        <table class="dataTable">
-            <tbody>
-                <tr>
-                    <th scope="col">Date</th>
-                    <th scope="col">Sender</th>
-                    <th scope="col">Play Voicemail</th>
-                    <th scope="col">Archive</th>
-                </tr>
-                {% if voicemails %}
-                    {% for voicemail in voicemails %}
-                    <tr id="voicemail_{{ voicemail.message_uuid }}">
-                        <td>{{ voicemail.date }}</td>
-                        <td>{{ voicemail.sender }}</td>
-                        <td>
-                            <audio controls autobuffer preload='none'>
-                                <source src="{% url 'voicemail_attachment_request' voicemail.message_uuid %}" type='audio/wav'/>
-                                <p>Please use any browser other than IE.</p>
-                            </audio>
-                        </td>
-                        <td>{% if request.user|technician_access %}<a id="archive_{{ voicemail.message_uuid }}" style="color:red; cursor:pointer;" onclick="remove_voicemail('{{ voicemail.message_uuid }}');">Archive</a>
-                            <div id="spinner_{{ voicemail.message_uuid }}" class="spinner" style="display:none;">
-                                <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
-                            </div>{% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                <tr>
-                    <td colspan="4" style="text-align: center;">There are currently no new voicemails.</td>
-                </tr>
-                {% endif %}
-            </tbody>
+        <h1>ResNet Email Messages</h1>
+        <table>
+            <tr>
+                <td style="max-width: 33%;">Folder Structure Here</td>
+                <td>
+                <table class="dataTable">
+                    <tbody>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">From</th>
+                            <th scope="col">Subject</th>
+                            <th scope="col">Unread</th>
+                        </tr>
+                        {% if emails %}
+                            {% for email in emails %}
+                            <tr id="voicemail_{{ voicemail.message_uuid }}">
+                                <td>{{ email.date }}</td>
+                                <td>{{ email.from_name }} &lt;{{email.from_address }}&gt;</td>
+                                <td>{{ email.subject }}</td>
+                                <td>{{ email.unread }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="4" style="text-align: center;">There are currently no emails in this mailbox.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+                </td>
+            </tr>
         </table>
     </div>
 

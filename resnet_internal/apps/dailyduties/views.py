@@ -15,6 +15,18 @@ from django.core.cache import cache
 from .utils import EmailManager
 
 
+class EmailListView(TemplateView):
+    template_name = "dailyduties/email.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(EmailListView, self).get_context_data(**kwargs)
+
+        with EmailManager() as email_manager:
+            context['emails'] = email_manager.get_mailbox_summary('Inbox')
+
+        return context
+
+
 class VoicemailListView(TemplateView):
     template_name = "dailyduties/voicemail_list.html"
 

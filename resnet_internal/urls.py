@@ -21,7 +21,7 @@ from django.views.defaults import server_error, permission_denied, page_not_foun
 
 from .apps.adgroups.views import ResTechListEditView
 from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, handler500, TicketSummaryView
-from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView
+from .apps.dailyduties.views import EmailListView, VoicemailListView, VoicemailAttachmentRequestView
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
 from .apps.printers.views import PrintersView
@@ -104,6 +104,7 @@ urlpatterns = [
 
 # Daily Duties
 urlpatterns += [
+    url(r'^daily_duties/email_list/$', login_required(technician_access(EmailListView.as_view())), name='email_list'),
     url(r'^daily_duties/voicemail_list/$', login_required(technician_access(VoicemailListView.as_view())), name='voicemail_list'),
     url(r'^daily_duties/refresh_duties/$', login_required(technician_access(refresh_duties)), name='daily_duties_refresh_duties'),
     url(r'^daily_duties/update_duty/$', login_required(technician_access(update_duty)), name='daily_duties_update_duty'),

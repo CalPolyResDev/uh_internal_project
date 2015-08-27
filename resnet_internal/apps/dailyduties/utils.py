@@ -145,6 +145,7 @@ class EmailManager(EmailConnectionMixin):
                 'from_address': smart_text(message_from.mailbox) + '@' + smart_text(message_from.host)
             })
 
+        messages.sort(key=itemgetter('date'), reverse=True)
         return messages
 
 
