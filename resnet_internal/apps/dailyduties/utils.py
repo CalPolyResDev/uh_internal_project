@@ -59,9 +59,9 @@ class EmailManager(EmailConnectionMixin):
     server = None
 
     def get_attachment(self, uid):
-        response = self.server.fetch(uid, 'BODY[]')
+        response = self.server.fetch(int(uid), 'BODY[]')
 
-        message = email.message_from_bytes(response[uid][b'BODY[]'])
+        message = email.message_from_bytes(response[int(uid)][b'BODY[]'])
 
         for part in message.walk():
 
@@ -81,12 +81,12 @@ class EmailManager(EmailConnectionMixin):
         self.server.select_folder('Voicemails')
 
         try:
-            self.server.copy(uid, 'Archives/Voicemails')
+            self.server.copy(int(uid), 'Archives/Voicemails')
         except:
             print('Copy Failed!')
             return
 
-        self.server.delete_messages(uid)
+        self.server.delete_messages(int(uid))
         self.server.expunge()
 
     def get_all_voicemail_messages(self):

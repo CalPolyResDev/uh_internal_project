@@ -108,6 +108,6 @@ def remove_voicemail(request):
     context["message_uid"] = message_uid
 
     with EmailManager() as email_manager:
-        email_manager.delete_message(message_uid)
+        email_manager.delete_voicemail_message(message_uid)
 
     return context

@@ -54,7 +54,7 @@
             var spinner = document.getElementById('spinner_' + message_uid); 
             spinner.style.display = 'block';
             
-            ajaxPost("{% url 'remove_voicemail' %}", {"message_uuid": message_uid}, function(response_context) {
+            ajaxPost("{% url 'remove_voicemail' %}", {"message_uid": message_uid}, function(response_context) {
                 var row = document.getElementById('voicemail_' + message_uid);
                 row.parentNode.removeChild(row);
             });
