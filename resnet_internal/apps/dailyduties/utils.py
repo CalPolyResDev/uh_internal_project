@@ -5,7 +5,6 @@
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
-import imaplib
 import email
 from datetime import datetime, timedelta
 import logging
@@ -14,7 +13,7 @@ from operator import itemgetter
 
 from django.conf import settings
 from django.db import DatabaseError
-from django.utils.encoding import smart_text, smart_bytes
+from django.utils.encoding import smart_text
 
 import imapclient
 
