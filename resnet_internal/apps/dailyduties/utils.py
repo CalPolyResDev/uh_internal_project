@@ -197,10 +197,10 @@ class GetDutyData(EmailConnectionMixin):
         else:
             data = DailyDuties.objects.get(name='messages')
 
-            count = self.server.select('Voicemails', readonly=True)[1]
+            count = self.server.select_folder('Voicemails', readonly=True)[b'EXISTS']
 
             # Select the Inbox, get the message count
-            voicemail["count"] = int(count[0])
+            voicemail["count"] = count
             if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
                 voicemail["status_color"] = GREEN
             else:
@@ -232,9 +232,9 @@ class GetDutyData(EmailConnectionMixin):
             data = DailyDuties.objects.get(name='email')
 
             # Select the Inbox, get the message count
-            count = self.server.select('Inbox', readonly=True)[1]
+            count = self.server.select_folder('Inbox', readonly=True)[b'EXISTS']
 
-            email["count"] = int(count[0])
+            email["count"] = count
             if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
                 email["status_color"] = GREEN
             else:
