@@ -100,14 +100,14 @@ def remove_voicemail(request):
 
     """
     # Pull post parameters
-    message_uuid = request.POST["message_uuid"]
+    message_uid = request.POST["message_uid"]
 
     context = {}
     context["success"] = True
     context["error_message"] = None
-    context["message_uuid"] = message_uuid
+    context["message_uid"] = message_uid
 
-    with EmailManager() as voicemail_manager:
-        voicemail_manager.delete_message(message_uuid)
+    with EmailManager() as email_manager:
+        email_manager.delete_message(message_uid)
 
     return context

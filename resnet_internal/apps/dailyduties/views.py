@@ -21,8 +21,8 @@ class VoicemailListView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(VoicemailListView, self).get_context_data(**kwargs)
 
-        with EmailManager() as voicemail_manager:
-            context["voicemails"] = voicemail_manager.get_all_voicemail_messages()
+        with EmailManager() as email_manager:
+            context["voicemails"] = email_manager.get_all_voicemail_messages()
 
         return context
 
@@ -30,14 +30,14 @@ class VoicemailListView(TemplateView):
 class VoicemailAttachmentRequestView(TemplateView):
 
     def render_to_response(self, context, **response_kwargs):
-        message_uuid = self.kwargs["message_uuid"]
-        cached_file_data = cache.get('voicemail:' + message_uuid)
+        message_uid = self.kwargs["message_uid"]
+        cached_file_data = cache.get('voicemail:' + message_uid)
         response = HttpResponse()
 
         if not cached_file_data:
-            with EmailManager() as voicemail_manager:
-                filedata = voicemail_manager.get_attachment_by_uuid(message_uuid)[1]
-            cache.set('voicemail:' + message_uuid, filedata, 7200)
+            with EmailManager() as email_manager:
+                filedata = email_manager.get_attachment(message_uid)[1]
+            cache.set('voicemail:' + message_uid, filedata, 7200)
         else:
             filedata = cached_file_data
 
