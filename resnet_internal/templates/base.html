@@ -22,6 +22,7 @@
         <script type="text/javascript" src="{% static 'fancybox/jquery.fancybox.pack.js' %}?v=2.1.5"></script>
         <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
     	{% block meta %}
+    	{% endblock %}
     	<script type="text/javascript">
             $(document).ready(function() {
                 $(".popup_frame").fancybox({
@@ -41,7 +42,6 @@
                 });
             });
         </script>
-    	{% endblock %}
     	<title>ResNet Internal - Online Tools{% block subtitle %}{% endblock %}</title>
     </head>
     {% block body %}

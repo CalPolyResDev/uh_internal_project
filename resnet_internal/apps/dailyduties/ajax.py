@@ -13,6 +13,8 @@ from datetime import datetime
 from django.contrib.auth import get_user_model
 from django.views.decorators.http import require_POST
 from django.core.cache import cache
+from django.utils.encoding import smart_text
+from django.http.response import HttpResponse
 
 from django_ajax.decorators import ajax
 
@@ -111,3 +113,29 @@ def remove_voicemail(request):
         email_manager.delete_voicemail_message(message_uid)
 
     return context
+
+
+def get_email_folders(request):
+    with EmailManager() as email_manager:
+        folder_response = email_manager.server.list_folders()
+
+    html_response = "<ul><li class='jstree-open' id='root'>ResNet Email<ul>"
+    current_parents = []
+
+    for flags, delimiter, folder_name in folder_response:
+        hierarchical_list = folder_name.split(smart_text(delimiter))
+
+        if current_parents and (len(hierarchical_list) < 2 or not current_parents[-1] == hierarchical_list[-2]):
+            html_response += '</li></ul>'
+            current_parents.pop()
+
+        if b'\\HasChildren' in flags:
+            html_response += "<li class='jstree-closed' id='" + folder_name + "'>" + hierarchical_list[-1]
+            html_response += '<ul>'
+            current_parents.append(hierarchical_list[-1])
+        else:
+            html_response += '<li id="' + folder_name + '">' + hierarchical_list[-1] + '</li>'
+
+    html_response += "</li></ul></ul>"
+
+    return HttpResponse(html_response)

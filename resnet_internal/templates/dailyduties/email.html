@@ -4,13 +4,20 @@
 
 {% block subtitle %} | Email{% endblock %}
 
+{% block meta %}
+<script src="{% static 'js/jstree.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'css/jstree.css' %}" />
+{% endblock %}
+
 {% block content %}
     <div id="content">
         <h1>ResNet Email Messages</h1>
         <table>
             <tr>
-                <td style="max-width: 33%;">Folder Structure Here</td>
-                <td>
+                <td style="vertical-align: top;">
+                    <div id="jstree_folder_structure"></div>
+                </td>
+                <td style="vertical-align: top;" >
                 <table class="dataTable">
                     <tbody>
                         <tr>
@@ -21,7 +28,7 @@
                         </tr>
                         {% if emails %}
                             {% for email in emails %}
-                            <tr id="voicemail_{{ voicemail.message_uuid }}">
+                            <tr id="email_{{ email.message_uid }}">
                                 <td>{{ email.date }}</td>
                                 <td>{{ email.from_name }} &lt;{{email.from_address }}&gt;</td>
                                 <td>{{ email.subject }}</td>
@@ -43,16 +50,28 @@
     {% block extra_script %}
     {{ block.super }}
     <script type="text/javascript">
-        function remove_voicemail(message_uuid)  {
+        $(document).ready(function() {
+                $('#jstree_folder_structure').jstree({
+                    'core': {
+                        'data': {
+                            'url': "{% url 'email_get_folders' %}",
+                            'data': function(node) {
+                                return { 'id': node.text };
+                            }
+                        }
+                    }
+                });
+        });
+        function remove_voicemail(message_uid)  {
             // Cannot use JQuery here: $ signs and other character in UUID break the query
-            var archive_link = document.getElementById('archive_' + message_uuid);
+            var archive_link = document.getElementById('archive_' + message_uid);
             archive_link.style.display = 'none';
             
-            var spinner = document.getElementById('spinner_' + message_uuid); 
+            var spinner = document.getElementById('spinner_' + message_uid); 
             spinner.style.display = 'block';
             
-            ajaxPost("{% url 'remove_voicemail' %}", {"message_uuid": message_uuid}, function(response_context) {
-                var row = document.getElementById('voicemail_' + message_uuid);
+            ajaxPost("{% url 'remove_voicemail' %}", {"message_uid": message_uid}, function(response_context) {
+                var row = document.getElementById('voicemail_' + message_uid);
                 row.parentNode.removeChild(row);
             });
         }
