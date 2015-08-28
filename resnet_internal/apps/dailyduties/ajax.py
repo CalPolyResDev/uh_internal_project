@@ -15,6 +15,7 @@ from django.views.decorators.http import require_POST
 from django.core.cache import cache
 from django.utils.encoding import smart_text
 from django.http.response import HttpResponse
+from django.template import Template, RequestContext
 
 from django_ajax.decorators import ajax
 
@@ -138,8 +139,45 @@ def get_email_folders(request):
             html_response += '<ul>'
             current_parents.append(hierarchical_list[-1])
         else:
-            html_response += '<li id="' + folder_name + '">' + hierarchical_list[-1] + '</li>'
+            html_response += '<li id="' + folder_name + '"' + (" data-jstree='{\"selected\": true}'" if folder_name == 'INBOX' else "") + '>' + hierarchical_list[-1] + '</li>'
 
     html_response += "</li></ul></ul>"
 
     return HttpResponse(html_response)
+
+@ajax
+@require_POST
+def get_mailbox_summary(request):
+    mailbox_name = request.POST["mailbox"]
+
+    with EmailManager() as email_manager:
+        mailbox_summary = email_manager.get_mailbox_summary(mailbox_name)
+
+    raw_response = """
+        {% if emails %}
+            {% for email in emails %}
+            <tr id="email_{{ email.message_uid }}">
+                <td>{{ email.date }}</td>
+                <td>{{ email.from_name }} &lt;{{email.from_address }}&gt;</td>
+                <td>{{ email.subject }}</td>
+                <td>{{ email.unread }}</td>
+            </tr>
+            {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="4" style="text-align: center;">There are currently no emails in this mailbox.</td>
+        </tr>
+        {% endif %}
+    """
+
+    template = Template(raw_response)
+    context = RequestContext(request, {'emails': mailbox_summary})
+    response_html = template.render(context)
+
+    data = {
+        'fragments': {
+            '#loading_email_record': response_html
+        }
+    }
+
+    return data

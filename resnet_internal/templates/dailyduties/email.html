@@ -17,8 +17,8 @@
                 <td style="vertical-align: top;">
                     <div id="jstree_folder_structure"></div>
                 </td>
-                <td style="vertical-align: top;" >
-                <table class="dataTable">
+                <td style="vertical-align: top; width: 75%;" >
+                <table class="dataTable" id='email_table'>
                     <tbody>
                         <tr>
                             <th scope="col">Date</th>
@@ -26,55 +26,49 @@
                             <th scope="col">Subject</th>
                             <th scope="col">Unread</th>
                         </tr>
-                        {% if emails %}
-                            {% for email in emails %}
-                            <tr id="email_{{ email.message_uid }}">
-                                <td>{{ email.date }}</td>
-                                <td>{{ email.from_name }} &lt;{{email.from_address }}&gt;</td>
-                                <td>{{ email.subject }}</td>
-                                <td>{{ email.unread }}</td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                        <tr>
-                            <td colspan="4" style="text-align: center;">There are currently no emails in this mailbox.</td>
-                        </tr>
-                        {% endif %}
+                        <tr id="loading_email_record"><td colspan="4" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>
                     </tbody>
                 </table>
                 </td>
             </tr>
         </table>
     </div>
+{% endblock %}
 
-    {% block extra_script %}
-    {{ block.super }}
-    <script type="text/javascript">
-        $(document).ready(function() {
-                $('#jstree_folder_structure').jstree({
-                    'core': {
-                        'data': {
-                            'url': "{% url 'email_get_folders' %}",
-                            'data': function(node) {
-                                return { 'id': node.text };
-                            }
+{% block extra_script %}
+{{ block.super }}
+<script type="text/javascript">
+    $(document).ready(function() {
+            $('#jstree_folder_structure')
+            .on('select_node.jstree', function(event, data) {
+                $("#email_table tr:gt(0)").remove();
+                $("#email_table").append('<tr id="loading_email_record"><td colspan="4" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
+                ajaxPost("{% url 'email_get_mailbox_summary' %}", {"mailbox": data.node.text});
+            })
+            .jstree({
+                'core': {
+                    'data': {
+                        'url': "{% url 'email_get_folders' %}",
+                        'data': function(node) {
+                            return { 'id': node.text };
                         }
                     }
-                });
-        });
-        function remove_voicemail(message_uid)  {
-            // Cannot use JQuery here: $ signs and other character in UUID break the query
-            var archive_link = document.getElementById('archive_' + message_uid);
-            archive_link.style.display = 'none';
-            
-            var spinner = document.getElementById('spinner_' + message_uid); 
-            spinner.style.display = 'block';
-            
-            ajaxPost("{% url 'remove_voicemail' %}", {"message_uid": message_uid}, function(response_context) {
-                var row = document.getElementById('voicemail_' + message_uid);
-                row.parentNode.removeChild(row);
+                }
             });
-        }
-    </script>
-    {% endblock %}
+            ajaxPost("{% url 'email_get_mailbox_summary' %}", {"mailbox": 'INBOX'});
+    });
+    function remove_voicemail(message_uid)  {
+        // Cannot use JQuery here: $ signs and other character in UUID break the query
+        var archive_link = document.getElementById('archive_' + message_uid);
+        archive_link.style.display = 'none';
+        
+        var spinner = document.getElementById('spinner_' + message_uid); 
+        spinner.style.display = 'block';
+        
+        ajaxPost("{% url 'remove_voicemail' %}", {"message_uid": message_uid}, function(response_context) {
+            var row = document.getElementById('voicemail_' + message_uid);
+            row.parentNode.removeChild(row);
+        });
+    }
+</script>
 {% endblock %}

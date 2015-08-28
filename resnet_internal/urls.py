@@ -30,7 +30,7 @@ from .apps.portmap.views import ResidenceHallWiredPortsView
 
 from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.core.ajax import update_building, update_network_status, get_tickets
-from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders
+from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
 from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
@@ -104,8 +104,9 @@ urlpatterns = [
 
 # Daily Duties
 urlpatterns += [
-    url(r'^daily_duties/email_list/$', login_required(technician_access(EmailListView.as_view())), name='email_list'),
-    url(r'^daily_duties/email_get_subfolders/$', login_required(technician_access(get_email_folders)), name='email_get_folders'),
+    url(r'^daily_duties/email/list/$', login_required(technician_access(EmailListView.as_view())), name='email_list'),
+    url(r'^daily_duties/email/get_folders/$', login_required(technician_access(get_email_folders)), name='email_get_folders'),
+    url(r'^daily_duties/email/get_mailbox_summary/$', login_required(technician_access(get_mailbox_summary)), name='email_get_mailbox_summary'),
     url(r'^daily_duties/voicemail_list/$', login_required(technician_access(VoicemailListView.as_view())), name='voicemail_list'),
     url(r'^daily_duties/refresh_duties/$', login_required(technician_access(refresh_duties)), name='daily_duties_refresh_duties'),
     url(r'^daily_duties/update_duty/$', login_required(technician_access(update_duty)), name='daily_duties_update_duty'),
