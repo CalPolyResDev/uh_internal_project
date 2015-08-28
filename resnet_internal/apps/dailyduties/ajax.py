@@ -156,11 +156,10 @@ def get_mailbox_summary(request):
     raw_response = """
         {% if emails %}
             {% for email in emails %}
-            <tr id="email_{{ email.message_uid }}">
+            <tr id="email_{{ email.message_uid }}" {% if email.unread %}class="bg-info"{% endif %}>
                 <td>{{ email.date }}</td>
                 <td>{{ email.from_name }} &lt;{{email.from_address }}&gt;</td>
                 <td>{{ email.subject }}</td>
-                <td>{{ email.unread }}</td>
             </tr>
             {% endfor %}
         {% else %}
