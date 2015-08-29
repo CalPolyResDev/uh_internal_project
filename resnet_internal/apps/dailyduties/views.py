@@ -8,15 +8,57 @@
 
 import re
 
-from django.views.generic.base import TemplateView
-from django.http.response import HttpResponse
 from django.core.cache import cache
+from django.http.response import HttpResponse
+from django.views.generic.base import TemplateView
 
 from .utils import EmailManager
 
 
 class EmailListView(TemplateView):
     template_name = "dailyduties/email.html"
+
+
+class EmailMessageView(TemplateView):
+    template_name = "dailyduties/email_viewer.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(EmailMessageView, self).get_context_data(**kwargs)
+        message_uid = kwargs['uid']
+        mailbox_name = kwargs['mailbox_name']
+
+        with EmailManager() as email_manager:
+            message = email_manager.get_email_message(mailbox_name, message_uid)
+
+        def _address_list_to_string(address_list):
+            if not address_list:
+                return ''
+
+            return_string = ''
+
+            for name, email in address_list:
+                return_string += (name + ' <' + email + '>, ') if name else email + ', '
+
+            return return_string[:-2]
+
+        message['to'] = _address_list_to_string(message['to'])
+        message['from'] = _address_list_to_string(message['from'])
+        message['cc'] = _address_list_to_string(message['cc'])
+        message['reply_to'] = _address_list_to_string(message['reply_to'])
+
+        attachment_metadata = []
+
+        for attachment in message['attachments']:
+            metadata = {
+                'filename': attachment[0],
+                'size': len(attachment[1]),
+            }
+            attachment_metadata.append(metadata)
+
+        message['attachments'] = attachment_metadata
+
+        context['message'] = message
+        return context
 
 
 class VoicemailListView(TemplateView):

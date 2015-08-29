@@ -5,22 +5,22 @@
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
-import email
 from datetime import datetime, timedelta
+import email
 import logging
-from ssl import SSLError, SSLEOFError
 from operator import itemgetter
+from srsconnector.models import ServiceRequest
+from ssl import SSLError, SSLEOFError
 
 from django.conf import settings
+from django.core.cache import cache
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
-
 import imapclient
 
-from srsconnector.models import ServiceRequest
-
-from .models import DailyDuties
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
+from .models import DailyDuties
+
 
 logger = logging.getLogger(__name__)
 
@@ -141,12 +141,68 @@ class EmailManager(EmailConnectionMixin):
                 'unread': unread,
                 'date': date,
                 'subject': smart_text(subject),
-                'from_name': smart_text(message_from.name),
+                'from_name': smart_text(message_from.name) if message_from.name else '',
                 'from_address': smart_text(message_from.mailbox) + '@' + smart_text(message_from.host)
             })
 
         messages.sort(key=itemgetter('date'), reverse=True)
         return messages
+
+    def get_email_message(self, mailbox_name, uid):
+        def _convert_list_of_addresses(address_list):
+            if not address_list:
+                return
+
+            output_list = []
+
+            for address in address_list:
+                name = smart_text(address.name) if address.name else ''
+                email = smart_text(address.mailbox) + '@' + smart_text(address.host)
+                output_list.append((name, email))
+
+            return output_list
+
+        response = cache.get('email:raw:' + mailbox_name + ':' + uid)
+
+        if not response:
+            self.server.select_folder(mailbox_name, readonly=True)
+            response = self.server.fetch(int(uid), ['ENVELOPE', 'BODY[]'])
+            cache.set('email:raw:' + mailbox_name + ':' + uid, response, 172800)
+
+        message = email.message_from_bytes(response[int(uid)][b'BODY[]'])
+        envelope = response[int(uid)][b'ENVELOPE']
+
+        body_html = ""
+        body_plain_text = ""
+        attachments = []
+
+        for part in message.walk():
+            if part.get_content_type() in ['multipart', 'multipart/alternative', None]:
+                continue
+            elif part.get_content_type() == 'text/html':
+                body_html += smart_text(part.get_payload(decode=True), errors='replace')
+            elif part.get_content_type() == 'text/plain':
+                body_plain_text += smart_text(part.get_payload(decode=True), errors='replace')
+            else:
+                filename = part.get_filename()
+                file_data = part.get_payload(decode=True)
+                attachments.append((filename, file_data))
+
+        message = {
+            'to': _convert_list_of_addresses(envelope.to),
+            'from': _convert_list_of_addresses(envelope.from_),
+            'cc': _convert_list_of_addresses(envelope.cc),
+            'reply_to': _convert_list_of_addresses(envelope.reply_to),
+            'date': envelope.date,
+            'message-id': smart_text(envelope.message_id),
+            'subject': smart_text(envelope.subject),
+            'body_html': body_html,
+            'body_plain_text': body_plain_text,
+            'attachments': attachments,
+            'is_html': len(body_html) > len(body_plain_text)
+        }
+
+        return message
 
 
 class GetDutyData(EmailConnectionMixin):

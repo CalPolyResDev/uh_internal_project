@@ -6,21 +6,20 @@
 
 """
 
+from datetime import datetime
 import logging
 
-from datetime import datetime
-
 from django.contrib.auth import get_user_model
-from django.views.decorators.http import require_POST
 from django.core.cache import cache
-from django.utils.encoding import smart_text
 from django.http.response import HttpResponse
 from django.template import Template, RequestContext
-
+from django.utils.encoding import smart_text
+from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
 from .models import DailyDuties
 from .utils import GetDutyData, EmailManager
+
 
 logger = logging.getLogger(__name__)
 
@@ -156,7 +155,7 @@ def get_mailbox_summary(request):
     raw_response = """
         {% if emails %}
             {% for email in emails %}
-            <tr id="email_{{ email.message_uid }}" {% if email.unread %}class="bg-info"{% endif %}>
+            <tr id="email_{{ email.uid }}" {% if email.unread %}class="bg-info"{% endif %} onclick="$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe'}); $.fancybox.showLoading()">
                 <td>{{ email.date }}</td>
                 <td>{{ email.from_name }} &lt;{{email.from_address }}&gt;</td>
                 <td>{{ email.subject }}</td>
@@ -170,7 +169,7 @@ def get_mailbox_summary(request):
     """
 
     template = Template(raw_response)
-    context = RequestContext(request, {'emails': mailbox_summary})
+    context = RequestContext(request, {'emails': mailbox_summary, 'mailbox_name': mailbox_name})
     response_html = template.render(context)
 
     data = {
