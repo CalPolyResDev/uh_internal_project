@@ -113,6 +113,7 @@ def update_network_status(request):
 def get_tickets(request):
     raw_response = """
         {% load staticfiles %}
+        {% load core_filters %}
         <table class="dataTable">
             <tbody>
                 <tr>
@@ -130,7 +131,7 @@ def get_tickets(request):
                     </td>
                     <td>{{ ticket.requestor_full_name }}</td>
                     <td>{{ ticket.status }}</td>
-                    <td>{{ ticket.summary }}</td>
+                    <td>{{ ticket.summary|clean_srs_escapes }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
