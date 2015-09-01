@@ -6,18 +6,17 @@
 
 """
 
+from datetime import datetime
 import logging
 
-from datetime import datetime
-
 from django.contrib.auth import get_user_model
-from django.views.decorators.http import require_POST
 from django.core.cache import cache
-
+from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
 from .models import DailyDuties
 from .utils import GetDutyData, VoicemailManager
+
 
 logger = logging.getLogger(__name__)
 
@@ -49,9 +48,9 @@ def refresh_duties(request):
     def duty_dict_to_popover_html(daily_duty_dict):
         popover_html = """
             Last Checked:
-            <font color='""" + daily_duty_dict["status_color"] + """'>""" + daily_duty_dict["last_checked"] + """</font>
+            <font color='""" + str(daily_duty_dict["status_color"]) + """'>""" + str(daily_duty_dict["last_checked"]) + """</font>
             <br />
-            (<span style='text-align: center;'>""" + daily_duty_dict["last_user"] + """</span>)
+            (<span style='text-align: center;'>""" + str(daily_duty_dict["last_user"]) + """</span>)
             """
         return popover_html
 

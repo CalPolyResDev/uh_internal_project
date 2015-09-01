@@ -5,21 +5,21 @@
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
-import imaplib
-import email
 from datetime import datetime, timedelta
+import email
+import imaplib
 import logging
-from ssl import SSLError, SSLEOFError
 from operator import itemgetter
+from srsconnector.models import ServiceRequest
+from ssl import SSLError, SSLEOFError
 
 from django.conf import settings
 from django.db import DatabaseError
 from django.utils.encoding import smart_text, smart_bytes
 
-from srsconnector.models import ServiceRequest
-
-from .models import DailyDuties
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
+from .models import DailyDuties
+
 
 logger = logging.getLogger(__name__)
 
@@ -275,7 +275,7 @@ class GetDutyData(EmailConnectionMixin):
             else:
                 email["status_color"] = RED
             email["last_checked"] = datetime.strftime(data.last_checked, "%Y-%m-%d %H:%M")
-            email["last_user"] = data.last_user.get_full_name()
+            email["last_user"] = data.last_user.get_full_name() if data.last_user else '[Deleted User]'
 
         return email
 
