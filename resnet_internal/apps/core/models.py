@@ -16,23 +16,10 @@ from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.utils.http import urlquote
 
 
-class Building(Model):
-    """University Housing Building."""
-
-    name = CharField(max_length=30, verbose_name="Building Name")
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'University Housing Building'
-
-
 class Community(Model):
     """University Housing Community."""
 
     name = CharField(max_length=30, verbose_name="Community Name")
-    buildings = ManyToManyField(Building)
 
     def __str__(self):
         return self.name
@@ -40,6 +27,19 @@ class Community(Model):
     class Meta:
         verbose_name = 'University Housing Community'
         verbose_name_plural = 'University Housing Communities'
+
+
+class Building(Model):
+    """University Housing Building."""
+
+    name = CharField(max_length=30, verbose_name="Building Name")
+    community = ForeignKey(Community, verbose_name="Community", related_name="buildings")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'University Housing Building'
 
 
 class SubDepartment(Model):

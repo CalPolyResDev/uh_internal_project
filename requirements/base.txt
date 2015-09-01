@@ -2,8 +2,8 @@ Django~=1.8.4
 
 git+https://github.com/kavdev/djangotoolbox
 
-git+https://code.its.calpoly.edu/scm/rmsc/rmsconnector
-git+https://code.its.calpoly.edu/scm/srsc/srsconnector
+git+ssh://git@code.its.calpoly.edu:7999/rmsc/rmsconnector.git
+git+ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git
 colorama==0.3.3
 termcolor==1.1.0
 
