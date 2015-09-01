@@ -9,34 +9,32 @@
 
 import logging
 
-from django.core.exceptions import PermissionDenied
 from django.conf import settings
-from django.conf.urls.static import static
 from django.conf.urls import include, url
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.staticfiles.templatetags.staticfiles import static as staticfiles
-from django.views.generic import RedirectView
+from django.core.exceptions import PermissionDenied
 from django.views.defaults import server_error, permission_denied, page_not_found
-
-from .apps.adgroups.views import ResTechListEditView
-from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, handler500, TicketSummaryView
-from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView
-from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
-from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
-from .apps.printers.views import PrintersView
-from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
-from .apps.portmap.views import ResidenceHallWiredPortsView
+from django.views.generic import RedirectView
 
 from .apps.adgroups.ajax import remove_resnet_tech
-from .apps.core.ajax import update_building, update_network_status, get_tickets
-from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail
-from .apps.orientation.ajax import complete_task, complete_orientation
+from .apps.adgroups.views import ResTechListEditView
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
-from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
-from .apps.printerrequests.ajax import change_request_status, update_part_inventory, update_toner_inventory
+from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
+from .apps.core.ajax import update_building, update_network_status, get_tickets
+from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, handler500, TicketSummaryView
+from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail
+from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView
+from .apps.orientation.ajax import complete_task, complete_orientation
+from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .apps.portmap.ajax import PopulateResidenceHallWiredPorts, UpdateResidenceHallWiredPort, change_port_status
-
+from .apps.portmap.views import ResidenceHallWiredPortsView
+from .apps.printerrequests.ajax import change_request_status, update_part_inventory, update_toner_inventory
+from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
+from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
+from .apps.printers.views import PrintersView
 from .settings.base import (technician_access_test, staff_access_test, printers_access_test, printers_modify_access_test,
                             portmap_access_test, portmap_modify_access_test, computers_access_test, computers_modify_access_test,
                             computer_record_modify_access_test)

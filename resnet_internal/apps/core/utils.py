@@ -6,15 +6,15 @@
 
 """
 
-import logging
-import os
-from sys import platform
 from copy import deepcopy
+import logging
 from operator import itemgetter
-
+import os
 from srsconnector.models import ServiceRequest
+from sys import platform
 
 from .models import NetworkDevice
+
 
 logger = logging.getLogger(__name__)
 

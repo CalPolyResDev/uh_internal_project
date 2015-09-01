@@ -6,11 +6,11 @@
 
 """
 
-from django.views.decorators.http import require_POST
+from srsconnector.models import AccountRequest
 
+from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from ldap_groups import ADGroup
-from srsconnector.models import AccountRequest
 
 
 @ajax

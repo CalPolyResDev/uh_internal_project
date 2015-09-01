@@ -10,8 +10,8 @@ from django.db.models.base import Model
 from django.db.models.fields import BooleanField, CharField, GenericIPAddressField, DateField
 from django.db.models.fields.related import ForeignKey
 
-from ..core.models import Department, SubDepartment
 from ..computers.fields import MACAddressField
+from ..core.models import Department, SubDepartment
 
 
 class Printer(Model):

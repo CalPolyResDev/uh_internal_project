@@ -7,11 +7,12 @@
 
 """
 
-import re
 import ast
+import re
 
-from django.forms.fields import RegexField
 from django.db.models import Field, SubfieldBase, TextField
+from django.forms.fields import RegexField
+
 
 # MAC Address
 MAC_RE = r'^([0-9A-F]{2}[:]){5}([0-9A-F]{2})$'

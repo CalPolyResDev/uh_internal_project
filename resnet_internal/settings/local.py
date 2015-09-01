@@ -1,5 +1,6 @@
 from .base import *  # noqa @PydevCodeAnalysisIgnore
 
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
