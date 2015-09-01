@@ -85,5 +85,7 @@ activate_env()
 
 django.setup()
 
+# Import any functions with uWSGI decoraters here:
+
 # Send any wsgi errors to Sentry
 application = Sentry(WSGIHandler())
