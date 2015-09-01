@@ -133,8 +133,9 @@ class EmailManager(EmailConnectionMixin):
     def get_mailbox_summary(self, mailbox_name):
         self.server.select_folder(mailbox_name)
         message_uids = self.server.search()
-        messages = []
         message_uid_fetch_groups = zip_longest(*(iter(message_uids),) * 500)
+
+        messages = []
 
         for message_uid_group in message_uid_fetch_groups:
             message_uid_group = list(filter(None.__ne__, message_uid_group))
