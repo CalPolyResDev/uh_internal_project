@@ -211,7 +211,7 @@ class GetDutyData(EmailConnectionMixin):
 
         return printer_requests
 
-    def get_messages(self):
+    def get_voicemail(self):
         """Checks the current number of voicemail messages."""
 
         voicemail = {
@@ -230,7 +230,7 @@ class GetDutyData(EmailConnectionMixin):
             voicemail["last_checked"] = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
             voicemail["last_user"] = "Connection Error!"
         else:
-            data = DailyDuties.objects.get(name='messages')
+            data = DailyDuties.objects.get(name='voicemail')
 
             count = self.server.select('Voicemails', readonly=True)[1]
 

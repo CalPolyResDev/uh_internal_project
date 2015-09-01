@@ -29,7 +29,7 @@ def refresh_duties(request):
         with GetDutyData() as duty_data_manager:
             duty_data = {
                 'printer_requests': duty_data_manager.get_printer_requests(),
-                'voicemail': duty_data_manager.get_messages(),
+                'voicemail': duty_data_manager.get_voicemail(),
                 'email': duty_data_manager.get_email(),
                 'tickets': duty_data_manager.get_tickets(request.user),
             }
