@@ -6,12 +6,12 @@
 
 """
 
+from srsconnector.models import STATUS_CHOICES, PrinterRequest
+
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseRedirect
 from django.views.decorators.http import require_POST
-
 from django_ajax.decorators import ajax
-from srsconnector.models import STATUS_CHOICES, PrinterRequest
 
 from .models import Request, Toner, Part
 from .utils import can_fulfill_request, send_replenishment_email, send_delivery_confirmation

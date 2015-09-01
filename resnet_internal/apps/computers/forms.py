@@ -6,8 +6,9 @@
 
 """
 
-from django.forms import Form, ModelForm, BooleanField, CharField, ChoiceField, Textarea, ValidationError
 from srsconnector.models import PRIORITY_CHOICES
+
+from django.forms import Form, ModelForm, BooleanField, CharField, ChoiceField, Textarea, ValidationError
 
 from .fields import PortListFormField, DomainNameListFormFiled
 from .models import Computer

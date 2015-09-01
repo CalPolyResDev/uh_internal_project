@@ -6,14 +6,14 @@
 
 """
 
+from srsconnector.settings import ALIAS as SRS_ALIAS
+
 from django.conf import settings
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse_lazy
-from django.views.generic.edit import FormView
 from django.views.generic import TemplateView
-
+from django.views.generic.edit import FormView
 from django_ewiz import EwizAttacher
-from srsconnector.settings import ALIAS as SRS_ALIAS
 
 from ..core.models import StaffMapping
 from .forms import SRSUploadForm, OnityEmailForm

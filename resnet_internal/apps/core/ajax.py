@@ -6,17 +6,17 @@
 
 """
 
+from datetime import datetime
 import logging
 from operator import itemgetter
-from datetime import datetime
 
-from django.views.decorators.http import require_POST
 from django.template import Template, RequestContext
-
+from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
 from ..core.models import Community
 from ..core.utils import NetworkReachabilityTester, get_ticket_list
+
 
 logger = logging.getLogger(__name__)
 

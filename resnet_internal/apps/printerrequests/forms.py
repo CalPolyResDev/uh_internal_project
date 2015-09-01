@@ -7,6 +7,7 @@
 """
 
 from django.forms import ModelForm
+
 from .models import Toner, Part
 
 
@@ -20,7 +21,7 @@ class TonerCountForm(ModelForm):
 
     class Meta:
         model = Toner
-        fields = ('quantity', 'ordered', )
+        fields = ('quantity', 'ordered',)
 
 
 class PartCountForm(ModelForm):
@@ -33,4 +34,4 @@ class PartCountForm(ModelForm):
 
     class Meta:
         model = Part
-        fields = ('quantity', 'ordered', )
+        fields = ('quantity', 'ordered',)

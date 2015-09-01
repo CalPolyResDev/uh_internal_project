@@ -7,26 +7,26 @@
 
 """
 
-import shlex
-import logging
-import time
 from collections import OrderedDict
+import logging
+import shlex
+import time
 
-from django.db.models import Q
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
-from django.views.decorators.http import require_POST
-from django.conf import settings
+from django.db.models import Q
 from django.utils.encoding import smart_str
-
+from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
-from rmsconnector.utils import Resident
 from paramiko import SSHClient, AutoAddPolicy
+from rmsconnector.utils import Resident
 
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
-from .models import ResHallWired
 from .forms import ResHallWiredPortUpdateForm
+from .models import ResHallWired
+
 
 logger = logging.getLogger(__name__)
 

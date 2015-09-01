@@ -19,8 +19,6 @@ from django.core.exceptions import PermissionDenied
 from django.views.defaults import server_error, permission_denied, page_not_found
 from django.views.generic import RedirectView
 
-from resnet_internal.apps.dailyduties.views import EmailMessageView
-
 from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.adgroups.views import ResTechListEditView
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
@@ -28,7 +26,7 @@ from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequest
 from .apps.core.ajax import update_building, update_network_status, get_tickets
 from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, handler500, TicketSummaryView
 from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary
-from .apps.dailyduties.views import EmailListView, VoicemailListView, VoicemailAttachmentRequestView
+from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .apps.portmap.ajax import PopulateResidenceHallWiredPorts, UpdateResidenceHallWiredPort, change_port_status

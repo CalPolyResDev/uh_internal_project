@@ -21,6 +21,7 @@ from .models import DailyDuties
 from .utils import GetDutyData, EmailManager
 
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -32,7 +33,7 @@ def refresh_duties(request):
         with GetDutyData() as duty_data_manager:
             duty_data = {
                 'printer_requests': duty_data_manager.get_printer_requests(),
-                'voicemail': duty_data_manager.get_messages(),
+                'voicemail': duty_data_manager.get_voicemail(),
                 'email': duty_data_manager.get_email(),
                 'tickets': duty_data_manager.get_tickets(request.user),
             }
@@ -51,9 +52,9 @@ def refresh_duties(request):
     def duty_dict_to_popover_html(daily_duty_dict):
         popover_html = """
             Last Checked:
-            <font color='""" + daily_duty_dict["status_color"] + """'>""" + daily_duty_dict["last_checked"] + """</font>
+            <font color='""" + str(daily_duty_dict["status_color"]) + """'>""" + str(daily_duty_dict["last_checked"]) + """</font>
             <br />
-            (<span style='text-align: center;'>""" + daily_duty_dict["last_user"] + """</span>)
+            (<span style='text-align: center;'>""" + str(daily_duty_dict["last_user"]) + """</span>)
             """
         return popover_html
 

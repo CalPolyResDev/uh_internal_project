@@ -6,25 +6,25 @@
 
 """
 
-import shlex
-import logging
 from collections import OrderedDict
 from datetime import datetime
-
-from django.db.models import Q
-from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
-from django.contrib.staticfiles.templatetags.staticfiles import static
-from django.views.decorators.http import require_POST
-
-from dateutil.relativedelta import relativedelta
-from django_ajax.decorators import ajax
+import logging
+import shlex
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
-from ..core.models import StaffMapping, Department
+from dateutil.relativedelta import relativedelta
+from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
+from django.db.models import Q
+from django.views.decorators.http import require_POST
+from django_ajax.decorators import ajax
+
 from ...settings.base import computers_modify_access_test
+from ..core.models import StaffMapping, Department
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
-from .models import Computer, Pinhole, DomainName
 from .forms import ComputerUpdateForm
+from .models import Computer, Pinhole, DomainName
+
 
 logger = logging.getLogger(__name__)
 
