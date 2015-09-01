@@ -7,6 +7,7 @@
 """
 from datetime import datetime, timedelta
 import email
+from itertools import zip_longest
 import logging
 from operator import itemgetter
 from srsconnector.models import ServiceRequest
@@ -21,6 +22,8 @@ import imapclient
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
 
+
+imapclient.imapclient.imaplib._MAXLINE = 1000000
 
 logger = logging.getLogger(__name__)
 
@@ -43,8 +46,11 @@ class EmailConnectionMixin(object):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.server.close_folder()
-        self.server.logout()
+        try:
+            self.server.close_folder()
+            self.server.logout()
+        except:
+            return
 
     def _init_mail_connection(self):
         host = settings.INCOMING_EMAIL['IMAP4']['HOST']
@@ -127,24 +133,28 @@ class EmailManager(EmailConnectionMixin):
     def get_mailbox_summary(self, mailbox_name):
         self.server.select_folder(mailbox_name)
         message_uids = self.server.search()
-        response = self.server.fetch(message_uids, ['ALL'])
-
         messages = []
-        for uid, data in response.items():
-            unread = b'\\Seen' not in data[b'FLAGS']
-            envelope = data[b'ENVELOPE']
-            date = envelope.date
-            subject = envelope.subject
-            message_from = envelope.from_[0]
+        message_uid_fetch_groups = zip_longest(*(iter(message_uids),) * 500)
 
-            messages.append({
-                'uid': uid,
-                'unread': unread,
-                'date': date,
-                'subject': smart_text(subject),
-                'from_name': smart_text(message_from.name) if message_from.name else '',
-                'from_address': smart_text(message_from.mailbox) + '@' + smart_text(message_from.host)
-            })
+        for message_uid_group in message_uid_fetch_groups:
+            message_uid_group = list(filter(None.__ne__, message_uid_group))
+            response = self.server.fetch(message_uid_group, ['ALL'])
+
+            for uid, data in response.items():
+                unread = b'\\Seen' not in data[b'FLAGS']
+                envelope = data[b'ENVELOPE']
+                date = envelope.date
+                subject = envelope.subject
+                message_from = envelope.from_[0]
+
+                messages.append({
+                    'uid': uid,
+                    'unread': unread,
+                    'date': date,
+                    'subject': smart_text(subject),
+                    'from_name': smart_text(message_from.name) if message_from.name else '',
+                    'from_address': smart_text(message_from.mailbox) + '@' + smart_text(message_from.host)
+                })
 
         messages.sort(key=itemgetter('date'), reverse=True)
         return messages
