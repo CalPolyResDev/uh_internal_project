@@ -43,6 +43,7 @@ class EmailConnectionMixin(object):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+        self.server.close_folder()
         self.server.logout()
 
     def _init_mail_connection(self):
