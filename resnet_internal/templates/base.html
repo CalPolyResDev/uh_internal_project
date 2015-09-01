@@ -2,27 +2,27 @@
 {% load core_user_tests %}
 {% load staticfiles %}
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-		<meta name="layout" content="Cal Poly Web Template" />
-		<meta name="author" content="Alex Kavanaugh - ResNet Development Team" />
-		<meta name="keywords" content="Resnet Internal" />
-		<meta name="description" content="Residential Networking Services Internal Tools" />
-		<link href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}" rel="stylesheet" type="text/css" />
-		<link href="{% static 'css/bootstrap_tooltip.css' %}" rel="stylesheet" type="text/css" />
-		<link href="{% static 'common/css/cp_screen_3.4.css' %}" rel="stylesheet" type="text/css" media="screen" />
-		<link href="{% static 'common/css/cp_print_3.4.css' %}" rel="stylesheet" type="text/css" media="print" />
-		<link href="{% static 'css/screen.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
-		<link href="{% static 'css/print.css' %}" rel="stylesheet" type="text/css" media="print" />
-		<link href="{% static 'css/table.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
-		<link href="{% static 'fancybox/jquery.fancybox.css' %}?v=2.1.5" rel="stylesheet" type="text/css" media="screen" />
-		<link href="{% static 'images/icons/favicon.ico' %}" rel="shortcut icon" />
-		<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
-		<script type="text/javascript" src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
+    <head>
+    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    	<meta name="layout" content="Cal Poly Web Template" />
+    	<meta name="author" content="Alex Kavanaugh - ResNet Development Team" />
+    	<meta name="keywords" content="Resnet Internal" />
+    	<meta name="description" content="Residential Networking Services Internal Tools" />
+    	<link href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}" rel="stylesheet" type="text/css" />
+    	<link href="{% static 'css/bootstrap_tooltip.css' %}" rel="stylesheet" type="text/css" />
+    	<link href="{% static 'common/css/cp_screen_3.4.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    	<link href="{% static 'common/css/cp_print_3.4.css' %}" rel="stylesheet" type="text/css" media="print" />
+    	<link href="{% static 'css/screen.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
+    	<link href="{% static 'css/print.css' %}" rel="stylesheet" type="text/css" media="print" />
+    	<link href="{% static 'css/table.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
+    	<link href="{% static 'fancybox/jquery.fancybox.css' %}?v=2.1.5" rel="stylesheet" type="text/css" media="screen" />
+    	<link href="{% static 'images/icons/favicon.ico' %}" rel="shortcut icon" />
+    	<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
+    	<script type="text/javascript" src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'fancybox/jquery.fancybox.pack.js' %}?v=2.1.5"></script>
         <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
-		{% block meta %}
-		<script type="text/javascript">
+    	{% block meta %}
+    	<script type="text/javascript">
             $(document).ready(function() {
                 $(".popup_frame").fancybox({
                     type: 'iframe',
@@ -41,90 +41,90 @@
                 });
             });
         </script>
-		{% endblock %}
-		<title>ResNet Internal - Online Tools{% block subtitle %}{% endblock %}</title>
-	</head>
-	{% block body %}
-	<body>
-		<noscript><div id="noscript-padding"></div></noscript>
-		<div id="container">
-			<div id="header">
-				<div id="cplogo">
-					<a href="http://www.calpoly.edu/"><img src="{% static 'common/images/header/cp_logo.gif' %}" alt="Cal Poly" title="Go to Cal Poly Home" width="166" height="60" /></a>
-				</div>
-				<div id="headercontent">
-					<a href="https://resnet.calpoly.edu"><img src="{% static 'images/resnetlogo.png' %}" alt="ResNet Logo" title="Go to the ResNet home page" id="headerimage" height="50" width="136.5" /></a>
-					<div id="deptname">
-						<p id="department_name">
-							Residential Networking Services
-						</p>
-						<p id="optional_deptinfo">
-							<a href="{% url 'home' %}">ResNet Online Tools</a><font color="red">&nbsp;&nbsp;Beta</font>
-						</p>
-					</div>
-				</div>
-				<!-- Begin Login Display Module -->
-				{% if request.user.is_authenticated %} {# User is logged in - display user information. #}
-					<div class="loginDisplay">
-						You are logged in as <span style="color: #A1B39C">{{ user_display_name }}</span>
-						<br />
-						{# Display User Specializations #}
-						{% for title in user_specializations %}
-							{{ title }}{% if not forloop.last %}, {% endif %}
-						{% endfor %}
-						<br />
-						(<a href="{% url 'logout' %}">Logout</a>)
-					</div>
-				{% else %} {# User is not logged in - display log in link. #}
-					<div class="loginDisplay">
-							You are not currently logged in.
-							<br />
-							(<a href="{% url 'login' %}">Login</a>)
-					</div>
-				{% endif %}
-				<!-- End Login Display Module -->
-				<div id="cp">
-					<p>
-						California Polytechnic State University
-					</p>
-				</div>
-			</div>
-			{% block sidenav %}
-			{% if request.user.is_authenticated and not request.user.is_new_tech %} {# User is logged in - display navigation bar. #}
-			<!-- Begin Navigation Bar -->
-			<div id="leftnav">
-				<h1>Navigation<a href='/settings/navigation/' class='popup_frame'><img src="{% static 'images/icons/settings_cog.png' %}" alt="Navigation Settings" align="top" width="16" height="16" border="0" style="padding-left: 5px;"/></a></h1>
-
-				{% if request.user|technician_access %}
-				<h2>Technician Tools</h2>
-				<ul>
-				    <li>
+    	{% endblock %}
+    	<title>ResNet Internal - Online Tools{% block subtitle %}{% endblock %}</title>
+    </head>
+    {% block body %}
+    <body>
+    	<noscript><div id="noscript-padding"></div></noscript>
+    	<div id="container">
+    		<div id="header">
+    			<div id="cplogo">
+    				<a href="http://www.calpoly.edu/"><img src="{% static 'common/images/header/cp_logo.gif' %}" alt="Cal Poly" title="Go to Cal Poly Home" width="166" height="60" /></a>
+    			</div>
+    			<div id="headercontent">
+    				<a href="https://resnet.calpoly.edu"><img src="{% static 'images/resnetlogo.png' %}" alt="ResNet Logo" title="Go to the ResNet home page" id="headerimage" height="50" width="136.5" /></a>
+    				<div id="deptname">
+    					<p id="department_name">
+    						Residential Networking Services
+    					</p>
+    					<p id="optional_deptinfo">
+    						<a href="{% url 'home' %}">ResNet Online Tools</a><font color="red">&nbsp;&nbsp;Beta</font>
+    					</p>
+    				</div>
+    			</div>
+    			<!-- Begin Login Display Module -->
+    			{% if request.user.is_authenticated %} {# User is logged in - display user information. #}
+    				<div class="loginDisplay">
+    					You are logged in as <span style="color: #A1B39C">{{ user_display_name }}</span>
+    					<br />
+    					{# Display User Specializations #}
+    					{% for title in user_specializations %}
+    						{{ title }}{% if not forloop.last %}, {% endif %}
+    					{% endfor %}
+    					<br />
+    					(<a href="{% url 'logout' %}">Logout</a>)
+    				</div>
+    			{% else %} {# User is not logged in - display log in link. #}
+    				<div class="loginDisplay">
+    						You are not currently logged in.
+    						<br />
+    						(<a href="{% url 'login' %}">Login</a>)
+    				</div>
+    			{% endif %}
+    			<!-- End Login Display Module -->
+    			<div id="cp">
+    				<p>
+    					California Polytechnic State University
+    				</p>
+    			</div>
+    		</div>
+    		{% block sidenav %}
+    		{% if request.user.is_authenticated and not request.user.is_new_tech %} {# User is logged in - display navigation bar. #}
+    		<!-- Begin Navigation Bar -->
+    		<div id="leftnav">
+    			<h1>Navigation<a href='/settings/navigation/' class='popup_frame'><img src="{% static 'images/icons/settings_cog.png' %}" alt="Navigation Settings" align="top" width="16" height="16" border="0" style="padding-left: 5px;"/></a></h1>
+    
+    			{% if request.user|technician_access %}
+    			<h2>Technician Tools</h2>
+    			<ul>
+    			    <li>
                         <a href="/link_handler/email/" id="email_link" onclick="updateDuty('email', '')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
                     </li>
-					<li>
-						<a href="/link_handler/portal/" class="handler_link"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
-					</li>
-					<li>
-						<a href="/link_handler/srs/" id="srs_ticket_link" onclick="updateDuty('tickets', '')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
-					</li>
-					<li>
-                        <a style="cursor: pointer;" id="voicemail_link" onclick="updateDuty('messages', '{% url 'voicemail_list' %}')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
+    				<li>
+    					<a href="/link_handler/portal/" class="handler_link"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
+    				</li>
+    				<li>
+    					<a href="/link_handler/srs/" id="srs_ticket_link" onclick="updateDuty('tickets', '')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
+    				</li>
+    				<li>
+                        <a style="cursor: pointer;" id="voicemail_link" onclick="updateDuty('voicemail', '{% url 'voicemail_list' %}')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
                     </li>
-					<li>
-						<a href="/link_handler/advocate/" class="handler_link"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
-					</li>
-					<!-- <li>
-						<a href="/link_handler/devices/" class="handler_link"><img src="{% static 'images/icons/controller.png' %}" alt="Device Manager" align="top" width="16" height="16" border="0" />Device Pass Through</a>
-					</li> -->
-					<!-- <li>
-						<a href="/link_handler/abuse/" class="handler_link"><img src="{% static 'images/icons/log.png' %}" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
-					</li> -->
-					<li>
-						<a href="/link_handler/reslife/" class="handler_link"><img src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/favicon.ico" alt="ResLife Internal" align="top" width="16" height="16" border="0">ResLife Internal</a>
-					</li>
-					<li>
+    				<li>
+    					<a href="/link_handler/advocate/" class="handler_link"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
+    				</li>
+    				<!-- <li>
+    					<a href="/link_handler/devices/" class="handler_link"><img src="{% static 'images/icons/controller.png' %}" alt="Device Manager" align="top" width="16" height="16" border="0" />Device Pass Through</a>
+    				</li> -->
+    				<!-- <li>
+    					<a href="/link_handler/abuse/" class="handler_link"><img src="{% static 'images/icons/log.png' %}" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
+    				</li> -->
+    				<li>
+    					<a href="/link_handler/reslife/" class="handler_link"><img src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/favicon.ico" alt="ResLife Internal" align="top" width="16" height="16" border="0">ResLife Internal</a>
+    				</li>
+    				<li>
                         <a onclick="$('#wiki_pages_list').toggle()" style="cursor: pointer !important;"><img src="{% static 'images/icons/confluence_16.png' %}" alt="Wiki Pages" align="top" width="16" height="16" border="0" />Wiki Pages</a>
-					</li>
+    				</li>
                     <ul id="wiki_pages_list" style="display: none;">
                         <li>
                             <a href="/link_handler/resnet_wiki/" class="handler_link sublink">ResNet Wiki</a>
@@ -136,24 +136,24 @@
                             <a href="/link_handler/its_wiki/" class="handler_link sublink">ITS Wiki</a>
                         </li>
                     </ul>
-				</ul>
-				{% endif %}
-
-				{% if request.user|staff_access %}
-				<h2>Staff Tools</h2>
-				<ul>
-				    <li>
+    			</ul>
+    			{% endif %}
+    
+    			{% if request.user|staff_access %}
+    			<h2>Staff Tools</h2>
+    			<ul>
+    			    <li>
                         <a href="{% url 'restech_list_edit' %}"><img src="{% static 'images/icons/restech.png' %}" alt="Manage Technicians" align="top" width="16" height="16" border="0" />Manage Technicians</a>
                     </li>
-				</ul>
-				{% endif %}
-
-				{% if request.user|technician_access %}
-				<h2>Network Analysis</h2>
+    			</ul>
+    			{% endif %}
+    
+    			{% if request.user|technician_access %}
+    			<h2>Network Analysis</h2>
                 <ul>
-					<li>
-						<a href="/link_handler/aruba/" class="handler_link"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
-					</li>
+    				<li>
+    					<a href="/link_handler/aruba/" class="handler_link"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
+    				</li>
                     <li>
                         <a onclick="$('#aruba_controllers_list').toggle()" style="cursor: pointer !important;"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba Controllers" align="top" width="16" height="16" border="0" />Aruba Controllers</a>
                     </li>
@@ -176,46 +176,46 @@
                     </ul>
                 </ul>
                 {% endif %}
-
-				{% if request.user|portmap_access or request.user|computers_access or request.user|printers_access %}
-				<h2>Databases</h2>
-				<ul>
-					{% if request.user|portmap_access %}
-					<li>
-						<a href="{% url 'residence_halls_wired_ports' %}"><img src="{% static 'images/icons/database.png' %}" alt="Residence Halls Port Map" align="top" width="16" height="16" border="0" />Res Halls Port Map</a>
-					</li>
-					{% endif %}
-					{% if request.user|computers_access %}
-					<li>
-						<a href="{% url 'uh_computers' %}"><img src="{% static 'images/icons/database.png' %}" alt="UH Computer Index" align="top" width="16" height="16" border="0" />UH Computer Index</a>
-					</li>
-					{% endif %}
-					{% if request.user|printers_access %}
-					<li>
-						<a href="{% url 'uh_printers' %}"><img src="{% static 'images/icons/database.png' %}" alt="UH Printer Index" align="top" width="16" height="16" border="0" />UH Printer Index</a>
-					</li>
-					{% endif %}
-				</ul>
-				{% endif %}
-
-				{% if request.user|technician_access %}
-				<h2>Equipment</h2>
-				<ul>
-					<li>
-						<a style="cursor: pointer;" id="printer_request_link" onclick="updateDuty('printerrequests', '{% url 'printer_request_list' %}')" title="Printer Requests" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" /><span id="printer_requests_text">Printer Requests</span></a>
-					</li>
-					<ul>
-						<li>
-						<a href="{% url 'printer_inventory' %}" class="sublink">Check Inventory</a>
-					    </li>
-					    <li>
-						<a href="{% url 'printer_ordered_items' %}" class="sublink">Ordered Items</a>
-					    </li>
-					</ul>
-				</ul>
-				{% endif %}
-
-				{% if request.user|developer_access %}
+    
+    			{% if request.user|portmap_access or request.user|computers_access or request.user|printers_access %}
+    			<h2>Databases</h2>
+    			<ul>
+    				{% if request.user|portmap_access %}
+    				<li>
+    					<a href="{% url 'residence_halls_wired_ports' %}"><img src="{% static 'images/icons/database.png' %}" alt="Residence Halls Port Map" align="top" width="16" height="16" border="0" />Res Halls Port Map</a>
+    				</li>
+    				{% endif %}
+    				{% if request.user|computers_access %}
+    				<li>
+    					<a href="{% url 'uh_computers' %}"><img src="{% static 'images/icons/database.png' %}" alt="UH Computer Index" align="top" width="16" height="16" border="0" />UH Computer Index</a>
+    				</li>
+    				{% endif %}
+    				{% if request.user|printers_access %}
+    				<li>
+    					<a href="{% url 'uh_printers' %}"><img src="{% static 'images/icons/database.png' %}" alt="UH Printer Index" align="top" width="16" height="16" border="0" />UH Printer Index</a>
+    				</li>
+    				{% endif %}
+    			</ul>
+    			{% endif %}
+    
+    			{% if request.user|technician_access %}
+    			<h2>Equipment</h2>
+    			<ul>
+    				<li>
+    					<a style="cursor: pointer;" id="printer_request_link" onclick="updateDuty('printerrequests', '{% url 'printer_request_list' %}')" title="Printer Requests" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" /><span id="printer_requests_text">Printer Requests</span></a>
+    				</li>
+    				<ul>
+    					<li>
+    					<a href="{% url 'printer_inventory' %}" class="sublink">Check Inventory</a>
+    				    </li>
+    				    <li>
+    					<a href="{% url 'printer_ordered_items' %}" class="sublink">Ordered Items</a>
+    				    </li>
+    				</ul>
+    			</ul>
+    			{% endif %}
+    
+    			{% if request.user|developer_access %}
                 <h2>Administration</h2>
                 <ul>
                     <li>
@@ -223,44 +223,63 @@
                     </li>
                 </ul>
                 {% endif %}
-			</div>
-			<!-- End Navigation Bar -->
-			{% endif %}
-			{% endblock %}
-			{% block content %}{% endblock %}
-			<div id="footer">
-				<div id="footer_links">
-					<p><a href="http://get.adobe.com/reader/" title="Download Adobe Reader for viewing PDFs">Get Adobe Reader</a></p>
-				</div>
-				<div id="footer_deptlinks">
-					<ul>
-						<li class="removeBullet">
-							<a href="https://housing.calpoly.edu">University Housing</a>
-						</li>
-						<li>
-							<a href="https://residentiallife.calpoly.edu">Residential Life &amp; Education</a>
-						</li>
-						<li>
-							<a href="https://resnet.calpoly.edu">Residential Networking Services</a>
-						</li>
-					</ul>
-					<img src="{% static 'images/django_logo_negative.png' %}" width="136px" height="60px" class="djangoLogo" />
-				</div>
-				<div id="footer_deptinfo">
-					<p>
-						ResNet Development Team
-						<br />
-						California Polytechnic State University
-						<br />
-						San Luis Obispo, CA 93401
-						<br />
-						<a href="mailto:resdev@calpoly.edu">resdev@calpoly.edu</a>
-					</p>
-				</div>
-			</div>
-		</div>
-		{% block extra_script %}
-		<script type="text/javascript">
+    		</div>
+    		<!-- End Navigation Bar -->
+    		{% endif %}
+    		{% endblock %}
+    		{% block content %}{% endblock %}
+    		<div id="footer">
+    			<div id="footer_links">
+    				<p><a href="http://get.adobe.com/reader/" title="Download Adobe Reader for viewing PDFs">Get Adobe Reader</a></p>
+    			</div>
+    			<div id="footer_deptlinks">
+    				<ul>
+    					<li class="removeBullet">
+    						<a href="https://housing.calpoly.edu">University Housing</a>
+    					</li>
+    					<li>
+    						<a href="https://residentiallife.calpoly.edu">Residential Life &amp; Education</a>
+    					</li>
+    					<li>
+    						<a href="https://resnet.calpoly.edu">Residential Networking Services</a>
+    					</li>
+    				</ul>
+    				<img src="{% static 'images/django_logo_negative.png' %}" width="136px" height="60px" class="djangoLogo" />
+    			</div>
+    			<div id="footer_deptinfo">
+    				<p>
+    					ResNet Development Team
+    					<br />
+    					California Polytechnic State University
+    					<br />
+    					San Luis Obispo, CA 93401
+    					<br />
+    					<a href="mailto:resdev@calpoly.edu">resdev@calpoly.edu</a>
+    				</p>
+    			</div>
+    		</div>
+    	</div>
+    	<script type="text/javascript">
+    	    {% if request.user.is_authenticated %}
+            function refreshDuties() {
+                ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
+                    $("#email_link").attr('data-content', response_context.email_content);
+                    $("#srs_ticket_link").attr('data-content', response_context.tickets_content);
+                    $("#voicemail_link").attr('data-content', response_context.voicemail_content);
+                    $("#printer_request_link").attr('data-content', response_context.printer_requests_content);
+                });
+            };
+            function updateDuty(duty, redirect_url, target) {
+                ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
+                    if (redirect_url) {
+                        window.open(redirect_url, '_self');
+                    }
+                    else {
+                        refreshDuties();
+                    }
+                });
+            };
+            {% endif %}
     		function update_link_targets(key) {
                 if (key == "False") {
                     $(".handler_link").attr("target", "_blank");
@@ -270,38 +289,17 @@
                 }
             };
             $(document).ready(function() {
-                update_link_targets("{{ request.user.open_links_in_frame }}");
                 {% if request.user.is_authenticated %}
                     refreshDuties();
                 {% endif %}
+                update_link_targets("{{ request.user.open_links_in_frame }}");
             });
         </script>
-        {% if request.user.is_authenticated %}
-		<script type="text/javascript">
-			function refreshDuties() {
-				ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
-					$("#email_link").attr('data-content', response_context.email_content);
-					$("#srs_ticket_link").attr('data-content', response_context.tickets_content);
-					$("#voicemail_link").attr('data-content', response_context.voicemail_content);
-					$("#printer_request_link").attr('data-content', response_context.printer_requests_content);
-				});
-			};
-			function updateDuty(duty, redirect_url, target) {
-				ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
-				    if (redirect_url) {
-				        window.open(redirect_url, '_self');
-				    }
-				    else {
-				        refreshDuties();
-				    }
-				});
-			};
-		</script>
-		{% endif %}
-		{% endblock %}
-		<noscript>
+    	<noscript>
         	<div id="noscript-warning">Many applications on this website require that JavaScript be enabled. Please do so.</div>
     	</noscript>
-	</body>
-	{% endblock %}
+    	{% block extra_script %}
+    	{% endblock %}
+    </body>
+    {% endblock %}
 </html>

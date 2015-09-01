@@ -1,11 +1,11 @@
 #!/usr/bin/env python3.4
 import os
-import sys
+from pathlib import Path
 import re
+import sys
 
 from colorama import init as color_init
 from termcolor import colored
-from pathlib import Path
 
 
 def get_env_variable(name):

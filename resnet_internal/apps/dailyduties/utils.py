@@ -5,21 +5,21 @@
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
-import imaplib
-import email
 from datetime import datetime, timedelta
+import email
+import imaplib
 import logging
-from ssl import SSLError, SSLEOFError
 from operator import itemgetter
+from srsconnector.models import ServiceRequest
+from ssl import SSLError, SSLEOFError
 
 from django.conf import settings
 from django.db import DatabaseError
 from django.utils.encoding import smart_text, smart_bytes
 
-from srsconnector.models import ServiceRequest
-
-from .models import DailyDuties
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
+from .models import DailyDuties
+
 
 logger = logging.getLogger(__name__)
 
@@ -30,6 +30,19 @@ ACCEPTABLE_LAST_CHECKED = timedelta(days=1)
 
 
 class EmailConnectionMixin(object):
+
+    def __init__(self, *args, **kwargs):
+        super(EmailConnectionMixin, self).__init__(*args, **kwargs)
+        if self.server is None:
+            self._init_mail_connection()
+
+    def __enter__(self):
+        if self.server is None:
+            self._init_mail_connection()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.server.logout()
 
     def _init_mail_connection(self):
         # Connect to the email server and authenticate
@@ -42,19 +55,6 @@ class EmailConnectionMixin(object):
 
 class VoicemailManager(EmailConnectionMixin):
     server = None
-
-    def __init__(self, *args, **kwargs):
-        super(VoicemailManager, self).__init__(*args, **kwargs)
-        if self.server is None:
-            self._init_mail_connection()
-
-    def __enter__(self):
-        if self.server is None:
-            self._init_mail_connection()
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        self.server.logout()
 
     def _parse_message_id(self, message_id_string):
         return message_id_string.split('<')[1].rsplit('>')[0]
@@ -211,7 +211,7 @@ class GetDutyData(EmailConnectionMixin):
 
         return printer_requests
 
-    def get_messages(self):
+    def get_voicemail(self):
         """Checks the current number of voicemail messages."""
 
         voicemail = {
@@ -230,10 +230,9 @@ class GetDutyData(EmailConnectionMixin):
             voicemail["last_checked"] = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
             voicemail["last_user"] = "Connection Error!"
         else:
-            data = DailyDuties.objects.get(name='messages')
+            data = DailyDuties.objects.get(name='voicemail')
 
             count = self.server.select('Voicemails', readonly=True)[1]
-            self.server.logout()
 
             # Select the Inbox, get the message count
             voicemail["count"] = int(count[0])
@@ -269,7 +268,6 @@ class GetDutyData(EmailConnectionMixin):
 
             # Select the Inbox, get the message count
             count = self.server.select('Inbox', readonly=True)[1]
-            self.server.logout()
 
             email["count"] = int(count[0])
             if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
@@ -277,7 +275,7 @@ class GetDutyData(EmailConnectionMixin):
             else:
                 email["status_color"] = RED
             email["last_checked"] = datetime.strftime(data.last_checked, "%Y-%m-%d %H:%M")
-            email["last_user"] = data.last_user.get_full_name()
+            email["last_user"] = data.last_user.get_full_name() if data.last_user else '[Deleted User]'
 
         return email
 

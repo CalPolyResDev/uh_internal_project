@@ -36,7 +36,7 @@
           <p>{% autoescape off %}{{ announcement.description }}{% endautoescape %}</p>
           {% endfor %}
         </div>
-        <div id="column2" style="max-width: 33%;">
+        <div id="column2" style="max-width: 33%; max-height: 600px; overflow: auto;">
           <h2>Network Status</h2>
           <p id="network_status_response">Loading...</p>
         </div>
@@ -52,15 +52,15 @@
       </div>
     </div>
   </div>
-    {% block extra_script %}
-    {{ block.super }}
-    <script type="text/javascript">
-        $(document).ready(function() {
-            ajaxGet("{% url 'core_update_network_status' %}");
-            {% if request.user.is_authenticated %}
-            ajaxGet("{% url 'core_get_tickets' %}");
-            {% endif %}
-        });
-    </script>
-    {% endblock %}
  {% endblock %}
+ 
+{% block extra_script %}
+<script type="text/javascript">
+    $(document).ready(function() {
+        ajaxGet("{% url 'core_update_network_status' %}");
+        {% if request.user.is_authenticated %}
+        ajaxGet("{% url 'core_get_tickets' %}");
+        {% endif %}
+    });
+</script>
+{% endblock %}

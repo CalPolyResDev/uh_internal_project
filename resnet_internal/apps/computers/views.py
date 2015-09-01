@@ -9,21 +9,19 @@
 
 import logging
 import socket
+from srsconnector.models import PinholeRequest, DomainNameRequest
 import subprocess
 
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http.response import HttpResponseRedirect, HttpResponse
-from django.views.generic.edit import FormView
-from django.views.generic import TemplateView
 from django.utils.encoding import smart_str
-
-from srsconnector.models import PinholeRequest, DomainNameRequest
+from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
 
 from ..datatables.views import DatatablesView
-
+from .ajax import PopulateComputers
 from .forms import ComputerCreateForm, RequestPinholeForm, RequestDomainNameForm
 from .models import Computer, Pinhole, DomainName
-from .ajax import PopulateComputers
 
 
 logger = logging.getLogger(__name__)

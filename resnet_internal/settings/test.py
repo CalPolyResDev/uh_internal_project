@@ -1,9 +1,9 @@
 from .base import *  # noqa @PydevCodeAnalysisIgnore
 
+
 # ======================================================================================================== #
 #                                         Test Settings                                                    #
 # ======================================================================================================== #
-
 TEST_RUNNER = 'discover_runner.DiscoverRunner'
 TEST_DISCOVER_TOP_LEVEL = PROJECT_DIR
 TEST_DISCOVER_ROOT = PROJECT_DIR

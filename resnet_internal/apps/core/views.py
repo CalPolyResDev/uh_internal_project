@@ -7,20 +7,19 @@
 """
 
 from datetime import datetime
+from srsconnector.models import ServiceRequest
 
-from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.core.urlresolvers import reverse_lazy
-from django.views.decorators.debug import sensitive_post_parameters
-from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_protect
-from django.views.generic.edit import FormView
-from django.views.generic import TemplateView
-from django.utils.decorators import method_decorator
+from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
-
-from srsconnector.models import ServiceRequest
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.debug import sensitive_post_parameters
+from django.views.generic import TemplateView
+from django.views.generic.edit import FormView
 
 from .forms import NavigationSettingsForm, AutoFocusAuthenticationForm
 from .models import SiteAnnouncements
@@ -138,9 +137,9 @@ class TicketSummaryView(TemplateView):
         context = super(TicketSummaryView, self).get_context_data(**kwargs)
         ticket_id = kwargs['ticket_id']
         context['ticket'] = ServiceRequest.objects.get(ticket_id=ticket_id)
-        
+
         time_difference = (datetime.today() - context['ticket'].date_updated).total_seconds() / 86400
-        
+
         if time_difference < 3:
             context['date_display_class'] = 'text-success'
         elif time_difference < 7:
@@ -149,7 +148,7 @@ class TicketSummaryView(TemplateView):
             context['date_display_class'] = 'text-warning'
         else:
             context['date_display_class'] = 'text-danger'
-        
+
         return context
 
 

@@ -1,12 +1,15 @@
 #!/usr/bin/python3.4
 import os
-import sys
-import site
+from pathlib import Path
 import re
+import site
+import sys
 
 from colorama import init as color_init
+import django  # noqa
+from django.core.handlers.wsgi import WSGIHandler  # noqa
+from raven.contrib.django.raven_compat.middleware.wsgi import Sentry  # noqa
 from termcolor import colored
-from pathlib import Path
 
 
 def get_env_variable(name):
@@ -80,10 +83,9 @@ def activate_env():
 
 activate_env()
 
-import django  # noqa
-from django.core.handlers.wsgi import WSGIHandler  # noqa
-from raven.contrib.django.raven_compat.middleware.wsgi import Sentry  # noqa
 django.setup()
+
+# Import any functions with uWSGI decoraters here:
 
 # Send any wsgi errors to Sentry
 application = Sentry(WSGIHandler())

@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from ..core.models import StaffMapping
 from .models import Request, Toner, Part, InventoryEmail
 
+
 INVENTORY_LOW_CUTOFF = 5
 LAST_EMAIL_DELTA = datetime.timedelta(days=1)
 

@@ -6,6 +6,8 @@
 """
 
 from django import template
+
+
 register = template.Library()
 
 
@@ -95,3 +97,10 @@ def divide(value, arg):
     """
 
     return value / arg
+
+
+@register.filter
+def clean_srs_escapes(value):
+    """Cleans uneccessary escapes from SRS strings."""
+
+    return value.replace('\\', '')

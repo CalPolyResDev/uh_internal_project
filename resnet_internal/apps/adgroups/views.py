@@ -11,10 +11,10 @@ from operator import itemgetter
 
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.views.generic.edit import FormView
-
 from ldap_groups import ADGroup
 
 from .forms import AddADUserForm
+
 
 logger = logging.getLogger(__name__)
 

@@ -7,9 +7,11 @@
 
 import logging
 
-from django.template import Context, loader, Library, Node, TemplateSyntaxError
 from django.core.exceptions import ImproperlyConfigured
+from django.template import Context, loader, Library, Node, TemplateSyntaxError
+
 from ..ajax import RNINDatatablesPopulateView
+
 
 logger = logging.getLogger(__name__)
 register = Library()

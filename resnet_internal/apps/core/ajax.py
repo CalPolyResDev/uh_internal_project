@@ -6,17 +6,17 @@
 
 """
 
+from datetime import datetime
 import logging
 from operator import itemgetter
-from datetime import datetime
 
-from django.views.decorators.http import require_POST
 from django.template import Template, RequestContext
-
+from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
 from ..core.models import Community
 from ..core.utils import NetworkReachabilityTester, get_ticket_list
+
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +70,7 @@ def update_building(request):
 def update_network_status(request):
     network_reachability = NetworkReachabilityTester.get_network_device_reachability()
     network_reachability.sort(key=itemgetter('status', 'display_name'))
-    
+
     raw_response = """
         <table class="dataTable">
             <tbody>
@@ -113,6 +113,7 @@ def update_network_status(request):
 def get_tickets(request):
     raw_response = """
         {% load staticfiles %}
+        {% load core_filters %}
         <table class="dataTable">
             <tbody>
                 <tr>
@@ -130,7 +131,7 @@ def get_tickets(request):
                     </td>
                     <td>{{ ticket.requestor_full_name }}</td>
                     <td>{{ ticket.status }}</td>
-                    <td>{{ ticket.summary }}</td>
+                    <td>{{ ticket.summary|clean_srs_escapes }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -140,7 +141,7 @@ def get_tickets(request):
     now = datetime.today()
     for ticket in tickets:
         time_difference = (now - ticket['date_updated']).total_seconds() / 86400
-        
+
         if time_difference < 3:
             ticket['display_class'] = 'bg-success'
         elif time_difference < 7:
@@ -159,5 +160,5 @@ def get_tickets(request):
             '#tickets_response': response_html
         }
     }
-    
+
     return data

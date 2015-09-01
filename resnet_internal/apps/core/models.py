@@ -9,11 +9,11 @@
 import re
 
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
+from django.core.mail import send_mail
 from django.db.models.base import Model
 from django.db.models.fields import CharField, IntegerField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.utils.http import urlquote
-from django.core.mail import send_mail
 
 
 class Community(Model):
@@ -70,7 +70,7 @@ class Department(Model):
 
 class NetworkDevice(Model):
     """Network Infrastructure Device."""
-    
+
     display_name = CharField(max_length=100, verbose_name='Display Name')
     dns_name = CharField(max_length=75, verbose_name='DNS Name')
     ip_address = GenericIPAddressField(verbose_name='IP Address', protocol='IPv4')

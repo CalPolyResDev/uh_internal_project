@@ -1,0 +1,11 @@
+#! /bin/bash
+
+git pull | grep 'Already up-to-date.'
+UPDATED=$?
+
+if [ $UPDATED = 1 ]; then    
+    git pull
+    pip3 install -qr requirements.txt 
+    python3 resnet_internal/manage.py collectstatic --noinput
+    touch conf/uwsgi.ini
+fi

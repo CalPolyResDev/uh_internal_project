@@ -6,30 +6,35 @@
 
 """
 
+from datetime import datetime
 import logging
 
-from datetime import datetime
-
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.views.decorators.http import require_POST
-
 from django_ajax.decorators import ajax
 
 from .models import DailyDuties
 from .utils import GetDutyData, VoicemailManager
+
 
 logger = logging.getLogger(__name__)
 
 
 @ajax
 def refresh_duties(request):
+    duty_data = cache.get('duty_data')
 
-    # Load data dicts
-    printer_requests_dict = GetDutyData().get_printer_requests()
-    voicemail_dict = GetDutyData().get_messages()
-    email_dict = GetDutyData().get_email()
-    tickets_dict = GetDutyData().get_tickets(request.user)
-    
+    if not duty_data:
+        with GetDutyData() as duty_data_manager:
+            duty_data = {
+                'printer_requests': duty_data_manager.get_printer_requests(),
+                'voicemail': duty_data_manager.get_voicemail(),
+                'email': duty_data_manager.get_email(),
+                'tickets': duty_data_manager.get_tickets(request.user),
+            }
+            cache.set('duty_data', duty_data, 120)
+
     def duty_dict_to_link_text(daily_duty_dict, name):
         return_string = name
 
@@ -39,27 +44,27 @@ def refresh_duties(request):
             return_string += ' <strong>(' + str(daily_duty_dict['count']) + ')</strong>'
 
         return return_string
-    
+
     def duty_dict_to_popover_html(daily_duty_dict):
         popover_html = """
             Last Checked:
-            <font color='""" + daily_duty_dict["status_color"] + """'>""" + daily_duty_dict["last_checked"] + """</font>
+            <font color='""" + str(daily_duty_dict["status_color"]) + """'>""" + str(daily_duty_dict["last_checked"]) + """</font>
             <br />
-            (<span style='text-align: center;'>""" + daily_duty_dict["last_user"] + """</span>)
+            (<span style='text-align: center;'>""" + str(daily_duty_dict["last_user"]) + """</span>)
             """
         return popover_html
 
     data = {
         'inner-fragments': {
-            '#printer_requests_text': duty_dict_to_link_text(printer_requests_dict, 'Printer Requests'),
-            '#voicemail_text': duty_dict_to_link_text(voicemail_dict, 'Voicemail'),
-            '#email_text': duty_dict_to_link_text(email_dict, 'Email'),
-            '#ticket_text': duty_dict_to_link_text(tickets_dict, 'Ticket Manager'),
+            '#printer_requests_text': duty_dict_to_link_text(duty_data['printer_requests'], 'Printer Requests'),
+            '#voicemail_text': duty_dict_to_link_text(duty_data['voicemail'], 'Voicemail'),
+            '#email_text': duty_dict_to_link_text(duty_data['email'], 'Email'),
+            '#ticket_text': duty_dict_to_link_text(duty_data['tickets'], 'Ticket Manager'),
         },
-        'printer_requests_content': duty_dict_to_popover_html(printer_requests_dict),
-        'voicemail_content': duty_dict_to_popover_html(voicemail_dict),
-        'email_content': duty_dict_to_popover_html(email_dict),
-        'tickets_content': duty_dict_to_popover_html(tickets_dict),
+        'printer_requests_content': duty_dict_to_popover_html(duty_data['printer_requests']),
+        'voicemail_content': duty_dict_to_popover_html(duty_data['voicemail']),
+        'email_content': duty_dict_to_popover_html(duty_data['email']),
+        'tickets_content': duty_dict_to_popover_html(duty_data['tickets']),
     }
 
     return data

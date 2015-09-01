@@ -1,8 +1,9 @@
 {% extends "base_frame.html" %}
+{% load core_filters %}
 {% block subtitle %} | Ticket Summary{% endblock %}
 
 {% block content %}
-    <h1>Summary: {{ ticket.summary }}</h1>
+    <h1>Summary: {{ ticket.summary|clean_srs_escapes }}</h1>
     {% if ticket %}
         <h3>Details:</h3>
         <table>
@@ -14,6 +15,7 @@
                     <br /><strong>Date Created:</strong>
                     <br /><strong>Last Updated:</strong>
                     <br /><strong>Assigned Team:</strong>
+                    <br /><strong>Assigned User:</strong>
                     <br />
                 </td>
                 <td style="vertical-align: text-top;">
@@ -23,9 +25,11 @@
                     <br />{{ ticket.date_created }}
                     <br /><span class="{{ date_display_class }}">{{ ticket.date_updated }}</span>
                     <br />{{ ticket.assigned_team }}
+                    <br />{{ ticket.assigned_person }}
                 </td>
                 <td style="vertical-align: text-top; text-align: right;">
-                    <strong>Phone:</strong>
+                    <strong>Ticket #:</strong>
+                    <br /><strong>Phone:</strong>
                     <br /><strong>Dorm Address:</strong>
                     <br /><strong>Department:</strong>
                     <br /><strong>Building:</strong>
@@ -33,7 +37,8 @@
                     <br />
                 </td>
                 <td style="vertical-align: text-top;">
-                    {{ ticket.formatted_requestor_phone }}
+                    {{ ticket.ticket_id }}
+                    <br />{{ ticket.formatted_requestor_phone }}
                     <br />{{ ticket.requestor_housing_address }}
                     <br />{{ ticket.requestor_department }}
                     <br />{{ ticket.requestor_building }}
