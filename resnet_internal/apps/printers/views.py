@@ -11,10 +11,10 @@ import logging
 from django.core.urlresolvers import reverse_lazy
 
 from ..datatables.views import DatatablesView
-
+from .ajax import PopulatePrinters
 from .forms import PrinterCreateForm
 from .models import Printer
-from .ajax import PopulatePrinters
+
 
 logger = logging.getLogger(__name__)
 

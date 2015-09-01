@@ -14,6 +14,7 @@ from django.views.generic.list import ListView
 from .forms import TonerCountForm, PartCountForm
 from .models import Request, Toner, Part
 
+
 logger = logging.getLogger(__name__)
 
 

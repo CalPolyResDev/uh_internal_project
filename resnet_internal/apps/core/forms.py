@@ -9,6 +9,7 @@
 from django.contrib.auth.forms import AuthenticationForm
 from django.forms import Form, ChoiceField, RadioSelect
 
+
 LINK_CHOICES = [
     ('frame', 'in a frame.'),
     ('external', 'in a new tab/window.'),

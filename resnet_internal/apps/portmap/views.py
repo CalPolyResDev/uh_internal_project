@@ -11,10 +11,9 @@
 from django.core.urlresolvers import reverse_lazy
 
 from ..datatables.views import DatatablesView
-
-from .models import ResHallWired
-from .forms import ResHallWiredPortCreateForm
 from .ajax import PopulateResidenceHallWiredPorts
+from .forms import ResHallWiredPortCreateForm
+from .models import ResHallWired
 
 
 class ResidenceHallWiredPortsView(DatatablesView):

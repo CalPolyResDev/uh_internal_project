@@ -6,11 +6,11 @@
 
 """
 
-import shlex
-import json
-import logging
 from collections import OrderedDict
 from copy import deepcopy
+import json
+import logging
+import shlex
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Q
@@ -18,11 +18,11 @@ from django.forms import models as model_forms
 from django.http.response import HttpResponseNotAllowed
 from django.utils.encoding import smart_str
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
-
-from django_datatables_view.base_datatable_view import BaseDatatableView
 from django_ajax.mixin import AJAXMixin
+from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from ..core.utils import dict_merge
+
 
 logger = logging.getLogger(__name__)
 

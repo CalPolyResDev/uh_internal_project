@@ -6,22 +6,22 @@
 
 """
 
-import shlex
 from collections import OrderedDict
 from datetime import datetime
+import shlex
 
+from dateutil.relativedelta import relativedelta
 from django.core.urlresolvers import reverse_lazy
 from django.db.models.query_utils import Q
 from django.views.decorators.http import require_POST
-
-from dateutil.relativedelta import relativedelta
 from django_ajax.decorators import ajax
 
 from ...settings.base import printers_modify_access_test
 from ..core.models import Department
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
-from .models import Printer
 from .forms import PrinterUpdateForm
+from .models import Printer
+
 
 OLD_YEARS = 3
 OLDER_YEARS = 4

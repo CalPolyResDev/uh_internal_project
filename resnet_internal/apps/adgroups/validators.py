@@ -6,11 +6,9 @@
 
 """
 
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
-
-from ldap_groups import ADGroup
-
 from django.conf import settings
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from ldap_groups import ADGroup
 
 
 def validate_ad_membership(alias):
