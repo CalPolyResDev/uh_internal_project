@@ -20,7 +20,7 @@ class Community(Model):
     """University Housing Community."""
 
     name = CharField(max_length=30, verbose_name="Community Name")
-    buildings = ManyToManyField("Building")
+#     buildings = ManyToManyField("Building")
 
     def __str__(self):
         return self.name
