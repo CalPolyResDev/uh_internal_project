@@ -67,6 +67,38 @@ fieldset ul {
 	width: 100%;
 }
 
+.button {
+    display: inline-block;
+    padding 6px 12px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    margin-top: 5px;
+    margin-bottom: 5px; 
+}
+
+.button.default {
+    color: #333;
+    background-color: #fff;
+    border-color: #ccc;
+}
+
+.button.default:hover {
+    color: #333;
+    background-color: #e6e6e6;
+    border-color: #adadad;
+}
+
 #noscript-padding {
 	padding-top: 1.5em;
 }

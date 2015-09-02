@@ -156,10 +156,11 @@ def get_mailbox_summary(request):
     raw_response = """
         {% if emails %}
             {% for email in emails %}
-            <tr id="email_{{ email.uid }}" {% if email.unread %}class="bg-info"{% endif %} style="cursor: pointer;" onclick="$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">
-                <td>{{ email.date }}</td>
-                <td>{{ email.from_name }} &lt;{{email.from_address }}&gt;</td>
-                <td>{{ email.subject }}</td>
+            <tr id="email_{{ email.uid }}" {% if email.unread %}class="bg-info"{% endif %}>
+                <td><input type="checkbox" name="email_selection" value="{{ email.uid }}"></td>
+                <td style="cursor: pointer;" onclick="$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.date }}</td>
+                <td style="cursor: pointer;" onclick="$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.from_name }} &lt;{{email.from_address }}&gt;</td>
+                <td style="cursor: pointer;" onclick="$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.subject }}</td>
             </tr>
             {% endfor %}
         {% else %}

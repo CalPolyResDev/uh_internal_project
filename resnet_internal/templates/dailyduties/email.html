@@ -18,9 +18,15 @@
                     <div id="jstree_folder_structure"></div>
                 </td>
                 <td style="vertical-align: top; width: 75%;">
+                    <div>
+                        <button style="padding: 6px 12px;" class="button default" onclick="refresh_mail();">Refresh</button>
+                        <button style="padding: 6px 12px;" class="button default" onclick="archive_selected();">Archive</button>
+                        <button style="padding: 6px 12px;" class="button default" onclick="mark_selected_runread();">Mark as Unread</button>
+                    </div>
                     <table class="dataTable" id='email_table' style="">
                     <tbody>
                             <tr>
+                                <th></th>
                                 <th>Date</th>
                                 <th>From</th>
                                 <th>Subject</th>
