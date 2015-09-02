@@ -101,6 +101,10 @@ fieldset ul {
     background-color: #f2dede
 }
 
+.bg-muted {
+    background-color: #777
+}
+
 .text-success {
     color: #3c763d
 }
@@ -115,4 +119,8 @@ fieldset ul {
 
 .text-danger {
     color: #a94442
+}
+
+.text-muted {
+  color: #777;
 }

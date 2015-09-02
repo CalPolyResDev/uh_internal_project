@@ -72,7 +72,8 @@ def get_ticket_list(user):
                     'status': ticket.status,
                     'summary': ticket.summary,
                     'date_created': ticket.date_created,
-                    'date_updated': ticket.date_updated
+                    'date_updated': ticket.date_updated,
+                    'assigned_person': ticket.assigned_person,
                     } for ticket in ticket_queryset)
 
     tickets = sorted(tickets, key=itemgetter('date_created'), reverse=True)
