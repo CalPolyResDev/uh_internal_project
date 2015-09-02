@@ -6,37 +6,29 @@
     {% if message %}
     <h1>{{ message.subject }}</h1>
         <h3>{{ message.from }}</h3>
-        <!-- <table>
-            <tr>
-                <td style="vertical-align: text-top; text-align: right;">
-                    <strong>To:</strong>
-                    <br /><strong>CC:</strong>
-                    <br /><strong>Date:</strong>
-                    <br /><strong>Reply To:</strong>
-                    <br />
-                </td>
-                <td style="vertical-align: text-top;">
-                    {{ message.to }}
-                    <br />{{ message.cc }}
-                    <br />{{ message.date }}
-                    <br />{{ message.reply_to }}
-                </td>
-            </tr>
-        </table> -->
+
         <p><strong>To:</strong> {{ message.to }}
-            <br /><strong>CC:</strong> {{ message.cc }}
+            {% if message.cc %}<br /><strong>CC:</strong> {{ message.cc }}{% endif %}
             <br /><strong>Date:</strong> {{ message.date }}
             <br /><strong>Reply To:</strong> {{ message.reply_to }}
+            {% if message.attachments %}<br /><strong>Attachments:</strong>
+                {% for attachment in message.attachments %}
+                    <a href="{{ attachment.url }}" target="_blank">
+                        <img style="display: inline-block" src="{{ attachment.icon }}" />
+                        {{ attachment.filename }} ({{ attachment.size|filesizeformat }})
+                    </a>
+                {% endfor %}
+            {% endif %}
         </p>
         {% if message.is_html %}
-        <script language="javascript" type="text/javascript">
-            function resizeIframe(obj) {
-                obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
-            }
-        </script>
-        <iframe frameborder="0" srcdoc="{{ message.body_html }}" width="100%" onload="resizeIframe(this);"></iframe>
+            <script language="javascript" type="text/javascript">
+                function resize_iframe(iframe) {
+                    iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
+                  }
+            </script>
+            <iframe id="email_body" frameborder="0" srcdoc="{{ message.body_html }}" width="100%" onload="resize_iframe(this)"></iframe>
         {% else %}
-        <p>{{ message.body_plain_text|linebreaksbr }}</p>
+            <p>{{ message.body_plain_text|linebreaksbr }}</p>
         {% endif %}
     {% else %}
         <p>Could not retrieve email.</p>

@@ -6,10 +6,13 @@
 
 """
 
+import os.path
 import re
 
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.http.response import HttpResponse
+from django.templatetags.static import static
 from django.views.generic.base import TemplateView
 
 from .utils import EmailManager
@@ -46,13 +49,18 @@ class EmailMessageView(TemplateView):
         message['cc'] = _address_list_to_string(message['cc'])
         message['reply_to'] = _address_list_to_string(message['reply_to'])
 
+        attachment_icons = ['accdb', 'avi', 'csv', 'doc', 'docx', 'mp4', 'mpeg', 'pdf', 'pps', 'ppt', 'pptx', 'rtf', 'swf', 'txt', 'xls', 'xlsx']
         attachment_metadata = []
 
         for attachment in message['attachments']:
-            print(attachment)
+            extension = os.path.splitext(attachment[0])[1][1:]
             metadata = {
                 'filename': attachment[0],
                 'size': len(attachment[1]),
+                'icon': static('images/attachment_icons/' + extension + '-icon.png') if extension in attachment_icons else static('images/attachment_icons/default.png'),
+                'url': reverse('email_get_attachment', kwargs={'uid': message_uid,
+                                                               'mailbox_name': mailbox_name,
+                                                               'attachment_index': message['attachments'].index(attachment)})
             }
             attachment_metadata.append(metadata)
 
@@ -60,6 +68,39 @@ class EmailMessageView(TemplateView):
 
         context['message'] = message
         return context
+
+
+class EmailAttachmentRequestView(TemplateView):
+
+    def render_to_response(self, context, **response_kwargs):
+        message_uid = context['uid']
+        mailbox_name = context['mailbox_name']
+        attachment_index = context['attachment_index']
+
+        with EmailManager() as email_manager:
+            message = email_manager.get_email_message(mailbox_name, message_uid)
+
+        filename, filedata, filetype = message['attachments'][int(attachment_index)]
+
+        response = HttpResponse()
+
+        if 'HTTP_RANGE' in self.request.META:
+            http_range_regex = re.compile('bytes=(\d*)-(\d*)$')
+            regex_match = http_range_regex.match(self.request.META['HTTP_RANGE'])
+            response_start = int(regex_match.groups()[0])
+            response_end = int(regex_match.groups()[1] if regex_match.groups()[1] else (len(filedata) - 1))
+        else:
+            response_start = 0
+            response_end = len(filedata) - 1
+
+        response.write(filedata[response_start:response_end + 1])
+        response["Accept-Ranges"] = 'bytes'
+        response["Content-Length"] = response_end - response_start + 1
+        response["Content-Type"] = filetype
+        response["Content-Range"] = 'bytes ' + str(response_start) + '-' + str(response_end) + '/' + str(len(filedata))
+        response["Content-Disposition"] = 'filename="' + str(filename) + '"'
+
+        return response
 
 
 class VoicemailListView(TemplateView):

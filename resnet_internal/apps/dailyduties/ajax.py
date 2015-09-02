@@ -156,7 +156,7 @@ def get_mailbox_summary(request):
     raw_response = """
         {% if emails %}
             {% for email in emails %}
-            <tr id="email_{{ email.uid }}" {% if email.unread %}class="bg-info"{% endif %} onclick="$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe'}); $.fancybox.showLoading()">
+            <tr id="email_{{ email.uid }}" {% if email.unread %}class="bg-info"{% endif %} onclick="$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">
                 <td>{{ email.date }}</td>
                 <td>{{ email.from_name }} &lt;{{email.from_address }}&gt;</td>
                 <td>{{ email.subject }}</td>

@@ -6,7 +6,7 @@
 
 """
 from datetime import datetime, timedelta
-import email
+import email.header
 from itertools import zip_longest
 import logging
 from operator import itemgetter
@@ -64,6 +64,15 @@ class EmailConnectionMixin(object):
 
 class EmailManager(EmailConnectionMixin):
     server = None
+
+    def decode_header(self, header_bytes):
+            """ From https://github.com/maxiimou/imapclient/blob/decode_imap_bytes/imapclient/response_types.py
+            Will hopefully be merged into IMAPClient in the future."""
+
+            bytes_output, encoding = email.header.decode_header(smart_text((header_bytes)))[0]
+            if encoding:
+                return bytes_output.decode(encoding)
+            return bytes_output
 
     def get_attachment(self, uid):
         response = self.server.fetch(int(uid), 'BODY[]')
@@ -145,14 +154,14 @@ class EmailManager(EmailConnectionMixin):
                 unread = b'\\Seen' not in data[b'FLAGS']
                 envelope = data[b'ENVELOPE']
                 date = envelope.date
-                subject = envelope.subject
+                subject = smart_text(envelope.subject)
                 message_from = envelope.from_[0]
 
                 messages.append({
                     'uid': uid,
                     'unread': unread,
                     'date': date,
-                    'subject': smart_text(subject),
+                    'subject': self.decode_header(subject),
                     'from_name': smart_text(message_from.name) if message_from.name else '',
                     'from_address': smart_text(message_from.mailbox) + '@' + smart_text(message_from.host)
                 })
@@ -198,7 +207,8 @@ class EmailManager(EmailConnectionMixin):
             else:
                 filename = part.get_filename()
                 filedata = part.get_payload(decode=True)
-                attachments.append((filename, filedata))
+                filetype = part.get_content_type()
+                attachments.append((filename, filedata, filetype))
 
         message = {
             'to': _convert_list_of_addresses(envelope.to),
@@ -207,7 +217,7 @@ class EmailManager(EmailConnectionMixin):
             'reply_to': _convert_list_of_addresses(envelope.reply_to),
             'date': envelope.date,
             'message-id': smart_text(envelope.message_id),
-            'subject': smart_text(envelope.subject),
+            'subject': self.decode_header(envelope.subject),
             'body_html': body_html,
             'body_plain_text': body_plain_text,
             'attachments': attachments,
