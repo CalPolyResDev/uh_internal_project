@@ -189,7 +189,7 @@ class EmailManager(EmailConnectionMixin):
         attachments = []
 
         for part in message.walk():
-            if part.get_content_type() in ['multipart', 'multipart/alternative', None]:
+            if part.get_content_type() in ['multipart', 'multipart/alternative', 'multipart/related', None]:
                 continue
             elif part.get_content_type() == 'text/html':
                 body_html += smart_text(part.get_payload(decode=True), errors='replace')
@@ -197,8 +197,8 @@ class EmailManager(EmailConnectionMixin):
                 body_plain_text += smart_text(part.get_payload(decode=True), errors='replace')
             else:
                 filename = part.get_filename()
-                file_data = part.get_payload(decode=True)
-                attachments.append((filename, file_data))
+                filedata = part.get_payload(decode=True)
+                attachments.append((filename, filedata))
 
         message = {
             'to': _convert_list_of_addresses(envelope.to),

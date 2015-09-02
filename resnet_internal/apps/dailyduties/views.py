@@ -49,6 +49,7 @@ class EmailMessageView(TemplateView):
         attachment_metadata = []
 
         for attachment in message['attachments']:
+            print(attachment)
             metadata = {
                 'filename': attachment[0],
                 'size': len(attachment[1]),
