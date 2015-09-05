@@ -211,3 +211,16 @@ def email_mark_read(request):
             if key.startswith('message'):
                 mailbox, uid = value.rsplit('/', 1)
                 email_manager.mark_message_read(mailbox, uid)
+
+
+@ajax
+@require_POST
+def email_archive(request):
+    post_items = request.POST.items()
+    destination_folder = request.POST['destination_folder']
+
+    with EmailManager() as email_manager:
+        for key, value in post_items:
+            if key.startswith('message'):
+                mailbox, uid = value.rsplit('/', 1)
+                email_manager.move_message(mailbox, uid, destination_folder)

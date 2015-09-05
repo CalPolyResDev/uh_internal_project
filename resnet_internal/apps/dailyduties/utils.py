@@ -93,17 +93,20 @@ class EmailManager(EmailConnectionMixin):
 
         raise ValueError('Not a Valid Voicemail Message: No attachment.')
 
-    def delete_voicemail_message(self, uid):
-        self.server.select_folder('Voicemails')
+    def move_message(self, mailbox, uid, destination_folder):
+        self.server.select_folder(mailbox)
 
         try:
-            self.server.copy(int(uid), 'Archives/Voicemails')
+            self.server.copy(int(uid), destination_folder)
         except:
             print('Copy Failed!')
             return
 
         self.server.delete_messages(int(uid))
         self.server.expunge()
+
+    def delete_voicemail_message(self, uid):
+        self.move_message('Voicemails', uid, 'Archives/Voicemails')
 
     def get_all_voicemail_messages(self):
         """Get the voicemail messages."""

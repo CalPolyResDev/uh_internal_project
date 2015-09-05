@@ -22,7 +22,18 @@
                         <button style="padding: 6px 12px;" class="button default" onclick="$('input:checkbox').prop('checked', true);">Check All</button>
                         <button style="padding: 6px 12px;" class="button default" onclick="$('input:checkbox').prop('checked', false);">Uncheck All</button>
                         <button style="padding: 6px 12px;" class="button default" onclick="refresh_messages('INBOX');" id="refresh_button">Refresh</button>
-                        <button style="padding: 6px 12px;" class="button default" onclick="archive_selected();">Archive</button>
+                        <button style="padding: 6px 12px;"  class="button default"id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
+                            data-content="<table class='dataTable'>
+                                    <tbody>
+                                        {% for folder, display_name in archive_folders %}
+                                            <tr id='{{ folder }}' style='cursor: pointer;' onclick='$(&quot;#archive_button&quot;).popover(&quot;hide&quot;);archive_selected(&quot;{{ folder }}&quot;);'>
+                                                <td>{{ display_name }}</td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>">
+                            Archive
+                        </button>
                         <button style="padding: 6px 12px;" class="button default" onclick="mark_selected_unread();">Mark as Unread</button>
                         <button style="padding: 6px 12px;" class="button default" onclick="mark_selected_read();">Mark as Read</button>
                     </div>
@@ -95,8 +106,19 @@
 
         return ajaxDict;
     };
-    function archive_selected() {
+    function archive_selected(destination_folder) {
         var selected_messages = get_selected_emails();
+        set_spinner_status(selected_messages, true);
+
+        var post_data = arrayToAjax(selected_messages, 'message');
+        post_data['destination_folder'] = destination_folder;
+
+        console.log(post_data);
+        ajaxPost("{% url 'email_archive' %}", post_data, function(response_context) {
+            for (index = 0; index < selected_messages.length; ++index) {
+                $(document.getElementById(selected_messages[index])).remove();
+            };  
+        });
     };
     function mark_selected_unread() {
         var selected_messages = get_selected_emails();

@@ -21,6 +21,34 @@ from .utils import EmailManager
 class EmailListView(TemplateView):
     template_name = "dailyduties/email.html"
 
+    def get_context_data(self, **kwargs):
+        context = super(EmailListView, self).get_context_data(**kwargs)
+
+        archive_folders = [
+            ('Archives/Aruba Ethernet', 'Aruba Ethernet'),
+            ('Archives/Aruba WiFi', 'Aruba WiFi'),
+            ('Archives/Device Registration', 'Device Registration'),
+            ("Archives/DMCA Abuse Complaints", "DMCA's'"),
+            ('Archives/General Questions and Complaints', 'General'),
+            ('Archives/Hardware', 'Hardware'),
+            ('Archives/Internal', 'Internal - General'),
+            ('Archives/Internal/Accounts', 'Internal - Accounts'),
+            ('Archives/Internal/Dev Team', 'Internal - Dev Team'),
+            ('Archives/Internal/Docs', 'Internal - Docs'),
+            ('Archives/Internal/Forms', 'Internal - Forms'),
+            ('Archives/Internal/Scheduling', 'Internal - Scheduling'),
+            ('Archives/Internal/SRS', 'Internal - SRS'),
+            ('Archives/Internal/UHTV', 'Internal - UHTV'),
+            ('Archives/Internal/Software', 'Software'),
+            ('Archives/Internal/Software/VM', 'Software - VM'),
+            ('Junk Email', 'Junk'),
+        ]
+
+        archive_folders.sort(key=lambda tup: tup[1])
+        context['archive_folders'] = archive_folders
+
+        return context
+
 
 class EmailMessageView(TemplateView):
     template_name = "dailyduties/email_viewer.html"
