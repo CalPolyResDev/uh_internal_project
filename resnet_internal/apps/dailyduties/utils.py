@@ -81,7 +81,7 @@ class EmailManager(EmailConnectionMixin):
 
         for part in message.walk():
 
-            if part.get_content_maintype() == 'multipart':
+            if part.get_content_maintype().startswith('multipart'):
                 continue
             if part.get('Content-Disposition') is None:
                 continue
@@ -209,7 +209,9 @@ class EmailManager(EmailConnectionMixin):
         attachments = []
 
         for part in message.walk():
-            if part.get_content_type() in ['multipart', 'multipart/alternative', 'multipart/related', None]:
+            if part.get_content_type().startswith('multipart'):
+                continue
+            elif part.get_content_type() is None:
                 continue
             elif part.get_content_type() == 'text/html':
                 body_html += smart_text(part.get_payload(decode=True), errors='replace')
