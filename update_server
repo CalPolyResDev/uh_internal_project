@@ -4,8 +4,8 @@ source /etc/environment
 source /usr/local/bin/virtualenvwrapper.sh
 
 workon resnet_internal_project
-GITOUTPUT=$(git pull)
-echo $GITOUTPUT | grep 'Already up-to-date.' &> /dev/null
+GITOUTPUT=$(git pull 2> /dev/null)
+echo $GITOUTPUT | grep 'Already up-to-date.' > /dev/null
 UPDATED=$?
 
 if [ $UPDATED = 1 ]; then    
