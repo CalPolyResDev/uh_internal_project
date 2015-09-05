@@ -21,7 +21,6 @@ from .models import DailyDuties
 from .utils import GetDutyData, EmailManager
 
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -145,6 +144,7 @@ def get_email_folders(request):
 
     return HttpResponse(html_response)
 
+
 @ajax
 @require_POST
 def get_mailbox_summary(request):
@@ -154,10 +154,16 @@ def get_mailbox_summary(request):
         mailbox_summary = email_manager.get_mailbox_summary(mailbox_name)
 
     raw_response = """
+        {% load staticfiles %}
         {% if emails %}
             {% for email in emails %}
-            <tr id="email_{{ email.uid }}" {% if email.unread %}class="bg-info"{% endif %}>
-                <td><input type="checkbox" name="email_selection" value="{{ email.uid }}"></td>
+            <tr id="{{ mailbox_name }}/{{ email.uid }}" {% if email.unread %}class="bg-info"{% endif %}>
+                <td>
+                    <input type="checkbox" name="email_selection" value="{{ email.uid }}" id="checkbox_{{ mailbox_name }}/{{ email.uid }}">
+                    <div id="spinner_{{ mailbox_name }}/{{ email.uid }}" class="spinner" style="display:none;">
+                        <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
+                    </div>
+                </td>
                 <td style="cursor: pointer;" onclick="$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.date }}</td>
                 <td style="cursor: pointer;" onclick="$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.from_name }} &lt;{{email.from_address }}&gt;</td>
                 <td style="cursor: pointer;" onclick="$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.subject }}</td>
@@ -181,3 +187,27 @@ def get_mailbox_summary(request):
     }
 
     return data
+
+
+@ajax
+@require_POST
+def email_mark_unread(request):
+    post_items = request.POST.items()
+
+    with EmailManager() as email_manager:
+        for key, value in post_items:
+            if key.startswith('message'):
+                mailbox, uid = value.rsplit('/', 1)
+                email_manager.mark_message_unread(mailbox, uid)
+
+
+@ajax
+@require_POST
+def email_mark_read(request):
+    post_items = request.POST.items()
+
+    with EmailManager() as email_manager:
+        for key, value in post_items:
+            if key.startswith('message'):
+                mailbox, uid = value.rsplit('/', 1)
+                email_manager.mark_message_read(mailbox, uid)

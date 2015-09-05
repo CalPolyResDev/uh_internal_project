@@ -66,13 +66,13 @@ class EmailManager(EmailConnectionMixin):
     server = None
 
     def decode_header(self, header_bytes):
-            """ From https://github.com/maxiimou/imapclient/blob/decode_imap_bytes/imapclient/response_types.py
-            Will hopefully be merged into IMAPClient in the future."""
+        """ From https://github.com/maxiimou/imapclient/blob/decode_imap_bytes/imapclient/response_types.py
+        Will hopefully be merged into IMAPClient in the future."""
 
-            bytes_output, encoding = email.header.decode_header(smart_text((header_bytes)))[0]
-            if encoding:
-                return bytes_output.decode(encoding)
-            return bytes_output
+        bytes_output, encoding = email.header.decode_header(smart_text((header_bytes)))[0]
+        if encoding:
+            return bytes_output.decode(encoding)
+        return bytes_output
 
     def get_attachment(self, uid):
         response = self.server.fetch(int(uid), 'BODY[]')
@@ -168,6 +168,14 @@ class EmailManager(EmailConnectionMixin):
 
         messages.sort(key=itemgetter('date'), reverse=True)
         return messages
+
+    def mark_message_read(self, mailbox_name, uid):
+        self.server.select_folder(mailbox_name)
+        self.server.add_flags(uid, b'\\Seen')
+
+    def mark_message_unread(self, mailbox_name, uid):
+        self.server.select_folder(mailbox_name)
+        self.server.remove_flags(uid, b'\\Seen')
 
     def get_email_message(self, mailbox_name, uid):
         def _convert_list_of_addresses(address_list):

@@ -19,9 +19,12 @@
                 </td>
                 <td style="vertical-align: top; width: 75%;">
                     <div>
+                        <button style="padding: 6px 12px;" class="button default" onclick="$('input:checkbox').prop('checked', true);">Check All</button>
+                        <button style="padding: 6px 12px;" class="button default" onclick="$('input:checkbox').prop('checked', false);">Uncheck All</button>
                         <button style="padding: 6px 12px;" class="button default" onclick="refresh_mail();">Refresh</button>
                         <button style="padding: 6px 12px;" class="button default" onclick="archive_selected();">Archive</button>
-                        <button style="padding: 6px 12px;" class="button default" onclick="mark_selected_runread();">Mark as Unread</button>
+                        <button style="padding: 6px 12px;" class="button default" onclick="mark_selected_unread();">Mark as Unread</button>
+                        <button style="padding: 6px 12px;" class="button default" onclick="mark_selected_read();">Mark as Read</button>
                     </div>
                     <table class="dataTable" id='email_table' style="">
                     <tbody>
@@ -62,18 +65,66 @@
             });
             ajaxPost("{% url 'email_get_mailbox_summary' %}", {"mailbox": 'INBOX'});
     });
+    function get_selected_emails() {
+        var rows = new Array();
+        $('#email_table tr').filter(':has(:checkbox:checked)').each(function() {
+            rows.push(this.id);
+        });
+
+        return rows;
+    };
+    function set_spinner_status(emails, status) {
+        for (index = 0; index < emails.length; ++index) {
+            var checkbox = document.getElementById('checkbox_' + emails[index]);
+            checkbox.style.display = status ? 'none' : 'inline';
+            
+            var spinner = document.getElementById('spinner_' + emails[index]); 
+            spinner.style.display = status ? 'inline' : 'none';
+        };
+    };
+    function arrayToAjax(array, prefix) {
+        var ajaxDict = {};
+        for (index = 0; index < array.length; ++index) {
+            ajaxDict[prefix + index.toString()] = array[index];
+        };
+
+        return ajaxDict;
+    };
+    function archive_selected() {
+        var selected_messages = get_selected_emails();
+    };
+    function mark_selected_unread() {
+        var selected_messages = get_selected_emails();
+        set_spinner_status(selected_messages, true);
+        ajaxPost("{% url 'email_mark_unread' %}", arrayToAjax(selected_messages, 'message'), function(response_context) {
+            for (index = 0; index < selected_messages.length; ++index) {
+                $(document.getElementById(selected_messages[index])).addClass('bg-info');
+            };
+            set_spinner_status(selected_messages, false);
+        });
+    };
+    function mark_selected_read() {
+        var selected_messages = get_selected_emails();
+        set_spinner_status(selected_messages, true);
+        ajaxPost("{% url 'email_mark_read' %}", arrayToAjax(selected_messages, 'message'), function(response_context) {
+            for (index = 0; index < selected_messages.length; ++index) {
+                $(document.getElementById(selected_messages[index])).removeClass('bg-info');
+            };
+            set_spinner_status(selected_messages, false);
+        });
+    };
     function remove_voicemail(message_uid)  {
         // Cannot use JQuery here: $ signs and other character in UUID break the query
         var archive_link = document.getElementById('archive_' + message_uid);
         archive_link.style.display = 'none';
         
-        var spinner = document.getElementById('spinner_' + message_uid); 
+        var spinner = document.getElementById('spinner_' + message_uid);
         spinner.style.display = 'block';
         
         ajaxPost("{% url 'remove_voicemail' %}", {"message_uid": message_uid}, function(response_context) {
             var row = document.getElementById('voicemail_' + message_uid);
             row.parentNode.removeChild(row);
         });
-    }
+    };
 </script>
 {% endblock %}
