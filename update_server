@@ -5,13 +5,13 @@ source /usr/local/bin/virtualenvwrapper.sh
 
 workon resnet_internal_project
 GITOUTPUT=$(git pull)
-echo $GITOUTPUT | grep 'Already up-to-date.' > /dev/null
+echo $GITOUTPUT | grep 'Already up-to-date.' 2>&1 /dev/null
 UPDATED=$?
 
 if [ $UPDATED = 1 ]; then    
     echo $GITOUTPUT
     wipeenv
-    pip3 install -qr requirements.txt 
+    pip3 install -r requirements.txt 
     python3 resnet_internal/manage.py collectstatic --noinput
     touch conf/uwsgi.ini
 fi
