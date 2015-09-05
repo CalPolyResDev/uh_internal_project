@@ -21,7 +21,7 @@
                     <div>
                         <button style="padding: 6px 12px;" class="button default" onclick="$('input:checkbox').prop('checked', true);">Check All</button>
                         <button style="padding: 6px 12px;" class="button default" onclick="$('input:checkbox').prop('checked', false);">Uncheck All</button>
-                        <button style="padding: 6px 12px;" class="button default" onclick="refresh_mail();">Refresh</button>
+                        <button style="padding: 6px 12px;" class="button default" onclick="refresh_messages('INBOX');" id="refresh_button">Refresh</button>
                         <button style="padding: 6px 12px;" class="button default" onclick="archive_selected();">Archive</button>
                         <button style="padding: 6px 12px;" class="button default" onclick="mark_selected_unread();">Mark as Unread</button>
                         <button style="padding: 6px 12px;" class="button default" onclick="mark_selected_read();">Mark as Read</button>
@@ -49,9 +49,7 @@
     $(document).ready(function() {
             $('#jstree_folder_structure')
             .on('select_node.jstree', function(event, data) {
-                $("#email_table tr:gt(0)").remove();
-                $("#email_table").append('<tr id="loading_email_record"><td colspan="4" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
-                ajaxPost("{% url 'email_get_mailbox_summary' %}", {"mailbox": data.node.id});
+                refresh_messages(data.node.id);
             })
             .jstree({
                 'core': {
@@ -63,7 +61,7 @@
                     }
                 }
             });
-            ajaxPost("{% url 'email_get_mailbox_summary' %}", {"mailbox": 'INBOX'});
+            refresh_messages('INBOX');
     });
     function get_selected_emails() {
         var rows = new Array();
@@ -81,6 +79,13 @@
             var spinner = document.getElementById('spinner_' + emails[index]); 
             spinner.style.display = status ? 'inline' : 'none';
         };
+    };
+    function refresh_messages(mailbox) {
+        $("#email_table tr:gt(0)").remove();
+        $("#email_table").append('<tr id="loading_email_record"><td colspan="4" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
+        ajaxPost("{% url 'email_get_mailbox_summary' %}", {"mailbox": mailbox}, function(response_context) {
+            $("#refresh_button").attr("onclick","refresh_messages('" + mailbox + "');");
+        });
     };
     function arrayToAjax(array, prefix) {
         var ajaxDict = {};
