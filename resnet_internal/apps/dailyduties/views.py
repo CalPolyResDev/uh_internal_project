@@ -42,6 +42,7 @@ class EmailListView(TemplateView):
             ('Archives/Internal/Software', 'Software'),
             ('Archives/Internal/Software/VM', 'Software - VM'),
             ('Junk Email', 'Junk'),
+            ('Job Applicants', 'Job Applicants'),
         ]
 
         archive_folders.sort(key=lambda tup: tup[1])
