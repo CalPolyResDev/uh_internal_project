@@ -23,7 +23,7 @@ class NetworkReachabilityTester:
 
     @staticmethod
     def _is_device_reachable(ip_address):
-        response = os.system("ping -c 1 -t 1 " + ip_address + ' > /dev/null 2>&1') if platform == 'darwin' else os.system("ping -c 1 -w 1 " + ip_address)
+        response = os.system("ping -c 1 -t 1 " + ip_address + ' > /dev/null 2>&1') if platform == 'darwin' else os.system("ping -c 1 -w 1 " + ip_address + ' > /dev/null 2>&1')
         return True if response == 0 else False
 
     @staticmethod
@@ -57,7 +57,7 @@ def dict_merge(base, merge):
 
     for key, value in merge.items():
         if key in result and isinstance(result[key], dict):
-                result[key] = dict_merge(result[key], value)
+            result[key] = dict_merge(result[key], value)
         else:
             result[key] = deepcopy(value)
 
@@ -72,7 +72,10 @@ def get_ticket_list(user):
                     'status': ticket.status,
                     'summary': ticket.summary,
                     'date_created': ticket.date_created,
-                    'date_updated': ticket.date_updated
+                    'date_updated': ticket.date_updated,
+                    'assigned_person': ticket.assigned_person,
+                    'updater_is_technician': ticket.updater_is_technician,
+                    'date_updated': ticket.date_updated,
                     } for ticket in ticket_queryset)
 
     tickets = sorted(tickets, key=itemgetter('date_created'), reverse=True)

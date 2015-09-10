@@ -6,6 +6,7 @@
 
 """
 
+from _datetime import timedelta
 from datetime import datetime
 import logging
 from operator import itemgetter
@@ -140,17 +141,28 @@ def get_tickets(request):
     tickets = get_ticket_list(request.user)
     now = datetime.today()
     for ticket in tickets:
-        time_difference = (now - ticket['date_updated']).total_seconds() / 86400
+        if ((not ticket['assigned_person'] or ticket['assigned_person'] == request.user.get_full_name()) and
+                (ticket['status'] != 'Pending Information' and ticket['updater_is_technician'] == True and
+                 ticket['date_updated'] + timedelta(weeks=1) > datetime.today())):
 
-        if time_difference < 3:
-            ticket['display_class'] = 'bg-success'
-        elif time_difference < 7:
-            ticket['display_class'] = 'bg-info'
-        elif time_difference < 14:
-            ticket['display_class'] = 'bg-warning'
+            time_difference = (now - ticket['date_updated']).total_seconds() / 86400
+            if time_difference < 3:
+                ticket['display_class'] = 'bg-success'
+                ticket['sort_order'] = 1
+            elif time_difference < 7:
+                ticket['display_class'] = 'bg-info'
+                ticket['sort_order'] = 2
+            elif time_difference < 14:
+                ticket['display_class'] = 'bg-warning'
+                ticket['sort_order'] = 3
+            else:
+                ticket['display_class'] = 'bg-danger'
+                ticket['sort_order'] = 4
         else:
-            ticket['display_class'] = 'bg-danger'
+            ticket['display_class'] = 'bg-muted'
+            ticket['sort_order'] = 5
 
+    tickets.sort(key=itemgetter('sort_order'))
     template = Template(raw_response)
     context = RequestContext(request, {'tickets': tickets})
     response_html = template.render(context)

@@ -1,11 +1,17 @@
 #! /bin/bash
 
-git pull | grep 'Already up-to-date.'
+source /etc/environment
+source /usr/local/bin/virtualenvwrapper.sh
+
+workon resnet_internal_project
+GITOUTPUT=$(git pull 2> /dev/null)
+echo $GITOUTPUT | grep 'Already up-to-date.' > /dev/null
 UPDATED=$?
 
 if [ $UPDATED = 1 ]; then    
-    git pull
-    pip3 install -qr requirements.txt 
+    echo $GITOUTPUT
+    wipeenv
+    pip3 install -r requirements.txt 
     python3 resnet_internal/manage.py collectstatic --noinput
     touch conf/uwsgi.ini
 fi
