@@ -16,7 +16,7 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.staticfiles.templatetags.staticfiles import static as staticfiles
 from django.core.exceptions import PermissionDenied
-from django.views.defaults import server_error, permission_denied, page_not_found
+from django.views.defaults import permission_denied, page_not_found
 from django.views.generic import RedirectView
 
 from .apps.adgroups.ajax import remove_resnet_tech
@@ -168,7 +168,7 @@ urlpatterns += [
 
 # Raise errors on purpose
 urlpatterns += [
-    url(r'^500/$', server_error),
+    url(r'^500/$', handler500),
     url(r'^403/$', permission_denied),
     url(r'^404/$', page_not_found),
 ]
