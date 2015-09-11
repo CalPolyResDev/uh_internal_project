@@ -94,21 +94,20 @@
             <!-- Begin Navigation Bar -->
             <div id="leftnav">
                 <h1>Navigation</h1>
-
                 {% if request.user|technician_access %}
                 <h2>Technician Tools</h2>
                 <ul>
                     <li>
-                        <a href="https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=calpoly.edu&wreply=https%3A%2F%2Foutlook.office365.com" id="email_link" onclick="updateDuty('email', '')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
+                        <a style="cursor: pointer;" id="email_link" onclick="updateDuty('email', 'https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=calpoly.edu&wreply=https%3A%2F%2Foutlook.office365.com')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
                     </li>
                     <li>
                         <a href="https://myportal.calpoly.edu/f/u17l1s6/normal/render.uP"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
                     </li>
                     <li>
-                        <a href="https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Main" id="srs_ticket_link" onclick="updateDuty('tickets', '')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
+                        <a id="srs_ticket_link" style="cursor: pointer;" onclick="updateDuty('tickets', 'https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Main')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
                     </li>
                     <li>
-                        <a style="cursor: pointer;" id="voicemail_link" onclick="updateDuty('voicemail', '{% url 'voicemail_list' %}')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
+                        <a id="voicemail_link" style="cursor: pointer;" onclick="updateDuty('voicemail', '{% url 'voicemail_list' %}')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
                     </li>
                     <li>
                         <a href="https://calpoly-advocate.symplicity.com/index.php/pid480522"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
@@ -121,18 +120,18 @@
                     </li>
                     <ul id="wiki_pages_list" style="display: none;">
                         <li>
-                            <a href="https://wiki.calpoly.edu/display/RES/ResNet+Home" class="handler_link sublink">ResNet Wiki</a>
+                            <a href="https://wiki.calpoly.edu/display/RES/ResNet+Home" class="sublink">ResNet Wiki</a>
                         </li>
                         <li>
-                            <a href="https://wiki.calpoly.edu/display/UH/University+Housing+Home" class="handler_link sublink">University Housing Wiki</a>
+                            <a href="https://wiki.calpoly.edu/display/UH/University+Housing+Home" class="sublink">University Housing Wiki</a>
                         </li>
                         <li>
-                            <a href="https://wiki.calpoly.edu/display/ITS/ITS+Home" class="handler_link sublink">ITS Wiki</a>
+                            <a href="https://wiki.calpoly.edu/display/ITS/ITS+Home" class="sublink">ITS Wiki</a>
                         </li>
                     </ul>
                 </ul>
                 {% endif %}
-    
+
                 {% if request.user|staff_access %}
                 <h2>Staff Tools</h2>
                 <ul>
@@ -141,7 +140,7 @@
                     </li>
                 </ul>
                 {% endif %}
-    
+
                 {% if request.user|technician_access %}
                 <h2>Network Analysis</h2>
                 <ul>
@@ -153,24 +152,27 @@
                     </li>
                     <ul id="aruba_controllers_list" style="display: none;">
                         <li>
-                            <a href="https://resnetcontroller2.netadm.calpoly.edu:4343" class="handler_link sublink">Halls Controller</a>
+                            <a href="https://resnetcontroller2.netadm.calpoly.edu:4343" class="sublink">Halls Controller</a>
                         </li>
                         <li>
-                            <a href="https://resnetcontroller1.netadm.calpoly.edu:4343" class="handler_link sublink">PCV Controller</a>
+                            <a href="https://resnetcontroller1.netadm.calpoly.edu:4343" class="sublink">PCV Controller</a>
                         </li>
                         <li>
-                            <a href="https://resnetcontroller3.netadm.calpoly.edu:4343" class="handler_link sublink">Failover Controller</a>
+                            <a href="https://resnetmaster.netadm.calpoly.edu:4343" class="sublink">Master Controller</a>
                         </li>
                         <li>
-                            <a href="https://resnetairwaves1.netadm.calpoly.edu" class="handler_link sublink">Airwaves Primary</a>
+                            <a href="https://resnetcontroller3.netadm.calpoly.edu:4343" class="sublink">Failover Controller</a>
                         </li>
                         <li>
-                            <a href="https://resnetairwaves2.netadm.calpoly.edu" class="handler_link sublink">Airwaves Secondary</a>
+                            <a href="https://resnetairwaves1.netadm.calpoly.edu" class="sublink">Airwaves Primary</a>
+                        </li>
+                        <li>
+                            <a href="https://resnetairwaves2.netadm.calpoly.edu" class="sublink">Airwaves Secondary</a>
                         </li>
                     </ul>
                 </ul>
                 {% endif %}
-    
+
                 {% if request.user|portmap_access or request.user|computers_access or request.user|printers_access %}
                 <h2>Indexes</h2>
                 <ul>
@@ -191,7 +193,7 @@
                     {% endif %}
                 </ul>
                 {% endif %}
-    
+
                 {% if request.user|technician_access %}
                 <h2>Equipment</h2>
                 <ul>
@@ -208,7 +210,7 @@
                     </ul>
                 </ul>
                 {% endif %}
-    
+
                 {% if request.user|developer_access %}
                 <h2>Administration</h2>
                 <ul>
