@@ -93,47 +93,41 @@
             {% if request.user.is_authenticated and not request.user.is_new_tech %} {# User is logged in - display navigation bar. #}
             <!-- Begin Navigation Bar -->
             <div id="leftnav">
-                <h1>Navigation<a href='/settings/navigation/' class='popup_frame'><img src="{% static 'images/icons/settings_cog.png' %}" alt="Navigation Settings" align="top" width="16" height="16" border="0" style="padding-left: 5px;"/></a></h1>
-    
+                <h1>Navigation</h1>
+
                 {% if request.user|technician_access %}
                 <h2>Technician Tools</h2>
                 <ul>
                     <li>
-                        <a href="/link_handler/email/" id="email_link" onclick="updateDuty('email', '')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
+                        <a href="https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=calpoly.edu&wreply=https%3A%2F%2Foutlook.office365.com" id="email_link" onclick="updateDuty('email', '')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
                     </li>
                     <li>
-                        <a href="/link_handler/portal/" class="handler_link"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
+                        <a href="https://myportal.calpoly.edu/f/u17l1s6/normal/render.uP"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
                     </li>
                     <li>
-                        <a href="/link_handler/srs/" id="srs_ticket_link" onclick="updateDuty('tickets', '')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
+                        <a href="https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Main" id="srs_ticket_link" onclick="updateDuty('tickets', '')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
                     </li>
                     <li>
                         <a style="cursor: pointer;" id="voicemail_link" onclick="updateDuty('voicemail', '{% url 'voicemail_list' %}')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
                     </li>
                     <li>
-                        <a href="/link_handler/advocate/" class="handler_link"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
+                        <a href="https://calpoly-advocate.symplicity.com/index.php/pid480522"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
                     </li>
-                    <!-- <li>
-                        <a href="/link_handler/devices/" class="handler_link"><img src="{% static 'images/icons/controller.png' %}" alt="Device Manager" align="top" width="16" height="16" border="0" />Device Pass Through</a>
-                    </li> -->
-                    <!-- <li>
-                        <a href="/link_handler/abuse/" class="handler_link"><img src="{% static 'images/icons/log.png' %}" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
-                    </li> -->
                     <li>
-                        <a href="/link_handler/reslife/" class="handler_link"><img src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/favicon.ico" alt="ResLife Internal" align="top" width="16" height="16" border="0">ResLife Internal</a>
+                        <a href="https://internal.reslife.calpoly.edu"><img src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/favicon.ico" alt="ResLife Internal" align="top" width="16" height="16" border="0">ResLife Internal</a>
                     </li>
                     <li>
                         <a onclick="$('#wiki_pages_list').toggle()" style="cursor: pointer !important;"><img src="{% static 'images/icons/confluence_16.png' %}" alt="Wiki Pages" align="top" width="16" height="16" border="0" />Wiki Pages</a>
                     </li>
                     <ul id="wiki_pages_list" style="display: none;">
                         <li>
-                            <a href="/link_handler/resnet_wiki/" class="handler_link sublink">ResNet Wiki</a>
+                            <a href="https://wiki.calpoly.edu/display/RES/ResNet+Home" class="handler_link sublink">ResNet Wiki</a>
                         </li>
                         <li>
-                            <a href="/link_handler/housing_wiki/" class="handler_link sublink">University Housing Wiki</a>
+                            <a href="https://wiki.calpoly.edu/display/UH/University+Housing+Home" class="handler_link sublink">University Housing Wiki</a>
                         </li>
                         <li>
-                            <a href="/link_handler/its_wiki/" class="handler_link sublink">ITS Wiki</a>
+                            <a href="https://wiki.calpoly.edu/display/ITS/ITS+Home" class="handler_link sublink">ITS Wiki</a>
                         </li>
                     </ul>
                 </ul>
@@ -152,26 +146,26 @@
                 <h2>Network Analysis</h2>
                 <ul>
                     <li>
-                        <a href="/link_handler/aruba/" class="handler_link"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
+                        <a href="https://backupclearpass.netadm.calpoly.edu/tips/tipsLogin.action"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
                     </li>
                     <li>
                         <a onclick="$('#aruba_controllers_list').toggle()" style="cursor: pointer !important;"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba Controllers" align="top" width="16" height="16" border="0" />Aruba Controllers</a>
                     </li>
                     <ul id="aruba_controllers_list" style="display: none;">
                         <li>
-                            <a href="/link_handler/ac_halls/" class="handler_link sublink">Halls Controller</a>
+                            <a href="https://resnetcontroller2.netadm.calpoly.edu:4343" class="handler_link sublink">Halls Controller</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_pcv/" class="handler_link sublink">PCV Controller</a>
+                            <a href="https://resnetcontroller1.netadm.calpoly.edu:4343" class="handler_link sublink">PCV Controller</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_failover/" class="handler_link sublink">Failover Controller</a>
+                            <a href="https://resnetcontroller3.netadm.calpoly.edu:4343" class="handler_link sublink">Failover Controller</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_airwaves_p/" class="handler_link sublink">Airwaves Primary</a>
+                            <a href="https://resnetairwaves1.netadm.calpoly.edu" class="handler_link sublink">Airwaves Primary</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_airwaves_s/" class="handler_link sublink">Airwaves Secondary</a>
+                            <a href="https://resnetairwaves2.netadm.calpoly.edu" class="handler_link sublink">Airwaves Secondary</a>
                         </li>
                     </ul>
                 </ul>
@@ -219,7 +213,7 @@
                 <h2>Administration</h2>
                 <ul>
                     <li>
-                        <a href="/link_handler/flugzeug/" class="handler_link"><img src="{% static 'images/icons/django.ico' %}" alt="Django Admin" align="top" width="16" height="16" border="0" />Django Admin Site</a>
+                        <a href="/flugzeug/"><img src="{% static 'images/icons/django.ico' %}" alt="Django Admin" align="top" width="16" height="16" border="0" />Django Admin Site</a>
                     </li>
                 </ul>
                 {% endif %}
@@ -261,42 +255,32 @@
         </div>
         <script type="text/javascript">
             {% if request.user.is_authenticated %}
-            function refreshDuties() {
-                ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
-                    $("#email_link").attr('data-content', response_context.email_content);
-                    $("#srs_ticket_link").attr('data-content', response_context.tickets_content);
-                    $("#voicemail_link").attr('data-content', response_context.voicemail_content);
-                    $("#printer_request_link").attr('data-content', response_context.printer_requests_content);
-                });
-            };
-            function updateDuty(duty, redirect_url, target) {
-                ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
-                    if (redirect_url) {
-                        window.open(redirect_url, '_self');
-                    }
-                    else {
-                        refreshDuties();
-                    }
-                });
-            };
-            {% endif %}
-            function update_link_targets(key) {
-                if (key == "False") {
-                    $(".handler_link").attr("target", "_blank");
-                }
-                else {
-                    $(".handler_link").attr("target", "_self");
-                }
-            };
-            $(document).ready(function() {
-                {% if request.user.is_authenticated %}
+                function refreshDuties() {
+                    ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
+                        $("#email_link").attr('data-content', response_context.email_content);
+                        $("#srs_ticket_link").attr('data-content', response_context.tickets_content);
+                        $("#voicemail_link").attr('data-content', response_context.voicemail_content);
+                        $("#printer_request_link").attr('data-content', response_context.printer_requests_content);
+                    });
+                };
+                function updateDuty(duty, redirect_url, target) {
+                    ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
+                        if (redirect_url) {
+                            window.open(redirect_url, '_self');
+                        }
+                        else {
+                            refreshDuties();
+                        }
+                    });
+                };
+                
+                $(document).ready(function() {
                     refreshDuties();
-                {% endif %}
-                update_link_targets("{{ request.user.open_links_in_frame }}");
-            });
+                });
+            {% endif %}
         </script>
         <noscript>
-            <div id="noscript-warning">Many applications on this website require that JavaScript be enabled. Please do so.</div>
+            <div id="noscript-warning">Many features of this website require that JavaScript be enabled. Please do so.</div>
         </noscript>
         {% block extra_script %}
         {% endblock %}
