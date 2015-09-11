@@ -124,12 +124,12 @@
 	}
 
 	$("#id_community").change(function () {
-		ajaxPost("{% url 'ajax_update_building' %}", {'community_id': $(this).val()});
+		ajaxPost("{% url 'ajax_update_building' %}", {'community_id': $(this).val(), 'css_target': '#id_building'});
 	});
 
 	{% if form.building.value %}
 	$(document).ready(function () {
-		ajaxPost("{% url 'ajax_update_building' %}", {'community_id': '{{ form.community.value }}', 'building_selection_id': '{{ form.building.value }}'});
+		ajaxPost("{% url 'ajax_update_building' %}", {'community_id': '{{ form.community.value }}', 'building_selection_id': '{{ form.building.value }}', 'css_target': '#id_building'});
 	});
 	{% endif %}
 </script>

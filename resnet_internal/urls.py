@@ -16,7 +16,7 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.staticfiles.templatetags.staticfiles import static as staticfiles
 from django.core.exceptions import PermissionDenied
-from django.views.defaults import server_error, permission_denied, page_not_found
+from django.views.defaults import permission_denied, page_not_found
 from django.views.generic import RedirectView
 
 from .apps.adgroups.ajax import remove_resnet_tech
@@ -24,7 +24,7 @@ from .apps.adgroups.views import ResTechListEditView
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
 from .apps.core.ajax import update_building, update_network_status, get_tickets
-from .apps.core.views import IndexView, LoginView, logout, link_handler, NavigationSettingsView, handler500, TicketSummaryView
+from .apps.core.views import IndexView, LoginView, logout, NavigationSettingsView, handler500, TicketSummaryView
 from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView
 from .apps.orientation.ajax import complete_task, complete_orientation
@@ -93,8 +93,6 @@ urlpatterns = [
     url(r'^logout/$', logout, name='logout'),
     url(r'^ajax/update_building/$', update_building, name='ajax_update_building'),
     url(r'^settings/navigation/$', login_required(NavigationSettingsView.as_view()), name='navigation_settings'),
-    url(r'^(?P<mode>frame|external|link_handler)/(?P<key>\b[a-zA-Z0-9_]*\b)/$', login_required(link_handler), name='link_handler'),
-    url(r'^(?P<mode>frame|external|link_handler)/(?P<key>cisco)/(?P<ip>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(link_handler), name='link_handler_cisco'),
     url(r'^core/network_status/update/$', update_network_status, name='core_update_network_status'),
     url(r'^core/tickets/list/$', login_required(technician_access(get_tickets)), name='core_get_tickets'),
     url(r'^core/tickets/list/(?P<ticket_id>\b[0-9]*\b)/$', login_required(technician_access(TicketSummaryView.as_view())), name='core_ticket_summary'),
@@ -176,7 +174,7 @@ urlpatterns += [
 
 # Raise errors on purpose
 urlpatterns += [
-    url(r'^500/$', server_error),
+    url(r'^500/$', handler500),
     url(r'^403/$', permission_denied),
     url(r'^404/$', page_not_found),
 ]
