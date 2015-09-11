@@ -93,41 +93,41 @@
             {% if request.user.is_authenticated and not request.user.is_new_tech %} {# User is logged in - display navigation bar. #}
             <!-- Begin Navigation Bar -->
             <div id="leftnav">
-                <h1>Navigation<a href='/settings/navigation/' class='popup_frame'><img src="{% static 'images/icons/settings_cog.png' %}" alt="Navigation Settings" align="top" width="16" height="16" border="0" style="padding-left: 5px;"/></a></h1>
+                <h1>Navigation</h1>
     
                 {% if request.user|technician_access %}
                 <h2>Technician Tools</h2>
                 <ul>
                     <li>
-                        <a id="email_link" onclick="updateDuty('email', '')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
+                        <a style="cursor: pointer;" id="email_link" onclick="updateDuty('email', 'https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=calpoly.edu&wreply=https%3A%2F%2Foutlook.office365.com')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
                     </li>
                     <li>
-                        <a href="/link_handler/portal/"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
+                        <a href="https://myportal.calpoly.edu/"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
                     </li>
                     <li>
-                        <a onclick="updateDuty('tickets', '')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
+                        <a id="srs_ticket_link" style="cursor: pointer;" onclick="updateDuty('tickets', 'https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Main')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
                     </li>
                     <li>
-                        <a style="cursor: pointer;" onclick="updateDuty('voicemail', '{% url 'voicemail_list' %}')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
+                        <a id="voicemail_link" style="cursor: pointer;" onclick="updateDuty('voicemail', '{% url 'voicemail_list' %}')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
                     </li>
                     <li>
-                        <a href="/link_handler/advocate/"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
+                        <a href="https://calpoly-advocate.symplicity.com/index.php/pid480522"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
                     </li>
                     <li>
-                        <a href="/link_handler/reslife/"><img src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/favicon.ico" alt="ResLife Internal" align="top" width="16" height="16" border="0">ResLife Internal</a>
+                        <a href="https://internal.reslife.calpoly.edu"><img src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/favicon.ico" alt="ResLife Internal" align="top" width="16" height="16" border="0">ResLife Internal</a>
                     </li>
                     <li>
                         <a onclick="$('#wiki_pages_list').toggle()" style="cursor: pointer !important;"><img src="{% static 'images/icons/confluence_16.png' %}" alt="Wiki Pages" align="top" width="16" height="16" border="0" />Wiki Pages</a>
                     </li>
                     <ul id="wiki_pages_list" style="display: none;">
                         <li>
-                            <a href="/link_handler/resnet_wiki/">ResNet Wiki</a>
+                            <a href="https://wiki.calpoly.edu/display/RES/ResNet+Home">ResNet Wiki</a>
                         </li>
                         <li>
-                            <a href="/link_handler/housing_wiki/">University Housing Wiki</a>
+                            <a href="https://wiki.calpoly.edu/display/UH/University+Housing+Home">University Housing Wiki</a>
                         </li>
                         <li>
-                            <a href="/link_handler/its_wiki/">ITS Wiki</a>
+                            <a href="https://wiki.calpoly.edu/display/ITS/ITS+Home">ITS Wiki</a>
                         </li>
                     </ul>
                 </ul>
@@ -146,26 +146,29 @@
                 <h2>Network Analysis</h2>
                 <ul>
                     <li>
-                        <a href="/link_handler/aruba/"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
+                        <a href="https://backupclearpass.netadm.calpoly.edu/tips/tipsLogin.action"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
                     </li>
                     <li>
                         <a onclick="$('#aruba_controllers_list').toggle()" style="cursor: pointer !important;"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba Controllers" align="top" width="16" height="16" border="0" />Aruba Controllers</a>
                     </li>
                     <ul id="aruba_controllers_list" style="display: none;">
                         <li>
-                            <a href="/link_handler/ac_halls/">Halls Controller</a>
+                            <a href="https://resnetcontroller2.netadm.calpoly.edu:4343">Halls Controller</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_pcv/">PCV Controller</a>
+                            <a href="https://resnetcontroller1.netadm.calpoly.edu:4343">PCV Controller</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_failover/">Failover Controller</a>
+                            <a href="https://resnetmaster.netadm.calpoly.edu:4343">Master Controller</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_airwaves_p/">Airwaves Primary</a>
+                            <a href="https://resnetcontroller3.netadm.calpoly.edu:4343">Failover Controller</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_airwaves_s/">Airwaves Secondary</a>
+                            <a href="https://resnetairwaves1.netadm.calpoly.edu/">Airwaves Primary</a>
+                        </li>
+                        <li>
+                            <a href="https://resnetairwaves2.netadm.calpoly.edu">Airwaves Secondary</a>
                         </li>
                     </ul>
                 </ul>
@@ -213,7 +216,7 @@
                 <h2>Administration</h2>
                 <ul>
                     <li>
-                        <a href="/link_handler/flugzeug/"><img src="{% static 'images/icons/django.ico' %}" alt="Django Admin" align="top" width="16" height="16" border="0" />Django Admin Site</a>
+                        <a href="/flugzeug/"><img src="{% static 'images/icons/django.ico' %}" alt="Django Admin" align="top" width="16" height="16" border="0" />Django Admin Site</a>
                     </li>
                 </ul>
                 {% endif %}
