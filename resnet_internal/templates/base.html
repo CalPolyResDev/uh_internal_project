@@ -94,7 +94,6 @@
             <!-- Begin Navigation Bar -->
             <div id="leftnav">
                 <h1>Navigation</h1>
-    
                 {% if request.user|technician_access %}
                 <h2>Technician Tools</h2>
                 <ul>
@@ -102,7 +101,7 @@
                         <a style="cursor: pointer;" id="email_link" onclick="updateDuty('email', 'https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=calpoly.edu&wreply=https%3A%2F%2Foutlook.office365.com')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
                     </li>
                     <li>
-                        <a href="https://myportal.calpoly.edu/"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
+                        <a href="https://myportal.calpoly.edu/f/u17l1s6/normal/render.uP"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
                     </li>
                     <li>
                         <a id="srs_ticket_link" style="cursor: pointer;" onclick="updateDuty('tickets', 'https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Main')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
@@ -121,18 +120,18 @@
                     </li>
                     <ul id="wiki_pages_list" style="display: none;">
                         <li>
-                            <a href="https://wiki.calpoly.edu/display/RES/ResNet+Home">ResNet Wiki</a>
+                            <a href="https://wiki.calpoly.edu/display/RES/ResNet+Home" class="sublink">ResNet Wiki</a>
                         </li>
                         <li>
-                            <a href="https://wiki.calpoly.edu/display/UH/University+Housing+Home">University Housing Wiki</a>
+                            <a href="https://wiki.calpoly.edu/display/UH/University+Housing+Home" class="sublink">University Housing Wiki</a>
                         </li>
                         <li>
-                            <a href="https://wiki.calpoly.edu/display/ITS/ITS+Home">ITS Wiki</a>
+                            <a href="https://wiki.calpoly.edu/display/ITS/ITS+Home" class="sublink">ITS Wiki</a>
                         </li>
                     </ul>
                 </ul>
                 {% endif %}
-    
+
                 {% if request.user|staff_access %}
                 <h2>Staff Tools</h2>
                 <ul>
@@ -141,7 +140,7 @@
                     </li>
                 </ul>
                 {% endif %}
-    
+
                 {% if request.user|technician_access %}
                 <h2>Network Analysis</h2>
                 <ul>
@@ -153,27 +152,27 @@
                     </li>
                     <ul id="aruba_controllers_list" style="display: none;">
                         <li>
-                            <a href="https://resnetcontroller2.netadm.calpoly.edu:4343">Halls Controller</a>
+                            <a href="https://resnetcontroller2.netadm.calpoly.edu:4343" class="sublink">Halls Controller</a>
                         </li>
                         <li>
-                            <a href="https://resnetcontroller1.netadm.calpoly.edu:4343">PCV Controller</a>
+                            <a href="https://resnetcontroller1.netadm.calpoly.edu:4343" class="sublink">PCV Controller</a>
                         </li>
                         <li>
-                            <a href="https://resnetmaster.netadm.calpoly.edu:4343">Master Controller</a>
+                            <a href="https://resnetmaster.netadm.calpoly.edu:4343" class="sublink">Master Controller</a>
                         </li>
                         <li>
-                            <a href="https://resnetcontroller3.netadm.calpoly.edu:4343">Failover Controller</a>
+                            <a href="https://resnetcontroller3.netadm.calpoly.edu:4343" class="sublink">Failover Controller</a>
                         </li>
                         <li>
-                            <a href="https://resnetairwaves1.netadm.calpoly.edu/">Airwaves Primary</a>
+                            <a href="https://resnetairwaves1.netadm.calpoly.edu" class="sublink">Airwaves Primary</a>
                         </li>
                         <li>
-                            <a href="https://resnetairwaves2.netadm.calpoly.edu">Airwaves Secondary</a>
+                            <a href="https://resnetairwaves2.netadm.calpoly.edu" class="sublink">Airwaves Secondary</a>
                         </li>
                     </ul>
                 </ul>
                 {% endif %}
-    
+
                 {% if request.user|portmap_access or request.user|computers_access or request.user|printers_access %}
                 <h2>Indexes</h2>
                 <ul>
@@ -194,7 +193,7 @@
                     {% endif %}
                 </ul>
                 {% endif %}
-    
+
                 {% if request.user|technician_access %}
                 <h2>Equipment</h2>
                 <ul>
@@ -211,7 +210,7 @@
                     </ul>
                 </ul>
                 {% endif %}
-    
+
                 {% if request.user|developer_access %}
                 <h2>Administration</h2>
                 <ul>
@@ -258,33 +257,32 @@
         </div>
         <script type="text/javascript">
             {% if request.user.is_authenticated %}
-            function refreshDuties() {
-                ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
-                    $("#email_link").attr('data-content', response_context.email_content);
-                    $("#srs_ticket_link").attr('data-content', response_context.tickets_content);
-                    $("#voicemail_link").attr('data-content', response_context.voicemail_content);
-                    $("#printer_request_link").attr('data-content', response_context.printer_requests_content);
-                });
-            };
-            function updateDuty(duty, redirect_url, target) {
-                ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
-                    if (redirect_url) {
-                        window.open(redirect_url, '_self');
-                    }
-                    else {
-                        refreshDuties();
-                    }
-                });
-            };
-            {% endif %}
-            $(document).ready(function() {
-                {% if request.user.is_authenticated %}
+                function refreshDuties() {
+                    ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
+                        $("#email_link").attr('data-content', response_context.email_content);
+                        $("#srs_ticket_link").attr('data-content', response_context.tickets_content);
+                        $("#voicemail_link").attr('data-content', response_context.voicemail_content);
+                        $("#printer_request_link").attr('data-content', response_context.printer_requests_content);
+                    });
+                };
+                function updateDuty(duty, redirect_url, target) {
+                    ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
+                        if (redirect_url) {
+                            window.open(redirect_url, '_self');
+                        }
+                        else {
+                            refreshDuties();
+                        }
+                    });
+                };
+                
+                $(document).ready(function() {
                     refreshDuties();
-                {% endif %}
-            });
+                });
+            {% endif %}
         </script>
         <noscript>
-            <div id="noscript-warning">Many applications on this website require that JavaScript be enabled. Please do so.</div>
+            <div id="noscript-warning">Many features of this website require that JavaScript be enabled. Please do so.</div>
         </noscript>
         {% block extra_script %}
         {% endblock %}

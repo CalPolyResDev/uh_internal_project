@@ -24,7 +24,7 @@ from .apps.adgroups.views import ResTechListEditView
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
 from .apps.core.ajax import update_building, update_network_status, get_tickets
-from .apps.core.views import IndexView, LoginView, logout, NavigationSettingsView, handler500, TicketSummaryView
+from .apps.core.views import IndexView, LoginView, logout, handler500, TicketSummaryView
 from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView
 from .apps.orientation.ajax import complete_task, complete_orientation
@@ -92,7 +92,6 @@ urlpatterns = [
     url(r'^login/$', LoginView.as_view(), name='login'),
     url(r'^logout/$', logout, name='logout'),
     url(r'^ajax/update_building/$', update_building, name='ajax_update_building'),
-    url(r'^settings/navigation/$', login_required(NavigationSettingsView.as_view()), name='navigation_settings'),
     url(r'^core/network_status/update/$', update_network_status, name='core_update_network_status'),
     url(r'^core/tickets/list/$', login_required(technician_access(get_tickets)), name='core_get_tickets'),
     url(r'^core/tickets/list/(?P<ticket_id>\b[0-9]*\b)/$', login_required(technician_access(TicketSummaryView.as_view())), name='core_ticket_summary'),
