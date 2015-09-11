@@ -23,6 +23,12 @@ class AutoFocusAuthenticationForm(AuthenticationForm):
 
         self.fields["username"].widget.attrs['autofocus'] = True
 
+    def clean_username(self):
+        """Trim the @calpoly.edu if it's entered."""
+
+        username = self.cleaned_data["username"]
+        return username.replace("@calpoly.edu", "")
+
 
 class NavigationSettingsForm(Form):
 
