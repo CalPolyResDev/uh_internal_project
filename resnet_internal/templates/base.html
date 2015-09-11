@@ -99,41 +99,35 @@
                 <h2>Technician Tools</h2>
                 <ul>
                     <li>
-                        <a href="/link_handler/email/" id="email_link" onclick="updateDuty('email', '')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
+                        <a id="email_link" onclick="updateDuty('email', '')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
                     </li>
                     <li>
-                        <a href="/link_handler/portal/" class="handler_link"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
+                        <a href="/link_handler/portal/"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
                     </li>
                     <li>
-                        <a href="/link_handler/srs/" id="srs_ticket_link" onclick="updateDuty('tickets', '')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
+                        <a onclick="updateDuty('tickets', '')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover" class="handler_link"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
                     </li>
                     <li>
-                        <a style="cursor: pointer;" id="voicemail_link" onclick="updateDuty('voicemail', '{% url 'voicemail_list' %}')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
+                        <a style="cursor: pointer;" onclick="updateDuty('voicemail', '{% url 'voicemail_list' %}')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
                     </li>
                     <li>
-                        <a href="/link_handler/advocate/" class="handler_link"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
+                        <a href="/link_handler/advocate/"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
                     </li>
-                    <!-- <li>
-                        <a href="/link_handler/devices/" class="handler_link"><img src="{% static 'images/icons/controller.png' %}" alt="Device Manager" align="top" width="16" height="16" border="0" />Device Pass Through</a>
-                    </li> -->
-                    <!-- <li>
-                        <a href="/link_handler/abuse/" class="handler_link"><img src="{% static 'images/icons/log.png' %}" alt="Abuse Log Finder" align="top" width="16" height="16" border="0" />Abuse Log Finder</a>
-                    </li> -->
                     <li>
-                        <a href="/link_handler/reslife/" class="handler_link"><img src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/favicon.ico" alt="ResLife Internal" align="top" width="16" height="16" border="0">ResLife Internal</a>
+                        <a href="/link_handler/reslife/"><img src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/favicon.ico" alt="ResLife Internal" align="top" width="16" height="16" border="0">ResLife Internal</a>
                     </li>
                     <li>
                         <a onclick="$('#wiki_pages_list').toggle()" style="cursor: pointer !important;"><img src="{% static 'images/icons/confluence_16.png' %}" alt="Wiki Pages" align="top" width="16" height="16" border="0" />Wiki Pages</a>
                     </li>
                     <ul id="wiki_pages_list" style="display: none;">
                         <li>
-                            <a href="/link_handler/resnet_wiki/" class="handler_link sublink">ResNet Wiki</a>
+                            <a href="/link_handler/resnet_wiki/">ResNet Wiki</a>
                         </li>
                         <li>
-                            <a href="/link_handler/housing_wiki/" class="handler_link sublink">University Housing Wiki</a>
+                            <a href="/link_handler/housing_wiki/">University Housing Wiki</a>
                         </li>
                         <li>
-                            <a href="/link_handler/its_wiki/" class="handler_link sublink">ITS Wiki</a>
+                            <a href="/link_handler/its_wiki/">ITS Wiki</a>
                         </li>
                     </ul>
                 </ul>
@@ -152,26 +146,26 @@
                 <h2>Network Analysis</h2>
                 <ul>
                     <li>
-                        <a href="/link_handler/aruba/" class="handler_link"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
+                        <a href="/link_handler/aruba/"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
                     </li>
                     <li>
                         <a onclick="$('#aruba_controllers_list').toggle()" style="cursor: pointer !important;"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba Controllers" align="top" width="16" height="16" border="0" />Aruba Controllers</a>
                     </li>
                     <ul id="aruba_controllers_list" style="display: none;">
                         <li>
-                            <a href="/link_handler/ac_halls/" class="handler_link sublink">Halls Controller</a>
+                            <a href="/link_handler/ac_halls/">Halls Controller</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_pcv/" class="handler_link sublink">PCV Controller</a>
+                            <a href="/link_handler/ac_pcv/">PCV Controller</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_failover/" class="handler_link sublink">Failover Controller</a>
+                            <a href="/link_handler/ac_failover/">Failover Controller</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_airwaves_p/" class="handler_link sublink">Airwaves Primary</a>
+                            <a href="/link_handler/ac_airwaves_p/">Airwaves Primary</a>
                         </li>
                         <li>
-                            <a href="/link_handler/ac_airwaves_s/" class="handler_link sublink">Airwaves Secondary</a>
+                            <a href="/link_handler/ac_airwaves_s/">Airwaves Secondary</a>
                         </li>
                     </ul>
                 </ul>
@@ -219,7 +213,7 @@
                 <h2>Administration</h2>
                 <ul>
                     <li>
-                        <a href="/link_handler/flugzeug/" class="handler_link"><img src="{% static 'images/icons/django.ico' %}" alt="Django Admin" align="top" width="16" height="16" border="0" />Django Admin Site</a>
+                        <a href="/link_handler/flugzeug/"><img src="{% static 'images/icons/django.ico' %}" alt="Django Admin" align="top" width="16" height="16" border="0" />Django Admin Site</a>
                     </li>
                 </ul>
                 {% endif %}
@@ -280,19 +274,10 @@
                 });
             };
             {% endif %}
-            function update_link_targets(key) {
-                if (key == "False") {
-                    $(".handler_link").attr("target", "_blank");
-                }
-                else {
-                    $(".handler_link").attr("target", "_self");
-                }
-            };
             $(document).ready(function() {
                 {% if request.user.is_authenticated %}
                     refreshDuties();
                 {% endif %}
-                update_link_targets("{{ request.user.open_links_in_frame }}");
             });
         </script>
         <noscript>
