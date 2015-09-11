@@ -70,7 +70,7 @@
                         <br />
                         {# Display User Specializations #}
                         {% for title in user_specializations %}
-                            {{ title }}{% if not forloop.last %}, {% endif %}
+                            {{ title }}{% if not forloop.last %},&nbsp;{% endif %}
                         {% endfor %}
                         <br />
                         (<a href="{% url 'logout' %}">Logout</a>)

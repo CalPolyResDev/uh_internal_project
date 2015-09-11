@@ -44,7 +44,7 @@ def specializations(request):
         if request.user.is_rn_staff:
             user_specializations.append('ResNet Staff')
         if request.user.is_developer:
-            if "akavanau" or "rjalmada" in request.user.username:
+            if "akavanau" in request.user.username:
                 user_specializations.append('ResNet Development Team BDFL')
             else:
                 user_specializations.append('ResNet Developer')
