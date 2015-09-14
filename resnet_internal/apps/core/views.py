@@ -7,12 +7,10 @@
 """
 
 from datetime import datetime
-from srsconnector.models import ServiceRequest
 
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.core.urlresolvers import reverse_lazy
-from django.http import HttpResponseNotFound, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.http import HttpResponseRedirect
 from django.template.context import RequestContext
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -20,79 +18,10 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
+from srsconnector.models import ServiceRequest
 
-from .forms import NavigationSettingsForm, AutoFocusAuthenticationForm
+from .forms import AutoFocusAuthenticationForm
 from .models import SiteAnnouncements
-
-
-def link_handler(request, mode, key, ip=""):
-    # My Cal Poly Portal
-    if key == "portal":
-        subtitle = "My Cal Poly Portal"
-        source = "https://myportal.calpoly.edu/f/u17l1s6/normal/render.uP"
-    # Email
-    elif key == "email":
-        subtitle = "Office365 Email"
-        source = "https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=calpoly.edu&wreply=https%3A%2F%2Foutlook.office365.com"
-    # SRS Ticket Manager
-    elif key == "srs":
-        subtitle = "SRS Ticket Manager"
-        source = "https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Main"
-    # Advocate
-    elif key == "advocate":
-        subtitle = "Advocate"
-        source = "https://calpoly-advocate.symplicity.com/index.php/pid480522"
-    # Device Pass Through
-    elif key == "devices":
-        subtitle = "Device Pass Through"
-        source = "https://housingservices.calpoly.edu/guests/device/add/"
-    # Aruba ClearPass
-    elif key == "aruba":
-        subtitle = "Aruba ClearPass"
-        source = "https://backupclearpass.netadm.calpoly.edu/tips/tipsLogin.action"
-    elif key == "ac_pcv":
-        subtitle = "Aruba PCV Controller"
-        source = "https://resnetcontroller1.netadm.calpoly.edu:4343"
-    elif key == "ac_failover":
-        subtitle = "Aruba Failover Controller"
-        source = "https://resnetcontroller3.netadm.calpoly.edu:4343"
-    elif key == "ac_halls":
-        subtitle = "Aruba Dorms Controller"
-        source = "https://resnetcontroller2.netadm.calpoly.edu:4343"
-    elif key == "ac_airwaves_p":
-        subtitle = "Aruba AirWaves Primary"
-        source = "https://resnetairwaves1.netadm.calpoly.edu"
-    elif key == "ac_airwaves_s":
-        subtitle = "Aruba AirWaves Secondary"
-        source = "https://resnetairwaves2.netadm.calpoly.edu"
-    # ResLife Internal
-    elif key == "reslife":
-        subtitle = "ResLife Interal"
-        source = "https://internal.reslife.calpoly.edu"
-    # Wiki Pages
-    elif key == "resnet_wiki":
-        subtitle = "ResNet Wiki"
-        source = "https://wiki.calpoly.edu/display/RES/ResNet+Home"
-    elif key == "housing_wiki":
-        subtitle = "University Housing Wiki"
-        source = "https://wiki.calpoly.edu/display/UH/University+Housing+Home"
-    elif key == "its_wiki":
-        subtitle = "ITS Wiki"
-        source = "https://wiki.calpoly.edu/display/ITS/ITS+Home"
-    elif key == "flugzeug":
-        subtitle = "Django Administration"
-        source = "/flugzeug/"
-    # None of the passed keys are correct - return a 404
-    else:
-        return HttpResponseNotFound()
-
-    if mode == "frame" or request.user.open_links_in_frame:
-        if mode == "external":
-            return HttpResponseRedirect(source)
-
-        return render_to_response('core/frame.html', {'subtitle': subtitle, 'source': source}, context_instance=RequestContext(request))
-    else:
-        return HttpResponseRedirect(source)
 
 
 class IndexView(TemplateView):
@@ -104,30 +33,6 @@ class IndexView(TemplateView):
         context['announcements'] = SiteAnnouncements.objects.all().order_by('-created')[:3]
 
         return context
-
-
-class NavigationSettingsView(FormView):
-    template_name = "core/settings/navigation.html"
-    form_class = NavigationSettingsForm
-
-    def get_initial(self):
-        initial = self.initial.copy()
-
-        initial.update({
-            'handle_links': 'frame' if self.request.user.open_links_in_frame else 'external',
-        })
-
-        return initial
-
-    def form_valid(self, form):
-
-        link_handling = form.cleaned_data['handle_links']
-
-        user_instance = self.request.user
-        user_instance.open_links_in_frame = True if link_handling == "frame" else False
-        user_instance.save()
-
-        return render_to_response('core/settings/close_window.html', context_instance=RequestContext(self.request))
 
 
 class TicketSummaryView(TemplateView):

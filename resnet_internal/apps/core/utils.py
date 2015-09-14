@@ -57,7 +57,7 @@ def dict_merge(base, merge):
 
     for key, value in merge.items():
         if key in result and isinstance(result[key], dict):
-                result[key] = dict_merge(result[key], value)
+            result[key] = dict_merge(result[key], value)
         else:
             result[key] = deepcopy(value)
 
@@ -74,6 +74,8 @@ def get_ticket_list(user):
                     'date_created': ticket.date_created,
                     'date_updated': ticket.date_updated,
                     'assigned_person': ticket.assigned_person,
+                    'updater_is_technician': ticket.updater_is_technician,
+                    'date_updated': ticket.date_updated,
                     } for ticket in ticket_queryset)
 
     tickets = sorted(tickets, key=itemgetter('date_created'), reverse=True)
