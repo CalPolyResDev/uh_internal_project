@@ -219,7 +219,6 @@
                     </li>
                 </ul>
                 {% endif %}
-<<<<<<< HEAD
                 <br />
                 <br />
     		</div>
@@ -258,48 +257,8 @@
     			</div>
     		</div>
     	</div>
-    	<script type="text/javascript">
-    	    {% if request.user.is_authenticated %}
-=======
-            </div>
-            <!-- End Navigation Bar -->
-            {% endif %}
-            {% endblock %}
-            {% block content %}{% endblock %}
-            <div id="footer">
-                <div id="footer_links">
-                    <p><a href="http://get.adobe.com/reader/" title="Download Adobe Reader for viewing PDFs">Get Adobe Reader</a></p>
-                </div>
-                <div id="footer_deptlinks">
-                    <ul>
-                        <li class="removeBullet">
-                            <a href="https://housing.calpoly.edu">University Housing</a>
-                        </li>
-                        <li>
-                            <a href="https://residentiallife.calpoly.edu">Residential Life &amp; Education</a>
-                        </li>
-                        <li>
-                            <a href="https://resnet.calpoly.edu">Residential Networking Services</a>
-                        </li>
-                    </ul>
-                    <img src="{% static 'images/django_logo_negative.png' %}" width="136px" height="60px" class="djangoLogo" />
-                </div>
-                <div id="footer_deptinfo">
-                    <p>
-                        ResNet Development Team
-                        <br />
-                        California Polytechnic State University
-                        <br />
-                        San Luis Obispo, CA 93401
-                        <br />
-                        <a href="mailto:resdev@calpoly.edu">resdev@calpoly.edu</a>
-                    </p>
-                </div>
-            </div>
-        </div>
         <script type="text/javascript">
             {% if request.user.is_authenticated %}
->>>>>>> RNIN-107
             function refreshDuties() {
                 ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
                     $("#email_link").attr('data-content', response_context.email_content);
