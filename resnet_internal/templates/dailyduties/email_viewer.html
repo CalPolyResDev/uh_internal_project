@@ -4,6 +4,10 @@
 
 {% block content %}
     {% if message %}
+    <button style="padding: 6px 12px;" class="button default" onclick="reply();">Reply</button>
+    <button style="padding: 6px 12px;" class="button default" onclick="reply_all();">Reply All</button>
+    <button style="padding: 6px 12px;" class="button default" onclick="forward();">Forward</button>
+    <button style="padding: 6px 12px;" class="button default" onclick="archive();">Archive</button>
     <h1>{{ message.subject }}</h1>
         <h3>{{ message.from }}</h3>
 
@@ -28,9 +32,32 @@
             </script>
             <iframe id="email_body" frameborder="0" srcdoc="{{ message.body_html }}" width="100%" onload="resize_iframe(this)"></iframe>
         {% else %}
-            <p>{{ message.body_plain_text|linebreaksbr }}</p>
+            <p id="email_body">{{ message.body_plain_text|linebreaksbr }}</p>
         {% endif %}
     {% else %}
         <p>Could not retrieve email.</p>
     {% endif %}
+{% endblock %}
+
+{% block extra_script %}
+    <script src="//cdn.ckeditor.com/4.5.3/standard-all/ckeditor.js"></script>
+    <script language="javascript" type="text/javascript">
+        function reply_to(recipient_list) {
+            {% if message.is_html %}
+                var editor = CKEDITOR.replace('email_body', {
+                    fullPage: true,
+                    allowedContent: true,
+                    removePlugins: 'magicline',
+                    extraPlugins: 'autogrow',
+                    autoGrow_onStartup: true
+                });
+                editor.setData('{{ message.reply_html|escapejs }}');
+            {% else %}
+                $('#email_body').replaceWith('<textarea name="email_editor" style="min-height: 300px; min-width: 100%;">{{ message.reply_plain_text|escapejs }}</textarea>');
+            {% endif %}
+        };
+        function reply() {
+            reply_to(0);
+        }
+    </script>
 {% endblock %}

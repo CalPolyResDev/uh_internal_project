@@ -1,6 +1,5 @@
 {% extends "base_frame.html" %}
 {% load core_filters %}
-{% load staticfiles %}
 {% block subtitle %} | Ticket Summary{% endblock %}
 
 {% block content %}
@@ -35,7 +34,6 @@
                     <br /><strong>Department:</strong>
                     <br /><strong>Building:</strong>
                     <br /><strong>Room:</strong>
-                    <br /><strong>Edit Ticket:</strong>
                     <br />
                 </td>
                 <td style="vertical-align: text-top;">
@@ -45,7 +43,6 @@
                     <br />{{ ticket.requestor_department }}
                     <br />{{ ticket.requestor_building }}
                     <br />{{ ticket.requestor_room }}
-                    <br /><a href="https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Edit:helpdesk_case&record={{ ticket.ticket_id }}&gui=Staff&record_access=Edit" target="_blank"><img src="{% static 'images/srs_edit_button.gif' %}"></a>
                 </td>
             </tr>
         </table>
@@ -77,4 +74,3 @@
         <p>Could not retrieve ticket.</p>
     {% endif %}
 {% endblock %}
-

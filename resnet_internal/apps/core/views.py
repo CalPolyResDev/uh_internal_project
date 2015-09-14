@@ -7,12 +7,10 @@
 """
 
 from datetime import datetime
-from srsconnector.models import ServiceRequest
 
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.core.urlresolvers import reverse_lazy
-from django.http import HttpResponseNotFound, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.http import HttpResponseRedirect
 from django.template.context import RequestContext
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
@@ -20,8 +18,9 @@ from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
+from srsconnector.models import ServiceRequest
 
-from .forms import NavigationSettingsForm, AutoFocusAuthenticationForm
+from .forms import AutoFocusAuthenticationForm
 from .models import SiteAnnouncements
 
 
@@ -34,30 +33,6 @@ class IndexView(TemplateView):
         context['announcements'] = SiteAnnouncements.objects.all().order_by('-created')[:3]
 
         return context
-
-
-class NavigationSettingsView(FormView):
-    template_name = "core/settings/navigation.html"
-    form_class = NavigationSettingsForm
-
-    def get_initial(self):
-        initial = self.initial.copy()
-
-        initial.update({
-            'handle_links': 'frame' if self.request.user.open_links_in_frame else 'external',
-        })
-
-        return initial
-
-    def form_valid(self, form):
-
-        link_handling = form.cleaned_data['handle_links']
-
-        user_instance = self.request.user
-        user_instance.open_links_in_frame = True if link_handling == "frame" else False
-        user_instance.save()
-
-        return render_to_response('core/settings/close_window.html', context_instance=RequestContext(self.request))
 
 
 class TicketSummaryView(TemplateView):
