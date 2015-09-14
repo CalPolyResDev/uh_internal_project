@@ -119,6 +119,7 @@ def get_tickets(request):
             <tbody>
                 <tr>
                     <th scope="col"></th>
+                    <th scope="col"></th>
                     <th scope="col">Name</th>
                     <th scope="col">Status</th>
                     <th scope="col">Summary</th>
@@ -128,6 +129,11 @@ def get_tickets(request):
                     <td>
                         <a href="{% url 'core_ticket_summary' ticket_id=ticket.ticket_id %}" class="popup_frame" style="cursor:pointer;">
                             <img src="{% static 'images/srs_view_button.gif' %}">
+                        </a>
+                    </td>
+                    <td>
+                        <a href="https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Edit:helpdesk_case&record={{ ticket.ticket_id }}&gui=Staff&record_access=Edit" target="_blank">
+                            <img src="{% static 'images/srs_edit_button.gif' %}">
                         </a>
                     </td>
                     <td>{{ ticket.requestor_full_name }}</td>
@@ -140,6 +146,9 @@ def get_tickets(request):
 
     tickets = get_ticket_list(request.user)
     now = datetime.today()
+
+    tickets[:] = [ticket for ticket in tickets if ticket['assigned_person'].strip() != 'ResnetAPI']
+
     for ticket in tickets:
         if ((not ticket['assigned_person'] or ticket['assigned_person'] == request.user.get_full_name()) and
                 (ticket['status'] != 'Pending Information' and ticket['updater_is_technician'] == True and
