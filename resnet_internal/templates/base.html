@@ -94,20 +94,11 @@
             <!-- Begin Navigation Bar -->
             <div id="leftnav">
                 <h1>Navigation</h1>
-    
-<<<<<<< HEAD
     			{% if request.user|technician_access %}
     			<h2>Technician Tools</h2>
     			<ul>
     			    <li>
                         <a href="{% url 'email_list' %}" id="email_link" onclick="updateDuty('email', '')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
-=======
-                {% if request.user|technician_access %}
-                <h2>Technician Tools</h2>
-                <ul>
-                    <li>
-                        <a style="cursor: pointer;" id="email_link" onclick="updateDuty('email', 'https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=calpoly.edu&wreply=https%3A%2F%2Foutlook.office365.com')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
->>>>>>> RNIN-107
                     </li>
                     <li>
                         <a href="https://myportal.calpoly.edu/"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
