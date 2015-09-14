@@ -37,7 +37,7 @@
                     <br />
                 </td>
                 <td style="vertical-align: text-top;">
-                    {{ ticket.ticket_id }}
+                    {{ ticket.ticket_id }}  <a href="https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Edit:helpdesk_case&record={{ ticket.ticket_id }}&gui=Staff&record_access=Edit" target="_blank"><img src="{% static 'images/srs_edit_button.gif' %}"></a>
                     <br />{{ ticket.formatted_requestor_phone }}
                     <br />{{ ticket.requestor_housing_address }}
                     <br />{{ ticket.requestor_department }}
