@@ -146,6 +146,9 @@ def get_tickets(request):
 
     tickets = get_ticket_list(request.user)
     now = datetime.today()
+
+    tickets[:] = [ticket for ticket in tickets if ticket['assigned_person'].strip() != 'ResnetAPI']
+
     for ticket in tickets:
         if ((not ticket['assigned_person'] or ticket['assigned_person'] == request.user.get_full_name()) and
                 (ticket['status'] != 'Pending Information' and ticket['updater_is_technician'] == True and
