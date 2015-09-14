@@ -1,6 +1,5 @@
 {% extends "base_frame.html" %}
 {% load core_filters %}
-{% load staticfiles %}
 {% block subtitle %} | Ticket Summary{% endblock %}
 
 {% block content %}
@@ -44,7 +43,6 @@
                     <br />{{ ticket.requestor_department }}
                     <br />{{ ticket.requestor_building }}
                     <br />{{ ticket.requestor_room }}
-                    <br />
                 </td>
             </tr>
         </table>
@@ -76,4 +74,3 @@
         <p>Could not retrieve ticket.</p>
     {% endif %}
 {% endblock %}
-
