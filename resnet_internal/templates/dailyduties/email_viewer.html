@@ -98,6 +98,7 @@
             {% else %}
                 $('#email_body').replaceWith('<textarea name="email_editor" id="email_editor" style="min-height: 300px; min-width: 100%;">{{ message.reply_plain_text|escapejs }}</textarea>');
             {% endif %}
+
             $('#to_hr').css('display', 'block');
             $('#to').replaceWith('<input type="text" style="outline: none; border: none; padding: 10px 0px;" id="to"><hr>');
             $('#cc').replaceWith('<input type="text" style="outline: none; border: none; padding: 10px 0px;" id="cc"><hr>');
@@ -139,16 +140,21 @@
         function archive(destination_folder) {
             $.blockUI({message: '<h1>Archiving...</h1>'});
     
-            ajaxPost("{% url 'email_archive' %}", {'message0': '{{ message.path|escapejs }}', 'destination_folder': destination_folder}, function(response_context) {
-                $.unblockUI();
-                $(parent.document.getElementById('{{ message.path|escapejs }}')).remove();
-                parent.$.fancybox.close();
+            ajaxPost("{% url 'email_archive' %}", 
+                {'message0': '{{ message.path|escapejs }}', 
+                    'destination_folder': destination_folder}, 
+                function(response_context) {
+                    $.unblockUI();
+                    $(parent.document.getElementById('{{ message.path|escapejs }}')).remove();
+                    parent.$.fancybox.close();
             });
         }
         function send_email() {
             to = $('#to').val();
             cc = $('#cc').val();
             reply_to = $('#reply_to').val();
+            subject = $('#subject').val();
+
             {% if message.is_html %}
                 is_html = true;
                 body = editor.getData();
@@ -156,7 +162,6 @@
                 is_html = false;
                 body = $('#email_editor').val();
             {% endif %}
-            subject = $('#subject').val();
             
             var in_reply_to = '';
             if (subject.search(/^Re:/i) != -1) {
