@@ -116,14 +116,21 @@ class EmailConnectionMixin(object):
                 return
         Exception('Could not find connection.')
 
+    @classmethod
+    def _reinitialize_connection(cls, connection):
+        for index in range(0, len(cls.connection_list)):
+            if cls.connection_list[index][0] is connection:
+                cls.connection_list[index] = (cls._new_connection(), True)
+                return cls.connection_list[index][0]
+        Exception('Could not find connection to reinitialize it.')
+
     def _init_mail_connection(self):
         self.server = EmailConnectionMixin._get_connection()
 
         try:
             self.server.noop()
         except:
-            self.server._imap.open()
-            self.server.login(settings.INCOMING_EMAIL['IMAP4']['USER'], settings.INCOMING_EMAIL['IMAP4']['PASSWORD'])
+            self.server = EmailConnectionMixin._reinitialize_connection(self.server)
 
 
 class EmailManager(EmailConnectionMixin):
