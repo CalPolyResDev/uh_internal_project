@@ -116,11 +116,15 @@
                 subject = 'Re: ' + subject;
             }
             $('#subject').val(subject);
-            $('#to').val('{{ message.reply_to|escapejs }}');
+            if ('{{ message.reply_to|escapejs }}'.search(/[a-zA-Z0-9 <]*resnet@calpoly\.edu[>]*/i) != -1) {
+                $('#to').val('{{ message.to|escapejs }}');
+            }
+            else {
+                $('#to').val('{{ message.reply_to|escapejs }}');
+            }
         };
         function reply_all() {
             reply();
-            $('#to').val('{{ message.from|escapejs }}');
             $('#cc').val('{{ message.cc|escapejs }}');
         }
         function forward() {
