@@ -47,8 +47,8 @@
     <h1 id="subject">{{ message.subject }}</h1>
         <h3 id="from_header">{{ message.from }}</h3>
 
-        <p><strong>To:</strong> <span id="to">{{ message.to }}</span>
-            <br /><strong>CC:</strong> <span id="cc">{{ message.cc }}</span>
+        <p><hr id="to_hr" style="display: none;"><strong>To:</strong> <span id="to">{{ message.to }}</span>
+            <strong>CC:</strong> <span id="cc">{{ message.cc }}</span>
             <span id="date"><br /><strong>Date:</strong> {{ message.date }}</span>
             <span id="reply_to"><br /><strong>Reply To:</strong> {{ message.reply_to }}</span>
             <span id="attachments">
@@ -98,9 +98,10 @@
             {% else %}
                 $('#email_body').replaceWith('<textarea name="email_editor" id="email_editor" style="min-height: 300px; min-width: 100%;">{{ message.reply_plain_text|escapejs }}</textarea>');
             {% endif %}
-            $('#to').replaceWith('<input type="text" style="outline: none; border: none;" id="to"><hr>');
-            $('#cc').replaceWith('<input type="text" style="outline: none; border: none;" id="cc"><hr>');
-            $('#subject').replaceWith('<input type="text" style="outline: none; border: none; color: #1c4102; font-size: 215%; padding: 0px 0px;" id="subject"><hr>');
+            $('#to_hr').css('display', 'block');
+            $('#to').replaceWith('<input type="text" style="outline: none; border: none; padding: 10px 0px;" id="to"><hr>');
+            $('#cc').replaceWith('<input type="text" style="outline: none; border: none; padding: 10px 0px;" id="cc"><hr>');
+            $('#subject').replaceWith('<input type="text" style="outline: none; border: none; color: #1c4102; font-size: 215%; padding: 0px 0px;" id="subject">');
             $('#reply_to').remove();
             $('#date').remove();
             $('#attachments').remove();
