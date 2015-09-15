@@ -98,16 +98,16 @@
                 <h2>Technician Tools</h2>
                 <ul>
                     <li>
-                        <a style="cursor: pointer;" id="email_link" target="_blank" onclick="updateDuty('email', 'https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=calpoly.edu&wreply=https%3A%2F%2Foutlook.office365.com')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
+                        <a style="cursor: pointer;" id="email_link" target="_blank" onclick="updateDuty('email', 'https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=calpoly.edu&wreply=https%3A%2F%2Foutlook.office365.com', '_blank')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
                     </li>
                     <li>
                         <a href="https://myportal.calpoly.edu/f/u17l1s6/normal/render.uP" target="_blank"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
                     </li>
                     <li>
-                        <a id="srs_ticket_link" style="cursor: pointer;" target="_blank" onclick="updateDuty('tickets', 'https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Main')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
+                        <a id="srs_ticket_link" style="cursor: pointer;" onclick="updateDuty('tickets', 'https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Main', '_blank')" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
                     </li>
                     <li>
-                        <a id="voicemail_link" style="cursor: pointer;" onclick="updateDuty('voicemail', '{% url 'voicemail_list' %}')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
+                        <a id="voicemail_link" style="cursor: pointer;" onclick="updateDuty('voicemail', '{% url 'voicemail_list' %}', '_self')" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
                     </li>
                     <li>
                         <a href="https://calpoly-advocate.symplicity.com/index.php/pid480522" target="_blank"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
@@ -203,7 +203,7 @@
                 <h2>Equipment</h2>
                 <ul>
                     <li>
-                        <a style="cursor: pointer;" id="printer_request_link" onclick="updateDuty('printerrequests', '{% url 'printer_request_list' %}')" title="Printer Requests" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" /><span id="printer_requests_text">Printer Requests</span></a>
+                        <a style="cursor: pointer;" id="printer_request_link" onclick="updateDuty('printerrequests', '{% url 'printer_request_list' %}', '_self')" title="Printer Requests" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" /><span id="printer_requests_text">Printer Requests</span></a>
                     </li>
                     <ul>
                         <li>
@@ -273,7 +273,7 @@
                 function updateDuty(duty, redirect_url, target) {
                     ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
                         if (redirect_url) {
-                            window.open(redirect_url, '_self');
+                            window.open(redirect_url, target);
                         }
                         else {
                             refreshDuties();
