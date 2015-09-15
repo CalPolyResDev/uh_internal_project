@@ -71,7 +71,6 @@ class EmailMessageView(TemplateView):
                                                                'attachment_index': message['attachments'].index(attachment)})
             }
             attachment_metadata.append(metadata)
-
         message['attachments'] = attachment_metadata
 
         quote_string = "On " + message['date'].strftime('%b %d, %Y at %I:%M%p') + ", " + message['from'] + " wrote:"

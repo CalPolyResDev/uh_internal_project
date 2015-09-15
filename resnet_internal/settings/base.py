@@ -350,8 +350,8 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'root': {
-        'level': 'DEBUG',
-        'handlers': ['console'],
+        'level': 'INFO',
+        'handlers': ['sentry'],
     },
     'formatters': {
         'verbose': {
