@@ -63,6 +63,7 @@ def get_archive_folders():
 
 
 class EmailConnectionMixin(object):
+    connection_list = None
 
     def __init__(self, *args, **kwargs):
         super(EmailConnectionMixin, self).__init__(*args, **kwargs)
@@ -76,19 +77,53 @@ class EmailConnectionMixin(object):
 
     def __exit__(self, exc_type, exc_value, traceback):
         try:
-            self.server.close_folder()
-            self.server.logout()
+            EmailConnectionMixin._release_connection(self.server)
         except:
             return
 
-    def _init_mail_connection(self):
+    @staticmethod
+    def _new_connection():
         host = settings.INCOMING_EMAIL['IMAP4']['HOST']
         port = settings.INCOMING_EMAIL['IMAP4']['PORT']
         username = settings.INCOMING_EMAIL['IMAP4']['USER']
         password = settings.INCOMING_EMAIL['IMAP4']['PASSWORD']
         ssl = settings.INCOMING_EMAIL['IMAP4']['USE_SSL']
-        self.server = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
-        self.server.login(username, password)
+        connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
+        connection.login(username, password)
+
+        return connection
+
+    @classmethod
+    def _get_connection(obj):
+        if not obj.connection_list:
+            obj.connection_list = [(obj._new_connection(), True)]
+            return obj.connection_list[0][0]
+
+        for index in range(0, len(obj.connection_list)):
+            if obj.connection_list[index][1] is False:
+                obj.connection_list[index] = (obj.connection_list[index][0], True)
+                return obj.connection_list[index][0]
+
+        return_connection = obj._new_connection()
+        obj.connection_list.append((return_connection, True))
+        return return_connection
+
+    @classmethod
+    def _release_connection(obj, connection):
+        for index in range(0, len(obj.connection_list)):
+            if obj.connection_list[index][0] is connection:
+                obj.connection_list[index] = (connection, False)
+                return
+        Exception('Could not find connection.')
+
+    def _init_mail_connection(self):
+        self.server = EmailConnectionMixin._get_connection()
+
+        try:
+            self.server.noop()
+        except:
+            self.server._imap.open()
+            self.server.login(settings.INCOMING_EMAIL['IMAP4']['USER'], settings.INCOMING_EMAIL['IMAP4']['PASSWORD'])
 
 
 class EmailManager(EmailConnectionMixin):
