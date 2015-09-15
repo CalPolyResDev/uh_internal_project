@@ -1,28 +1,66 @@
 {% extends "base_frame.html" %}
 {% load core_filters %}
+{% load staticfiles %}
 {% block subtitle %} | Email{% endblock %}
+
+{% block meta %}
+{{ block.super }}
+<style>
+    hr {
+        line-height: 50% !important; 
+        margin-bottom: 0px !important;
+    }
+    input {
+        min-width: 90% !important;
+    }
+    .button.default {
+        padding: 6px 12px !important;
+    }
+    textarea {
+        outline: none;
+        border: none;
+    }
+</style>
+{% endblock %}
+
 
 {% block content %}
     {% if message %}
-    <button style="padding: 6px 12px;" class="button default" onclick="reply();">Reply</button>
-    <button style="padding: 6px 12px;" class="button default" onclick="reply_all();">Reply All</button>
-    <button style="padding: 6px 12px;" class="button default" onclick="forward();">Forward</button>
-    <button style="padding: 6px 12px;" class="button default" onclick="archive();">Archive</button>
-    <h1>{{ message.subject }}</h1>
-        <h3>{{ message.from }}</h3>
+    <span id="buttons">
+        <button class="button default" onclick="reply();">Reply</button>
+        <button class="button default" onclick="reply_all();">Reply All</button>
+        <button class="button default" onclick="forward();">Forward</button>
+        <button class="button default"id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
+                data-content="<table class='dataTable'>
+                        <tbody>
+                            {% for folder, display_name in archive_folders %}
+                                <tr id='{{ folder }}' style='cursor: pointer;' onclick='$(&quot;#archive_button&quot;).popover(&quot;hide&quot;);archive(&quot;{{ folder }}&quot;);'>
+                                    <td>{{ display_name }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>">
+            Archive
+        </button>
+    </span>
+    <br />
+    <h1 id="subject">{{ message.subject }}</h1>
+        <h3 id="from_header">{{ message.from }}</h3>
 
-        <p><strong>To:</strong> {{ message.to }}
-            {% if message.cc %}<br /><strong>CC:</strong> {{ message.cc }}{% endif %}
-            <br /><strong>Date:</strong> {{ message.date }}
-            <br /><strong>Reply To:</strong> {{ message.reply_to }}
-            {% if message.attachments %}<br /><strong>Attachments:</strong>
-                {% for attachment in message.attachments %}
-                    <a href="{{ attachment.url }}" target="_blank">
-                        <img style="display: inline-block" src="{{ attachment.icon }}" />
-                        {{ attachment.filename }} ({{ attachment.size|filesizeformat }})
-                    </a>
-                {% endfor %}
-            {% endif %}
+        <p><strong>To:</strong> <span id="to">{{ message.to }}</span>
+            <br /><strong>CC:</strong> <span id="cc">{{ message.cc }}</span>
+            <span id="date"><br /><strong>Date:</strong> {{ message.date }}</span>
+            <span id="reply_to"><br /><strong>Reply To:</strong> {{ message.reply_to }}</span>
+            <span id="attachments">
+                {% if message.attachments %}<br /><strong>Attachments:</strong>
+                    {% for attachment in message.attachments %}
+                        <a href="{{ attachment.url }}" target="_blank">
+                            <img style="display: inline-block" src="{{ attachment.icon }}" />
+                            {{ attachment.filename }} ({{ attachment.size|filesizeformat }})
+                        </a>
+                    {% endfor %}
+                {% endif %}
+            </span>
         </p>
         {% if message.is_html %}
             <script language="javascript" type="text/javascript">
@@ -40,11 +78,16 @@
 {% endblock %}
 
 {% block extra_script %}
+    <script type="text/javascript" src="{% static 'js/jquery.blockUI.js' %}"></script>
     <script src="//cdn.ckeditor.com/4.5.3/standard-all/ckeditor.js"></script>
     <script language="javascript" type="text/javascript">
-        function reply_to(recipient_list) {
+        var editor = '';
+        function add_button(button_text, onclick_text, id) {
+            $('#buttons').append('<button id="' + id + '" class="button default" onclick="' + onclick_text +'">' + button_text + '</button>');
+        };
+        function change_to_editor() {
             {% if message.is_html %}
-                var editor = CKEDITOR.replace('email_body', {
+                editor = CKEDITOR.replace('email_body', {
                     fullPage: true,
                     allowedContent: true,
                     removePlugins: 'magicline',
@@ -53,11 +96,90 @@
                 });
                 editor.setData('{{ message.reply_html|escapejs }}');
             {% else %}
-                $('#email_body').replaceWith('<textarea name="email_editor" style="min-height: 300px; min-width: 100%;">{{ message.reply_plain_text|escapejs }}</textarea>');
+                $('#email_body').replaceWith('<textarea name="email_editor" id="email_editor" style="min-height: 300px; min-width: 100%;">{{ message.reply_plain_text|escapejs }}</textarea>');
             {% endif %}
+            $('#to').replaceWith('<input type="text" style="outline: none; border: none;" id="to"><hr>');
+            $('#cc').replaceWith('<input type="text" style="outline: none; border: none;" id="cc"><hr>');
+            $('#subject').replaceWith('<input type="text" style="outline: none; border: none; color: #1c4102; font-size: 215%; padding: 0px 0px;" id="subject"><hr>');
+            $('#reply_to').remove();
+            $('#date').remove();
+            $('#attachments').remove();
+            $('#from_header').remove();
+            $('#buttons').html('');
+            add_button('Send', 'send_email();', 'send_button');
         };
         function reply() {
-            reply_to(0);
+            change_to_editor();
+            var subject = '{{ message.subject|escapejs }}';
+            if (subject.search(/^RE:/i) == -1) {
+                subject = 'Re: ' + subject;
+            }
+            $('#subject').val(subject);
+            $('#to').val('{{ message.reply_to|escapejs }}');
+        };
+        function reply_all() {
+            reply();
+            $('#to').val('{{ message.from|escapejs }}');
+            $('#cc').val('{{ message.cc|escapejs }}');
         }
+        function forward() {
+            change_to_editor();
+            
+            var subject = '{{ message.subject|escapejs }}';
+            if (subject.search(/^FWD:/i) == -1) {
+                subject = 'Fwd: ' + subject;
+            }
+            $('#subject').val(subject);
+        }
+        function archive(destination_folder) {
+            $.blockUI({message: '<h1>Archiving...</h1>'});
+    
+            ajaxPost("{% url 'email_archive' %}", {'message0': '{{ message.path|escapejs }}', 'destination_folder': destination_folder}, function(response_context) {
+                $.unblockUI();
+                $(parent.document.getElementById('{{ message.path|escapejs }}')).remove();
+                parent.$.fancybox.close();
+            });
+        }
+        function send_email() {
+            to = $('#to').val();
+            cc = $('#cc').val();
+            reply_to = $('#reply_to').val();
+            {% if message.is_html %}
+                is_html = true;
+                body = editor.getData();
+            {% else %}
+                is_html = false;
+                body = $('#email_editor').val();
+            {% endif %}
+            subject = $('#subject').val();
+            
+            var in_reply_to = '';
+            if (subject.search(/^Re:/i) != -1) {
+                in_reply_to = '{{ message.path|escapejs }}';
+            }
+            
+            $('#send_button').remove();
+            $.blockUI({ message: '<h1>Sending...</h1>'});
+            
+            ajaxPost("{% url 'send_email' %}", {
+                    'to': to,
+                    'cc': cc,
+                    'reply_to': reply_to,
+                    'body': body,
+                    'subject': subject,
+                    'is_html': is_html,
+                    'in_reply_to': in_reply_to
+                }, 
+                function(response_context) {
+                    $.unblockUI();
+                    
+                    if (response_context['success']) {
+                        parent.$.fancybox.close();
+                    }
+                    else {
+                        alert('Failed to send message. Please try again.');
+                    }
+            });
+        };
     </script>
 {% endblock %}

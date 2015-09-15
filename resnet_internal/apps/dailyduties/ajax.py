@@ -224,3 +224,24 @@ def email_archive(request):
             if key.startswith('message'):
                 mailbox, uid = value.rsplit('/', 1)
                 email_manager.move_message(mailbox, uid, destination_folder)
+
+
+@ajax
+@require_POST
+def send_email(request):
+    post_data = request.POST
+
+    message = {
+        'to': post_data['to'].replace(',', ';').split(';'),
+        'from': 'Residence Halls Network <resnet@calpoly.edu>',
+        'cc': post_data['cc'].replace(',', ';').split(';'),
+        'body': post_data['body'],
+        'is_html': True if post_data['is_html'] == 'true' else False,
+        'subject': post_data['subject'],
+        'in_reply_to': post_data.get('in_reply_to'),
+    }
+
+    with EmailManager() as email_manager:
+        email_manager.send_message(message)
+
+    return {'success': True}

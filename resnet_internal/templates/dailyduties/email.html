@@ -113,7 +113,6 @@
         var post_data = arrayToAjax(selected_messages, 'message');
         post_data['destination_folder'] = destination_folder;
 
-        console.log(post_data);
         ajaxPost("{% url 'email_archive' %}", post_data, function(response_context) {
             for (index = 0; index < selected_messages.length; ++index) {
                 $(document.getElementById(selected_messages[index])).remove();

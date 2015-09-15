@@ -14,7 +14,9 @@ from srsconnector.models import ServiceRequest
 from ssl import SSLError, SSLEOFError
 
 from django.conf import settings
+from django.core import mail
 from django.core.cache import cache
+from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
 import imapclient
@@ -31,6 +33,33 @@ GREEN = "#060"
 RED = "#900"
 
 ACCEPTABLE_LAST_CHECKED = timedelta(days=1)
+
+
+def get_archive_folders():
+    archive_folders = [
+        ('Archives/Aruba Ethernet', 'Aruba Ethernet'),
+        ('Archives/Aruba WiFi', 'Aruba WiFi'),
+        ('Archives/Device Registration', 'Device Registration'),
+        ("Archives/DMCA Abuse Complaints", "DMCA's'"),
+        ('Archives/General Questions and Complaints', 'General'),
+        ('Archives/Hardware', 'Hardware'),
+        ('Archives/Internal', 'Internal - General'),
+        ('Archives/Internal/Accounts', 'Internal - Accounts'),
+        ('Archives/Internal/Dev Team', 'Internal - Dev Team'),
+        ('Archives/Internal/Docs', 'Internal - Docs'),
+        ('Archives/Internal/Forms', 'Internal - Forms'),
+        ('Archives/Internal/Scheduling', 'Internal - Scheduling'),
+        ('Archives/Internal/SRS', 'Internal - SRS'),
+        ('Archives/Internal/UHTV', 'Internal - UHTV'),
+        ('Archives/Internal/Software', 'Software'),
+        ('Archives/Internal/Software/VM', 'Software - VM'),
+        ('Junk Email', 'Junk'),
+        ('Job Applicants', 'Job Applicants'),
+    ]
+
+    archive_folders.sort(key=lambda tup: tup[1])
+
+    return archive_folders
 
 
 class EmailConnectionMixin(object):
@@ -180,6 +209,10 @@ class EmailManager(EmailConnectionMixin):
         self.server.select_folder(mailbox_name)
         self.server.remove_flags(uid, b'\\Seen')
 
+    def mark_message_replied(self, mailbox_name, uid):
+        self.server.select_folder(mailbox_name)
+        self.server.add_flags(uid, b'\\Answered')
+
     def get_email_message(self, mailbox_name, uid):
         def _convert_list_of_addresses(address_list):
             if not address_list:
@@ -227,17 +260,42 @@ class EmailManager(EmailConnectionMixin):
             'to': _convert_list_of_addresses(envelope.to),
             'from': _convert_list_of_addresses(envelope.from_),
             'cc': _convert_list_of_addresses(envelope.cc),
-            'reply_to': _convert_list_of_addresses(envelope.reply_to),
+            'reply_to': _convert_list_of_addresses(envelope.reply_to) if envelope.reply_to else _convert_list_of_addresses(envelope.from_),
             'date': envelope.date,
             'message-id': smart_text(envelope.message_id),
             'subject': self.decode_header(envelope.subject),
             'body_html': body_html,
             'body_plain_text': body_plain_text,
             'attachments': attachments,
-            'is_html': len(body_html) > len(body_plain_text)
+            'is_html': len(body_html) > len(body_plain_text),
+            'path': mailbox_name + '/' + uid,
+            'mailbox': mailbox_name,
+            'uid': uid,
         }
 
         return message
+
+    def send_message(self, message_dict):
+        with mail.get_connection() as connection:
+            email = EmailMessage()
+            email.connection = connection
+
+            email.to = message_dict['to']
+            email.cc = message_dict['cc']
+            email.from_email = message_dict['from']
+            email.reply_to = [message_dict['from']]
+            email.subject = message_dict['subject']
+            email.body = message_dict['body']
+
+            if message_dict['is_html']:
+                email.content_subtype = 'html'
+
+            email.send()
+            self.server.append('Sent Items', email.message().as_bytes())
+
+            if message_dict.get('in_reply_to'):
+                reply_information = message_dict['in_reply_to'].rsplit('/', 1)
+                self.mark_message_replied(reply_information[0], reply_information[1])
 
 
 class GetDutyData(EmailConnectionMixin):

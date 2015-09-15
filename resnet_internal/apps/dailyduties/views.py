@@ -15,7 +15,7 @@ from django.http.response import HttpResponse
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
 
-from .utils import EmailManager
+from .utils import EmailManager, get_archive_folders
 
 
 class EmailListView(TemplateView):
@@ -24,29 +24,7 @@ class EmailListView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(EmailListView, self).get_context_data(**kwargs)
 
-        archive_folders = [
-            ('Archives/Aruba Ethernet', 'Aruba Ethernet'),
-            ('Archives/Aruba WiFi', 'Aruba WiFi'),
-            ('Archives/Device Registration', 'Device Registration'),
-            ("Archives/DMCA Abuse Complaints", "DMCA's'"),
-            ('Archives/General Questions and Complaints', 'General'),
-            ('Archives/Hardware', 'Hardware'),
-            ('Archives/Internal', 'Internal - General'),
-            ('Archives/Internal/Accounts', 'Internal - Accounts'),
-            ('Archives/Internal/Dev Team', 'Internal - Dev Team'),
-            ('Archives/Internal/Docs', 'Internal - Docs'),
-            ('Archives/Internal/Forms', 'Internal - Forms'),
-            ('Archives/Internal/Scheduling', 'Internal - Scheduling'),
-            ('Archives/Internal/SRS', 'Internal - SRS'),
-            ('Archives/Internal/UHTV', 'Internal - UHTV'),
-            ('Archives/Internal/Software', 'Software'),
-            ('Archives/Internal/Software/VM', 'Software - VM'),
-            ('Junk Email', 'Junk'),
-            ('Job Applicants', 'Job Applicants'),
-        ]
-
-        archive_folders.sort(key=lambda tup: tup[1])
-        context['archive_folders'] = archive_folders
+        context['archive_folders'] = get_archive_folders()
 
         return context
 
@@ -109,10 +87,11 @@ class EmailMessageView(TemplateView):
         else:
             reply_text = message['body_plain_text']
             reply_text = '>'.join(reply_text.splitlines(True))
-            reply_text = '\n\n' + quote_string + '\n\n>' + reply_text
+            reply_text = '\n\n>' + quote_string + '\n\n>' + reply_text
             message['reply_plain_text'] = reply_text
 
         context['message'] = message
+        context['archive_folders'] = get_archive_folders()
         return context
 
 
