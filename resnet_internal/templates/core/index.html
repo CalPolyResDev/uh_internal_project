@@ -36,11 +36,11 @@
           <p>{% autoescape off %}{{ announcement.description }}{% endautoescape %}</p>
           {% endfor %}
         </div>
-        <div id="column2" style="max-width: 33%; max-height: 600px; overflow: auto;">
+        <div id="column2" style="max-width: 33%; max-height: 450px; overflow: auto;">
           <h2>Network Status</h2>
           <p id="network_status_response">Loading...</p>
         </div>
-        <div id="column3" style="max-width: 50%;">
+        <div id="column3" style="max-width: 50%; max-height: 450px; overflow: auto;">
           <h2>Ticket Summary</h2>
           {% if request.user.is_authenticated %}
             <p id="tickets_response">Loading...</p>
