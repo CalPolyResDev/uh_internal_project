@@ -80,15 +80,15 @@ class EmailMessageView(TemplateView):
             reply_html = message['body_html']
 
             if reply_html.find('<body>') >= 0:
-                reply_html = reply_html.replace('<body>', '<body><p id="new_body"></p><div><div>' + quote_string + '<div><div><blockquote>').replace('</body>', '</blockquote></body>')
+                reply_html = reply_html.replace('<body>', '<body><p id="new_body"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician</p><div><div>' + quote_string + '<div><div><blockquote>').replace('</body>', '</blockquote></body>')
             else:
-                reply_html = '<p id="start_message"></p><div><div>' + '<blockquote>\n' + quote_string + reply_html + '\n</blockquote>'
+                reply_html = '<p id="start_message"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician</p><div><div>' + '<blockquote>\n' + quote_string + reply_html + '\n</blockquote>'
 
             message['reply_html'] = reply_html
         else:
             reply_text = message['body_plain_text']
             reply_text = '>'.join(reply_text.splitlines(True))
-            reply_text = '\n\n>' + quote_string + '\n\n>' + reply_text
+            reply_text = '\n\n\nBest regards,\n' + self.request.user.get_full_name() + '\nResNet Technician\n\n>' + quote_string + '\n\n>' + reply_text
             message['reply_plain_text'] = reply_text
 
         context['message'] = message
