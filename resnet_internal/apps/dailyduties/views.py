@@ -39,6 +39,7 @@ class EmailMessageView(TemplateView):
 
         with EmailManager() as email_manager:
             message = email_manager.get_email_message(mailbox_name, message_uid)
+            email_manager.mark_message_read(mailbox_name, message_uid)
 
         def _address_list_to_string(address_list):
             if not address_list:
