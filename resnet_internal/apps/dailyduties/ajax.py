@@ -150,8 +150,11 @@ def get_email_folders(request):
 def get_mailbox_summary(request):
     mailbox_name = request.POST["mailbox"]
 
-    with EmailManager() as email_manager:
-        mailbox_summary = email_manager.get_mailbox_summary(mailbox_name)
+    if mailbox_name == 'root':
+        mailbox_summary = None
+    else:
+        with EmailManager() as email_manager:
+            mailbox_summary = email_manager.get_mailbox_summary(mailbox_name)
 
     raw_response = """
         {% load staticfiles %}
