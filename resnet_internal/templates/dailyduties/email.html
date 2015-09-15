@@ -7,6 +7,11 @@
 {% block meta %}
 <script src="{% static 'js/jstree.min.js' %}"></script>
 <link rel="stylesheet" href="{% static 'css/jstree.css' %}" />
+<style>
+.button.default {
+    padding: 6px 12px !important;
+}
+</style>
 {% endblock %}
 
 {% block content %}
@@ -19,10 +24,10 @@
                 </td>
                 <td style="vertical-align: top; width: 75%;">
                     <div>
-                        <button style="padding: 6px 12px;" class="button default" onclick="$('input:checkbox').prop('checked', true);">Check All</button>
-                        <button style="padding: 6px 12px;" class="button default" onclick="$('input:checkbox').prop('checked', false);">Uncheck All</button>
-                        <button style="padding: 6px 12px;" class="button default" onclick="refresh_messages('INBOX');" id="refresh_button">Refresh</button>
-                        <button style="padding: 6px 12px;"  class="button default"id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
+                        <button class="button default" onclick="$('input:checkbox').prop('checked', true);">Check All</button>
+                        <button class="button default" onclick="$('input:checkbox').prop('checked', false);">Uncheck All</button>
+                        <button class="button default" onclick="refresh_messages('INBOX');" id="refresh_button">Refresh</button>
+                        <button class="button default" id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
                             data-content="<table class='dataTable'>
                                     <tbody>
                                         {% for folder, display_name in archive_folders %}
@@ -34,8 +39,8 @@
                                 </table>">
                             Archive
                         </button>
-                        <button style="padding: 6px 12px;" class="button default" onclick="mark_selected_unread();">Mark as Unread</button>
-                        <button style="padding: 6px 12px;" class="button default" onclick="mark_selected_read();">Mark as Read</button>
+                        <button class="button default" onclick="mark_selected_unread();">Mark as Unread</button>
+                        <button class="button default" onclick="mark_selected_read();">Mark as Read</button>
                     </div>
                     <table class="dataTable" id='email_table' style="">
                     <tbody>
