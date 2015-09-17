@@ -77,10 +77,7 @@ class EmailConnectionMixin(object):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        try:
-            EmailConnectionMixin._release_connection(self.server)
-        except:
-            return
+        EmailConnectionMixin._release_connection(self.server)
 
     @staticmethod
     def _new_connection():
