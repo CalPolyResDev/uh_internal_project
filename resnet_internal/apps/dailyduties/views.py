@@ -6,7 +6,7 @@
 
 """
 
-import os.path
+from os import path
 import re
 
 from django.core.cache import cache
@@ -61,7 +61,7 @@ class EmailMessageView(TemplateView):
         attachment_metadata = []
 
         for attachment in message['attachments']:
-            extension = os.path.splitext(attachment[0])[1][1:]
+            extension = path.splitext(attachment[0])[1][1:]
             metadata = {
                 'filename': attachment[0],
                 'size': len(attachment[1]),
