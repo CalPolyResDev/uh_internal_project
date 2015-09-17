@@ -143,7 +143,8 @@ class EmailManager(EmailConnectionMixin):
             return bytes_output.decode(encoding)
         return bytes_output
 
-    def get_attachment(self, uid):
+    def get_voicemail_attachment(self, uid):
+        self.server.select_folder('Voicemails')
         response = self.server.fetch(int(uid), 'BODY[]')
 
         message = email.message_from_bytes(response[int(uid)][b'BODY[]'])
