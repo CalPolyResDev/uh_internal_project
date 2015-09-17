@@ -6,12 +6,12 @@
 
 """
 from datetime import datetime, timedelta
-import email.header
+from email import header
 from itertools import zip_longest
-import logging
 from operator import itemgetter
-from srsconnector.models import ServiceRequest
 from ssl import SSLError, SSLEOFError
+import email
+import logging
 
 from django.conf import settings
 from django.core import mail
@@ -19,6 +19,7 @@ from django.core.cache import cache
 from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
+from srsconnector.models import ServiceRequest
 import imapclient
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
@@ -140,7 +141,7 @@ class EmailManager(EmailConnectionMixin):
         """ From https://github.com/maxiimou/imapclient/blob/decode_imap_bytes/imapclient/response_types.py
         Will hopefully be merged into IMAPClient in the future."""
 
-        bytes_output, encoding = email.header.decode_header(smart_text((header_bytes)))[0]
+        bytes_output, encoding = header.decode_header(smart_text((header_bytes)))[0]
         if encoding:
             return bytes_output.decode(encoding)
         return bytes_output
