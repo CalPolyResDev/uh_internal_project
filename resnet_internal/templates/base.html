@@ -3,26 +3,27 @@
 {% load staticfiles %}
 <html>
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <meta name="layout" content="Cal Poly Web Template" />
-        <meta name="author" content="Alex Kavanaugh - ResNet Development Team" />
-        <meta name="keywords" content="Resnet Internal" />
-        <meta name="description" content="Residential Networking Services Internal Tools" />
-        <link href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}" rel="stylesheet" type="text/css" />
-        <link href="{% static 'css/bootstrap_tooltip.css' %}" rel="stylesheet" type="text/css" />
-        <link href="{% static 'common/css/cp_screen_3.4.css' %}" rel="stylesheet" type="text/css" media="screen" />
-        <link href="{% static 'common/css/cp_print_3.4.css' %}" rel="stylesheet" type="text/css" media="print" />
-        <link href="{% static 'css/screen.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
-        <link href="{% static 'css/print.css' %}" rel="stylesheet" type="text/css" media="print" />
-        <link href="{% static 'css/table.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
-        <link href="{% static 'fancybox/jquery.fancybox.css' %}?v=2.1.5" rel="stylesheet" type="text/css" media="screen" />
-        <link href="{% static 'images/icons/favicon.ico' %}" rel="shortcut icon" />
-        <script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
-        <script type="text/javascript" src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
+    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    	<meta name="layout" content="Cal Poly Web Template" />
+    	<meta name="author" content="Alex Kavanaugh - ResNet Development Team" />
+    	<meta name="keywords" content="Resnet Internal" />
+    	<meta name="description" content="Residential Networking Services Internal Tools" />
+    	<link href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}" rel="stylesheet" type="text/css" />
+    	<link href="{% static 'common/css/cp_screen_3.4.css' %}" rel="stylesheet" type="text/css" media="screen" />
+    	<link href="{% static 'common/css/cp_print_3.4.css' %}" rel="stylesheet" type="text/css" media="print" />
+    	<link href="{% static 'css/screen.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
+    	<link href="{% static 'css/print.css' %}" rel="stylesheet" type="text/css" media="print" />
+    	<link href="{% static 'css/table.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
+    	<link href="{% static 'fancybox/jquery.fancybox.css' %}?v=2.1.5" rel="stylesheet" type="text/css" media="screen" />
+    	<link href="{% static 'images/icons/favicon.ico' %}" rel="shortcut icon" />
+    	<link href="{% static 'css/bootstrap_tooltip.css' %}" rel="stylesheet" type="text/css" />
+    	<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
+    	<script type="text/javascript" src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'fancybox/jquery.fancybox.pack.js' %}?v=2.1.5"></script>
         <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
-        {% block meta %}
-        <script type="text/javascript">
+    	{% block meta %}
+    	{% endblock %}
+    	<script type="text/javascript">
             $(document).ready(function() {
                 $(".popup_frame").fancybox({
                     type: 'iframe',
@@ -41,8 +42,7 @@
                 });
             });
         </script>
-        {% endblock %}
-        <title>ResNet Internal - Online Tools{% block subtitle %}{% endblock %}</title>
+    	<title>ResNet Internal - Online Tools{% block subtitle %}{% endblock %}</title>
     </head>
     {% block body %}
     <body>
@@ -94,11 +94,11 @@
             <!-- Begin Navigation Bar -->
             <div id="leftnav">
                 <h1>Navigation</h1>
-                {% if request.user|technician_access %}
-                <h2>Technician Tools</h2>
-                <ul>
-                    <li>
-                        <a style="cursor: pointer;" id="email_link" target="_blank" onclick="updateDuty('email', 'https://login.microsoftonline.com/login.srf?wa=wsignin1.0&whr=calpoly.edu&wreply=https%3A%2F%2Foutlook.office365.com', '_blank')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
+    			{% if request.user|technician_access %}
+    			<h2>Technician Tools</h2>
+    			<ul>
+    			    <li>
+                        <a href="{% url 'email_list' %}" id="email_link" onclick="updateDuty('email', '')" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
                     </li>
                     <li>
                         <a href="https://myportal.calpoly.edu/f/u17l1s6/normal/render.uP" target="_blank"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
@@ -224,42 +224,44 @@
                     </li>
                 </ul>
                 {% endif %}
-            </div>
-            <!-- End Navigation Bar -->
-            {% endif %}
-            {% endblock %}
-            {% block content %}{% endblock %}
-            <div id="footer">
-                <div id="footer_links">
-                    <p><a href="http://get.adobe.com/reader/" title="Download Adobe Reader for viewing PDFs">Get Adobe Reader</a></p>
-                </div>
-                <div id="footer_deptlinks">
-                    <ul>
-                        <li class="removeBullet">
-                            <a href="https://housing.calpoly.edu">University Housing</a>
-                        </li>
-                        <li>
-                            <a href="https://residentiallife.calpoly.edu">Residential Life &amp; Education</a>
-                        </li>
-                        <li>
-                            <a href="https://resnet.calpoly.edu">Residential Networking Services</a>
-                        </li>
-                    </ul>
-                    <img src="{% static 'images/django_logo_negative.png' %}" width="136px" height="60px" class="djangoLogo" />
-                </div>
-                <div id="footer_deptinfo">
-                    <p>
-                        ResNet Development Team
-                        <br />
-                        California Polytechnic State University
-                        <br />
-                        San Luis Obispo, CA 93401
-                        <br />
-                        <a href="mailto:resdev@calpoly.edu">resdev@calpoly.edu</a>
-                    </p>
-                </div>
-            </div>
-        </div>
+                <br />
+                <br />
+    		</div>
+    		<!-- End Navigation Bar -->
+    		{% endif %}
+    		{% endblock %}
+    		{% block content %}{% endblock %}
+    		<div id="footer">
+    			<div id="footer_links">
+    				<p><a href="http://get.adobe.com/reader/" title="Download Adobe Reader for viewing PDFs">Get Adobe Reader</a></p>
+    			</div>
+    			<div id="footer_deptlinks">
+    				<ul>
+    					<li class="removeBullet">
+    						<a href="https://housing.calpoly.edu">University Housing</a>
+    					</li>
+    					<li>
+    						<a href="https://residentiallife.calpoly.edu">Residential Life &amp; Education</a>
+    					</li>
+    					<li>
+    						<a href="https://resnet.calpoly.edu">Residential Networking Services</a>
+    					</li>
+    				</ul>
+    				<img src="{% static 'images/django_logo_negative.png' %}" width="136px" height="60px" class="djangoLogo" />
+    			</div>
+    			<div id="footer_deptinfo">
+    				<p>
+    					ResNet Development Team
+    					<br />
+    					California Polytechnic State University
+    					<br />
+    					San Luis Obispo, CA 93401
+    					<br />
+    					<a href="mailto:resdev@calpoly.edu">resdev@calpoly.edu</a>
+    				</p>
+    			</div>
+    		</div>
+    	</div>
         <script type="text/javascript">
             {% if request.user.is_authenticated %}
                 function refreshDuties() {

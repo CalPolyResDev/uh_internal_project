@@ -6,20 +6,27 @@
 
 """
 from datetime import datetime, timedelta
-import email
-import imaplib
-import logging
+from email import header
+from itertools import zip_longest
 from operator import itemgetter
-from srsconnector.models import ServiceRequest
 from ssl import SSLError, SSLEOFError
+import email
+import logging
 
 from django.conf import settings
+from django.core import mail
+from django.core.cache import cache
+from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
-from django.utils.encoding import smart_text, smart_bytes
+from django.utils.encoding import smart_text
+from srsconnector.models import ServiceRequest
+import imapclient
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
 
+
+imapclient.imapclient.imaplib._MAXLINE = 1000000
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +36,35 @@ RED = "#900"
 ACCEPTABLE_LAST_CHECKED = timedelta(days=1)
 
 
+def get_archive_folders():
+    archive_folders = [
+        ('Archives/Aruba Ethernet', 'Aruba Ethernet'),
+        ('Archives/Aruba WiFi', 'Aruba WiFi'),
+        ('Archives/Device Registration', 'Device Registration'),
+        ("Archives/DMCA Abuse Complaints", "DMCA's'"),
+        ('Archives/General Questions and Complaints', 'General'),
+        ('Archives/Hardware', 'Hardware'),
+        ('Archives/Internal', 'Internal - General'),
+        ('Archives/Internal/Accounts', 'Internal - Accounts'),
+        ('Archives/Internal/Dev Team', 'Internal - Dev Team'),
+        ('Archives/Internal/Docs', 'Internal - Docs'),
+        ('Archives/Internal/Forms', 'Internal - Forms'),
+        ('Archives/Internal/Scheduling', 'Internal - Scheduling'),
+        ('Archives/Internal/SRS', 'Internal - SRS'),
+        ('Archives/Internal/UHTV', 'Internal - UHTV'),
+        ('Archives/Internal/Software', 'Software'),
+        ('Archives/Internal/Software/VM', 'Software - VM'),
+        ('Junk Email', 'Junk'),
+        ('Job Applicants', 'Job Applicants'),
+    ]
+
+    archive_folders.sort(key=lambda tup: tup[1])
+
+    return archive_folders
+
+
 class EmailConnectionMixin(object):
+    connection_list = None
 
     def __init__(self, *args, **kwargs):
         super(EmailConnectionMixin, self).__init__(*args, **kwargs)
@@ -42,80 +77,80 @@ class EmailConnectionMixin(object):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.server.logout()
+        EmailConnectionMixin._release_connection(self.server)
+
+    @staticmethod
+    def _new_connection():
+        host = settings.INCOMING_EMAIL['IMAP4']['HOST']
+        port = settings.INCOMING_EMAIL['IMAP4']['PORT']
+        username = settings.INCOMING_EMAIL['IMAP4']['USER']
+        password = settings.INCOMING_EMAIL['IMAP4']['PASSWORD']
+        ssl = settings.INCOMING_EMAIL['IMAP4']['USE_SSL']
+        connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
+        connection.login(username, password)
+
+        return connection
+
+    @classmethod
+    def _get_connection(obj):
+        if not obj.connection_list:
+            obj.connection_list = [(obj._new_connection(), True)]
+            return obj.connection_list[0][0]
+
+        for index in range(0, len(obj.connection_list)):
+            if obj.connection_list[index][1] is False:
+                obj.connection_list[index] = (obj.connection_list[index][0], True)
+                return obj.connection_list[index][0]
+
+        return_connection = obj._new_connection()
+        obj.connection_list.append((return_connection, True))
+        return return_connection
+
+    @classmethod
+    def _release_connection(obj, connection):
+        for index in range(0, len(obj.connection_list)):
+            if obj.connection_list[index][0] is connection:
+                obj.connection_list[index] = (connection, False)
+                return
+        Exception('Could not find connection.')
+
+    @classmethod
+    def _reinitialize_connection(cls, connection):
+        for index in range(0, len(cls.connection_list)):
+            if cls.connection_list[index][0] is connection:
+                cls.connection_list[index] = (cls._new_connection(), True)
+                return cls.connection_list[index][0]
+        Exception('Could not find connection to reinitialize it.')
 
     def _init_mail_connection(self):
-        # Connect to the email server and authenticate
-        if settings.INCOMING_EMAIL['IMAP4']['USE_SSL']:
-            self.server = imaplib.IMAP4_SSL(host=settings.INCOMING_EMAIL['IMAP4']['HOST'], port=settings.INCOMING_EMAIL['IMAP4']['PORT'])
-        else:
-            self.server = imaplib.IMAP4(host=settings.INCOMING_EMAIL['IMAP4']['HOST'], port=settings.INCOMING_EMAIL['IMAP4']['PORT'])
-        self.server.login(user=settings.INCOMING_EMAIL['IMAP4']['USER'], password=settings.INCOMING_EMAIL['IMAP4']['PASSWORD'])
+        self.server = EmailConnectionMixin._get_connection()
+
+        try:
+            self.server.noop()
+        except:
+            self.server = EmailConnectionMixin._reinitialize_connection(self.server)
 
 
-class VoicemailManager(EmailConnectionMixin):
+class EmailManager(EmailConnectionMixin):
     server = None
 
-    def _parse_message_id(self, message_id_string):
-        return message_id_string.split('<')[1].rsplit('>')[0]
+    def decode_header(self, header_bytes):
+        """ From https://github.com/maxiimou/imapclient/blob/decode_imap_bytes/imapclient/response_types.py
+        Will hopefully be merged into IMAPClient in the future."""
 
-    def _get_message_body(self, message_number):
-        data = self.server.fetch(message_number, 'BODY[1]')[1]
-        return smart_text(data[0][1])
+        bytes_output, encoding = header.decode_header(smart_text((header_bytes)))[0]
+        if encoding:
+            return bytes_output.decode(encoding)
+        return bytes_output
 
-    def _build_message_set(self, message_numbers):
-        message_set_string = ''
-        for message_number in message_numbers:
-            message_set_string = message_set_string + ',' + smart_text(message_number)
+    def get_attachment(self, uid):
+        response = self.server.fetch(int(uid), 'BODY[]')
 
-        message_set_string = message_set_string.split(',', 1)[-1]
-        message_set = smart_bytes(message_set_string)
+        message = email.message_from_bytes(response[int(uid)][b'BODY[]'])
 
-        return message_set if message_set else None
+        for part in message.walk():
 
-    def _get_message_set_length(self, message_set):
-        return len(smart_text(message_set).split(','))
-
-    def _get_message_bodies(self, message_set):
-        data = self.server.fetch(message_set, 'BODY[1]')[1]
-
-        message_bodies = []
-        for message_index in range(0, self._get_message_set_length(message_set)):
-            message_bodies.append(smart_text(data[message_index * 2][1]))
-
-        return message_bodies
-
-    def _get_message_numbers(self):
-        data = self.server.search(None, 'ALL')[1]
-        return data[0].split()
-
-    def _get_message_uuids(self, message_set):
-        data = self.server.fetch(message_set, '(BODY[HEADER.FIELDS (MESSAGE-ID)])')[1]
-        message_uuids = []
-
-        for message_index in range(0, self._get_message_set_length(message_set)):
-            message_uuids.append(self._parse_message_id(smart_text(data[message_index * 2][1])))
-
-        return message_uuids
-
-    def _get_message_number_for_uuid(self, message_uuid):
-        message_numbers = self._get_message_numbers()
-        message_uuids = self._get_message_uuids(self._build_message_set(message_numbers))
-
-        message_number = None
-
-        if message_uuid in message_uuids:
-            message_number = message_numbers[message_uuids.index(message_uuid)]
-
-        return message_number
-
-    def _get_attachment_by_message_number(self, message_number):
-        data = self.server.fetch(message_number, '(RFC822)')
-        voicemail_message = email.message_from_bytes(data[1][0][1])
-
-        for part in voicemail_message.walk():
-
-            if part.get_content_maintype() == 'multipart':
+            if part.get_content_maintype().startswith('multipart'):
                 continue
             if part.get('Content-Disposition') is None:
                 continue
@@ -127,61 +162,180 @@ class VoicemailManager(EmailConnectionMixin):
 
         raise ValueError('Not a Valid Voicemail Message: No attachment.')
 
-    def get_attachment_by_uuid(self, message_uuid):
-        self.server.select('Voicemails', readonly=True)
+    def move_message(self, mailbox, uid, destination_folder):
+        self.server.select_folder(mailbox)
 
-        message_number = self._get_message_number_for_uuid(message_uuid)
+        try:
+            self.server.copy(int(uid), destination_folder)
+        except:
+            print('Copy Failed!')
+            return
 
-        if not message_number:
-            raise ValueError('Unable to retrieve voicemail message attachment because message uuid could not be found.')
+        self.server.delete_messages(int(uid))
+        self.server.expunge()
 
-        return self._get_attachment_by_message_number(message_number)
-
-    def delete_message(self, message_uuid):
-        self.server.select('Voicemails', readonly=False)
-
-        message_number = self._get_message_number_for_uuid(message_uuid)
-
-        imap_query_result = self.server.copy(message_number, 'Archives/Voicemails')
-        if (imap_query_result[0] == 'OK'):
-            self.server.store(message_number, '+FLAGS', '\\Deleted')
-            self.server.expunge()
-        else:
-            print('Copy Failed: ' + str(imap_query_result))
+    def delete_voicemail_message(self, uid):
+        self.move_message('Voicemails', uid, 'Archives/Voicemails')
 
     def get_all_voicemail_messages(self):
         """Get the voicemail messages."""
         voicemails = []
 
-        self.server.select('Voicemails', readonly=True)
-        message_numbers = self._get_message_numbers()
+        self.server.select_folder('Voicemails', readonly=True)
+        uids = self.server.search()
 
         # Check for empty inbox
-        if not message_numbers:
+        if not uids:
             return None
 
-        message_uuids = self._get_message_uuids(self._build_message_set(message_numbers))
-        message_bodies = self._get_message_bodies(self._build_message_set(message_numbers))
+        response = self.server.fetch(uids, ['BODY[1]'])
 
-        for message_uuid, message_body in zip(message_uuids, message_bodies):
-            date_string = message_body[27:41]
+        for uid, data in response.items():
+            body = smart_text(data[b'BODY[1]'])
 
-            from_idx = message_body.find('from')
-            from_string = message_body[from_idx + 5:message_body.find('.', from_idx)]
+            date_string = body[27:41]
+
+            from_idx = body.find('from')
+            from_string = body[from_idx + 5:body.find('.', from_idx)]
 
             date = datetime.strftime(datetime.strptime(date_string, "%H:%M %m-%d-%y"), "%Y-%m-%d %H:%M")
 
             message = {
                 "date": date,
                 "sender": from_string,
-                "message_uuid": message_uuid,
-                "url": "daily_duties/voicemail/" + message_uuid
+                "message_uid": uid,
+                "url": "daily_duties/voicemail/" + str(uid)
             }
-
             voicemails.append(message)
 
         voicemails.sort(key=itemgetter('date'), reverse=True)
         return voicemails
+
+    def get_mailbox_summary(self, mailbox_name):
+        self.server.select_folder(mailbox_name)
+        message_uids = self.server.search()
+        message_uid_fetch_groups = zip_longest(*(iter(message_uids),) * 500)
+
+        messages = []
+
+        for message_uid_group in message_uid_fetch_groups:
+            message_uid_group = list(filter(None.__ne__, message_uid_group))
+            response = self.server.fetch(message_uid_group, ['ALL'])
+
+            for uid, data in response.items():
+                unread = b'\\Seen' not in data[b'FLAGS']
+                envelope = data[b'ENVELOPE']
+                date = envelope.date
+                subject = smart_text(envelope.subject)
+                message_from = envelope.from_[0]
+
+                messages.append({
+                    'uid': uid,
+                    'unread': unread,
+                    'date': date,
+                    'subject': self.decode_header(subject),
+                    'from_name': smart_text(message_from.name) if message_from.name else '',
+                    'from_address': smart_text(message_from.mailbox) + '@' + smart_text(message_from.host)
+                })
+
+        messages.sort(key=itemgetter('date'), reverse=True)
+        return messages
+
+    def mark_message_read(self, mailbox_name, uid):
+        self.server.select_folder(mailbox_name)
+        self.server.add_flags(uid, b'\\Seen')
+
+    def mark_message_unread(self, mailbox_name, uid):
+        self.server.select_folder(mailbox_name)
+        self.server.remove_flags(uid, b'\\Seen')
+
+    def mark_message_replied(self, mailbox_name, uid):
+        self.server.select_folder(mailbox_name)
+        self.server.add_flags(uid, b'\\Answered')
+
+    def get_email_message(self, mailbox_name, uid):
+        def _convert_list_of_addresses(address_list):
+            if not address_list:
+                return
+
+            output_list = []
+
+            for address in address_list:
+                name = smart_text(address.name) if address.name else ''
+                email = smart_text(address.mailbox) + '@' + smart_text(address.host)
+                output_list.append((name, email))
+
+            return output_list
+
+        response = cache.get('email:raw:' + mailbox_name + ':' + uid)
+
+        if not response:
+            self.server.select_folder(mailbox_name, readonly=True)
+            response = self.server.fetch(int(uid), ['ENVELOPE', 'BODY[]'])
+            cache.set('email:raw:' + mailbox_name + ':' + uid, response, 172800)
+
+        message = email.message_from_bytes(response[int(uid)][b'BODY[]'])
+        envelope = response[int(uid)][b'ENVELOPE']
+
+        body_html = ""
+        body_plain_text = ""
+        attachments = []
+
+        for part in message.walk():
+            if part.get_content_type().startswith('multipart'):
+                continue
+            elif part.get_content_type() is None:
+                continue
+            elif part.get_content_type() == 'text/html':
+                body_html += smart_text(part.get_payload(decode=True), errors='replace')
+            elif part.get_content_type() == 'text/plain':
+                body_plain_text += smart_text(part.get_payload(decode=True), errors='replace')
+            else:
+                filename = part.get_filename()
+                filedata = part.get_payload(decode=True)
+                filetype = part.get_content_type()
+                attachments.append((filename, filedata, filetype))
+
+        message = {
+            'to': _convert_list_of_addresses(envelope.to),
+            'from': _convert_list_of_addresses(envelope.from_),
+            'cc': _convert_list_of_addresses(envelope.cc),
+            'reply_to': _convert_list_of_addresses(envelope.reply_to) if envelope.reply_to else _convert_list_of_addresses(envelope.from_),
+            'date': envelope.date,
+            'message-id': smart_text(envelope.message_id),
+            'subject': self.decode_header(envelope.subject),
+            'body_html': body_html,
+            'body_plain_text': body_plain_text,
+            'attachments': attachments,
+            'is_html': len(body_html) > len(body_plain_text),
+            'path': mailbox_name + '/' + uid,
+            'mailbox': mailbox_name,
+            'uid': uid,
+        }
+
+        return message
+
+    def send_message(self, message_dict):
+        with mail.get_connection() as connection:
+            email = EmailMessage()
+            email.connection = connection
+
+            email.to = message_dict['to']
+            email.cc = message_dict['cc']
+            email.from_email = message_dict['from']
+            email.reply_to = [message_dict['from']]
+            email.subject = message_dict['subject']
+            email.body = message_dict['body']
+
+            if message_dict['is_html']:
+                email.content_subtype = 'html'
+
+            email.send()
+            self.server.append('Sent Items', email.message().as_bytes())
+
+            if message_dict.get('in_reply_to'):
+                reply_information = message_dict['in_reply_to'].rsplit('/', 1)
+                self.mark_message_replied(reply_information[0], reply_information[1])
 
 
 class GetDutyData(EmailConnectionMixin):
@@ -232,10 +386,10 @@ class GetDutyData(EmailConnectionMixin):
         else:
             data = DailyDuties.objects.get(name='voicemail')
 
-            count = self.server.select('Voicemails', readonly=True)[1]
+            count = self.server.select_folder('Voicemails', readonly=True)[b'EXISTS']
 
             # Select the Inbox, get the message count
-            voicemail["count"] = int(count[0])
+            voicemail["count"] = count
             if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
                 voicemail["status_color"] = GREEN
             else:
@@ -267,9 +421,9 @@ class GetDutyData(EmailConnectionMixin):
             data = DailyDuties.objects.get(name='email')
 
             # Select the Inbox, get the message count
-            count = self.server.select('Inbox', readonly=True)[1]
+            count = self.server.select_folder('Inbox', readonly=True)[b'EXISTS']
 
-            email["count"] = int(count[0])
+            email["count"] = count
             if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
                 email["status_color"] = GREEN
             else:
