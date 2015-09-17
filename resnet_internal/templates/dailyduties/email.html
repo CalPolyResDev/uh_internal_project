@@ -79,6 +79,7 @@
             });
             refresh_messages('INBOX');
     });
+
     function get_selected_emails() {
         var rows = new Array();
         $('#email_table tr').filter(':has(:checkbox:checked)').each(function() {
@@ -87,6 +88,7 @@
 
         return rows;
     };
+
     function set_spinner_status(emails, status) {
         for (index = 0; index < emails.length; ++index) {
             var checkbox = document.getElementById('checkbox_' + emails[index]);
@@ -96,6 +98,7 @@
             spinner.style.display = status ? 'inline' : 'none';
         };
     };
+
     function refresh_messages(mailbox) {
         $("#email_table tr:gt(0)").remove();
         $("#email_table").append('<tr id="loading_email_record"><td colspan="4" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
@@ -103,6 +106,7 @@
             $("#refresh_button").attr("onclick","refresh_messages('" + mailbox + "');");
         });
     };
+
     function arrayToAjax(array, prefix) {
         var ajaxDict = {};
         for (index = 0; index < array.length; ++index) {
@@ -111,6 +115,7 @@
 
         return ajaxDict;
     };
+
     function archive_selected(destination_folder) {
         var selected_messages = get_selected_emails();
         set_spinner_status(selected_messages, true);
@@ -124,6 +129,7 @@
             };  
         });
     };
+
     function mark_selected_unread() {
         var selected_messages = get_selected_emails();
         set_spinner_status(selected_messages, true);
@@ -134,6 +140,7 @@
             set_spinner_status(selected_messages, false);
         });
     };
+
     function mark_selected_read() {
         var selected_messages = get_selected_emails();
         set_spinner_status(selected_messages, true);
@@ -144,6 +151,7 @@
             set_spinner_status(selected_messages, false);
         });
     };
+
     function remove_voicemail(message_uid)  {
         // Cannot use JQuery here: $ signs and other character in UUID break the query
         var archive_link = document.getElementById('archive_' + message_uid);

@@ -85,6 +85,7 @@
         function add_button(button_text, onclick_text, id) {
             $('#buttons').append('<button id="' + id + '" class="button default" onclick="' + onclick_text +'">' + button_text + '</button>');
         };
+
         function change_to_editor() {
             {% if message.is_html %}
                 editor = CKEDITOR.replace('email_body', {
@@ -110,6 +111,7 @@
             $('#buttons').html('');
             add_button('Send', 'send_email();', 'send_button');
         };
+
         function reply() {
             change_to_editor();
             var subject = '{{ message.subject|escapejs }}';
@@ -124,10 +126,12 @@
                 $('#to').val('{{ message.reply_to|escapejs }}');
             }
         };
+
         function reply_all() {
             reply();
             $('#cc').val('{{ message.cc|escapejs }}');
-        }
+        };
+
         function forward() {
             change_to_editor();
             
@@ -136,7 +140,8 @@
                 subject = 'Fwd: ' + subject;
             }
             $('#subject').val(subject);
-        }
+        };
+
         function archive(destination_folder) {
             $.blockUI({message: '<h1>Archiving...</h1>'});
     
@@ -148,7 +153,8 @@
                     $(parent.document.getElementById('{{ message.path|escapejs }}')).remove();
                     parent.$.fancybox.close();
             });
-        }
+        };
+
         function send_email() {
             to = $('#to').val();
             cc = $('#cc').val();
