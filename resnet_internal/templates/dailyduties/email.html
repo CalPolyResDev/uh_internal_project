@@ -107,20 +107,20 @@
         });
     };
 
-    function arrayToAjax(array, prefix) {
-        var ajaxDict = {};
+    function array_to_ajax(array, prefix) {
+        var ajax_dict = {};
         for (index = 0; index < array.length; ++index) {
-            ajaxDict[prefix + index.toString()] = array[index];
+            ajax_dict[prefix + index.toString()] = array[index];
         };
 
-        return ajaxDict;
+        return ajax_dict;
     };
 
     function archive_selected(destination_folder) {
         var selected_messages = get_selected_emails();
         set_spinner_status(selected_messages, true);
 
-        var post_data = arrayToAjax(selected_messages, 'message');
+        var post_data = array_to_ajax(selected_messages, 'message');
         post_data['destination_folder'] = destination_folder;
 
         ajaxPost("{% url 'email_archive' %}", post_data, function(response_context) {
@@ -133,7 +133,7 @@
     function mark_selected_unread() {
         var selected_messages = get_selected_emails();
         set_spinner_status(selected_messages, true);
-        ajaxPost("{% url 'email_mark_unread' %}", arrayToAjax(selected_messages, 'message'), function(response_context) {
+        ajaxPost("{% url 'email_mark_unread' %}", array_to_ajax(selected_messages, 'message'), function(response_context) {
             for (index = 0; index < selected_messages.length; ++index) {
                 $(document.getElementById(selected_messages[index])).addClass('bg-info');
             };
@@ -144,7 +144,7 @@
     function mark_selected_read() {
         var selected_messages = get_selected_emails();
         set_spinner_status(selected_messages, true);
-        ajaxPost("{% url 'email_mark_read' %}", arrayToAjax(selected_messages, 'message'), function(response_context) {
+        ajaxPost("{% url 'email_mark_read' %}", array_to_ajax(selected_messages, 'message'), function(response_context) {
             for (index = 0; index < selected_messages.length; ++index) {
                 $(document.getElementById(selected_messages[index])).removeClass('bg-info');
             };
