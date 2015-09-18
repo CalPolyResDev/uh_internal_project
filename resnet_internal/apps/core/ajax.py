@@ -8,8 +8,8 @@
 
 from _datetime import timedelta
 from datetime import datetime
-import logging
 from operator import itemgetter
+import logging
 
 from django.template import Template, RequestContext
 from django.views.decorators.http import require_POST
@@ -145,14 +145,15 @@ def get_tickets(request):
         </table>"""
 
     tickets = get_ticket_list(request.user)
+    print(tickets)
     now = datetime.today()
 
     tickets[:] = [ticket for ticket in tickets if ticket['assigned_person'].strip() != 'ResnetAPI']
 
     for ticket in tickets:
         if ((not ticket['assigned_person'] or ticket['assigned_person'] == request.user.get_full_name()) and
-                (ticket['status'] != 'Pending Information' and ticket['updater_is_technician'] == True and
-                 ticket['date_updated'] + timedelta(weeks=1) > datetime.today())):
+                (ticket['status'] != 'Pending Information' or ticket['updater_is_technician'] == False or
+                 ticket['date_updated'] + timedelta(weeks=1) < datetime.today())):
 
             time_difference = (now - ticket['date_updated']).total_seconds() / 86400
             if time_difference < 3:
