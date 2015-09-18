@@ -145,7 +145,6 @@ def get_tickets(request):
         </table>"""
 
     tickets = get_ticket_list(request.user)
-    print(tickets)
     now = datetime.today()
 
     tickets[:] = [ticket for ticket in tickets if ticket['assigned_person'].strip() != 'ResnetAPI']
