@@ -19,8 +19,9 @@ from django.core.cache import cache
 from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
-from srsconnector.models import ServiceRequest
 import imapclient
+
+from srsconnector.models import ServiceRequest
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
@@ -189,7 +190,7 @@ class EmailManager(EmailConnectionMixin):
         if not uids:
             return None
 
-        response = self.server.fetch(uids, ['BODY[1]'])
+        response = self.server.fetch(uids, ['FLAGS', 'BODY[1]'])
 
         for uid, data in response.items():
             body = smart_text(data[b'BODY[1]'])
@@ -205,8 +206,10 @@ class EmailManager(EmailConnectionMixin):
                 "date": date,
                 "sender": from_string,
                 "message_uid": uid,
-                "url": "daily_duties/voicemail/" + str(uid)
+                "url": "daily_duties/voicemail/" + str(uid),
+                "unread": b'\\Seen' not in data[b'FLAGS'],
             }
+            print(message)
             voicemails.append(message)
 
         voicemails.sort(key=itemgetter('date'), reverse=True)

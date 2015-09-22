@@ -149,7 +149,9 @@ class VoicemailAttachmentRequestView(TemplateView):
 
         if not cached_file_data:
             with EmailManager() as email_manager:
+                email_manager.mark_message_read('Voicemails', message_uid)
                 filedata = email_manager.get_voicemail_attachment(message_uid)[1]
+
             cache.set('voicemail:' + message_uid, filedata, 7200)
         else:
             filedata = cached_file_data
