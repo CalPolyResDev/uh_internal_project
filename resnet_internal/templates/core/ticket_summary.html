@@ -53,7 +53,7 @@
                 <td style="vertical-align: text-top; width: 50%;">
                     <p><h3>Requestor Notes:</h3>
                         {% for note in ticket.requestor_notification_dict %}
-                                <strong>[{{ note.first_name }} {{ note.last_name }} {{ note.timestamp }}]</strong>
+                                <strong>[{{ note.first_name }} {{ note.last_name }} on {{ note.timestamp }}]</strong>
                                 <br /><br />{{ note.message|linebreaksbr }}
                                 <br /><br />
                         {% endfor %}
@@ -62,7 +62,7 @@
                 <td style="vertical-align: text-top; width: 50%;">
                     <p><h3>Work Log:</h3>
                         {% for note in ticket.work_log_dict %}
-                                <strong>[{{ note.first_name }} {{ note.last_name }} {{ note.timestamp }}]</strong>
+                                <strong>[{{ note.first_name }} {{ note.last_name }} on {{ note.timestamp }}]</strong>
                                 <br /><br />{{ note.message|linebreaksbr }}
                                 <br /><br />
                         {% endfor %}

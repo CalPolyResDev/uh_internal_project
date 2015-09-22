@@ -18,17 +18,17 @@
                 </tr>
                 {% if voicemails %}
                     {% for voicemail in voicemails %}
-                    <tr id="voicemail_{{ voicemail.message_uuid }}">
+                    <tr id="voicemail_{{ voicemail.message_uid }}">
                         <td>{{ voicemail.date }}</td>
                         <td>{{ voicemail.sender }}</td>
                         <td>
                             <audio controls autobuffer preload='none'>
-                                <source src="{% url 'voicemail_attachment_request' voicemail.message_uuid %}" type='audio/wav'/>
+                                <source src="{% url 'voicemail_attachment_request' voicemail.message_uid %}" type='audio/wav'/>
                                 <p>Please use any browser other than IE.</p>
                             </audio>
                         </td>
-                        <td>{% if request.user|technician_access %}<a id="archive_{{ voicemail.message_uuid }}" style="color:red; cursor:pointer;" onclick="remove_voicemail('{{ voicemail.message_uuid }}');">Archive</a>
-                            <div id="spinner_{{ voicemail.message_uuid }}" class="spinner" style="display:none;">
+                        <td>{% if request.user|technician_access %}<a id="archive_{{ voicemail.message_uid }}" style="color:red; cursor:pointer;" onclick="remove_voicemail('{{ voicemail.message_uid }}');">Archive</a>
+                            <div id="spinner_{{ voicemail.message_uid }}" class="spinner" style="display:none;">
                                 <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
                             </div>{% endif %}
                         </td>
@@ -46,16 +46,16 @@
     {% block extra_script %}
     {{ block.super }}
     <script type="text/javascript">
-        function remove_voicemail(message_uuid)  {
+        function remove_voicemail(message_uid)  {
             // Cannot use JQuery here: $ signs and other character in UUID break the query
-            var archive_link = document.getElementById('archive_' + message_uuid);
+            var archive_link = document.getElementById('archive_' + message_uid);
             archive_link.style.display = 'none';
             
-            var spinner = document.getElementById('spinner_' + message_uuid); 
+            var spinner = document.getElementById('spinner_' + message_uid); 
             spinner.style.display = 'block';
             
-            ajaxPost("{% url 'remove_voicemail' %}", {"message_uuid": message_uuid}, function(response_context) {
-                var row = document.getElementById('voicemail_' + message_uuid);
+            ajaxPost("{% url 'remove_voicemail' %}", {"message_uid": message_uid}, function(response_context) {
+                var row = document.getElementById('voicemail_' + message_uid);
                 row.parentNode.removeChild(row);
             });
         }
