@@ -6,8 +6,7 @@
 
 """
 
-from _datetime import timedelta
-from datetime import datetime
+from datetime import datetime, timedelta
 from operator import itemgetter
 import logging
 
