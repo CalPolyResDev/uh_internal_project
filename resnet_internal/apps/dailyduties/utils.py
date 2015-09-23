@@ -295,10 +295,12 @@ class EmailManager(EmailConnectionMixin):
             elif part.get_content_type() == 'text/plain':
                 body_plain_text += smart_text(part.get_payload(decode=True), errors='replace')
             else:
-                filename = part.get_filename()
-                filedata = part.get_payload(decode=True)
-                filetype = part.get_content_type()
-                attachments.append((filename, filedata, filetype))
+                attachment = {
+                    'filename': part.get_filename(),
+                    'filedata': part.get_payload(decode=True),
+                    'filetype': part.get_content_type(),
+                }
+                attachments.append(attachment)
 
         message = {
             'to': _convert_list_of_addresses(envelope.to),

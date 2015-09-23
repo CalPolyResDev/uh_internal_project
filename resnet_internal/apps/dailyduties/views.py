@@ -61,10 +61,10 @@ class EmailMessageView(TemplateView):
         attachment_metadata = []
 
         for attachment in message['attachments']:
-            extension = path.splitext(attachment[0])[1][1:]
+            extension = path.splitext(attachment['filename'])[1][1:]
             metadata = {
-                'filename': attachment[0],
-                'size': len(attachment[1]),
+                'filename': attachment['filename'],
+                'size': len(attachment['filedata']),
                 'icon': static('images/attachment_icons/' + extension + '-icon.png') if extension in attachment_icons else static('images/attachment_icons/default.png'),
                 'url': reverse('email_get_attachment', kwargs={'uid': message_uid,
                                                                'mailbox_name': mailbox_name,
@@ -105,7 +105,7 @@ class EmailAttachmentRequestView(TemplateView):
         with EmailManager() as email_manager:
             message = email_manager.get_email_message(mailbox_name, message_uid)
 
-        filename, filedata, filetype = message['attachments'][int(attachment_index)]
+        attachment = message['attachments'][int(attachment_index)]
 
         response = HttpResponse()
 
@@ -113,17 +113,17 @@ class EmailAttachmentRequestView(TemplateView):
             http_range_regex = re.compile('bytes=(\d*)-(\d*)$')
             regex_match = http_range_regex.match(self.request.META['HTTP_RANGE'])
             response_start = int(regex_match.groups()[0])
-            response_end = int(regex_match.groups()[1] if regex_match.groups()[1] else (len(filedata) - 1))
+            response_end = int(regex_match.groups()[1] if regex_match.groups()[1] else (len(attachment['filedata']) - 1))
         else:
             response_start = 0
-            response_end = len(filedata) - 1
+            response_end = len(attachment['filedata']) - 1
 
-        response.write(filedata[response_start:response_end + 1])
+        response.write(attachment['filedata'][response_start:response_end + 1])
         response["Accept-Ranges"] = 'bytes'
         response["Content-Length"] = response_end - response_start + 1
-        response["Content-Type"] = filetype
-        response["Content-Range"] = 'bytes ' + str(response_start) + '-' + str(response_end) + '/' + str(len(filedata))
-        response["Content-Disposition"] = 'filename="' + str(filename) + '"'
+        response["Content-Type"] = attachment['filetype']
+        response["Content-Range"] = 'bytes ' + str(response_start) + '-' + str(response_end) + '/' + str(len(attachment['filedata']))
+        response["Content-Disposition"] = 'filename="' + str(attachment['filename']) + '"'
 
         return response
 
