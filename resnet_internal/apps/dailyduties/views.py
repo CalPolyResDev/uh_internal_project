@@ -73,15 +73,6 @@ class EmailMessageView(TemplateView):
             attachment_metadata.append(metadata)
         message['attachments'] = attachment_metadata
 
-        if message['is_html']:
-            def content_id_match_to_url(match):
-                content_id = match.groupdict()['content_id']
-                return 'src="' + reverse('email_get_attachment', kwargs={'uid': message_uid,
-                                                               'mailbox_name': mailbox_name,
-                                                               'content_id': content_id}) + '"'
-
-            message['body_html'] = re.sub(r'src="cid:(?P<content_id>[^"]+)"', content_id_match_to_url, message['body_html'])
-
         quote_string = "On " + message['date'].strftime('%b %d, %Y at %I:%M%p') + ", " + message['from'] + " wrote:"
 
         if message['is_html']:
@@ -98,6 +89,15 @@ class EmailMessageView(TemplateView):
             reply_text = '>'.join(reply_text.splitlines(True))
             reply_text = '\n\n\nBest regards,\n' + self.request.user.get_full_name() + '\nResNet Technician\n\n>' + quote_string + '\n\n>' + reply_text
             message['reply_plain_text'] = reply_text
+
+        if message['is_html']:
+            def content_id_match_to_url(match):
+                content_id = match.groupdict()['content_id']
+                return 'src="' + reverse('email_get_attachment', kwargs={'uid': message_uid,
+                                                               'mailbox_name': mailbox_name,
+                                                               'content_id': content_id}) + '"'
+
+            message['body_html'] = re.sub(r'src="cid:(?P<content_id>[^"]+)"', content_id_match_to_url, message['body_html'])
 
         context['message'] = message
         context['archive_folders'] = get_archive_folders()
