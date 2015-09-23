@@ -273,8 +273,11 @@
                     });
                 };
                 function updateDuty(duty, redirect_url, target) {
+                    if (target === '_blank') {  // Popup-Blocking Workaround
+                        window.open(redirect_url, target);
+                    }
                     ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
-                        if (redirect_url) {
+                        if (redirect_url && target !== '_blank') {
                             window.open(redirect_url, target);
                         }
                         else {
