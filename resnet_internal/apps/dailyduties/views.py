@@ -78,7 +78,7 @@ class EmailMessageView(TemplateView):
         if message['is_html']:
             reply_html = message['body_html']
 
-            if reply_html.find('<body>') >= 0 and not (reply_html.find('<p>') >= 0 and reply_html.find('<p>') < reply_html.find('<body>')):
+            if reply_html.find('<body>') >= 0 and not (reply_html.find('<p>') >= 0 and reply_html.find('<p') < reply_html.find('<body>')):
                 reply_html = reply_html.replace('<body>', '<body><p id="new_body"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician</p><div><div>' + quote_string + '<div><div><blockquote>').replace('</body>', '</blockquote></body>')
             else:
                 reply_html = '<p id="start_message"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician</p><div><div>' + '<blockquote>\n' + quote_string + reply_html + '\n</blockquote>'
