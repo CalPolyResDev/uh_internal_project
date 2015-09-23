@@ -100,12 +100,21 @@ class EmailAttachmentRequestView(TemplateView):
     def render_to_response(self, context, **response_kwargs):
         message_uid = context['uid']
         mailbox_name = context['mailbox_name']
-        attachment_index = context['attachment_index']
+
+        if 'attachment_index' in context:
+            attachment_index = context['attachment_index']
+        elif 'content_id' in context:
+            content_id = context['content_id']
 
         with EmailManager() as email_manager:
             message = email_manager.get_email_message(mailbox_name, message_uid)
 
-        attachment = message['attachments'][int(attachment_index)]
+        if attachment_index:
+            attachment = message['attachments'][int(attachment_index)]
+        elif content_id:
+            attachment = next(attachment for attachment in message['attachments'] if attachment['content-id'] == content_id)
+        else:
+            Exception('No form of attachment id provided.')
 
         response = HttpResponse()
 

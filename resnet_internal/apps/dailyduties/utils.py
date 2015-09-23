@@ -299,8 +299,9 @@ class EmailManager(EmailConnectionMixin):
                     'filename': part.get_filename(),
                     'filedata': part.get_payload(decode=True),
                     'filetype': part.get_content_type(),
-                    'content-id': part.get('Content-ID'),
+                    'content_id': part.get('Content-ID'),
                 }
+                print(attachment)
                 attachments.append(attachment)
 
         message = {

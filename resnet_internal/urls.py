@@ -105,6 +105,7 @@ urlpatterns += [
     url(r'^daily_duties/email/mark_read/$', login_required(technician_access(email_mark_read)), name='email_mark_read'),
     url(r'^daily_duties/email/archive$', login_required(technician_access(email_archive)), name='email_archive'),
     url(r'^daily_duties/email/get_attachment/(?P<mailbox_name>.+)/(?P<uid>[0-9]+)/(?P<attachment_index>[0-9]+)/$', login_required(technician_access(EmailAttachmentRequestView.as_view())), name='email_get_attachment'),
+    url(r'^daily_duties/email/get_attachment/(?P<mailbox_name>.+)/(?P<uid>[0-9]+)/(?P<content_id>[^<>]+)/$', login_required(technician_access(EmailAttachmentRequestView.as_view())), name='email_get_attachment'),
     url(r'^daily_duties/email/get_folders/$', login_required(technician_access(get_email_folders)), name='email_get_folders'),
     url(r'^daily_duties/email/get_mailbox_summary/$', login_required(technician_access(get_mailbox_summary)), name='email_get_mailbox_summary'),
     url(r'^daily_duties/email/send_email/$', login_required(technician_access(send_email)), name='send_email'),
