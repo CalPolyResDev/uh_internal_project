@@ -104,7 +104,7 @@ class EmailAttachmentRequestView(TemplateView):
         if 'attachment_index' in context:
             attachment_index = context['attachment_index']
         elif 'content_id' in context:
-            content_id = context['content_id']
+            content_id = '<' + context['content_id'] + '>'
 
         with EmailManager() as email_manager:
             message = email_manager.get_email_message(mailbox_name, message_uid)
