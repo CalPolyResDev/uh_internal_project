@@ -301,7 +301,6 @@ class EmailManager(EmailConnectionMixin):
                     'filetype': part.get_content_type(),
                     'content_id': part.get('Content-ID'),
                 }
-                print(attachment)
                 attachments.append(attachment)
 
         message = {

@@ -73,6 +73,15 @@ class EmailMessageView(TemplateView):
             attachment_metadata.append(metadata)
         message['attachments'] = attachment_metadata
 
+        if message['is_html']:
+            def content_id_match_to_url(match):
+                content_id = match.groupdict()['content_id']
+                return 'src="' + reverse('email_get_attachment', kwargs={'uid': message_uid,
+                                                               'mailbox_name': mailbox_name,
+                                                               'content_id': content_id}) + '"'
+
+            message['body_html'] = re.sub(r'src="cid:(?P<content_id>[^"]+)"', content_id_match_to_url, message['body_html'])
+
         quote_string = "On " + message['date'].strftime('%b %d, %Y at %I:%M%p') + ", " + message['from'] + " wrote:"
 
         if message['is_html']:
@@ -101,18 +110,16 @@ class EmailAttachmentRequestView(TemplateView):
         message_uid = context['uid']
         mailbox_name = context['mailbox_name']
 
-        if 'attachment_index' in context:
-            attachment_index = context['attachment_index']
-        elif 'content_id' in context:
-            content_id = '<' + context['content_id'] + '>'
-
         with EmailManager() as email_manager:
             message = email_manager.get_email_message(mailbox_name, message_uid)
 
-        if attachment_index:
-            attachment = message['attachments'][int(attachment_index)]
-        elif content_id:
-            attachment = next(attachment for attachment in message['attachments'] if attachment['content-id'] == content_id)
+        if 'attachment_index' in context:
+            attachment = message['attachments'][int(context['attachment_index'])]
+        elif 'content_id' in context:
+            try:
+                attachment = next(attachment for attachment in message['attachments'] if attachment['content_id'] == '<' + context['content_id'] + '>')
+            except StopIteration:
+                raise Exception('Could not find Content ID: ' + context['content_id'])
         else:
             Exception('No form of attachment id provided.')
 
