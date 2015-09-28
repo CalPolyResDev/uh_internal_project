@@ -167,6 +167,11 @@ def get_mailbox_summary(request):
                         <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
                     </div>
                 </td>
+                <td>
+                    {% if email.replied %}
+                        <img src="{% static 'images/mail_reply.png' %}"></img>
+                    {% endif %}
+                </td>
                 <td style="cursor: pointer;" onclick="$(document.getElementById('{{ mailbox_name }}/{{ email.uid }}')).removeClass('bg-info');$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.date }}</td>
                 <td style="cursor: pointer;" onclick="$(document.getElementById('{{ mailbox_name }}/{{ email.uid }}')).removeClass('bg-info');$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.from_name }} &lt;{{email.from_address }}&gt;</td>
                 <td style="cursor: pointer;" onclick="$(document.getElementById('{{ mailbox_name }}/{{ email.uid }}')).removeClass('bg-info');$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.subject }}</td>

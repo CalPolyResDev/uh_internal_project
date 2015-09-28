@@ -19,8 +19,9 @@ from django.core.cache import cache
 from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
-from srsconnector.models import ServiceRequest
 import imapclient
+
+from srsconnector.models import ServiceRequest
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
@@ -225,6 +226,7 @@ class EmailManager(EmailConnectionMixin):
 
             for uid, data in response.items():
                 unread = b'\\Seen' not in data[b'FLAGS']
+                replied = b'\\Answered' in data[b'FLAGS']
                 envelope = data[b'ENVELOPE']
                 date = envelope.date
                 subject = smart_text(envelope.subject)
@@ -233,6 +235,7 @@ class EmailManager(EmailConnectionMixin):
                 messages.append({
                     'uid': uid,
                     'unread': unread,
+                    'replied': replied,
                     'date': date,
                     'subject': self.decode_header(subject),
                     'from_name': smart_text(message_from.name) if message_from.name else '',
