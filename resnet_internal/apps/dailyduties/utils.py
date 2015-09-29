@@ -66,6 +66,10 @@ def get_archive_folders():
     return archive_folders
 
 
+def get_plaintext_signature(technician_name):
+    return '\n\n\nBest regards,\n' + technician_name + '\nResNet Technician\n\nFor office hours and locations, please visit http://resnet.calpoly.edu.'
+
+
 class EmailConnectionMixin(object):
     connection_list = None
 
