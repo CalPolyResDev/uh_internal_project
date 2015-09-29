@@ -15,7 +15,7 @@ from django.http.response import HttpResponse
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
 
-from .utils import EmailManager, get_archive_folders
+from .utils import EmailManager, get_archive_folders, get_plaintext_signature
 
 
 class EmailListView(TemplateView):
@@ -26,6 +26,15 @@ class EmailListView(TemplateView):
 
         context['archive_folders'] = get_archive_folders()
 
+        return context
+
+
+class EmailComposeView(TemplateView):
+    template_name = "dailyduties/email_compose.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(EmailComposeView, self).get_context_data(**kwargs)
+        context['email_template'] = get_plaintext_signature(self.request.user.get_full_name())
         return context
 
 
@@ -87,7 +96,7 @@ class EmailMessageView(TemplateView):
         else:
             reply_text = message['body_plain_text']
             reply_text = '>'.join(reply_text.splitlines(True))
-            reply_text = '\n\n\nBest regards,\n' + self.request.user.get_full_name() + '\nResNet Technician\n\nFor office hours and locations, please visit http://resnet.calpoly.edu.\n\n>' + quote_string + '\n\n>' + reply_text
+            reply_text = get_plaintext_signature(self.request.user.get_full_name()) + '\n\n>' + quote_string + '\n\n>' + reply_text
             message['reply_plain_text'] = reply_text
 
         if message['is_html']:

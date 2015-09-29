@@ -11,6 +11,7 @@ from itertools import zip_longest
 from operator import itemgetter
 from ssl import SSLError, SSLEOFError
 import email
+import imapclient
 import logging
 
 from django.conf import settings
@@ -19,7 +20,6 @@ from django.core.cache import cache
 from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
-import imapclient
 
 from srsconnector.models import ServiceRequest
 
@@ -62,6 +62,10 @@ def get_archive_folders():
     archive_folders.sort(key=lambda tup: tup[1])
 
     return archive_folders
+
+
+def get_plaintext_signature(technician_name):
+    return '\n\n\nBest regards,\n' + technician_name + '\nResNet Technician\n\nFor office hours and locations, please visit http://resnet.calpoly.edu.'
 
 
 class EmailConnectionMixin(object):
