@@ -61,10 +61,10 @@ class EmailMessageView(TemplateView):
         attachment_metadata = []
 
         for attachment in message['attachments']:
-            extension = path.splitext(attachment[0])[1][1:]
+            extension = path.splitext(attachment['filename'])[1][1:]
             metadata = {
-                'filename': attachment[0],
-                'size': len(attachment[1]),
+                'filename': attachment['filename'],
+                'size': len(attachment['filedata']),
                 'icon': static('images/attachment_icons/' + extension + '-icon.png') if extension in attachment_icons else static('images/attachment_icons/default.png'),
                 'url': reverse('email_get_attachment', kwargs={'uid': message_uid,
                                                                'mailbox_name': mailbox_name,
@@ -78,17 +78,26 @@ class EmailMessageView(TemplateView):
         if message['is_html']:
             reply_html = message['body_html']
 
-            if reply_html.find('<body>') >= 0:
+            if reply_html.find('<body>') >= 0 and not (reply_html.find('<p>') >= 0 and reply_html.find('<p') < reply_html.find('<body>')):
                 reply_html = reply_html.replace('<body>', '<body><p id="new_body"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician</p><div><div>' + quote_string + '<div><div><blockquote>').replace('</body>', '</blockquote></body>')
             else:
-                reply_html = '<p id="start_message"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician</p><div><div>' + '<blockquote>\n' + quote_string + reply_html + '\n</blockquote>'
+                reply_html = '<p id="start_message"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician<br /><br />For office hours and locations, please visit <a href="http://resnet.calpoly.edu">resnet.calpoly.edu</a>.</p><div><div>' + '<blockquote>\n' + quote_string + reply_html + '\n</blockquote>'
 
             message['reply_html'] = reply_html
         else:
             reply_text = message['body_plain_text']
             reply_text = '>'.join(reply_text.splitlines(True))
-            reply_text = '\n\n\nBest regards,\n' + self.request.user.get_full_name() + '\nResNet Technician\n\n>' + quote_string + '\n\n>' + reply_text
+            reply_text = '\n\n\nBest regards,\n' + self.request.user.get_full_name() + '\nResNet Technician\n\nFor office hours and locations, please visit http://resnet.calpoly.edu.\n\n>' + quote_string + '\n\n>' + reply_text
             message['reply_plain_text'] = reply_text
+
+        if message['is_html']:
+            def content_id_match_to_url(match):
+                content_id = match.groupdict()['content_id']
+                return 'src="' + reverse('email_get_attachment', kwargs={'uid': message_uid,
+                                                               'mailbox_name': mailbox_name,
+                                                               'content_id': content_id}) + '"'
+
+            message['body_html'] = re.sub(r'src="cid:(?P<content_id>[^"]+)"', content_id_match_to_url, message['body_html'])
 
         context['message'] = message
         context['archive_folders'] = get_archive_folders()
@@ -100,12 +109,19 @@ class EmailAttachmentRequestView(TemplateView):
     def render_to_response(self, context, **response_kwargs):
         message_uid = context['uid']
         mailbox_name = context['mailbox_name']
-        attachment_index = context['attachment_index']
 
         with EmailManager() as email_manager:
             message = email_manager.get_email_message(mailbox_name, message_uid)
 
-        filename, filedata, filetype = message['attachments'][int(attachment_index)]
+        if 'attachment_index' in context:
+            attachment = message['attachments'][int(context['attachment_index'])]
+        elif 'content_id' in context:
+            try:
+                attachment = next(attachment for attachment in message['attachments'] if attachment['content_id'] == '<' + context['content_id'] + '>')
+            except StopIteration:
+                raise Exception('Could not find Content ID: ' + context['content_id'])
+        else:
+            Exception('No form of attachment id provided.')
 
         response = HttpResponse()
 
@@ -113,17 +129,17 @@ class EmailAttachmentRequestView(TemplateView):
             http_range_regex = re.compile('bytes=(\d*)-(\d*)$')
             regex_match = http_range_regex.match(self.request.META['HTTP_RANGE'])
             response_start = int(regex_match.groups()[0])
-            response_end = int(regex_match.groups()[1] if regex_match.groups()[1] else (len(filedata) - 1))
+            response_end = int(regex_match.groups()[1] if regex_match.groups()[1] else (len(attachment['filedata']) - 1))
         else:
             response_start = 0
-            response_end = len(filedata) - 1
+            response_end = len(attachment['filedata']) - 1
 
-        response.write(filedata[response_start:response_end + 1])
+        response.write(attachment['filedata'][response_start:response_end + 1])
         response["Accept-Ranges"] = 'bytes'
         response["Content-Length"] = response_end - response_start + 1
-        response["Content-Type"] = filetype
-        response["Content-Range"] = 'bytes ' + str(response_start) + '-' + str(response_end) + '/' + str(len(filedata))
-        response["Content-Disposition"] = 'filename="' + str(filename) + '"'
+        response["Content-Type"] = attachment['filetype']
+        response["Content-Range"] = 'bytes ' + str(response_start) + '-' + str(response_end) + '/' + str(len(attachment['filedata']))
+        response["Content-Disposition"] = 'filename="' + str(attachment['filename']) + '"'
 
         return response
 
@@ -149,7 +165,9 @@ class VoicemailAttachmentRequestView(TemplateView):
 
         if not cached_file_data:
             with EmailManager() as email_manager:
+                email_manager.mark_message_read('Voicemails', message_uid)
                 filedata = email_manager.get_voicemail_attachment(message_uid)[1]
+
             cache.set('voicemail:' + message_uid, filedata, 7200)
         else:
             filedata = cached_file_data

@@ -69,7 +69,7 @@
             </script>
             <iframe id="email_body" frameborder="0" srcdoc="{{ message.body_html }}" width="100%" onload="resize_iframe(this)"></iframe>
         {% else %}
-            <p id="email_body">{{ message.body_plain_text|linebreaksbr }}</p>
+            <p id="email_body">{{ message.body_plain_text|linebreaksbr|urlize }}</p>
         {% endif %}
     {% else %}
         <p>Could not retrieve email.</p>
