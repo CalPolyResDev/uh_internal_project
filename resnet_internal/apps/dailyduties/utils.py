@@ -338,8 +338,6 @@ class EmailManager(EmailConnectionMixin):
             'references': message.get('References')
         }
 
-        print(message)
-
         return message
 
     def send_message(self, message_dict):
@@ -370,8 +368,6 @@ class EmailManager(EmailConnectionMixin):
 
             if message_dict['is_html']:
                 email_message.content_subtype = 'html'
-
-            print(email_message.extra_headers)
 
             email_message.send()
             self.server.append('Sent Items', email_message.message().as_bytes())
