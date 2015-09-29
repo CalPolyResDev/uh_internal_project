@@ -11,6 +11,7 @@ from itertools import zip_longest
 from operator import itemgetter
 from ssl import SSLError, SSLEOFError
 import email
+import imapclient
 import logging
 
 from django.conf import settings
@@ -19,7 +20,6 @@ from django.core.cache import cache
 from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
-import imapclient
 
 from srsconnector.models import ServiceRequest
 
@@ -214,7 +214,6 @@ class EmailManager(EmailConnectionMixin):
                 "url": "daily_duties/voicemail/" + str(uid),
                 "unread": b'\\Seen' not in data[b'FLAGS'],
             }
-            print(message)
             voicemails.append(message)
 
         voicemails.sort(key=itemgetter('date'), reverse=True)
@@ -333,31 +332,45 @@ class EmailManager(EmailConnectionMixin):
             'path': mailbox_name + '/' + uid,
             'mailbox': mailbox_name,
             'uid': uid,
+            'in_reply_to': envelope.in_reply_to,
+            'references': message.get('References')
         }
+
+        print(message)
 
         return message
 
     def send_message(self, message_dict):
         with mail.get_connection() as connection:
-            email = EmailMessage()
-            email.connection = connection
+            email_message = EmailMessage()
+            email_message.connection = connection
 
-            email.to = message_dict['to']
-            email.cc = message_dict['cc']
-            email.from_email = message_dict['from']
-            email.reply_to = [message_dict['from']]
-            email.subject = message_dict['subject']
-            email.body = message_dict['body']
-
-            if message_dict['is_html']:
-                email.content_subtype = 'html'
-
-            email.send()
-            self.server.append('Sent Items', email.message().as_bytes())
+            email_message.to = message_dict['to']
+            email_message.cc = message_dict['cc']
+            email_message.from_email = message_dict['from']
+            email_message.reply_to = [message_dict['from']]
+            email_message.subject = message_dict['subject']
+            email_message.body = message_dict['body']
 
             if message_dict.get('in_reply_to'):
                 reply_information = message_dict['in_reply_to'].rsplit('/', 1)
                 self.mark_message_replied(reply_information[0], reply_information[1])
+
+                original_message = self.get_email_message(reply_information[0], reply_information[1])
+                email_message.extra_headers['In-Reply-To'] = original_message['message-id']
+
+                if original_message.get('references'):
+                    email_message.extra_headers['References'] = original_message['references'].strip() + ' ' + original_message['message-id']
+                else:
+                    email_message.extra_headers['References'] = original_message['message-id'].strip()
+
+            if message_dict['is_html']:
+                email_message.content_subtype = 'html'
+
+            print(email_message.extra_headers)
+
+            email_message.send()
+            self.server.append('Sent Items', email_message.message().as_bytes())
 
 
 class GetDutyData(EmailConnectionMixin):
