@@ -13,6 +13,8 @@ from ssl import SSLError, SSLEOFError
 import email
 import imapclient
 import logging
+import os
+import socket
 
 from django.conf import settings
 from django.core import mail
@@ -351,6 +353,8 @@ class EmailManager(EmailConnectionMixin):
             email_message.reply_to = [message_dict['from']]
             email_message.subject = message_dict['subject']
             email_message.body = message_dict['body']
+
+            email_message.extra_headers['message-id'] = '<' + datetime.datetime.utcnow() + '.' + str(os.getpid()) + '@' + socket.gethostname() + '>'
 
             if message_dict.get('in_reply_to'):
                 reply_information = message_dict['in_reply_to'].rsplit('/', 1)
