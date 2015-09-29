@@ -81,13 +81,13 @@ class EmailMessageView(TemplateView):
             if reply_html.find('<body>') >= 0 and not (reply_html.find('<p>') >= 0 and reply_html.find('<p') < reply_html.find('<body>')):
                 reply_html = reply_html.replace('<body>', '<body><p id="new_body"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician</p><div><div>' + quote_string + '<div><div><blockquote>').replace('</body>', '</blockquote></body>')
             else:
-                reply_html = '<p id="start_message"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician</p><div><div>' + '<blockquote>\n' + quote_string + reply_html + '\n</blockquote>'
+                reply_html = '<p id="start_message"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician<br /><br />For office hours and locations, please visit <a href="http://resnet.calpoly.edu">resnet.calpoly.edu</a>.</p><div><div>' + '<blockquote>\n' + quote_string + reply_html + '\n</blockquote>'
 
             message['reply_html'] = reply_html
         else:
             reply_text = message['body_plain_text']
             reply_text = '>'.join(reply_text.splitlines(True))
-            reply_text = '\n\n\nBest regards,\n' + self.request.user.get_full_name() + '\nResNet Technician\n\n>' + quote_string + '\n\n>' + reply_text
+            reply_text = '\n\n\nBest regards,\n' + self.request.user.get_full_name() + '\nResNet Technician\n\nFor office hours and locations, please visit http://resnet.calpoly.edu.\n\n>' + quote_string + '\n\n>' + reply_text
             message['reply_plain_text'] = reply_text
 
         if message['is_html']:
