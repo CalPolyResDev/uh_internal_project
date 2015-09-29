@@ -1,5 +1,5 @@
-import os
 from pathlib import Path
+import os
 
 from django.core.exceptions import ImproperlyConfigured
 from django_auth_ldap.config import LDAPSearch, NestedActiveDirectoryGroupType
@@ -124,7 +124,7 @@ DATABASE_ROUTERS = (
 # Incoming email settings
 INCOMING_EMAIL = {
     'IMAP4': {  # IMAP4 is currently the only supported protocol. It must be included.
-        'HOST': 'outlook.office365.com',  # The host to use for receiving email. Set to empty string for localhost.
+        'HOST': 'outlook.com',  # The host to use for receiving email. Set to empty string for localhost.
         'PORT': 993,  # The port to use. Set to empty string for default values: 143, 993(SSL).
         'USE_SSL': True,  # Whether or not to use SSL (Boolean)
         'USER': get_env_variable('RESNET_INTERNAL_EMAIL_IN_USERNAME'),  # The username to use. The full email address is what most servers require.
