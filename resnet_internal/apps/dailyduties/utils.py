@@ -237,6 +237,7 @@ class EmailManager(EmailConnectionMixin):
 
             for uid, data in response.items():
                 unread = b'\\Seen' not in data[b'FLAGS']
+                replied = b'\\Answered' in data[b'FLAGS']
                 envelope = data[b'ENVELOPE']
                 date = envelope.date
                 subject = smart_text(envelope.subject)
@@ -245,6 +246,7 @@ class EmailManager(EmailConnectionMixin):
                 messages.append({
                     'uid': uid,
                     'unread': unread,
+                    'replied': replied,
                     'date': date,
                     'subject': self.decode_header(subject),
                     'from_name': smart_text(message_from.name) if message_from.name else '',

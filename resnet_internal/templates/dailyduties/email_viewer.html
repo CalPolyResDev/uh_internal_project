@@ -81,6 +81,12 @@
     <script src="//cdn.ckeditor.com/4.5.3/standard-all/ckeditor.js"></script>
     <script language="javascript" type="text/javascript">
         var editor = '';
+        
+        
+        String.prototype.rsplit = function(sep, maxsplit) { // Missing Python
+            var split = this.split(sep);
+            return maxsplit ? [ split.slice(0, -maxsplit).join(sep) ].concat(split.slice(-maxsplit)) : split;
+        }
         function add_button(button_text, onclick_text, id) {
             $('#buttons').append('<button id="' + id + '" class="button default" onclick="' + onclick_text +'">' + button_text + '</button>');
         };
@@ -189,6 +195,7 @@
                     $.unblockUI();
                     
                     if (response_context['success']) {
+                        parent.refresh_messages('{{ message.path|escapejs }}'.rsplit('/', 1)[0]);
                         parent.$.fancybox.close();
                     }
                     else {
