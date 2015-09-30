@@ -12,6 +12,23 @@ always : function(e, data) {
 },
 {% endblock %}
 
+{% block JS_INIT %}
+{{ block.super }}
+    // Load existing attachments if any.
+    if (attachment_details.length) {
+        $('#fileupload').fileupload('option', 'done').call($('#fileupload'), $.Event('done'), {result: {files: attachment_details}});
+    }
+    $('#fileupload').bind('fileuploaddestroy', function (e, data) {
+        for (var i=0; i < attachment_details.length; ++i) {
+            if (attachment_details[i].deleteUrl === data.url) {
+                attachment_details.splice(i,1);
+                attachments.splice(i,1);
+                break;
+            }
+        }
+    });
+{% endblock %}
+
 {% block CSS_BOOTSTRAP %}
     {% comment %}
     This is already included.
@@ -22,14 +39,6 @@ always : function(e, data) {
     {% comment %}
     This is already included.
     {% endcomment %}
-{% endblock %}
-
-{% block JS_INIT %}
-{{ block.super }}
-    // Load existing attachments if any.
-    if (attachment_details.length) {
-        $('#fileupload').fileupload('option', 'done').call($('#fileupload'), $.Event('done'), {result: {files: attachment_details}});
-    }
 {% endblock %}
 
 {% block JS_BOOTSTRAP %}
