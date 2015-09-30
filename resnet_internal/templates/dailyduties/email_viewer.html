@@ -133,11 +133,13 @@
             $('#from_header').remove();
             $('#buttons').html('');
             add_button('Send', 'send_email();', 'send_button');
+            
+            
             $('#buttons').append('<button class="btn btn-default" type="button" id="attach_button">Attach</button>');
             $('#attach_button').popover({
                 html: true,
                 container: 'body',
-                content: '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' message_path=request.user.username %}</span>',
+                content: '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' %}</span>',
             });
         };
 

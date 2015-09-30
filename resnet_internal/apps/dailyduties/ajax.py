@@ -271,9 +271,8 @@ def attachment_upload(request, **kwargs):
     # If multiple files can be uploaded simulatenously,
     # 'file' may be a list of files.
     file = upload_receive(request)
-    message_path = kwargs['message_path']
 
-    cache_key = 'email_attachment:' + message_path + ':' + file.name
+    cache_key = 'email_attachment:' + request.user.username + str(datetime.utcnow()) + ':' + file.name
     cache.set(cache_key, file, 24 * 60 * 60)
 
     file_dict = {
