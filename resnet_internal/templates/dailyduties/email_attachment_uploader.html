@@ -7,6 +7,21 @@ maxFileSize: 20000000,
 always : function(e, data) { 
     if (data.textStatus === 'success') {
         attachments.push(data.result.files[0].cacheKey);
+        attachment_details.push(data.result.files[0]);
     }
 },
+{% endblock %}
+
+{% block CSS_BOOTSTRAP %}
+    {% comment %}
+    This is already included.
+    {% endcomment %}
+{% endblock %}
+
+{% block JS_INIT %}
+{{ block.super }}
+    // Load existing attachments if any.
+    if (attachment_details.length) {
+        $('#fileupload').fileupload('option', 'done').call($('#fileupload'), $.Event('done'), {result: {files: attachment_details}});
+    }
 {% endblock %}
