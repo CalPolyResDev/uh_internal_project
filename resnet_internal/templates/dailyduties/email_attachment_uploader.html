@@ -6,8 +6,7 @@ autoUpload: true,
 maxFileSize: 20000000,
 always : function(e, data) { 
     if (data.textStatus === 'success') {
-        attachments = attachments.concat(data.files);
-        console.log(attachments);
+        attachments.push(data.result.files[0].cacheKey);
     }
 },
 {% endblock %}

@@ -99,7 +99,7 @@
         String.prototype.rsplit = function(sep, maxsplit) { // Missing Python
             var split = this.split(sep);
             return maxsplit ? [ split.slice(0, -maxsplit).join(sep) ].concat(split.slice(-maxsplit)) : split;
-        }
+        };
         
         function add_button(button_text, onclick_text, id) {
             $('#buttons').append('<button id="' + id + '" class="button default" onclick="' + onclick_text +'">' + button_text + '</button>');
@@ -197,25 +197,33 @@
             $('#send_button').remove();
             $.blockUI({ message: '<h1>Sending...</h1>'});
             
-            ajaxPost("{% url 'send_email' %}", {
-                    'to': to,
-                    'cc': cc,
-                    'reply_to': reply_to,
-                    'body': body,
-                    'subject': subject,
-                    'is_html': is_html,
-                    'in_reply_to': in_reply_to,
-                    'attachments': array_to_ajax(attachments, 'attachment')
-                }, 
+            var post_dict = array_to_ajax(attachments, 'attachment');
+            
+            post_dict['to'] = to;
+            post_dict['cc'] = cc;
+            post_dict['reply_to'] = reply_to;
+            post_dict['body'] = body;
+            post_dict['subject'] = subject;
+            post_dict['is_html'] = is_html;
+            post_dict['in_reply_to'] = in_reply_to;
+
+            ajaxPost("{% url 'send_email' %}", post_dict, 
                 function(response_context) {
                     $.unblockUI();
                     
                     if (response_context['success']) {
-                        parent.refresh_messages('{{ message.path|escapejs }}'.rsplit('/', 1)[0]);
+                        if ('{{ message.path|escapejs }}') {
+                            parent.refresh_messages('{{ message.path|escapejs }}'.rsplit('/', 1)[0]);
+                        }
                         parent.$.fancybox.close();
                     }
                     else {
-                        alert('Failed to send message. Please try again.');
+                        if (response_context['reason']) {
+                            alert('Failed to send message: ' + response_context['reason']);
+                        }
+                        else {
+                            alert('Failed to send message. Please try again.');
+                        }
                     }
             });
         };

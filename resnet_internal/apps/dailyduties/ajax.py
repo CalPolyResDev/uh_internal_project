@@ -241,6 +241,11 @@ def email_archive(request):
 def send_email(request):
     post_data = request.POST
 
+    attachments = []
+    for key, value in post_data.items():
+        if key.startswith('attachment'):
+            attachments.append(cache.get(value))
+
     message = {
         'to': post_data['to'].replace(',', ';').split(';'),
         'from': 'Residence Halls Network <resnet@calpoly.edu>',
@@ -249,6 +254,7 @@ def send_email(request):
         'is_html': True if post_data['is_html'] == 'true' else False,
         'subject': post_data['subject'],
         'in_reply_to': post_data.get('in_reply_to'),
+        'attachments': attachments,
     }
 
     with EmailManager() as email_manager:
@@ -273,6 +279,7 @@ def attachment_upload(request, **kwargs):
     file_dict = {
         'name': file.name,
         'size': file.size,
+        'cacheKey': cache_key,
         'deleteUrl': reverse('jfu_delete', kwargs={'pk': cache_key}),
         'deleteType': 'POST',
     }
