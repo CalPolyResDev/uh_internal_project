@@ -1,0 +1,13 @@
+{% extends 'jfu/upload_form.html' %}
+
+{% block JS_OPTS %}
+{{ block.super }},
+autoUpload: true,
+maxFileSize: 20000000,
+always : function(e, data) { 
+    if (data.textStatus === 'success') {
+        attachments = attachments.concat(data.files);
+        console.log(attachments);
+    }
+},
+{% endblock %}

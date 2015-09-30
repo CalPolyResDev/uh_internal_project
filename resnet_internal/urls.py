@@ -26,7 +26,7 @@ from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequest
 from .apps.core.ajax import update_building, update_network_status, get_tickets
 from .apps.core.views import IndexView, LoginView, logout, handler500, TicketSummaryView
 from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive, send_email, attachment_upload, attachment_delete
-from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView
+from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView, EmailComposeView
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .apps.portmap.ajax import PopulateResidenceHallWiredPorts, UpdateResidenceHallWiredPort, change_port_status
@@ -101,10 +101,12 @@ urlpatterns = [
 urlpatterns += [
     url(r'^daily_duties/email/list/$', login_required(technician_access(EmailListView.as_view())), name='email_list'),
     url(r'^daily_duties/email/view/(?P<mailbox_name>.+)/(?P<uid>[0-9]+)/$', login_required(technician_access(EmailMessageView.as_view())), name='email_view_message'),
+    url('^daily_duties/email/compose/$', login_required(technician_access(EmailComposeView.as_view())), name='email_compose'),
     url(r'^daily_duties/email/mark_unread/$', login_required(technician_access(email_mark_unread)), name='email_mark_unread'),
     url(r'^daily_duties/email/mark_read/$', login_required(technician_access(email_mark_read)), name='email_mark_read'),
     url(r'^daily_duties/email/archive$', login_required(technician_access(email_archive)), name='email_archive'),
     url(r'^daily_duties/email/get_attachment/(?P<mailbox_name>.+)/(?P<uid>[0-9]+)/(?P<attachment_index>[0-9]+)/$', login_required(technician_access(EmailAttachmentRequestView.as_view())), name='email_get_attachment'),
+    url(r'^daily_duties/email/get_attachment/(?P<mailbox_name>.+)/(?P<uid>[0-9]+)/(?P<content_id>[^<>]+)/$', login_required(technician_access(EmailAttachmentRequestView.as_view())), name='email_get_attachment'),
     url(r'^daily_duties/email/get_folders/$', login_required(technician_access(get_email_folders)), name='email_get_folders'),
     url(r'^daily_duties/email/get_mailbox_summary/$', login_required(technician_access(get_mailbox_summary)), name='email_get_mailbox_summary'),
     url(r'^daily_duties/email/send_email/$', login_required(technician_access(send_email)), name='send_email'),

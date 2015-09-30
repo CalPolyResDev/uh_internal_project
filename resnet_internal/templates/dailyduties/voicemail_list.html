@@ -14,29 +14,35 @@
                     <th scope="col">Date</th>
                     <th scope="col">Sender</th>
                     <th scope="col">Play Voicemail</th>
+                    <th scope="col">Mark as New</th>
                     <th scope="col">Archive</th>
                 </tr>
                 {% if voicemails %}
                     {% for voicemail in voicemails %}
-                    <tr id="voicemail_{{ voicemail.message_uid }}">
+                    <tr id="voicemail_{{ voicemail.message_uid }}" {% if voicemail.unread %}class="bg-info"{% endif %}>
                         <td>{{ voicemail.date }}</td>
                         <td>{{ voicemail.sender }}</td>
                         <td>
-                            <audio controls autobuffer preload='none'>
+                            <audio controls autobuffer preload='none' onplay="$(document.getElementById('voicemail_{{ voicemail.message_uid }}')).removeClass('bg-info');">
                                 <source src="{% url 'voicemail_attachment_request' voicemail.message_uid %}" type='audio/wav'/>
                                 <p>Please use any browser other than IE.</p>
                             </audio>
                         </td>
-                        <td>{% if request.user|technician_access %}<a id="archive_{{ voicemail.message_uid }}" style="color:red; cursor:pointer;" onclick="remove_voicemail('{{ voicemail.message_uid }}');">Archive</a>
+                        <td><a id="marknew_{{ voicemail.message_uid }}" style="color: blue; cursor:pointer;" onclick="mark_new('{{ voicemail.message_uid }}');">Mark New</a>
+                            <div id="spinner_mark_new_{{ voicemail.message_uid }}" class="spinner" style="display:none;">
+                                <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
+                            </div>
+                        </td>
+                        <td><a id="archive_{{ voicemail.message_uid }}" style="color: red; cursor:pointer;" onclick="remove_voicemail('{{ voicemail.message_uid }}');">Archive</a>
                             <div id="spinner_{{ voicemail.message_uid }}" class="spinner" style="display:none;">
                                 <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
-                            </div>{% endif %}
+                            </div>
                         </td>
                     </tr>
                     {% endfor %}
                 {% else %}
                 <tr>
-                    <td colspan="4" style="text-align: center;">There are currently no new voicemails.</td>
+                    <td colspan="5" style="text-align: center;">There are currently no new voicemails.</td>
                 </tr>
                 {% endif %}
             </tbody>
@@ -57,6 +63,21 @@
             ajaxPost("{% url 'remove_voicemail' %}", {"message_uid": message_uid}, function(response_context) {
                 var row = document.getElementById('voicemail_' + message_uid);
                 row.parentNode.removeChild(row);
+            });
+        }
+        function mark_new(message_uid)  {
+            // Cannot use JQuery here: $ signs and other character in UUID break the query
+            var mark_new_link = document.getElementById('marknew_' + message_uid);
+            mark_new_link.style.display = 'none';
+            
+            var spinner = document.getElementById('spinner_mark_new_' + message_uid); 
+            spinner.style.display = 'block';
+            
+            ajaxPost("{% url 'email_mark_unread' %}", {"message0": ('Voicemails/' + message_uid) }, function(response_context) {
+                var row = document.getElementById('voicemail_' + message_uid);
+                row.className = 'bg-info';
+                spinner.style.display = 'none';
+                mark_new_link.style.display = 'block';
             });
         }
     </script>

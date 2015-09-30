@@ -7,11 +7,13 @@
 """
 
 from copy import deepcopy
-import logging
 from operator import itemgetter
-import os
-from srsconnector.models import ServiceRequest
 from sys import platform
+import logging
+import os
+
+from resnet_internal.settings.base import technician_access_test
+from srsconnector.models import ServiceRequest
 
 from .models import NetworkDevice
 
@@ -65,7 +67,13 @@ def dict_merge(base, merge):
 
 
 def get_ticket_list(user):
-    ticket_queryset = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(status=8)
+    user_teams = []
+    if user.is_rn_staff:
+        user_teams.append('SA University Housing')
+    if technician_access_test(user):
+        user_teams.append('SA RESNET')
+
+    ticket_queryset = ServiceRequest.objects.filter(assigned_team__in=user_teams).exclude(status=4).exclude(status=8)
 
     tickets = list({'ticket_id': ticket.ticket_id,
                     'requestor_full_name': ticket.requestor_full_name,
