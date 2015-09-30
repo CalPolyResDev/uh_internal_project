@@ -244,7 +244,10 @@ def send_email(request):
     attachments = []
     for key, value in post_data.items():
         if key.startswith('attachment'):
-            attachments.append(cache.get(value))
+            attachment = cache.get(value)
+            if not attachment:
+                return {'success': False, 'reason': 'Could not retrieve attachments. Please re-attach and try again.'}
+            attachments.append(attachment)
 
     message = {
         'to': post_data['to'].replace(',', ';').split(';'),

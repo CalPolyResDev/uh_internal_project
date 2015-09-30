@@ -205,7 +205,6 @@
                 in_reply_to = '{{ message.path|escapejs }}';
             }
             
-            $('#send_button').remove();
             $.blockUI({ message: '<h1>Sending...</h1>'});
             
             var post_dict = array_to_ajax(attachments, 'attachment');
