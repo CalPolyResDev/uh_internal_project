@@ -22,6 +22,9 @@
     .popover {
         max-width: 800px;
     }
+    .btn.btn-default {
+        margin-right: 5px;
+    }
 </style>
 {% endblock %}
 
@@ -130,7 +133,7 @@
             $('#from_header').remove();
             $('#buttons').html('');
             add_button('Send', 'send_email();', 'send_button');
-            $('#buttons').append('<button type="button" id="attach_button" class="btn btn-default">Attach</button>');
+            $('#buttons').append('<button class="btn btn-default" id="attach_button">Attach</button>');
             $('#attach_button').popover({
                 html: true,
                 container: 'body',
