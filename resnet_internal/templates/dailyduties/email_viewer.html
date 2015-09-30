@@ -1,6 +1,6 @@
 {% extends "dailyduties/email_base.html" %}
 {% load staticfiles %}
-{% load jfuwrapper %}
+{% load jfu_escaped %}
 {% block subtitle %} | Email{% endblock %}
 
 {% block meta %}
@@ -137,7 +137,7 @@
             $('#attach_button').popover({
                 html: true,
                 container: 'body',
-                content: '<span>{% jfu_escaped 'dailyduties/email_attachment_uploader.html' message_path=request.user.username %}</span>',
+                content: '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' message_path=request.user.username %}</span>',
             });
         };
 
