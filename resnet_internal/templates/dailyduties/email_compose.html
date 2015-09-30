@@ -37,7 +37,7 @@
             <span id="reply_to"></span>
             <span id="attachments"></span>
             <span id="email_jfu" style="display:none;">
-                {% jfu 'dailyduties/email_attachment_uploader.html' message_path=message.path %}
+                {% jfu 'dailyduties/email_attachment_uploader.html' message_path=request.user.username %}
             </span>
         </p>
         <script language="javascript" type="text/javascript">
