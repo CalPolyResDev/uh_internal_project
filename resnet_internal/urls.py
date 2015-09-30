@@ -25,7 +25,7 @@ from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_d
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
 from .apps.core.ajax import update_building, update_network_status, get_tickets
 from .apps.core.views import IndexView, LoginView, logout, handler500, TicketSummaryView
-from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive, send_email
+from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive, send_email, attachment_upload, attachment_delete
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
@@ -108,6 +108,8 @@ urlpatterns += [
     url(r'^daily_duties/email/get_folders/$', login_required(technician_access(get_email_folders)), name='email_get_folders'),
     url(r'^daily_duties/email/get_mailbox_summary/$', login_required(technician_access(get_mailbox_summary)), name='email_get_mailbox_summary'),
     url(r'^daily_duties/email/send_email/$', login_required(technician_access(send_email)), name='send_email'),
+    url(r'^daily_duties/email/upload_attachment/(?P<message_path>.+)/$', technician_access(attachment_upload), name='jfu_upload'),
+    url(r'^daily_duties/email/delete_attachment/(?P<pk>.+)$', technician_access(attachment_delete), name='jfu_delete'),
     url(r'^daily_duties/voicemail_list/$', login_required(technician_access(VoicemailListView.as_view())), name='voicemail_list'),
     url(r'^daily_duties/refresh_duties/$', login_required(technician_access(refresh_duties)), name='daily_duties_refresh_duties'),
     url(r'^daily_duties/update_duty/$', login_required(technician_access(update_duty)), name='daily_duties_update_duty'),

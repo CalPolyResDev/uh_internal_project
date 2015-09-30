@@ -11,11 +11,13 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.http.response import HttpResponse
 from django.template import Template, RequestContext
 from django.utils.encoding import smart_text
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
+from jfu.http import upload_receive, UploadResponse, JFUResponse
 
 from .models import DailyDuties
 from .utils import GetDutyData, EmailManager
@@ -248,3 +250,37 @@ def send_email(request):
         email_manager.send_message(message)
 
     return {'success': True}
+
+
+@require_POST
+def attachment_upload(request, **kwargs):
+
+    # The assumption here is that jQuery File Upload
+    # has been configured to send files one at a time.
+    # If multiple files can be uploaded simulatenously,
+    # 'file' may be a list of files.
+    file = upload_receive(request)
+    message_path = kwargs['message_path']
+
+    cache_key = 'email_attachment:' + message_path + ':' + file.name
+    cache.set(cache_key, file, 24 * 60 * 60)
+
+    file_dict = {
+        'name': file.name,
+        'size': file.size,
+        'deleteUrl': reverse('jfu_delete', kwargs={'pk': cache_key}),
+        'deleteType': 'POST',
+    }
+
+    return UploadResponse(request, file_dict)
+
+
+@require_POST
+def attachment_delete(request, pk):
+    success = True
+    try:
+        cache.delete(pk)
+    except:
+        success = False
+
+    return JFUResponse(request, success)

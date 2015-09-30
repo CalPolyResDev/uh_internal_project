@@ -17,6 +17,7 @@ paramiko==1.15.2
 python3-memcached~=1.51
 uwsgidecorators~=1.1.0
 imapclient~=0.13
+django-jfu~=2.0.9
 
 # The only non-pure python package!
 cx_Oracle==5.2

@@ -1,5 +1,5 @@
-import os
 from pathlib import Path
+import os
 
 from django.core.exceptions import ImproperlyConfigured
 from django_auth_ldap.config import LDAPSearch, NestedActiveDirectoryGroupType
@@ -64,6 +64,8 @@ USE_L10N = True
 ROOT_URLCONF = 'resnet_internal.urls'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
+
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MB
 
 # ======================================================================================================== #
 #                                          Database Configuration                                          #
@@ -336,6 +338,7 @@ INSTALLED_APPS = (
     'resnet_internal.apps.printers',
     'resnet_internal.apps.printerrequests',
     'resnet_internal.apps.printerrequests.templatetags.__init__.default_app_config',
+    'jfu',
 )
 
 # ======================================================================================================== #

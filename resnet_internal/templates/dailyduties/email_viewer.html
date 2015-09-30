@@ -1,5 +1,6 @@
 {% extends "base_frame.html" %}
 {% load staticfiles %}
+{% load jfutags %}
 {% block subtitle %} | Email{% endblock %}
 
 {% block meta %}
@@ -60,6 +61,9 @@
                     {% endfor %}
                 {% endif %}
             </span>
+            <span id="email_jfu" style="display:none;">
+                {% jfu 'dailyduties/email_attachment_uploader.html' message_path=message.path %}
+            </span>
         </p>
         {% if message.is_html %}
             <script language="javascript" type="text/javascript">
@@ -81,6 +85,17 @@
     <script src="//cdn.ckeditor.com/4.5.3/standard-all/ckeditor.js"></script>
     <script language="javascript" type="text/javascript">
         var editor = '';
+        var attachments = [];
+        
+        function array_to_ajax(array, prefix) {
+            var ajax_dict = {};
+            for (index = 0; index < array.length; ++index) {
+                ajax_dict[prefix + index.toString()] = array[index];
+            };
+    
+            return ajax_dict;
+        };
+        
         function add_button(button_text, onclick_text, id) {
             $('#buttons').append('<button id="' + id + '" class="button default" onclick="' + onclick_text +'">' + button_text + '</button>');
         };
@@ -100,6 +115,7 @@
             {% endif %}
 
             $('#to_hr').css('display', 'block');
+            $('#email_jfu').css('display', 'block');
             $('#to').replaceWith('<input type="text" style="outline: none; border: none; padding: 10px 0px;" id="to"><hr>');
             $('#cc').replaceWith('<input type="text" style="outline: none; border: none; padding: 10px 0px;" id="cc"><hr>');
             $('#subject').replaceWith('<input type="text" style="outline: none; border: none; color: #1c4102; font-size: 215%; padding: 0px 0px;" id="subject">');
@@ -183,7 +199,8 @@
                     'body': body,
                     'subject': subject,
                     'is_html': is_html,
-                    'in_reply_to': in_reply_to
+                    'in_reply_to': in_reply_to,
+                    'attachments': array_to_ajax(attachments, 'attachment')
                 }, 
                 function(response_context) {
                     $.unblockUI();
