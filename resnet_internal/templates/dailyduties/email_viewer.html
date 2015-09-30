@@ -1,4 +1,4 @@
-{% extends "base_frame.html" %}
+{% extends "dailyduties/email_base.html" %}
 {% load staticfiles %}
 {% load jfutags %}
 {% block subtitle %} | Email{% endblock %}
@@ -6,15 +6,8 @@
 {% block meta %}
 {{ block.super }}
 <style>
-    hr {
-        line-height: 50% !important; 
-        margin-bottom: 0px !important;
-    }
     input {
         min-width: 90% !important;
-    }
-    .button.default {
-        padding: 6px 12px !important;
     }
     textarea {
         outline: none;
@@ -27,10 +20,10 @@
 {% block content %}
     {% if message %}
     <span id="buttons">
-        <button class="button default" onclick="reply();">Reply</button>
-        <button class="button default" onclick="reply_all();">Reply All</button>
-        <button class="button default" onclick="forward();">Forward</button>
-        <button class="button default"id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
+        <button class="btn btn-default" onclick="reply();">Reply</button>
+        <button class="btn btn-default" onclick="reply_all();">Reply All</button>
+        <button class="btn btn-default" onclick="forward();">Forward</button>
+        <button class="btn btn-default" id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
                 data-content="<table class='dataTable'>
                         <tbody>
                             {% for folder, display_name in archive_folders %}
@@ -102,7 +95,7 @@
         };
         
         function add_button(button_text, onclick_text, id) {
-            $('#buttons').append('<button id="' + id + '" class="button default" onclick="' + onclick_text +'">' + button_text + '</button>');
+            $('#buttons').append('<button id="' + id + '" class="btn btn-default" onclick="' + onclick_text +'">' + button_text + '</button>');
         };
 
         function change_to_editor() {
