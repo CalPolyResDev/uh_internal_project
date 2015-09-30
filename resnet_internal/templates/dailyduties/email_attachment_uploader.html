@@ -18,10 +18,22 @@ always : function(e, data) {
     {% endcomment %}
 {% endblock %}
 
+{% block JS_JQUERY %}
+    {% comment %}
+    This is already included.
+    {% endcomment %}
+{% endblock %}
+
 {% block JS_INIT %}
 {{ block.super }}
     // Load existing attachments if any.
     if (attachment_details.length) {
         $('#fileupload').fileupload('option', 'done').call($('#fileupload'), $.Event('done'), {result: {files: attachment_details}});
     }
+{% endblock %}
+
+{% block JS_BOOTSTRAP %}
+    {% comment %}
+    This is already included.
+    {% endcomment %}
 {% endblock %}
