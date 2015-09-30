@@ -4,12 +4,13 @@
 {{ block.super }},
 autoUpload: true,
 maxFileSize: 20000000,
-always : function(e, data) { 
+always: function(e, data) { 
     if (data.textStatus === 'success') {
         attachments.push(data.result.files[0].cacheKey);
         attachment_details.push(data.result.files[0]);
     }
 },
+dropZone: null,
 {% endblock %}
 
 {% block JS_INIT %}
