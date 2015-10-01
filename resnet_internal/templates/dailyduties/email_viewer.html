@@ -90,6 +90,8 @@
         var attachments = [];
         var attachment_details = [];
         
+        $.ajaxSetup({ cache: true });
+        
         function array_to_ajax(array, prefix) {
             var ajax_dict = {};
             for (index = 0; index < array.length; ++index) {
