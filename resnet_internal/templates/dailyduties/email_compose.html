@@ -1,0 +1,56 @@
+{% extends "dailyduties/email_viewer.html" %}
+{% load staticfiles %}
+{% load jfutags %}
+{% block subtitle %} | Email{% endblock %}
+
+{% block meta %}
+{{ block.super }}
+<style>
+    hr {
+        line-height: 50% !important; 
+        margin-bottom: 0px !important;
+    }
+    input {
+        min-width: 90% !important;
+    }
+    .button.default {
+        padding: 6px 12px !important;
+    }
+    textarea {
+        outline: none;
+        border: none;
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+    <span id="buttons">
+    </span>
+    <br />
+    <h1 id="subject"></h1>
+        <h3 id="from_header"></h3>
+
+        <p><hr id="to_hr" style="display: none;"><strong>To:</strong> <span id="to"></span>
+            <strong>CC:</strong> <span id="cc"></span>
+            <span id="date"></span>
+            <span id="reply_to"></span>
+            <span id="attachments"></span>
+        </p>
+        <script language="javascript" type="text/javascript">
+            function resize_iframe(iframe) {
+                iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
+              }
+        </script>
+        <iframe id="email_body" frameborder="0" srcdoc="{{ message.body_html }}" width="100%" onload="resize_iframe(this)"></iframe>
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script language="javascript" type="text/javascript">
+    $('document').ready(function(){
+        change_to_editor();
+        $('#email_editor').text('{{ email_template|escapejs|force_escape }}');
+    });
+</script>
+{% endblock %}

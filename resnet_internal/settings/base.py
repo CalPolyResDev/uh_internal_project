@@ -1,5 +1,5 @@
-import os
 from pathlib import Path
+import os
 
 from django.core.exceptions import ImproperlyConfigured
 from django_auth_ldap.config import LDAPSearch, NestedActiveDirectoryGroupType
@@ -65,6 +65,10 @@ ROOT_URLCONF = 'resnet_internal.urls'
 
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
+# Must be larger than largest allowed attachment size or attachments will break.
+# This is because non-in-memory file objects can't be serialized for the cache.
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MiB
+
 # ======================================================================================================== #
 #                                          Database Configuration                                          #
 # ======================================================================================================== #
@@ -124,7 +128,7 @@ DATABASE_ROUTERS = (
 # Incoming email settings
 INCOMING_EMAIL = {
     'IMAP4': {  # IMAP4 is currently the only supported protocol. It must be included.
-        'HOST': 'outlook.office365.com',  # The host to use for receiving email. Set to empty string for localhost.
+        'HOST': 'outlook.com',  # The host to use for receiving email. Set to empty string for localhost.
         'PORT': 993,  # The port to use. Set to empty string for default values: 143, 993(SSL).
         'USE_SSL': True,  # Whether or not to use SSL (Boolean)
         'USER': get_env_variable('RESNET_INTERNAL_EMAIL_IN_USERNAME'),  # The username to use. The full email address is what most servers require.
@@ -324,6 +328,7 @@ INSTALLED_APPS = (
     'srsconnector',
     'django_ewiz',
     'paramiko',
+    'jfu',
     'resnet_internal.apps.core',
     'resnet_internal.apps.core.templatetags.__init__.default_app_config',
     'resnet_internal.apps.dailyduties',

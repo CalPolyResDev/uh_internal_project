@@ -12,6 +12,8 @@ from operator import itemgetter
 from ssl import SSLError, SSLEOFError
 import email
 import logging
+import os
+import socket
 
 from django.conf import settings
 from django.core import mail
@@ -61,6 +63,10 @@ def get_archive_folders():
     archive_folders.sort(key=lambda tup: tup[1])
 
     return archive_folders
+
+
+def get_plaintext_signature(technician_name):
+    return '\n\n\nBest regards,\n' + technician_name + '\nResNet Technician\n\nFor office hours and locations, please visit http://resnet.calpoly.edu.'
 
 
 class EmailConnectionMixin(object):
@@ -158,9 +164,11 @@ class EmailManager(EmailConnectionMixin):
 
             filename = part.get_filename()
             file_data = part.get_payload(decode=True)
+            self.server.close_folder()
 
             return (filename, file_data)
 
+        self.server.close_folder()
         raise ValueError('Not a Valid Voicemail Message: No attachment.')
 
     def move_message(self, mailbox, uid, destination_folder):
@@ -174,9 +182,12 @@ class EmailManager(EmailConnectionMixin):
 
         self.server.delete_messages(int(uid))
         self.server.expunge()
+        self.server.close_folder()
 
     def delete_voicemail_message(self, uid):
+        self.server.select_folder('Voicemails')
         self.move_message('Voicemails', uid, 'Archives/Voicemails')
+        self.server.close_folder()
 
     def get_all_voicemail_messages(self):
         """Get the voicemail messages."""
@@ -189,7 +200,7 @@ class EmailManager(EmailConnectionMixin):
         if not uids:
             return None
 
-        response = self.server.fetch(uids, ['BODY[1]'])
+        response = self.server.fetch(uids, ['FLAGS', 'BODY[1]'])
 
         for uid, data in response.items():
             body = smart_text(data[b'BODY[1]'])
@@ -205,11 +216,15 @@ class EmailManager(EmailConnectionMixin):
                 "date": date,
                 "sender": from_string,
                 "message_uid": uid,
-                "url": "daily_duties/voicemail/" + str(uid)
+                "url": "daily_duties/voicemail/" + str(uid),
+                "unread": b'\\Seen' not in data[b'FLAGS'],
             }
             voicemails.append(message)
 
         voicemails.sort(key=itemgetter('date'), reverse=True)
+
+        self.server.close_folder()
+
         return voicemails
 
     def get_mailbox_summary(self, mailbox_name):
@@ -225,6 +240,7 @@ class EmailManager(EmailConnectionMixin):
 
             for uid, data in response.items():
                 unread = b'\\Seen' not in data[b'FLAGS']
+                replied = b'\\Answered' in data[b'FLAGS']
                 envelope = data[b'ENVELOPE']
                 date = envelope.date
                 subject = smart_text(envelope.subject)
@@ -233,11 +249,14 @@ class EmailManager(EmailConnectionMixin):
                 messages.append({
                     'uid': uid,
                     'unread': unread,
+                    'replied': replied,
                     'date': date,
                     'subject': self.decode_header(subject),
                     'from_name': smart_text(message_from.name) if message_from.name else '',
                     'from_address': smart_text(message_from.mailbox) + '@' + smart_text(message_from.host)
                 })
+
+        self.server.close_folder()
 
         messages.sort(key=itemgetter('date'), reverse=True)
         return messages
@@ -245,14 +264,17 @@ class EmailManager(EmailConnectionMixin):
     def mark_message_read(self, mailbox_name, uid):
         self.server.select_folder(mailbox_name)
         self.server.add_flags(uid, b'\\Seen')
+        self.server.close_folder()
 
     def mark_message_unread(self, mailbox_name, uid):
         self.server.select_folder(mailbox_name)
         self.server.remove_flags(uid, b'\\Seen')
+        self.server.close_folder()
 
     def mark_message_replied(self, mailbox_name, uid):
         self.server.select_folder(mailbox_name)
         self.server.add_flags(uid, b'\\Answered')
+        self.server.close_folder()
 
     def get_email_message(self, mailbox_name, uid):
         def _convert_list_of_addresses(address_list):
@@ -273,6 +295,8 @@ class EmailManager(EmailConnectionMixin):
         if not response:
             self.server.select_folder(mailbox_name, readonly=True)
             response = self.server.fetch(int(uid), ['ENVELOPE', 'BODY[]'])
+            self.server.close_folder()
+
             cache.set('email:raw:' + mailbox_name + ':' + uid, response, 172800)
 
         message = email.message_from_bytes(response[int(uid)][b'BODY[]'])
@@ -292,10 +316,13 @@ class EmailManager(EmailConnectionMixin):
             elif part.get_content_type() == 'text/plain':
                 body_plain_text += smart_text(part.get_payload(decode=True), errors='replace')
             else:
-                filename = part.get_filename()
-                filedata = part.get_payload(decode=True)
-                filetype = part.get_content_type()
-                attachments.append((filename, filedata, filetype))
+                attachment = {
+                    'filename': part.get_filename(),
+                    'filedata': part.get_payload(decode=True),
+                    'filetype': part.get_content_type(),
+                    'content_id': part.get('Content-ID'),
+                }
+                attachments.append(attachment)
 
         message = {
             'to': _convert_list_of_addresses(envelope.to),
@@ -312,31 +339,45 @@ class EmailManager(EmailConnectionMixin):
             'path': mailbox_name + '/' + uid,
             'mailbox': mailbox_name,
             'uid': uid,
+            'in_reply_to': envelope.in_reply_to,
+            'references': message.get('References')
         }
 
         return message
 
     def send_message(self, message_dict):
         with mail.get_connection() as connection:
-            email = EmailMessage()
-            email.connection = connection
+            email_message = EmailMessage()
+            email_message.connection = connection
 
-            email.to = message_dict['to']
-            email.cc = message_dict['cc']
-            email.from_email = message_dict['from']
-            email.reply_to = [message_dict['from']]
-            email.subject = message_dict['subject']
-            email.body = message_dict['body']
+            email_message.to = message_dict['to']
+            email_message.cc = message_dict['cc']
+            email_message.from_email = message_dict['from']
+            email_message.reply_to = [message_dict['from']]
+            email_message.subject = message_dict['subject']
+            email_message.body = message_dict['body']
+            email_message.extra_headers['message-id'] = '<' + str(datetime.utcnow()) + '.' + str(os.getpid()) + '@' + socket.gethostname() + '>'
 
-            if message_dict['is_html']:
-                email.content_subtype = 'html'
-
-            email.send()
-            self.server.append('Sent Items', email.message().as_bytes())
+            for attachment in message_dict['attachments']:
+                email_message.attach(attachment.name, attachment.read(), attachment.content_type)
 
             if message_dict.get('in_reply_to'):
                 reply_information = message_dict['in_reply_to'].rsplit('/', 1)
                 self.mark_message_replied(reply_information[0], reply_information[1])
+
+                original_message = self.get_email_message(reply_information[0], reply_information[1])
+                email_message.extra_headers['In-Reply-To'] = original_message['message-id']
+
+                if original_message.get('references'):
+                    email_message.extra_headers['References'] = original_message['references'].strip() + ' ' + original_message['message-id']
+                else:
+                    email_message.extra_headers['References'] = original_message['message-id'].strip()
+
+            if message_dict['is_html']:
+                email_message.content_subtype = 'html'
+
+            email_message.send()
+            self.server.append('Sent Items', email_message.message().as_bytes())
 
 
 class GetDutyData(EmailConnectionMixin):
@@ -388,6 +429,7 @@ class GetDutyData(EmailConnectionMixin):
             data = DailyDuties.objects.get(name='voicemail')
 
             count = self.server.select_folder('Voicemails', readonly=True)[b'EXISTS']
+            self.server.close_folder()
 
             # Select the Inbox, get the message count
             voicemail["count"] = count
@@ -423,6 +465,7 @@ class GetDutyData(EmailConnectionMixin):
 
             # Select the Inbox, get the message count
             count = self.server.select_folder('Inbox', readonly=True)[b'EXISTS']
+            self.server.close_folder()
 
             email["count"] = count
             if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:

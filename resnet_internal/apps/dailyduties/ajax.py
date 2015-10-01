@@ -11,11 +11,13 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.http.response import HttpResponse
 from django.template import Template, RequestContext
 from django.utils.encoding import smart_text
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
+from jfu.http import upload_receive, UploadResponse, JFUResponse
 
 from .models import DailyDuties
 from .utils import GetDutyData, EmailManager
@@ -167,6 +169,11 @@ def get_mailbox_summary(request):
                         <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
                     </div>
                 </td>
+                <td>
+                    {% if email.replied %}
+                        <img src="{% static 'images/mail_reply.png' %}"></img>
+                    {% endif %}
+                </td>
                 <td style="cursor: pointer;" onclick="$(document.getElementById('{{ mailbox_name }}/{{ email.uid }}')).removeClass('bg-info');$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.date }}</td>
                 <td style="cursor: pointer;" onclick="$(document.getElementById('{{ mailbox_name }}/{{ email.uid }}')).removeClass('bg-info');$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.from_name }} &lt;{{email.from_address }}&gt;</td>
                 <td style="cursor: pointer;" onclick="$(document.getElementById('{{ mailbox_name }}/{{ email.uid }}')).removeClass('bg-info');$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.subject }}</td>
@@ -234,6 +241,14 @@ def email_archive(request):
 def send_email(request):
     post_data = request.POST
 
+    attachments = []
+    for key, value in post_data.items():
+        if key.startswith('attachment'):
+            attachment = cache.get(value)
+            if not attachment:
+                return {'success': False, 'reason': 'Could not retrieve attachments. Please re-attach and try again.'}
+            attachments.append(attachment)
+
     message = {
         'to': post_data['to'].replace(',', ';').split(';'),
         'from': 'Residence Halls Network <resnet@calpoly.edu>',
@@ -242,9 +257,44 @@ def send_email(request):
         'is_html': True if post_data['is_html'] == 'true' else False,
         'subject': post_data['subject'],
         'in_reply_to': post_data.get('in_reply_to'),
+        'attachments': attachments,
     }
 
     with EmailManager() as email_manager:
         email_manager.send_message(message)
 
     return {'success': True}
+
+
+@require_POST
+def attachment_upload(request, **kwargs):
+
+    # The assumption here is that jQuery File Upload
+    # has been configured to send files one at a time.
+    # If multiple files can be uploaded simulatenously,
+    # 'file' may be a list of files.
+    file = upload_receive(request)
+
+    cache_key = 'email_attachment:' + request.user.username + str(datetime.utcnow()) + ':' + file.name
+    cache.set(cache_key, file, 24 * 60 * 60)
+
+    file_dict = {
+        'name': file.name,
+        'size': file.size,
+        'cacheKey': cache_key,
+        'deleteUrl': reverse('jfu_delete', kwargs={'pk': cache_key}),
+        'deleteType': 'POST',
+    }
+
+    return UploadResponse(request, file_dict)
+
+
+@require_POST
+def attachment_delete(request, pk):
+    success = True
+    try:
+        cache.delete(pk)
+    except:
+        success = False
+
+    return JFUResponse(request, success)

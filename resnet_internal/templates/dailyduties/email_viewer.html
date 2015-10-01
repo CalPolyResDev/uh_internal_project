@@ -1,23 +1,29 @@
-{% extends "base_frame.html" %}
+{% extends "dailyduties/email_base.html" %}
 {% load staticfiles %}
+{% load jfu_escaped %}
 {% block subtitle %} | Email{% endblock %}
 
 {% block meta %}
 {{ block.super }}
 <style>
-    hr {
-        line-height: 50% !important; 
-        margin-bottom: 0px !important;
-    }
     input {
         min-width: 90% !important;
-    }
-    .button.default {
-        padding: 6px 12px !important;
+        outline: none;
+        border: none;
     }
     textarea {
         outline: none;
         border: none;
+    }
+    hr {
+        margin-top: 5px !important;
+        margin-bottom: 5px !important;
+    }
+    .popover {
+        max-width: 800px;
+    }
+    .btn.btn-default {
+        margin-right: 5px;
     }
 </style>
 {% endblock %}
@@ -26,10 +32,10 @@
 {% block content %}
     {% if message %}
     <span id="buttons">
-        <button class="button default" onclick="reply();">Reply</button>
-        <button class="button default" onclick="reply_all();">Reply All</button>
-        <button class="button default" onclick="forward();">Forward</button>
-        <button class="button default"id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
+        <button class="btn btn-default" type="button" onclick="reply();">Reply</button>
+        <button class="btn btn-default" type="button" onclick="reply_all();">Reply All</button>
+        <button class="btn btn-default" type="button" onclick="forward();">Forward</button>
+        <button class="btn btn-default" type="button" id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
                 data-content="<table class='dataTable'>
                         <tbody>
                             {% for folder, display_name in archive_folders %}
@@ -46,7 +52,7 @@
     <h1 id="subject">{{ message.subject }}</h1>
         <h3 id="from_header">{{ message.from }}</h3>
 
-        <p><hr id="to_hr" style="display: none;"><strong>To:</strong> <span id="to">{{ message.to }}</span>
+        <p><hr id="to_hr" style="display: none;"><strong>To:</strong> <span id="to">{{ message.to }}<br/></span>
             <strong>CC:</strong> <span id="cc">{{ message.cc }}</span>
             <span id="date"><br /><strong>Date:</strong> {{ message.date }}</span>
             <span id="reply_to"><br /><strong>Reply To:</strong> {{ message.reply_to }}</span>
@@ -59,6 +65,7 @@
                         </a>
                     {% endfor %}
                 {% endif %}
+                <hr>
             </span>
         </p>
         {% if message.is_html %}
@@ -69,7 +76,7 @@
             </script>
             <iframe id="email_body" frameborder="0" srcdoc="{{ message.body_html }}" width="100%" onload="resize_iframe(this)"></iframe>
         {% else %}
-            <p id="email_body">{{ message.body_plain_text|linebreaksbr }}</p>
+            <p id="email_body">{{ message.body_plain_text|linebreaksbr|urlize }}</p>
         {% endif %}
     {% else %}
         <p>Could not retrieve email.</p>
@@ -81,8 +88,27 @@
     <script src="//cdn.ckeditor.com/4.5.3/standard-all/ckeditor.js"></script>
     <script language="javascript" type="text/javascript">
         var editor = '';
+        var attachments = [];
+        var attachment_details = [];
+        
+        $.ajaxSetup({ cache: true });
+        
+        function array_to_ajax(array, prefix) {
+            var ajax_dict = {};
+            for (index = 0; index < array.length; ++index) {
+                ajax_dict[prefix + index.toString()] = array[index];
+            };
+    
+            return ajax_dict;
+        };
+        
+        String.prototype.rsplit = function(sep, maxsplit) { // Missing Python
+            var split = this.split(sep);
+            return maxsplit ? [ split.slice(0, -maxsplit).join(sep) ].concat(split.slice(-maxsplit)) : split;
+        };
+        
         function add_button(button_text, onclick_text, id) {
-            $('#buttons').append('<button id="' + id + '" class="button default" onclick="' + onclick_text +'">' + button_text + '</button>');
+            $('#buttons').append('<button id="' + id + '" class="btn btn-default" type="button" onclick="' + onclick_text +'">' + button_text + '</button>');
         };
 
         function change_to_editor() {
@@ -100,15 +126,24 @@
             {% endif %}
 
             $('#to_hr').css('display', 'block');
-            $('#to').replaceWith('<input type="text" style="outline: none; border: none; padding: 10px 0px;" id="to"><hr>');
-            $('#cc').replaceWith('<input type="text" style="outline: none; border: none; padding: 10px 0px;" id="cc"><hr>');
-            $('#subject').replaceWith('<input type="text" style="outline: none; border: none; color: #1c4102; font-size: 215%; padding: 0px 0px;" id="subject">');
+            $('#email_jfu').css('display', 'initial');
+            $('#to').replaceWith('<input type="text" id="to"><hr>');
+            $('#cc').replaceWith('<input type="text" id="cc"><hr>');
+            $('#subject').replaceWith('<input type="text" placeholder="Subject" style="outline: none; border: none;" class="h1" id="subject">');
             $('#reply_to').remove();
             $('#date').remove();
             $('#attachments').remove();
             $('#from_header').remove();
             $('#buttons').html('');
             add_button('Send', 'send_email();', 'send_button');
+            
+            
+            $('#buttons').append('<button class="btn btn-default" type="button" id="attach_button">Attach</button>');
+            $('#attach_button').popover({
+                html: true,
+                container: 'body',
+                content: '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' %}</span>',
+            });
         };
 
         function reply() {
@@ -173,26 +208,35 @@
                 in_reply_to = '{{ message.path|escapejs }}';
             }
             
-            $('#send_button').remove();
             $.blockUI({ message: '<h1>Sending...</h1>'});
             
-            ajaxPost("{% url 'send_email' %}", {
-                    'to': to,
-                    'cc': cc,
-                    'reply_to': reply_to,
-                    'body': body,
-                    'subject': subject,
-                    'is_html': is_html,
-                    'in_reply_to': in_reply_to
-                }, 
+            var post_dict = array_to_ajax(attachments, 'attachment');
+            
+            post_dict['to'] = to;
+            post_dict['cc'] = cc;
+            post_dict['reply_to'] = reply_to;
+            post_dict['body'] = body;
+            post_dict['subject'] = subject;
+            post_dict['is_html'] = is_html;
+            post_dict['in_reply_to'] = in_reply_to;
+
+            ajaxPost("{% url 'send_email' %}", post_dict, 
                 function(response_context) {
                     $.unblockUI();
                     
                     if (response_context['success']) {
+                        if ('{{ message.path|escapejs }}') {
+                            parent.refresh_messages('{{ message.path|escapejs }}'.rsplit('/', 1)[0]);
+                        }
                         parent.$.fancybox.close();
                     }
                     else {
-                        alert('Failed to send message. Please try again.');
+                        if (response_context['reason']) {
+                            alert('Failed to send message: ' + response_context['reason']);
+                        }
+                        else {
+                            alert('Failed to send message. Please try again.');
+                        }
                     }
             });
         };

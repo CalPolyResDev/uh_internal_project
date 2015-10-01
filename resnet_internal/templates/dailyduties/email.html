@@ -24,6 +24,14 @@
                 </td>
                 <td style="vertical-align: top; width: 75%;">
                     <div>
+                        <button class="button default" onclick="$.fancybox({href : '{% url 'email_compose' %}', 
+                                                                            title : 'New Message', 
+                                                                            type: 'iframe', 
+                                                                            maxWidth: '85%', 
+                                                                            width: 1000}); 
+                                                                $.fancybox.showLoading();">
+                            New Message
+                        </button>
                         <button class="button default" onclick="$('input:checkbox').prop('checked', true);">Check All</button>
                         <button class="button default" onclick="$('input:checkbox').prop('checked', false);">Uncheck All</button>
                         <button class="button default" onclick="refresh_messages('INBOX');" id="refresh_button">Refresh</button>
@@ -45,6 +53,7 @@
                     <table class="dataTable" id='email_table' style="">
                     <tbody>
                             <tr>
+                                <th></th>
                                 <th></th>
                                 <th>Date</th>
                                 <th>From</th>
