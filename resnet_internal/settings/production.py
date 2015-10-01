@@ -18,3 +18,14 @@ ALLOWED_HOSTS = [
     'prod.resdev.calpoly.edu',
     '.internal.resnet.calpoly.edu',
 ]
+
+# ======================================================================================================== #
+#                                      Cache Configuration                                                 #
+# ======================================================================================================== #
+
+CACHES = {
+    'default': {
+        'BACKEND': 'uwsgicache.UWSGICache',
+        'LOCATION': get_env_variable('DJANGO_CACHE_NAME'),
+    }
+}

@@ -11,7 +11,6 @@ from itertools import zip_longest
 from operator import itemgetter
 from ssl import SSLError, SSLEOFError
 import email
-import imapclient
 import logging
 import os
 import socket
@@ -22,8 +21,8 @@ from django.core.cache import cache
 from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
-
 from srsconnector.models import ServiceRequest
+import imapclient
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
@@ -357,8 +356,10 @@ class EmailManager(EmailConnectionMixin):
             email_message.reply_to = [message_dict['from']]
             email_message.subject = message_dict['subject']
             email_message.body = message_dict['body']
+            email_message.extra_headers['message-id'] = '<' + str(datetime.utcnow()) + '.' + str(os.getpid()) + '@' + socket.gethostname() + '>'
 
-            email_message.extra_headers['message-id'] = '<' + datetime.datetime.utcnow() + '.' + str(os.getpid()) + '@' + socket.gethostname() + '>'
+            for attachment in message_dict['attachments']:
+                email_message.attach(attachment.name, attachment.read(), attachment.content_type)
 
             if message_dict.get('in_reply_to'):
                 reply_information = message_dict['in_reply_to'].rsplit('/', 1)
