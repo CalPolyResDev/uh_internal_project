@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.4
-import os
 from pathlib import Path
+import os
 import re
 import sys
 
@@ -40,7 +40,7 @@ def activate_env():
     # Add the app's directory to the PYTHONPATH
     sys.path.append(str(filepath.parents[1]))
 
-    # Add environment variables
+    # Grab .env lines
     try:
         if repo_parent == project_home:
             env_path = str(Path(project_home, repo_name, '.env').resolve())
@@ -50,6 +50,20 @@ def activate_env():
             content = f.read()
     except IOError:
         content = ''
+
+    # Add UWSGI environment variables
+    try:
+        if repo_parent == project_home:
+            env_path = str(Path(project_home, repo_name, 'conf/uwsgi.ini').resolve())
+        else:
+            env_path = str(Path(project_home, repo_parent.name, repo_name, 'conf/uwsgi.ini').resolve())
+        with open(env_path) as f:
+            uwsgi_content = f.read()
+            for line in uwsgi_content.splitlines():
+                if line.startswith('env = '):
+                    content += '\n' + line.split('env = ', 1)[1]
+    except IOError:
+        pass
 
     for line in content.splitlines():
         m1 = re.match(r'\A([A-Za-z_0-9]+)=(.*)\Z', line)
