@@ -328,6 +328,7 @@ INSTALLED_APPS = (
     'srsconnector',
     'django_ewiz',
     'paramiko',
+    'jfu',
     'resnet_internal.apps.core',
     'resnet_internal.apps.core.templatetags.__init__.default_app_config',
     'resnet_internal.apps.dailyduties',
@@ -340,7 +341,6 @@ INSTALLED_APPS = (
     'resnet_internal.apps.printers',
     'resnet_internal.apps.printerrequests',
     'resnet_internal.apps.printerrequests.templatetags.__init__.default_app_config',
-    'jfu',
 )
 
 # ======================================================================================================== #
