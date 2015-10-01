@@ -67,7 +67,7 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Must be larger than largest allowed attachment size or attachments will break.
 # This is because non-in-memory file objects can't be serialized for the cache.
-FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MiB
 
 # ======================================================================================================== #
 #                                          Database Configuration                                          #
