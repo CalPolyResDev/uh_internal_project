@@ -1,8 +1,10 @@
-'''
-Created on Sep 30, 2015
+"""
+.. module:: resnet_internal.apps.dailyduties.templatetags.jfu_escapd
+   :synopsis: ResNet Internal Daily Duties Template Tags.
 
-@author: thomaswillson
-'''
+.. moduleauthor:: Thomas Willson <thomas.willson@me.com>
+
+"""
 from django.template import Library
 from django.utils.html import escapejs, escape
 from jfu.templatetags.jfutags import jfu
