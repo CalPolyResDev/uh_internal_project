@@ -51,19 +51,20 @@ def activate_env():
     except IOError:
         content = ''
 
-    # Add UWSGI environment variables
-    try:
-        if repo_parent == project_home:
-            env_path = str(Path(project_home, repo_name, 'conf/uwsgi.ini').resolve())
-        else:
-            env_path = str(Path(project_home, repo_parent.name, repo_name, 'conf/uwsgi.ini').resolve())
-        with open(env_path) as f:
-            uwsgi_content = f.read()
-            for line in uwsgi_content.splitlines():
-                if line.startswith('env = '):
-                    content += '\n' + line.split('env = ', 1)[1]
-    except IOError:
-        pass
+    # Add UWSGI environment variables if in production
+    if get_env_variable('DJANGO_SETTINGS_MODULE') == 'settings.production':
+        try:
+            if repo_parent == project_home:
+                env_path = str(Path(project_home, repo_name, 'conf/uwsgi.ini').resolve())
+            else:
+                env_path = str(Path(project_home, repo_parent.name, repo_name, 'conf/uwsgi.ini').resolve())
+            with open(env_path) as f:
+                uwsgi_content = f.read()
+                for line in uwsgi_content.splitlines():
+                    if line.startswith('env = '):
+                        content += '\n' + line.split('env = ', 1)[1]
+        except IOError:
+            pass
 
     for line in content.splitlines():
         m1 = re.match(r'\A([A-Za-z_0-9]+)=(.*)\Z', line)
