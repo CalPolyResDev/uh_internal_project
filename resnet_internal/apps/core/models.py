@@ -11,7 +11,8 @@ import re
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
 from django.core.mail import send_mail
 from django.db.models.base import Model
-from django.db.models.fields import CharField, IntegerField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField
+from django.db.models.fields import CharField, IntegerField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField,\
+    URLField
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.utils.http import urlquote
 
@@ -112,6 +113,11 @@ class TechFlair(Model):
         verbose_name_plural = 'Tech Flair'
 
 
+class ADGroup(Model):
+    name = CharField(max_length=50, unique=True, verbose_name='Group Name')
+    title = CharField(max_length=20, verbose_name='Title')
+
+
 class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     """ResNet Internal User Model"""
 
@@ -119,6 +125,7 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     first_name = CharField(max_length=30, blank=True, verbose_name='First Name')
     last_name = CharField(max_length=30, blank=True, verbose_name='Last Name')
     email = EmailField(blank=True, verbose_name='Email Address')
+    groups = ManyToManyField(ADGroup)
 
     is_active = BooleanField(default=True)
     is_staff = BooleanField(default=False)
@@ -173,3 +180,13 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
         """Sends an email to this user."""
 
         send_mail(subject, message, from_email, [self.email])
+
+
+class NavbarLink(Model):
+    display_name = CharField(max_length=50, verbose_name='Display Name')
+    url = URLField(verbose_name='URL', null=True)
+    groups = ManyToManyField(ADGroup, verbose_name='Groups')
+
+
+class NavbarSubLink(NavbarLink):
+    parent_link = ForeignKey(NavbarLink, related_name='sublinks', null=False, verbose_name='Parent Link')
