@@ -4,6 +4,7 @@ import os
 from django.core.exceptions import ImproperlyConfigured
 from django_auth_ldap.config import LDAPSearch, NestedActiveDirectoryGroupType
 import ldap3
+import dj_database_url
 
 
 def get_env_variable(name):
@@ -74,14 +75,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MiB
 # ======================================================================================================== #
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'resnet_internal',
-        'USER': 'resnet_internal',
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_DEFAULT_PASSWORD'),
-        'HOST': 'data.resdev.calpoly.edu',
-        'PORT': '3306',
-    },
+    'default': dj_database_url.config(default=get_env_variable('RESNET_INTERNAL_DB_DEFAULT_DATABASE_URL')),
     'common': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'common',
