@@ -12,9 +12,10 @@ from sys import platform
 import logging
 import os
 
-from resnet_internal.settings.base import technician_access_test
+from django.core.cache import cache
 from srsconnector.models import ServiceRequest
 
+from ...settings.base import technician_access_test
 from .models import NetworkDevice
 
 
@@ -73,19 +74,25 @@ def get_ticket_list(user):
     if technician_access_test(user):
         user_teams.append('SA RESNET')
 
-    ticket_queryset = ServiceRequest.objects.filter(assigned_team__in=user_teams).exclude(status=4).exclude(status=8)
+    cache_key = 'ticket_list:' + str(user_teams)
 
-    tickets = list({'ticket_id': ticket.ticket_id,
-                    'requestor_full_name': ticket.requestor_full_name,
-                    'status': ticket.status,
-                    'summary': ticket.summary,
-                    'date_created': ticket.date_created,
-                    'date_updated': ticket.date_updated,
-                    'assigned_person': ticket.assigned_person,
-                    'updater_is_technician': ticket.updater_is_technician,
-                    'date_updated': ticket.date_updated,
-                    } for ticket in ticket_queryset)
+    tickets = cache.get(cache_key)
 
-    tickets = sorted(tickets, key=itemgetter('date_created'), reverse=True)
+    if tickets is None:
+        ticket_queryset = ServiceRequest.objects.filter(assigned_team__in=user_teams).exclude(status=4).exclude(status=8)
+
+        tickets = list({'ticket_id': ticket.ticket_id,
+                        'requestor_full_name': ticket.requestor_full_name,
+                        'status': ticket.status,
+                        'summary': ticket.summary,
+                        'date_created': ticket.date_created,
+                        'date_updated': ticket.date_updated,
+                        'assigned_person': ticket.assigned_person,
+                        'updater_is_technician': ticket.updater_is_technician,
+                        'date_updated': ticket.date_updated,
+                        } for ticket in ticket_queryset)
+
+        tickets = sorted(tickets, key=itemgetter('date_created'), reverse=True)
+        cache.set(cache_key, tickets, 60 * 5)
 
     return tickets
