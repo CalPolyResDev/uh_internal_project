@@ -12,7 +12,7 @@ from django.contrib.auth.models import AbstractBaseUser, UserManager, Permission
 from django.core.mail import send_mail
 from django.db.models.base import Model
 from django.db.models.fields import CharField, IntegerField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField,\
-    URLField
+    URLField, SmallIntegerField
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.utils.http import urlquote
 
@@ -184,9 +184,8 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
 
 class NavbarLink(Model):
     display_name = CharField(max_length=50, verbose_name='Display Name')
+    groups = ManyToManyField(ADGroup, verbose_name='AD Groups')
+    icon = CharField(max_length=100, verbose_name='Icon Static File Location')
+    sequence_index = SmallIntegerField(verbose_name='Sequence Index')
+    parent_group = ForeignKey('NavbarLink', related_name='links', null=True, verbose_name='Parent Link Group')
     url = URLField(verbose_name='URL', null=True)
-    groups = ManyToManyField(ADGroup, verbose_name='Groups')
-
-
-class NavbarSubLink(NavbarLink):
-    parent_link = ForeignKey(NavbarLink, related_name='sublinks', null=False, verbose_name='Parent Link')
