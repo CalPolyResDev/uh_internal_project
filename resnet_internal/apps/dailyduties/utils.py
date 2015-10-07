@@ -356,7 +356,7 @@ class EmailManager(EmailConnectionMixin):
             email_message.reply_to = [message_dict['from']]
             email_message.subject = message_dict['subject']
             email_message.body = message_dict['body']
-            email_message.extra_headers['message-id'] = '<' + str(datetime.utcnow()) + '.' + str(os.getpid()) + '@' + socket.gethostname() + '>'
+            email_message.extra_headers['message-id'] = '<' + datetime.strftime(datetime.utcnow(), '%d-%m-%Y-%H-%m-%S-%f') + '.' + str(os.getpid()) + '@' + socket.gethostname() + '>'
 
             for attachment in message_dict['attachments']:
                 email_message.attach(attachment.name, attachment.read(), attachment.content_type)
@@ -369,7 +369,7 @@ class EmailManager(EmailConnectionMixin):
                 email_message.extra_headers['In-Reply-To'] = original_message['message-id']
 
                 if original_message.get('references'):
-                    email_message.extra_headers['References'] = original_message['references'].strip() + ' ' + original_message['message-id']
+                    email_message.extra_headers['References'] = (original_message['references'].strip() + ' ' + original_message['message-id']).replace(',' ' ').replace('\n', '').replace('\r', '')
                 else:
                     email_message.extra_headers['References'] = original_message['message-id'].strip()
 
