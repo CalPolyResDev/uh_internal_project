@@ -2,8 +2,6 @@ from pathlib import Path
 import os
 
 from django.core.exceptions import ImproperlyConfigured
-from django_auth_ldap.config import LDAPSearch, NestedActiveDirectoryGroupType
-import ldap3
 
 
 def get_env_variable(name):
@@ -176,7 +174,7 @@ LOGIN_REDIRECT_URL = '/login/'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'checkin_parking.apps.core.backends.CASLDAPBackend',
+    'resnet_internal.apps.core.backends.CASLDAPBackend',
 )
 
 AUTH_USER_MODEL = 'core.ResNetInternalUser'
@@ -193,12 +191,17 @@ CAS_LOGOUT_URL = "https://my.calpoly.edu/cas/casClientLogout.jsp?logoutApp=Unive
 
 LDAP_GROUPS_SERVER_URI = 'ldap://ad.calpoly.edu'
 LDAP_GROUPS_BASE_DN = 'DC=ad,DC=calpoly,DC=edu'
+LDAP_GROUPS_USER_BASE_DN = 'OU=People,OU=Enterprise,OU=Accounts,' + LDAP_GROUPS_BASE_DN
+
+LDAP_GROUPS_USER_SEARCH_BASE_DN = 'OU=Enterprise,OU=Accounts,' + LDAP_GROUPS_BASE_DN
+LDAP_GROUPS_GROUP_SEARCH_BASE_DN = 'OU=Groups,' + LDAP_GROUPS_BASE_DN
 
 LDAP_GROUPS_BIND_DN = get_env_variable('RESNET_INTERNAL_LDAP_USER_DN')
 LDAP_GROUPS_BIND_PASSWORD = get_env_variable('RESNET_INTERNAL_LDAP_PASSWORD')
 
-LDAP_GROUPS_USER_LOOKUP_ATTRIBUTE = 'sAMAccountName'
-LDAP_GROUPS_ATTRIBUTE_LIST = ['displayName', 'sAMAccountName', 'distinguishedName']
+LDAP_GROUPS_USER_LOOKUP_ATTRIBUTE = 'userPrincipalName'
+LDAP_GROUPS_GROUP_LOOKUP_ATTRIBUTE = 'name'
+LDAP_GROUPS_ATTRIBUTE_LIST = ['displayName', LDAP_GROUPS_USER_LOOKUP_ATTRIBUTE]
 
 LDAP_ADMIN_GROUP = 'CN=UH-RN-Staff,OU=ResNet,OU=UH,OU=Manual,OU=Groups,' + LDAP_GROUPS_BASE_DN
 LDAP_DEVELOPER_GROUP = 'CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,' + LDAP_GROUPS_BASE_DN

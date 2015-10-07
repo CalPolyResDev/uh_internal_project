@@ -48,6 +48,8 @@ class CASLDAPBackend(CASBackend):
             else:
                 principal_name = str(user_info["userPrincipalName"])
 
+                print(ADGroup(settings.LDAP_ADMIN_GROUP))
+
                 staff_list = [member["userPrincipalName"] for member in ADGroup(settings.LDAP_ADMIN_GROUP).get_tree_members()]
                 developer_list = [member["userPrincipalName"] for member in ADGroup(settings.LDAP_DEVELOPER_GROUP).get_tree_members()]
 

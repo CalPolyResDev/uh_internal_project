@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from django.db.models.base import Model
 from django.db.models.fields import CharField, IntegerField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField
 from django.db.models.fields.related import ForeignKey, ManyToManyField
+from django.utils import timezone
 from django.utils.http import urlquote
 
 
@@ -112,6 +113,24 @@ class TechFlair(Model):
         verbose_name_plural = 'Tech Flair'
 
 
+class ResNetInternalUserManager(UserManager):
+
+    def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
+        now = timezone.now()
+
+        if not username:
+            raise ValueError('The given username must be set.')
+
+        email = self.normalize_email(email)
+        username = self.normalize_email(username)
+
+        user = self.model(username=username, email=email, is_staff=is_staff, is_active=True, is_superuser=is_superuser, last_login=now, **extra_fields)
+        user.set_password("!")
+        user.save(using=self._db)
+
+        return user
+
+
 class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     """ResNet Internal User Model"""
 
@@ -124,7 +143,7 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     is_staff = BooleanField(default=False)
 
     USERNAME_FIELD = 'username'
-    objects = UserManager()
+    objects = ResNetInternalUserManager()
 
     #
     # A set of flags for each user that decides what the user can and cannot see.
