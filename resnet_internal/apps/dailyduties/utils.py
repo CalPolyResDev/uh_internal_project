@@ -369,7 +369,7 @@ class EmailManager(EmailConnectionMixin):
                 email_message.extra_headers['In-Reply-To'] = original_message['message-id']
 
                 if original_message.get('references'):
-                    email_message.extra_headers['References'] = (original_message['references'].strip() + ' ' + original_message['message-id']).replace(',' ' ').replace('\n', '').replace('\r', '')
+                    email_message.extra_headers['References'] = (original_message['references'].strip() + ' ' + original_message['message-id']).replace(',', ' ').replace('\n', '').replace('\r', '')
                 else:
                     email_message.extra_headers['References'] = original_message['message-id'].strip()
 
