@@ -11,7 +11,8 @@ import logging
 from django.conf import settings
 from django_cas_ng.backends import CASBackend
 from ldap3 import Server, Connection, ObjectDef, AttrDef, Reader
-from ldap_groups.groups import ADGroup
+
+from ..core.models import ADGroup
 
 
 logger = logging.getLogger(__name__)
@@ -58,6 +59,11 @@ class CASLDAPBackend(CASBackend):
                 technician_list = get_group_members('CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
                 rn_staff_list = get_group_members('CN=UH-RN-Staff,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
                 developer_list = get_group_members('CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
+
+                for group in ADGroup.objects.all():
+                    group_members = get_group_members(group)
+                    if principal_name in group_members:
+                        user.ad_groups.add(group)
 
                 if principal_name in net_admin_list:
                     user.is_net_admin = True
