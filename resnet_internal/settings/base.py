@@ -362,11 +362,6 @@ LOGGING = {
             'handlers': ['console'],
             'propagate': False,
         },
-        'django_auth_ldap': {
-            'level': 'INFO',
-            'handlers': ['sentry'],
-            'propagate': True,
-        },
         'django_ajax': {
             'level': 'INFO',
             'handlers': ['sentry'],
