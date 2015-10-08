@@ -52,6 +52,13 @@ class CASLDAPBackend(CASBackend):
                 def get_group_members(group):
                     return [member["userPrincipalName"] for member in ADGroup(group).get_tree_members()]
 
+                # New Code should use the ad_groups property of the user to enforce permissions
+                for group in ADGroup.objects.all():
+                    group_members = get_group_members(group)
+                    if principal_name in group_members:
+                        user.ad_groups.add(group)
+
+                # Legacy Permissions Flags
                 net_admin_list = get_group_members('CN=StateHRDept - IS-ITS-Networks (132900 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu')
                 telecom_list = get_group_members('CN=StateHRDept - IS-ITS-Telecommunications (133100 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu')
                 tag_list = get_group_members('CN=UH-TAG,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
@@ -59,11 +66,6 @@ class CASLDAPBackend(CASBackend):
                 technician_list = get_group_members('CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
                 rn_staff_list = get_group_members('CN=UH-RN-Staff,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
                 developer_list = get_group_members('CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
-
-                for group in ADGroup.objects.all():
-                    group_members = get_group_members(group)
-                    if principal_name in group_members:
-                        user.ad_groups.add(group)
 
                 if principal_name in net_admin_list:
                     user.is_net_admin = True
