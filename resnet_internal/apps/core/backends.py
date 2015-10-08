@@ -11,6 +11,7 @@ import logging
 from django.conf import settings
 from django_cas_ng.backends import CASBackend
 from ldap3 import Server, Connection, ObjectDef, AttrDef, Reader
+from ldap_groups.groups import ADGroup as LDAPADGroup
 
 from ..core.models import ADGroup
 
@@ -50,11 +51,12 @@ class CASLDAPBackend(CASBackend):
                 principal_name = str(user_info["userPrincipalName"])
 
                 def get_group_members(group):
-                    return [member["userPrincipalName"] for member in ADGroup(group).get_tree_members()]
+                    return [member["userPrincipalName"] for member in LDAPADGroup(group).get_tree_members()]
 
                 # New Code should use the ad_groups property of the user to enforce permissions
+                user.ad_groups.clear()
                 for group in ADGroup.objects.all():
-                    group_members = get_group_members(group)
+                    group_members = get_group_members(group.distinguished_name)
                     if principal_name in group_members:
                         user.ad_groups.add(group)
 

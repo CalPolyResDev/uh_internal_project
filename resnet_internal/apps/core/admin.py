@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import connection, transaction
 
-from .models import Community, Building, Department, SubDepartment, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser, NetworkDevice
+from .models import Community, Building, Department, SubDepartment, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser, NetworkDevice, ADGroup
 
 
 class SiteAnnouncementsAdmin(admin.ModelAdmin):
@@ -31,6 +31,10 @@ class ResNetInternalUserAdmin(admin.ModelAdmin):
 class BuildingAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'community']
 
+
+class ADGroupAdmin(admin.ModelAdmin):
+    list_display = ['common_name', 'distinguished_name']
+
 admin.site.register(Community)
 admin.site.register(Building, BuildingAdmin)
 admin.site.register(Department)
@@ -40,6 +44,7 @@ admin.site.register(StaffMapping, StaffMappingAdmin)
 admin.site.register(TechFlair, TechFlairAdmin)
 admin.site.register(ResNetInternalUser, ResNetInternalUserAdmin)
 admin.site.register(NetworkDevice, NetworkDeviceAdmin)
+admin.site.register(ADGroup, ADGroupAdmin)
 
 
 def sync_rms_data():
