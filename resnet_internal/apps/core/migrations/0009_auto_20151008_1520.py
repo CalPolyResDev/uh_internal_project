@@ -8,7 +8,7 @@ import resnet_internal.apps.core.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0007_auto_20150901_1401'),
+        ('core', '0008_auto_20151008_1605'),
     ]
 
     operations = [
