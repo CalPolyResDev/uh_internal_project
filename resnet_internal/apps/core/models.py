@@ -118,6 +118,9 @@ class ADGroup(Model):
     distinguished_name = CharField(max_length=250, unique=True, verbose_name='Distinguished Name')
     common_name = CharField(max_length=50, verbose_name='Common Name')
 
+    class Meta:
+        verbose_name = 'AD Group'
+
 
 class ResNetInternalUserManager(UserManager):
 
