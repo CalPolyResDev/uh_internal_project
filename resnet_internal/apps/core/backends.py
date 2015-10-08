@@ -48,17 +48,37 @@ class CASLDAPBackend(CASBackend):
             else:
                 principal_name = str(user_info["userPrincipalName"])
 
-                print(ADGroup(settings.LDAP_ADMIN_GROUP))
+                def get_group_members(group):
+                    return [member["userPrincipalName"] for member in ADGroup(group).get_tree_members()]
 
-                staff_list = [member["userPrincipalName"] for member in ADGroup(settings.LDAP_ADMIN_GROUP).get_tree_members()]
-                developer_list = [member["userPrincipalName"] for member in ADGroup(settings.LDAP_DEVELOPER_GROUP).get_tree_members()]
+                net_admin_list = get_group_members('CN=StateHRDept - IS-ITS-Networks (132900 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu')
+                telecom_list = get_group_members('CN=StateHRDept - IS-ITS-Telecommunications (133100 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu')
+                tag_list = get_group_members('CN=UH-TAG,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
+                tag_readonly_list = get_group_members('CN=UH-TAG-READONLY,OU=User Groups,OU=Websites,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
+                technician_list = get_group_members('CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
+                rn_staff_list = get_group_members('CN=UH-RN-Staff,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
+                developer_list = get_group_members('CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
 
-                # Add admin flag
-                if principal_name in staff_list:
-                    user.is_admin = True
+                if principal_name in net_admin_list:
+                    user.is_net_admin = True
 
-                # Add superuser flags
+                if principal_name in telecom_list:
+                    user.is_telecom = True
+
+                if principal_name in tag_list:
+                    user.is_tag = True
+
+                if principal_name in tag_readonly_list:
+                    user.is_tag_readonly = True
+
+                if principal_name in technician_list:
+                    user.is_technician = True
+
+                if principal_name in rn_staff_list:
+                    user.is_rn_staff = True
+
                 if principal_name in developer_list:
+                    user.is_developer = True
                     user.is_staff = True
                     user.is_superuser = True
 
