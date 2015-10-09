@@ -111,6 +111,7 @@ DATABASES = {
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_SRS_PASSWORD'),
         'HOST': 'srs.calpoly.edu/ewws/',
         'PORT': '443',
+        'NUM_CONNECTIONS': 40,
     },
 }
 
@@ -356,7 +357,7 @@ LOGGING = {
     'disable_existing_loggers': True,
     'root': {
         'level': 'INFO',
-        'handlers': ['sentry'],
+        'handlers': ['console'],
     },
     'formatters': {
         'verbose': {
@@ -392,22 +393,22 @@ LOGGING = {
         },
         'django_auth_ldap': {
             'level': 'INFO',
-            'handlers': ['sentry'],
+            'handlers': ['console'],
             'propagate': True,
         },
         'django_ajax': {
             'level': 'INFO',
-            'handlers': ['sentry'],
+            'handlers': ['console'],
             'propagate': True,
         },
         'django_datatables_view': {
             'level': 'INFO',
-            'handlers': ['sentry'],
+            'handlers': ['console'],
             'propagate': True,
         },
         'paramiko': {
             'level': 'WARNING',
-            'handlers': ['sentry'],
+            'handlers': ['console'],
             'propagate': True,
         },
     }
