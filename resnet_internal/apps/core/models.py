@@ -211,3 +211,5 @@ class NavbarLink(Model):
     sequence_index = SmallIntegerField(verbose_name='Sequence Index')
     parent_group = ForeignKey('NavbarLink', related_name='links', null=True, verbose_name='Parent Link Group')
     url = URLField(verbose_name='URL', null=True)
+    onclick = CharField(max_length=200, null=True, verbose_name='Onclick Handler')
+    open_in_new = BooleanField(default=False, verbose_name='Open in New Window')
