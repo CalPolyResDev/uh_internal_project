@@ -274,6 +274,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
     'resnet_internal.apps.core.context_processors.specializations',
+    'resnet_internal.apps.core.context_processors.navbar',
     'django.contrib.messages.context_processors.messages',
 )
 

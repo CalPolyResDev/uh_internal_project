@@ -10,11 +10,13 @@ import re
 
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
 from django.core.mail import send_mail
+from django.core.urlresolvers import reverse
 from django.db.models.base import Model
 from django.db.models.fields import CharField, IntegerField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField,\
     URLField, SmallIntegerField
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.http import urlquote
 
 
@@ -118,6 +120,9 @@ class ADGroup(Model):
     distinguished_name = CharField(max_length=250, unique=True, verbose_name='Distinguished Name')
     common_name = CharField(max_length=50, verbose_name='Common Name')
 
+    def __str__(self):
+        return self.common_name
+
     class Meta:
         verbose_name = 'AD Group'
 
@@ -207,9 +212,19 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
 class NavbarLink(Model):
     display_name = CharField(max_length=50, verbose_name='Display Name')
     groups = ManyToManyField(ADGroup, verbose_name='AD Groups')
-    icon = CharField(max_length=100, verbose_name='Icon Static File Location')
+    icon = CharField(max_length=100, verbose_name='Icon Static File Location', blank=True, null=True)
     sequence_index = SmallIntegerField(verbose_name='Sequence Index')
-    parent_group = ForeignKey('NavbarLink', related_name='links', null=True, verbose_name='Parent Link Group')
-    url = URLField(verbose_name='URL', null=True)
-    onclick = CharField(max_length=200, null=True, verbose_name='Onclick Handler')
-    open_in_new = BooleanField(default=False, verbose_name='Open in New Window')
+    parent_group = ForeignKey('NavbarLink', related_name='links', blank=True, null=True, verbose_name='Parent Link Group')
+
+    external_url = URLField(verbose_name='URL', blank=True, null=True)
+    url_name = CharField(max_length=100, blank=True, null=True)
+    onclick = CharField(max_length=200, blank=True, null=True, verbose_name='Onclick Handler')
+
+    def __str__(self):
+        return self.display_name
+
+    def url(self):
+        return reverse(self.url_name) if self.url_name else self.external_url
+
+    def is_link_group(self):
+        return NavbarLink.objects.filter(parent_group__id=self.id).exists()

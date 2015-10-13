@@ -6,6 +6,8 @@
 
 """
 
+from resnet_internal.apps.core.models import NavbarLink, ResNetInternalUser
+
 from .models import TechFlair
 
 
@@ -65,3 +67,22 @@ def specializations(request):
     extra_context['user_specializations'] = user_specializations
 
     return extra_context
+
+
+def navbar(request):
+    if isinstance(request.user, ResNetInternalUser):
+        links_for_user = NavbarLink.objects.filter(groups__id__in=request.user.ad_groups.values_list('id', flat=True)).select_related()
+
+        links_inorder = []
+
+        for parent_link in links_for_user.filter(parent_group__isnull=True):
+            links_inorder.append(parent_link)
+            for link in links_for_user.filter(parent_group__id=parent_link.id).order_by('sequence_index'):
+                links_inorder.append(link)
+                for sublink in links_for_user.filter(parent_group__id=link.id).order_by('sequence_index'):
+                    links_inorder.append(sublink)
+
+        print(links_inorder)
+        return {'navbar_links': links_inorder}
+    else:
+        return {}
