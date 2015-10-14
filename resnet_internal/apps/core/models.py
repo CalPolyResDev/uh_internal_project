@@ -10,7 +10,7 @@ import re
 
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db.models.base import Model
 from django.db.models.fields import CharField, IntegerField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField,\
     URLField, SmallIntegerField
@@ -223,8 +223,28 @@ class NavbarLink(Model):
     def __str__(self):
         return self.display_name
 
+    @cached_property
     def url(self):
-        return reverse(self.url_name) if self.url_name else self.external_url
+        url = ''
 
+        if self.url_name:
+            try:
+                url = reverse(self.url_name)
+            except NoReverseMatch:
+                pass
+        else:
+            url = self.external_url
+
+        return url
+
+    @cached_property
     def is_link_group(self):
         return NavbarLink.objects.filter(parent_group__id=self.id).exists()
+
+    @cached_property
+    def html_id(self):
+        return self.display_name.lower().replace(' ', '_')
+
+    @cached_property
+    def target(self):
+        return '_blank' if self.external_url else '_self'

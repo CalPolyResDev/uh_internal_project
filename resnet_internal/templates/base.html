@@ -94,138 +94,7 @@
             <!-- Begin Navigation Bar -->
             <div id="leftnav">
                 <h1>Navigation</h1>
-    			{% if request.user|technician_access %}
-    			<h2>Technician Tools</h2>
-    			<ul>
-    			    <li>
-                        <a id="email_link" style="cursor: pointer;" onclick="updateEmail();" title="Email" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/email.png' %}" alt="Email" align="top" width="16" height="16" border="0" /><span id="email_text">Email</span></a>
-                    </li>
-                    <li>
-                        <a href="https://myportal.calpoly.edu/f/u17l1s6/normal/render.uP" target="_blank"><img src="{% static 'images/icons/calpoly.ico' %}" alt="Cal Poly Portal" align="top" width="16" height="16" border="0" />My Cal Poly Portal</a>
-                    </li>
-                    <li>
-                        <a id="srs_ticket_link" style="cursor: pointer;" onclick="updateTickets();" title="Tickets" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/ticket.png' %}" alt="SRS Ticket Manager" align="top" width="16" height="16" border="0" /><span id="ticket_text">Ticket Manager</span></a>
-                    </li>
-                    <li>
-                        <a id="voicemail_link" style="cursor: pointer;" onclick="updateVoicemail();" title="Voicemail" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/voicemail.png' %}" alt="Voicemail" align="top" width="16" height="16" border="0" /><span id="voicemail_text">Voicemail</span></a>
-                    </li>
-                    <li>
-                        <a href="https://calpoly-advocate.symplicity.com/index.php/pid480522" target="_blank"><img src="{% static 'images/icons/advocate.ico' %}" alt="Advocate" align="top" width="16" height="16" border="0" />Advocate</a>
-                    </li>
-                    <li>
-                        <a href="https://internal.reslife.calpoly.edu" target="_blank"><img src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/favicon.ico" alt="ResLife Internal" align="top" width="16" height="16" border="0">ResLife Internal</a>
-                    </li>
-                    <li>
-                        <a onclick="$('#wiki_pages_list').toggle()" style="cursor: pointer !important;"><img src="{% static 'images/icons/confluence_16.png' %}" alt="Wiki Pages" align="top" width="16" height="16" border="0" />Wiki Pages</a>
-                    </li>
-                    <ul id="wiki_pages_list" style="display: none;">
-                        <li>
-                            <a href="https://wiki.calpoly.edu/display/RES/ResNet+Home" class="sublink" target="_blank">ResNet Wiki</a>
-                        </li>
-                        <li>
-                            <a href="https://wiki.calpoly.edu/display/UH/University+Housing+Home" class="sublink" target="_blank">University Housing Wiki</a>
-                        </li>
-                        <li>
-                            <a href="https://wiki.calpoly.edu/display/ITS/ITS+Home" class="sublink" target="_blank">ITS Wiki</a>
-                        </li>
-                    </ul>
-                </ul>
-                {% endif %}
-
-                {% if request.user|staff_access %}
-                <h2>Staff Tools</h2>
-                <ul>
-                    <li>
-                        <a href="{% url 'restech_list_edit' %}"><img src="{% static 'images/icons/restech.png' %}" alt="Manage Technicians" align="top" width="16" height="16" border="0" />Manage Technicians</a>
-                    </li>
-                </ul>
-                {% endif %}
-
-                {% if request.user|technician_access %}
-                <h2>Network Analysis</h2>
-                <ul>
-                    <li>
-                        <a href="https://backupclearpass.netadm.calpoly.edu/tips/tipsLogin.action" target="_blank"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba ClearPass" align="top" width="16" height="16" border="0" />Aruba ClearPass</a>
-                    </li>
-                    <li>
-                        <a onclick="$('#aruba_controllers_list').toggle()" style="cursor: pointer !important;"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba Controllers" align="top" width="16" height="16" border="0" />Aruba Controllers</a>
-                    </li>
-                    <ul id="aruba_controllers_list" style="display: none;">
-                        <li>
-                            <a href="https://resnetcontroller2.netadm.calpoly.edu:4343" class="sublink" target="_blank">Halls Controller</a>
-                        </li>
-                        <li>
-                            <a href="https://resnetcontroller1.netadm.calpoly.edu:4343" class="sublink" target="_blank">PCV Controller</a>
-                        </li>
-                        <li>
-                            <a href="https://resnetmaster.netadm.calpoly.edu:4343" class="sublink" target="_blank">Master Controller</a>
-                        </li>
-                        <li>
-                            <a href="https://resnetcontroller3.netadm.calpoly.edu:4343" class="sublink" target="_blank">Failover Controller</a>
-                        </li>
-                    </ul>
-                    <li>
-                        <a onclick="$('#aruba_airwaves_list').toggle()" style="cursor: pointer !important;"><img src="{% static 'images/icons/aruba.ico' %}" alt="Aruba Airwaves" align="top" width="16" height="16" border="0" />Aruba Airwaves</a>
-                    </li>
-                    <ul id="aruba_airwaves_list" style="display: none;">
-                        <li>
-                            <a href="https://resnetairwaves1.netadm.calpoly.edu" class="sublink" target="_blank">Airwaves Primary</a>
-                        </li>
-                        <li>
-                            <a href="https://resnetairwaves2.netadm.calpoly.edu" class="sublink" target="_blank">Airwaves Secondary</a>
-                        </li>
-                    </ul>
-                </ul>
-                {% endif %}
-
-                {% if request.user|portmap_access or request.user|computers_access or request.user|printers_access %}
-                <h2>Indexes</h2>
-                <ul>
-                    {% if request.user|portmap_access %}
-                    <li>
-                        <a href="{% url 'residence_halls_wired_ports' %}"><img src="{% static 'images/icons/database.png' %}" alt="Residence Halls Port Map" align="top" width="16" height="16" border="0" />Res Halls Port Map</a>
-                    </li>
-                    {% endif %}
-                    {% if request.user|computers_access %}
-                    <li>
-                        <a href="{% url 'uh_computers' %}"><img src="{% static 'images/icons/database.png' %}" alt="UH Computer Index" align="top" width="16" height="16" border="0" />UH Computer Index</a>
-                    </li>
-                    {% endif %}
-                    {% if request.user|printers_access %}
-                    <li>
-                        <a href="{% url 'uh_printers' %}"><img src="{% static 'images/icons/database.png' %}" alt="UH Printer Index" align="top" width="16" height="16" border="0" />UH Printer Index</a>
-                    </li>
-                    {% endif %}
-                </ul>
-                {% endif %}
-
-                {% if request.user|technician_access %}
-                <h2>Equipment</h2>
-                <ul>
-                    <li>
-                        <a style="cursor: pointer;" id="printer_request_link" onclick="updatePrinterRequests();" title="Printer Requests" data-content="Loading..." data-toggle="popover" data-trigger="hover"><img src="{% static 'images/icons/printer.png' %}" alt="Printer Requests" align="top" width="16" height="16" border="0" /><span id="printer_requests_text">Printer Requests</span></a>
-                    </li>
-                    <ul>
-                        <li>
-                        <a href="{% url 'printer_inventory' %}" class="sublink">Check Inventory</a>
-                        </li>
-                        <li>
-                        <a href="{% url 'printer_ordered_items' %}" class="sublink">Ordered Items</a>
-                        </li>
-                    </ul>
-                </ul>
-                {% endif %}
-
-                {% if request.user|developer_access %}
-                <h2>Administration</h2>
-                <ul>
-                    <li>
-                        <a href="/flugzeug/" target="_blank"><img src="{% static 'images/icons/django.ico' %}" alt="Django Admin" align="top" width="16" height="16" border="0" />Django Admin Site</a>
-                    </li>
-                </ul>
-                {% endif %}
-                <br />
-                <br />
+    			{{ navbar|safe }}
     		</div>
     		<!-- End Navigation Bar -->
     		{% endif %}
@@ -264,12 +133,28 @@
     	</div>
         <script type="text/javascript">
             {% if request.user.is_authenticated %}
+                function add_duties() {
+                    var duties_links = ['email_link', 'ticket_manager_link', 'voicemail_link', 'printer_requests_link'];
+                    var duties_titles = ['Email', 'Tickets', 'Voicemail', 'Printer Requests'];
+                    
+                    for (var i=0; i < duties_links.length; ++i) {
+                        var link = $('#' + duties_links[i]);
+                        link.attr('title', duties_titles[i]);
+                        link.attr('data-content', 'Loading...');
+                        link.attr('data-toggle', 'popover');
+                        link.attr('data-trigger', 'hover');
+                    }
+                    
+                    $('[data-toggle="popover"]').popover({
+                        html: true,
+                    });
+                };
                 function refreshDuties() {
                     ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
                         $("#email_link").attr('data-content', response_context.email_content);
-                        $("#srs_ticket_link").attr('data-content', response_context.tickets_content);
+                        $("#ticket_manager_link").attr('data-content', response_context.tickets_content);
                         $("#voicemail_link").attr('data-content', response_context.voicemail_content);
-                        $("#printer_request_link").attr('data-content', response_context.printer_requests_content);
+                        $("#printer_requests_link").attr('data-content', response_context.printer_requests_content);
                     });
                 };
                 function updateEmail() {
@@ -299,6 +184,7 @@
                 };
                 
                 $(document).ready(function() {
+                    add_duties();
                     refreshDuties();
                 });
             {% endif %}
