@@ -350,7 +350,7 @@ LOGGING = {
     'loggers': {
         'django.db.backends': {
             'level': 'ERROR',
-            'handlers': ['console'],
+            'handlers': ['sentry'],
             'propagate': False,
         },
         'raven': {
@@ -364,16 +364,21 @@ LOGGING = {
             'propagate': False,
         },
         'django_ajax': {
-            'level': 'INFO',
+            'level': 'WARNING',
             'handlers': ['sentry'],
             'propagate': True,
         },
         'django_datatables_view': {
-            'level': 'INFO',
+            'level': 'WARNING',
             'handlers': ['sentry'],
             'propagate': True,
         },
         'paramiko': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
+            'propagate': True,
+        },
+        'resnet_internal': {
             'level': 'WARNING',
             'handlers': ['sentry'],
             'propagate': True,
