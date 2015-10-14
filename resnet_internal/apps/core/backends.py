@@ -11,6 +11,7 @@ import logging
 from django.conf import settings
 from django_cas_ng.backends import CASBackend
 from ldap3 import Server, Connection, ObjectDef, AttrDef, Reader
+from ldap_groups.exceptions import InvalidGroupDN
 from ldap_groups.groups import ADGroup as LDAPADGroup
 
 from ..core.models import ADGroup
@@ -51,7 +52,13 @@ class CASLDAPBackend(CASBackend):
                 principal_name = str(user_info["userPrincipalName"])
 
                 def get_group_members(group):
-                    return [member["userPrincipalName"] for member in LDAPADGroup(group).get_tree_members()]
+                    try:
+                        group_members = LDAPADGroup(group).get_tree_members()
+                    except InvalidGroupDN:
+                        logger.exception('Could not retrieve group members for DN: ' + group)
+                        return []
+
+                    return [member["userPrincipalName"] for member in group_members]
 
                 # New Code should use the ad_groups property of the user to enforce permissions
                 user.ad_groups.clear()
