@@ -238,7 +238,7 @@ class NavbarLink(Model):
 
     def clean(self):
         if self.url_name and self.external_url:
-            raise ValidationError(_('Navbar Links should have either a url name or an external url, not both.'))
+            raise ValidationError('Navbar Links should have either a url name or an external url, not both.')
 
     @cached_property
     def url(self):
