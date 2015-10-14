@@ -20,6 +20,8 @@ from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.http import urlquote
+from ldap_groups.exceptions import InvalidGroupDN
+from ldap_groups.groups import ADGroup as LDAPADGroup
 
 
 logger = logging.getLogger(__name__)
@@ -124,6 +126,12 @@ class TechFlair(Model):
 class ADGroup(Model):
     distinguished_name = CharField(max_length=250, unique=True, verbose_name='Distinguished Name')
     display_name = CharField(max_length=50, verbose_name='Display Name')
+
+    def clean(self):
+        try:
+            LDAPADGroup(self.distinguished_name).get_tree_members()
+        except InvalidGroupDN:
+            raise ValidationError('Invalid Group Distinguished Name. Please verify.')
 
     def __str__(self):
         return self.display_name
