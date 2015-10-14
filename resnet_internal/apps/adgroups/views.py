@@ -6,8 +6,8 @@
 
 """
 
-import logging
 from operator import itemgetter
+import logging
 
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.views.generic.edit import FormView
@@ -63,7 +63,7 @@ class SingleGroupEditView(FormView):
             for member in raw_member_data:
                 member_info.append({
                     'full_name': member['displayName'],
-                    'alias': member['sAMAccountName'],
+                    'alias': member['userPrincipalName'],
                     'dn': member['distinguishedName'].replace(",", ", "),  # Add spaces for better html wrapping
                     'buckley': 'FERPA' in member['distinguishedName']
                 })
