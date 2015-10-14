@@ -21,7 +21,7 @@
             <tbody>
                 <tr>
                     <th scope="col" width="15%">Full Name</th>
-                    <th scope="col" width="10%">Alias</th>
+                    <th scope="col" width="10%">Email Address</th>
                     {% if request.user.is_developer %}
                     <th scope="col" width="65%">Distinguished Name</th>
                     {% endif %}
@@ -29,13 +29,13 @@
                 </tr>
                 {% if group_members %}
                     {% for member in group_members %}
-                    <tr {% if member.buckley %}style="color:red"{% endif %} id="member_{{ member.alias }}">
+                    <tr {% if member.buckley %}style="color:red"{% endif %} id="member_{{ member.userPrincipalName }}">
                         <td>{{ member.full_name }}</td>
-                        <td>{{ member.alias }}</td>
+                        <td>{{ member.userPrincipalName }}</td>
                         {% if request.user.is_developer %}
                         <td>{{ member.dn }}</td>
                         {% endif %}
-                        <td><a style="color:red; cursor:pointer;" onclick="remove_tech('{{ member.alias }}')">Remove</a></td>
+                        <td><a style="color:red; cursor:pointer;" onclick="remove_tech('{{ member.userPrincipalName }}')">Remove</a></td>
                     </tr>
                     {% endfor %}
                 {% else %}
@@ -59,9 +59,9 @@
                 </legend>
                     {{ form.non_field_errors }}
                     <p>
-                        {{ form.alias.errors }}
-                        <label for="id_alias">{{ form.alias.label }}:</label>
-                        {{ form.alias }}&nbsp;&nbsp;&nbsp;&nbsp;<strong>@calpoly.edu</strong>
+                        {{ form.userPrincipalName.errors }}
+                        <label for="id_alias">{{ form.userPrincipalName.label }}:</label>
+                        {{ form.userPrincipalName }}&nbsp;&nbsp;&nbsp;&nbsp;
                     </p>
                 </fieldset>
                     <p>
