@@ -10,6 +10,7 @@ import logging
 import re
 
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
+from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db.models.base import Model
@@ -226,6 +227,10 @@ class NavbarLink(Model):
 
     def __str__(self):
         return self.display_name
+
+    def clean(self):
+        if self.url_name and self.external_url:
+            raise ValidationError(_('Navbar Links should have either a url name or an external url, not both.'))
 
     @cached_property
     def url(self):
