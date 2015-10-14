@@ -6,6 +6,7 @@
 
 """
 
+import logging
 import re
 
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
@@ -18,6 +19,9 @@ from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.http import urlquote
+
+
+logger = logging.getLogger(__name__)
 
 
 class Community(Model):
@@ -231,6 +235,7 @@ class NavbarLink(Model):
             try:
                 url = reverse(self.url_name)
             except NoReverseMatch:
+                logger.warning('Could not resolve ' + self.url_name + 'of link ' + self.display_name)
                 pass
         else:
             url = self.external_url
