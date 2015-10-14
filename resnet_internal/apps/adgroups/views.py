@@ -63,13 +63,13 @@ class SingleGroupEditView(FormView):
             for member in raw_member_data:
                 member_info.append({
                     'full_name': member['displayName'],
-                    'alias': member['userPrincipalName'],
+                    'userPrincipalName': member['userPrincipalName'],
                     'dn': member['distinguishedName'].replace(",", ", "),  # Add spaces for better html wrapping
                     'buckley': 'FERPA' in member['distinguishedName']
                 })
 
         if member_info:
-            return sorted(member_info, key=itemgetter('alias'))
+            return sorted(member_info, key=itemgetter('userPrincipalName'))
         else:
             return None
 
@@ -92,19 +92,19 @@ class SingleGroupEditView(FormView):
         if not self.valid_user:
             raise ValidationError("You do not have permission to view or modify this group.")
 
-        alias = form.cleaned_data['alias']
+        userPrincipalName = form.cleaned_data['userPrincipalName']
 
         member_already_exists = False
 
         # Check if the user already exists in the group (when it isn't empty)
         if self._get_member_info():
             for member in self._get_member_info():
-                if member['alias'] == alias:
+                if member['userPrincipalName'] == userPrincipalName:
                     member_already_exists = True
 
         # Don't add the user if (s)he is already in the group.
         if not member_already_exists:
-            self.ad_group_instance.add_member(alias)
+            self.ad_group_instance.add_member(userPrincipalName)
 
         return super(SingleGroupEditView, self).form_valid(form)
 
