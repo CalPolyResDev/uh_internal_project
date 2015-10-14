@@ -240,6 +240,12 @@ class NavbarLink(Model):
         if self.url_name and self.external_url:
             raise ValidationError('Navbar Links should have either a url name or an external url, not both.')
 
+        if self.url_name:
+            try:
+                reverse(self.url_name)
+            except NoReverseMatch:
+                raise ValidationError('URL Name could not be resolved. Please enter a valid URL Name.')
+
     @cached_property
     def url(self):
         url = ''
