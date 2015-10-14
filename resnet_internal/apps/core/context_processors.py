@@ -7,6 +7,7 @@
 """
 
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.core.cache import cache
 
 from resnet_internal.apps.core.models import NavbarLink, ResNetInternalUser
 
@@ -73,34 +74,39 @@ def specializations(request):
 
 def navbar(request):
     if isinstance(request.user, ResNetInternalUser):
-        links_for_user = NavbarLink.objects.filter(groups__id__in=request.user.ad_groups.values_list('id', flat=True))
+        cache_key = request.user.username + ':navbar'
 
-        navbar = ''
+        navbar = cache.get(cache_key)
 
-        def a_inner_html(link):
-            return '<img src="' + static(link.icon) + '" align="top" width="16" height="16" border="0"><span id="' + link.html_id + '_text">' + link.display_name + '</span>'
+        if not navbar:
+            links_for_user = NavbarLink.objects.filter(groups__id__in=request.user.ad_groups.values_list('id', flat=True))
+            navbar = ''
 
-        for parent_link in links_for_user.filter(parent_group__isnull=True):
-            navbar = navbar + '<h2>' + parent_link.display_name + '</h2>\n<ul>\n'
+            def a_inner_html(link):
+                return '<img src="' + static(link.icon) + '" align="top" width="16" height="16" border="0"><span id="' + link.html_id + '_text">' + link.display_name + '</span>'
 
-            for link in links_for_user.filter(parent_group__id=parent_link.id).order_by('sequence_index'):
-                navbar = navbar + '<li>'
+            for parent_link in links_for_user.filter(parent_group__isnull=True).order_by('sequence_index'):
+                navbar = navbar + '<h2>' + parent_link.display_name + '</h2>\n<ul>\n'
 
-                if link.is_link_group:
-                    navbar = navbar + '<a onclick="$(\'#' + link.html_id + '_list\').toggle()" style="cursor: pointer !important;">' + a_inner_html(link) + '</a>\n'
-                    navbar = navbar + '<ul id="' + link.html_id + '_list" style="display: none;">\n'
+                for link in links_for_user.filter(parent_group__id=parent_link.id).order_by('sequence_index'):
+                    navbar = navbar + '<li>'
 
-                    for sublink in links_for_user.filter(parent_group__id=link.id).order_by('sequence_index'):
-                        navbar = navbar + '<li><a ' + ('onclick="' + sublink.onclick + '" ' if sublink.onclick else '') + ((' href="' + sublink.url + '"') if sublink.url else '') + ' class="sublink" target="' + sublink.target + '">' + sublink.display_name + '</a></li>\n'
+                    if link.is_link_group:
+                        navbar = navbar + '<a onclick="$(\'#' + link.html_id + '_list\').toggle()" style="cursor: pointer !important;">' + a_inner_html(link) + '</a>\n'
+                        navbar = navbar + '<ul id="' + link.html_id + '_list" ' + ('style="display: none;"' if not link.url else '') + '>\n'
 
-                    navbar = navbar + '</ul>\n'
-                else:
-                    navbar = navbar + '<a id="' + link.html_id + '_link" style="cursor: pointer;"' + (('onclick="' + link.onclick + '"') if link.onclick else '') + \
-                        (('href="' + link.url + '"') if link.url else '') + 'target="' + link.target + '">\n' + a_inner_html(link) + '</a>\n'
-                navbar = navbar + '</li>\n'
+                        for sublink in links_for_user.filter(parent_group__id=link.id).order_by('sequence_index'):
+                            navbar = navbar + '<li><a ' + ('onclick="' + sublink.onclick + '" ' if sublink.onclick else '') + ((' href="' + sublink.url + '"') if sublink.url else '') + ' class="sublink" target="' + sublink.target + '">' + sublink.display_name + '</a></li>\n'
 
-            navbar = navbar + '</ul>\n'
-            print(navbar)
+                        navbar = navbar + '</ul>\n'
+                    else:
+                        navbar = navbar + '<a id="' + link.html_id + '_link" style="cursor: pointer;"' + (('onclick="' + link.onclick + '"') if link.onclick else '') + \
+                            (('href="' + link.url + '"') if link.url else '') + 'target="' + link.target + '">\n' + a_inner_html(link) + '</a>\n'
+                    navbar = navbar + '</li>\n'
+
+                navbar = navbar + '</ul>\n'
+
+                cache.set(cache_key, navbar, 60 * 60 * 4)
 
         return {'navbar': navbar}
     else:
