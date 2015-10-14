@@ -122,10 +122,10 @@ class TechFlair(Model):
 
 class ADGroup(Model):
     distinguished_name = CharField(max_length=250, unique=True, verbose_name='Distinguished Name')
-    common_name = CharField(max_length=50, verbose_name='Common Name')
+    display_name = CharField(max_length=50, verbose_name='Display Name')
 
     def __str__(self):
-        return self.common_name
+        return self.display_name
 
     class Meta:
         verbose_name = 'AD Group'

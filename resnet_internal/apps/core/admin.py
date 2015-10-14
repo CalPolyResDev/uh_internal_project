@@ -35,7 +35,7 @@ class BuildingAdmin(admin.ModelAdmin):
 
 
 class ADGroupAdmin(admin.ModelAdmin):
-    list_display = ['common_name', 'distinguished_name']
+    list_display = ['display_name', 'distinguished_name']
 
 
 class NavBarLinkAdmin(admin.ModelAdmin):
