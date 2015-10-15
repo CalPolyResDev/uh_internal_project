@@ -2,8 +2,7 @@ from pathlib import Path
 import os
 
 from django.core.exceptions import ImproperlyConfigured
-from django_auth_ldap.config import LDAPSearch, NestedActiveDirectoryGroupType
-import ldap3
+import dj_database_url
 
 
 def get_env_variable(name):
@@ -74,14 +73,7 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MiB
 # ======================================================================================================== #
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'resnet_internal',
-        'USER': 'resnet_internal',
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_DEFAULT_PASSWORD'),
-        'HOST': 'data.resdev.calpoly.edu',
-        'PORT': '3306',
-    },
+    'default': dj_database_url.config(default=get_env_variable('RESNET_INTERNAL_DB_DEFAULT_DATABASE_URL')),
     'common': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'common',
@@ -175,45 +167,17 @@ LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/login/'
 
 AUTHENTICATION_BACKENDS = (
-    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
+    'resnet_internal.apps.core.backends.CASLDAPBackend',
 )
 
 AUTH_USER_MODEL = 'core.ResNetInternalUser'
 
-AUTH_LDAP_BIND_DN = get_env_variable('RESNET_INTERNAL_LDAP_USER_DN')
-AUTH_LDAP_BIND_PASSWORD = get_env_variable('RESNET_INTERNAL_LDAP_PASSWORD')
+CAS_ADMIN_PREFIX = "flugzeug/"
+CAS_LOGOUT_COMPLETELY = False
 
-AUTH_LDAP_SERVER_URI = 'ldap://ad.calpoly.edu'
-AUTH_LDAP_START_TLS = True
-
-AUTH_LDAP_USER_SEARCH = LDAPSearch('DC=ad,DC=calpoly,DC=edu', ldap3.SEARCH_SCOPE_WHOLE_SUBTREE, '(&(objectClass=user)(sAMAccountName=%(user)s))')
-AUTH_LDAP_GROUP_SEARCH = LDAPSearch('DC=ad,DC=calpoly,DC=edu', ldap3.SEARCH_SCOPE_WHOLE_SUBTREE, '(objectClass=group)')
-
-AUTH_LDAP_GROUP_TYPE = NestedActiveDirectoryGroupType()
-AUTH_LDAP_FIND_GROUP_PERMS = True
-
-AUTH_LDAP_REQUIRE_GROUP = 'CN=resnetinternal,OU=Websites,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu'
-
-AUTH_LDAP_USER_ATTR_MAP = {
-    'first_name': 'givenName',
-    'last_name': 'sn',
-    'email': 'mail',
-}
-
-AUTH_LDAP_USER_FLAGS_BY_GROUP = {
-    'is_net_admin': 'StateHRDept - IS-ITS-Networks (132900 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu',
-    'is_telecom': 'StateHRDept - IS-ITS-Telecommunications (133100 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu',
-    'is_tag': 'CN=UH-TAG,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
-    'is_tag_readonly': 'CN=UH-TAG-READONLY,OU=User Groups,OU=Websites,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
-
-    'is_technician': 'CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
-    'is_rn_staff': 'CN=UH-RN-Staff,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
-    'is_developer': 'CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
-
-    'is_staff': 'CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
-    'is_superuser': 'CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu',
-}
+CAS_SERVER_URL = "https://my.calpoly.edu/cas/"
+CAS_LOGOUT_URL = "https://my.calpoly.edu/cas/casClientLogout.jsp?logoutApp=University%20Housing%20Internal"  # TODO: Change to correct URL!
 
 # ======================================================================================================== #
 #                                        LDAP Groups Configuration                                         #
@@ -221,12 +185,20 @@ AUTH_LDAP_USER_FLAGS_BY_GROUP = {
 
 LDAP_GROUPS_SERVER_URI = 'ldap://ad.calpoly.edu'
 LDAP_GROUPS_BASE_DN = 'DC=ad,DC=calpoly,DC=edu'
+LDAP_GROUPS_USER_BASE_DN = 'OU=People,OU=Enterprise,OU=Accounts,' + LDAP_GROUPS_BASE_DN
+
+LDAP_GROUPS_USER_SEARCH_BASE_DN = 'OU=Enterprise,OU=Accounts,' + LDAP_GROUPS_BASE_DN
+LDAP_GROUPS_GROUP_SEARCH_BASE_DN = 'OU=Groups,' + LDAP_GROUPS_BASE_DN
 
 LDAP_GROUPS_BIND_DN = get_env_variable('RESNET_INTERNAL_LDAP_USER_DN')
 LDAP_GROUPS_BIND_PASSWORD = get_env_variable('RESNET_INTERNAL_LDAP_PASSWORD')
 
-LDAP_GROUPS_USER_LOOKUP_ATTRIBUTE = 'sAMAccountName'
-LDAP_GROUPS_ATTRIBUTE_LIST = ['displayName', 'sAMAccountName', 'distinguishedName']
+LDAP_GROUPS_USER_LOOKUP_ATTRIBUTE = 'userPrincipalName'
+LDAP_GROUPS_GROUP_LOOKUP_ATTRIBUTE = 'name'
+LDAP_GROUPS_ATTRIBUTE_LIST = ['displayName', LDAP_GROUPS_USER_LOOKUP_ATTRIBUTE, 'distinguishedName']
+
+LDAP_ADMIN_GROUP = 'CN=UH-RN-Staff,OU=ResNet,OU=UH,OU=Manual,OU=Groups,' + LDAP_GROUPS_BASE_DN
+LDAP_DEVELOPER_GROUP = 'CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,' + LDAP_GROUPS_BASE_DN
 
 # ======================================================================================================== #
 #                                            SSH Configuration                                             #
@@ -302,6 +274,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
     'resnet_internal.apps.core.context_processors.specializations',
+    'resnet_internal.apps.core.context_processors.navbar',
     'django.contrib.messages.context_processors.messages',
 )
 
@@ -377,7 +350,7 @@ LOGGING = {
     'loggers': {
         'django.db.backends': {
             'level': 'ERROR',
-            'handlers': ['console'],
+            'handlers': ['sentry'],
             'propagate': False,
         },
         'raven': {
@@ -390,22 +363,22 @@ LOGGING = {
             'handlers': ['console'],
             'propagate': False,
         },
-        'django_auth_ldap': {
-            'level': 'INFO',
-            'handlers': ['sentry'],
-            'propagate': True,
-        },
         'django_ajax': {
-            'level': 'INFO',
+            'level': 'WARNING',
             'handlers': ['sentry'],
             'propagate': True,
         },
         'django_datatables_view': {
-            'level': 'INFO',
+            'level': 'WARNING',
             'handlers': ['sentry'],
             'propagate': True,
         },
         'paramiko': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
+            'propagate': True,
+        },
+        'resnet_internal': {
             'level': 'WARNING',
             'handlers': ['sentry'],
             'propagate': True,

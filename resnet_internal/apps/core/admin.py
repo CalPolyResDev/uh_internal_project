@@ -1,7 +1,9 @@
 from django.contrib import admin
 from django.db import connection, transaction
 
-from .models import Community, Building, Department, SubDepartment, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser, NetworkDevice
+from resnet_internal.apps.core.models import NavbarLink
+
+from .models import Community, Building, Department, SubDepartment, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser, NetworkDevice, ADGroup
 
 
 class SiteAnnouncementsAdmin(admin.ModelAdmin):
@@ -31,6 +33,14 @@ class ResNetInternalUserAdmin(admin.ModelAdmin):
 class BuildingAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'community']
 
+
+class ADGroupAdmin(admin.ModelAdmin):
+    list_display = ['display_name', 'distinguished_name']
+
+
+class NavBarLinkAdmin(admin.ModelAdmin):
+    list_display = ['display_name', 'sequence_index', 'parent_group']
+
 admin.site.register(Community)
 admin.site.register(Building, BuildingAdmin)
 admin.site.register(Department)
@@ -40,6 +50,8 @@ admin.site.register(StaffMapping, StaffMappingAdmin)
 admin.site.register(TechFlair, TechFlairAdmin)
 admin.site.register(ResNetInternalUser, ResNetInternalUserAdmin)
 admin.site.register(NetworkDevice, NetworkDeviceAdmin)
+admin.site.register(ADGroup, ADGroupAdmin)
+admin.site.register(NavbarLink, NavBarLinkAdmin)
 
 
 def sync_rms_data():

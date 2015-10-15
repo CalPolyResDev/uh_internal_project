@@ -12,4 +12,4 @@ from .validators import validate_ad_membership
 
 
 class AddADUserForm(Form):
-    alias = CharField(label='Cal Poly Alias', max_length=14, error_messages={'required': 'An alias is required'}, validators=[validate_ad_membership])
+    user_principal_name = CharField(label='Cal Poly Email Address', max_length=26, error_messages={'required': 'An email address is required'}, validators=[validate_ad_membership])

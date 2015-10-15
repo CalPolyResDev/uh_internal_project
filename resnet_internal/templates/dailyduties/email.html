@@ -59,7 +59,7 @@
                                 <th>From</th>
                                 <th>Subject</th>
                             </tr>
-                            <tr id="loading_email_record"><td colspan="4" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>
+                            <tr id="loading_email_record"><td colspan="5" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>
                         </tbody>
                     </table>
                 </td>
@@ -110,7 +110,7 @@
 
     function refresh_messages(mailbox) {
         $("#email_table tr:gt(0)").remove();
-        $("#email_table").append('<tr id="loading_email_record"><td colspan="4" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
+        $("#email_table").append('<tr id="loading_email_record"><td colspan="5" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
         ajaxPost("{% url 'email_get_mailbox_summary' %}", {"mailbox": mailbox}, function(response_context) {
             $("#refresh_button").attr("onclick","refresh_messages('" + mailbox + "');");
         });
