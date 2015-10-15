@@ -11,6 +11,13 @@ ALLOWED_HOSTS = [
 ]
 
 # ======================================================================================================== #
+#                                        Authentication Configuration                                      #
+# ======================================================================================================== #
+
+CAS_SERVER_URL = "https://mydev.calpoly.edu/cas/"
+CAS_LOGOUT_URL = "https://mydev.calpoly.edu/cas/casClientLogout.jsp?logoutApp=University%20Housing%20Checkin%20Parking%20Reservation"  # TODO: Update application URL!
+
+# ======================================================================================================== #
 #                                          Debugging Configuration                                         #
 # ======================================================================================================== #
 
