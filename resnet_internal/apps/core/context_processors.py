@@ -79,7 +79,7 @@ def navbar(request):
         navbar = cache.get(cache_key)
 
         if not navbar:
-            links_for_user = NavbarLink.objects.filter(groups__id__in=request.user.ad_groups.values_list('id', flat=True))
+            links_for_user = NavbarLink.objects.filter(groups__id__in=request.user.ad_groups.values_list('id', flat=True)).distinct()
             navbar = ''
 
             def a_inner_html(link):
