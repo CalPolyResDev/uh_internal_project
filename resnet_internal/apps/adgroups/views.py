@@ -105,6 +105,8 @@ class SingleGroupEditView(FormView):
         # Don't add the user if (s)he is already in the group.
         if not member_already_exists:
             self.ad_group_instance.add_member(userPrincipalName)
+        else:
+            raise ValidationError('Cannot add ' + userPrincipalName + ': user already exists in group.')
 
         return super(SingleGroupEditView, self).form_valid(form)
 
