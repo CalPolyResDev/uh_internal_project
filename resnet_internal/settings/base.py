@@ -177,7 +177,7 @@ CAS_ADMIN_PREFIX = "flugzeug/"
 CAS_LOGOUT_COMPLETELY = False
 
 CAS_SERVER_URL = "https://my.calpoly.edu/cas/"
-CAS_LOGOUT_URL = "https://my.calpoly.edu/cas/casClientLogout.jsp?logoutApp=University%20Housing%20Checkin%20Parking%20Reservation"  # TODO: Change to correct URL!
+CAS_LOGOUT_URL = "https://my.calpoly.edu/cas/casClientLogout.jsp?logoutApp=University%20Housing%20Internal"  # TODO: Change to correct URL!
 
 # ======================================================================================================== #
 #                                        LDAP Groups Configuration                                         #
