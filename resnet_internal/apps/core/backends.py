@@ -1,6 +1,6 @@
 """
-.. module:: checkin_parking.apps.core.backends
-   :synopsis: Checkin Parking Reservation Core Authentication Backends.
+.. module:: resnet_internal.apps.core.backends
+   :synopsis: ResNet Internal Core Authentication Backends.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
