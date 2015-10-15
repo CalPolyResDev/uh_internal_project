@@ -31,7 +31,7 @@
                     {% for member in group_members %}
                     <tr {% if member.buckley %}style="color:red"{% endif %} id="member_{{ member.userPrincipalName }}">
                         <td>{{ member.full_name }}</td>
-                        <td>{{ member.userPrincipalName }}</td>
+                        <td>{{ member.user_principal_name }}</td>
                         {% if request.user.is_developer %}
                         <td>{{ member.dn }}</td>
                         {% endif %}
@@ -59,9 +59,9 @@
                 </legend>
                     {{ form.non_field_errors }}
                     <p>
-                        {{ form.userPrincipalName.errors }}
-                        <label for="id_alias">{{ form.userPrincipalName.label }}:</label>
-                        {{ form.userPrincipalName }}&nbsp;&nbsp;&nbsp;&nbsp;
+                        {{ form.user_principal_name.errors }}
+                        <label for="id_alias">{{ form.user_principal_name.label }}:</label>
+                        {{ form.user_principal_name }}&nbsp;&nbsp;&nbsp;&nbsp;
                     </p>
                 </fieldset>
                     <p>

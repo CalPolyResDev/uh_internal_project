@@ -92,21 +92,21 @@ class SingleGroupEditView(FormView):
         if not self.valid_user:
             raise ValidationError("You do not have permission to view or modify this group.")
 
-        userPrincipalName = form.cleaned_data['userPrincipalName']
+        user_principal_name = form.cleaned_data['user_principal_name']
 
         member_already_exists = False
 
         # Check if the user already exists in the group (when it isn't empty)
         if self._get_member_info():
             for member in self._get_member_info():
-                if member['userPrincipalName'] == userPrincipalName:
+                if member['userPrincipalName'] == user_principal_name:
                     member_already_exists = True
 
         # Don't add the user if (s)he is already in the group.
         if not member_already_exists:
-            self.ad_group_instance.add_member(userPrincipalName)
+            self.ad_group_instance.add_member(user_principal_name)
         else:
-            form.add_error('userPrincipalName', ValidationError('Cannot add ' + userPrincipalName + ': user already exists in group.', code='user_in_group'))
+            form.add_error('user_principal_name', ValidationError('Cannot add ' + user_principal_name + ': user already exists in group.', code='user_in_group'))
             return self.form_invalid(form)
 
         return super(SingleGroupEditView, self).form_valid(form)
