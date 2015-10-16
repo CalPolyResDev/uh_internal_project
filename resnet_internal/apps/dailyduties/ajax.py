@@ -64,7 +64,7 @@ def refresh_duties(request):
             '#printer_requests_text': duty_dict_to_link_text(duty_data['printer_requests'], 'Printer Requests'),
             '#voicemail_text': duty_dict_to_link_text(duty_data['voicemail'], 'Voicemail'),
             '#email_text': duty_dict_to_link_text(duty_data['email'], 'Email'),
-            '#ticket_text': duty_dict_to_link_text(duty_data['tickets'], 'Ticket Manager'),
+            '#ticket_manager_text': duty_dict_to_link_text(duty_data['tickets'], 'Ticket Manager'),
         },
         'printer_requests_content': duty_dict_to_popover_html(duty_data['printer_requests']),
         'voicemail_content': duty_dict_to_popover_html(duty_data['voicemail']),
