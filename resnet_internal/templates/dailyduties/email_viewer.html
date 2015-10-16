@@ -36,11 +36,11 @@
         <button class="btn btn-default" type="button" onclick="reply_all();">Reply All</button>
         <button class="btn btn-default" type="button" onclick="forward();">Forward</button>
         <button class="btn btn-default" type="button" id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
-                data-content="<table class='dataTable'>
+                data-content="<table class='table table-hover table-condensed'>
                         <tbody>
                             {% for folder, display_name in archive_folders %}
                                 <tr id='{{ folder }}' style='cursor: pointer;' onclick='$(&quot;#archive_button&quot;).popover(&quot;hide&quot;);archive(&quot;{{ folder }}&quot;);'>
-                                    <td>{{ display_name }}</td>
+                                    <td style='padding: 2px; border-top: 0px;'>{{ display_name }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
