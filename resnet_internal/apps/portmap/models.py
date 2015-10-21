@@ -14,14 +14,11 @@ from django.db.models.fields import CharField, GenericIPAddressField, BooleanFie
 from django.db.models.fields.related import ForeignKey, OneToOneField
 
 from ..computers.fields import MACAddressField
-from ..core.models import Community, Building
+from ..core.models import Community, Building, Room
 
 
 class ResHallWired(Model):
-
-    community = ForeignKey(Community, verbose_name='Community')
-    building = ForeignKey(Building, verbose_name='Building')
-    room = CharField(max_length=10, verbose_name='Room')
+    room = ForeignKey(Room, verbose_name='Room', null=True)
     switch_ip = GenericIPAddressField(protocol='IPv4', verbose_name='Switch IP')
     switch_name = CharField(max_length=35, verbose_name='Switch Name')
     jack = CharField(max_length=5, verbose_name='Jack')

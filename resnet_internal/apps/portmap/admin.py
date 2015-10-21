@@ -5,7 +5,7 @@ from .models import ResHallWired, AccessPoint
 
 
 class ResHallWiredAdmin(admin.ModelAdmin):
-    list_display = ('community', 'building', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan', 'active',)
+    list_display = ('room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan', 'active',)
 
 admin.site.register(ResHallWired, ResHallWiredAdmin)
 

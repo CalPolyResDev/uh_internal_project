@@ -3,7 +3,7 @@ from django.db import connection, transaction
 
 from resnet_internal.apps.core.models import NavbarLink
 
-from .models import Community, Building, Department, SubDepartment, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser, NetworkDevice, ADGroup
+from .models import Community, Building, Room, Department, SubDepartment, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser, NetworkDevice, ADGroup
 
 
 class SiteAnnouncementsAdmin(admin.ModelAdmin):
@@ -34,6 +34,10 @@ class BuildingAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'community']
 
 
+class RoomAdmin(admin.ModelAdmin):
+    list_display = ['name', 'building']
+
+
 class ADGroupAdmin(admin.ModelAdmin):
     list_display = ['display_name', 'distinguished_name']
 
@@ -43,6 +47,7 @@ class NavBarLinkAdmin(admin.ModelAdmin):
 
 admin.site.register(Community)
 admin.site.register(Building, BuildingAdmin)
+admin.site.register(Room, RoomAdmin)
 admin.site.register(Department)
 admin.site.register(SubDepartment)
 admin.site.register(SiteAnnouncements, SiteAnnouncementsAdmin)

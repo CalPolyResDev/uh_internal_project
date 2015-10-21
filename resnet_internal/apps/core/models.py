@@ -47,10 +47,23 @@ class Building(Model):
     community = ForeignKey(Community, verbose_name="Community", related_name="buildings")
 
     def __str__(self):
-        return self.name
+        return self.community.name + ', ' + self.name
 
     class Meta:
         verbose_name = 'University Housing Building'
+
+
+class Room(Model):
+    """University Housing Room."""
+
+    name = CharField(max_length=10, verbose_name="Room Numbers")
+    building = ForeignKey(Building, verbose_name="Building", related_name="rooms")
+
+    def __str__(self):
+        return self.building.__str__() + ', ' + self.name
+
+    class Meta:
+        verbose_name = 'University Housing Room'
 
 
 class SubDepartment(Model):

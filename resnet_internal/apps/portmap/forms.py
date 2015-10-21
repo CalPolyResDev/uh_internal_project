@@ -20,12 +20,9 @@ class ResHallWiredPortCreateForm(ModelForm):
         for field_name in self.fields:
             self.fields[field_name].error_messages = {'required': 'A ' + field_name + ' is required.'}
 
-        if "community" in self.fields:
-            self.fields["community"].widget.attrs['autocomplete'] = "off"
-
     class Meta:
         model = ResHallWired
-        fields = ['id', 'community', 'building', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan']
+        fields = ['id', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan']
 
 
 class ResHallWiredPortUpdateForm(ResHallWiredPortCreateForm):
@@ -37,6 +34,16 @@ class ResHallWiredPortUpdateForm(ResHallWiredPortCreateForm):
 class AccessPointCreateForm(ACModelForm):
     community = ACModelChoiceField('CommunityAutocomplete')
     building = ACModelChoiceField('BuildingAutocomplete')
+    room = ACModelChoiceField('RoomAutocomplete')
+
+    class Media:
+        """
+        We're currently using Media here, but that forced to move the
+        javascript from the footer to the extrahead block ...
+
+        So that example might change when this situation annoys someone a lot.
+        """
+        js = ('dependant_autocomplete.js',)
 
     class Meta:
         fields = '__all__'
