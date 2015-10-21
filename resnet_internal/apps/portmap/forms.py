@@ -6,9 +6,10 @@
 
 """
 
+from autocomplete_light import ModelForm as ACModelForm, ModelChoiceField as ACModelChoiceField
 from django.forms import ModelForm
 
-from .models import ResHallWired
+from .models import ResHallWired, AccessPoint
 
 
 class ResHallWiredPortCreateForm(ModelForm):
@@ -31,3 +32,13 @@ class ResHallWiredPortUpdateForm(ResHallWiredPortCreateForm):
 
     class Meta:
         fields = ['id', 'switch_ip', 'switch_name', 'blade', 'port', 'vlan']
+
+
+class AccessPointCreateForm(ACModelForm):
+    community = ACModelChoiceField('CommunityAutocomplete')
+    building = ACModelChoiceField('BuildingAutocomplete')
+
+    class Meta:
+        fields = '__all__'
+        autocomplete_fields = ('port')
+        model = AccessPoint

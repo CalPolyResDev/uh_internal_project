@@ -79,7 +79,6 @@ computer_record_modify_access = permissions_check(computer_record_modify_access_
 printers_access = permissions_check(printers_access_test)
 printers_modify_access = permissions_check(printers_modify_access_test)
 
-admin.autodiscover()
 
 handler500 = handler500
 
@@ -87,6 +86,7 @@ logger = logging.getLogger(__name__)
 
 # Core
 urlpatterns = [
+    url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^$', IndexView.as_view(), name='home'),
     url(r'^favicon\.ico$', RedirectView.as_view(url=staticfiles('images/icons/favicon.ico')), name='favicon'),
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
