@@ -6,9 +6,12 @@
 
 """
 
-from django.forms import ModelForm
+from clever_selects.forms import ChainedChoicesModelForm, ChainedModelChoiceField
+from django.core.urlresolvers import reverse_lazy
+from django.forms import ModelForm, ModelChoiceField
 
-from .models import ResHallWired
+from ..core.models import Community, Building, Room
+from .models import ResHallWired, AccessPoint
 
 
 class ResHallWiredPortCreateForm(ModelForm):
@@ -28,3 +31,14 @@ class ResHallWiredPortUpdateForm(ResHallWiredPortCreateForm):
 
     class Meta:
         fields = ['id', 'switch_ip', 'switch_name', 'blade', 'port', 'vlan']
+
+
+class AccessPointCreateForm(ChainedChoicesModelForm):
+    community = ModelChoiceField(queryset=Community.objects.all(), required=True)
+    building = ChainedModelChoiceField('community', reverse_lazy('core_chained_building'), Building)
+    room = ChainedModelChoiceField('building', reverse_lazy('core_chained_room'), Room)
+    port = ChainedModelChoiceField('room', reverse_lazy('portmap_chained_port'), ResHallWired)
+
+    class Meta:
+        model = AccessPoint
+        fields = '__all__'

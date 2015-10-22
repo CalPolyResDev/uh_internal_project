@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 {% load core_user_tests %}
 {% load staticfiles %}
+{% load clever_selects_extras %}
 <html>
     <head>
     	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -193,6 +194,7 @@
         <noscript>
             <div id="noscript-warning">Many features of this website require that JavaScript be enabled. Please do so.</div>
         </noscript>
+        {% clever_selects_js_import %}
         {% block extra_script %}
         {% endblock %}
     </body>

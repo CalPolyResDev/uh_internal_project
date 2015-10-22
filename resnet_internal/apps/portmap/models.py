@@ -28,7 +28,7 @@ class ResHallWired(Model):
     active = BooleanField(default=True, verbose_name='Active')
 
     def __str__(self):
-        return str(self.community) + " - " + str(self.building) + " " + self.room + ": " + self.jack
+        return str(self.room) + ": " + self.jack
 
     def save(self, *args, **kwargs):
         # Upper room and jack letters

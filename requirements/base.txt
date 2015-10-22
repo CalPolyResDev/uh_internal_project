@@ -18,6 +18,7 @@ imapclient~=0.13
 django-jfu~=2.0.9
 django-uwsgi-cache~=1.0.1
 dj_database_url~=0.3.0
+django-clever-selects~=0.6.9
 
 # The only non-pure python package!
 cx_Oracle==5.2

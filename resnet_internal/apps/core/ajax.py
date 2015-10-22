@@ -6,6 +6,7 @@
 
 """
 
+from clever_selects.views import ChainedSelectChoicesView
 from datetime import datetime, timedelta
 from operator import itemgetter
 import logging
@@ -14,7 +15,7 @@ from django.template import Template, RequestContext
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
-from ..core.models import Community
+from ..core.models import Community, Building, Room
 from ..core.utils import NetworkReachabilityTester, get_ticket_list
 
 
@@ -182,3 +183,23 @@ def get_tickets(request):
     }
 
     return data
+
+
+class BuildingChainedAjaxView(ChainedSelectChoicesView):
+
+    def get_choices(self):
+        buildings = Building.objects.filter(community__id=self.parent_value)
+        building_names = buildings.values_list('name', flat=True)
+        building_ids = buildings.values_list('id', flat=True)
+
+        return tuple(zip(building_ids, building_names))
+
+
+class RoomChainedAjaxView(ChainedSelectChoicesView):
+
+    def get_choices(self):
+        rooms = Room.objects.filter(building__id=self.parent_value)
+        room_names = rooms.values_list('name', flat=True)
+        room_ids = rooms.values_list('id', flat=True)
+
+        return tuple(zip(room_ids, room_names))

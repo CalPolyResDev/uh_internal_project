@@ -7,6 +7,7 @@
 
 """
 
+from clever_selects.views import ChainedSelectChoicesView
 from collections import OrderedDict
 import logging
 import shlex
@@ -202,3 +203,13 @@ def change_port_status(request):
     ssh_client.close()
 
     return redraw_row(request, PopulateResidenceHallWiredPorts, port_id)
+
+
+class PortChainedAjaxView(ChainedSelectChoicesView):
+
+    def get_choices(self):
+        ports = ResHallWired.objects.filter(room__id=self.parent_value)
+        port_names = ports.values_list('jack', flat=True)
+        port_ids = ports.values_list('id', flat=True)
+
+        return tuple(zip(port_ids, port_names))

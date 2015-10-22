@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from resnet_internal.apps.portmap.forms import AccessPointCreateForm
+
 from .models import ResHallWired, AccessPoint
 
 
@@ -11,5 +13,6 @@ admin.site.register(ResHallWired, ResHallWiredAdmin)
 
 class AccessPointAdmin(admin.ModelAdmin):
     list_display = ('name', 'mac_address', 'ip_address', 'port')
+    form = AccessPointCreateForm
 
 admin.site.register(AccessPoint, AccessPointAdmin)
