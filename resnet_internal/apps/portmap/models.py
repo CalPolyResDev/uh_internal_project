@@ -14,7 +14,7 @@ from django.db.models.fields import CharField, GenericIPAddressField, BooleanFie
 from django.db.models.fields.related import ForeignKey, OneToOneField
 
 from ..computers.fields import MACAddressField
-from ..core.models import Community, Building, Room
+from ..core.models import Room
 
 
 class ResHallWired(Model):

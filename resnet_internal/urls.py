@@ -86,7 +86,6 @@ logger = logging.getLogger(__name__)
 
 # Core
 urlpatterns = [
-    url(r'^autocomplete/', include('autocomplete_light.urls')),
     url(r'^$', IndexView.as_view(), name='home'),
     url(r'^favicon\.ico$', RedirectView.as_view(url=staticfiles('images/icons/favicon.ico')), name='favicon'),
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked

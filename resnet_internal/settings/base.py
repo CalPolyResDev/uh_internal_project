@@ -289,7 +289,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 INSTALLED_APPS = (
-    'autocomplete_light',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

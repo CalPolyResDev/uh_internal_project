@@ -6,10 +6,9 @@
 
 """
 
-from autocomplete_light import ModelForm as ACModelForm, ModelChoiceField as ACModelChoiceField
 from django.forms import ModelForm
 
-from .models import ResHallWired, AccessPoint
+from .models import ResHallWired
 
 
 class ResHallWiredPortCreateForm(ModelForm):
@@ -29,23 +28,3 @@ class ResHallWiredPortUpdateForm(ResHallWiredPortCreateForm):
 
     class Meta:
         fields = ['id', 'switch_ip', 'switch_name', 'blade', 'port', 'vlan']
-
-
-class AccessPointCreateForm(ACModelForm):
-    community = ACModelChoiceField('CommunityAutocomplete')
-    building = ACModelChoiceField('BuildingAutocomplete')
-    room = ACModelChoiceField('RoomAutocomplete')
-
-    class Media:
-        """
-        We're currently using Media here, but that forced to move the
-        javascript from the footer to the extrahead block ...
-
-        So that example might change when this situation annoys someone a lot.
-        """
-        js = ('dependant_autocomplete.js',)
-
-    class Meta:
-        fields = '__all__'
-        autocomplete_fields = ('port')
-        model = AccessPoint

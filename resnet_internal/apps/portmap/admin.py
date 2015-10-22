@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-from .forms import AccessPointCreateForm
 from .models import ResHallWired, AccessPoint
 
 
@@ -12,6 +11,5 @@ admin.site.register(ResHallWired, ResHallWiredAdmin)
 
 class AccessPointAdmin(admin.ModelAdmin):
     list_display = ('name', 'mac_address', 'ip_address', 'port')
-    form = AccessPointCreateForm
 
 admin.site.register(AccessPoint, AccessPointAdmin)
