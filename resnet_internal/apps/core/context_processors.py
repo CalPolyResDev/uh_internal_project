@@ -22,7 +22,7 @@ def specializations(request):
     display_name = None
     user_specializations = []
 
-    if request.user.is_authenticated():
+    if request.user.is_authenticated() and not request.is_ajax():
         display_name = request.user.get_full_name()
 
         # Other Department specializations
@@ -73,7 +73,7 @@ def specializations(request):
 
 
 def navbar(request):
-    if isinstance(request.user, ResNetInternalUser):
+    if request.user.is_authenticated() and not request.is_ajax():
         cache_key = request.user.username + ':navbar'
 
         navbar = cache.get(cache_key)
@@ -107,7 +107,7 @@ def navbar(request):
 
                 navbar = navbar + '</ul>\n'
 
-                cache.set(cache_key, navbar, 60 * 60 * 4)
+            cache.set(cache_key, navbar, 60 * 60 * 4)
 
         return {'navbar': navbar}
     else:
