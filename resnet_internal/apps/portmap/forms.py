@@ -41,4 +41,4 @@ class AccessPointCreateForm(ChainedChoicesModelForm):
 
     class Meta:
         model = AccessPoint
-        fields = '__all__'
+        fields = ['name', 'property_id', 'serial_number', 'mac_address', 'ip_address', 'type', 'community', 'building', 'room', 'port']

@@ -36,6 +36,7 @@ class BuildingAdmin(admin.ModelAdmin):
 
 class RoomAdmin(admin.ModelAdmin):
     list_display = ['name', 'building']
+    list_filter = ['building']
 
 
 class ADGroupAdmin(admin.ModelAdmin):
