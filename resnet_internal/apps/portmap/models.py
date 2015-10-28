@@ -37,7 +37,7 @@ class ResHallWired(Model):
         return self.room.building.community
 
     def __str__(self):
-        return str(self.room) + ": " + self.jack
+        return self.jack
 
     def save(self, *args, **kwargs):
         # Upper jack letters
