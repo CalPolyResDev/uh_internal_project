@@ -114,6 +114,7 @@ def get_tickets(request):
     raw_response = """
         {% load staticfiles %}
         {% load core_filters %}
+        {% load srs_urls %}
         <table class="dataTable">
             <tbody>
                 <tr>
@@ -131,7 +132,7 @@ def get_tickets(request):
                         </a>
                     </td>
                     <td>
-                        <a href="https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Edit:helpdesk_case&record={{ ticket.ticket_id }}&gui=Staff&record_access=Edit" target="_blank">
+                        <a href="{% srs_edit_url ticket.sr_number %}" target="_blank">
                             <img src="{% static 'images/srs_edit_button.gif' %}">
                         </a>
                     </td>
