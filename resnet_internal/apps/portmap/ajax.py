@@ -207,9 +207,5 @@ def change_port_status(request):
 
 class PortChainedAjaxView(ChainedSelectChoicesView):
 
-    def get_choices(self):
-        ports = ResHallWired.objects.filter(room__id=self.parent_value)
-        port_names = ports.values_list('jack', flat=True)
-        port_ids = ports.values_list('id', flat=True)
-
-        return tuple(zip(port_ids, port_names))
+    def get_child_set(self):
+        return ResHallWired.objects.filter(room__id=self.parent_value)

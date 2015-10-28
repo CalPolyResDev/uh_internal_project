@@ -17,7 +17,7 @@ from .models import ResHallWired, AccessPoint
 class ResHallWiredPortCreateForm(ChainedChoicesModelForm):
     community = ModelChoiceField(queryset=Community.objects.all())
     building = ChainedModelChoiceField('community', reverse_lazy('core_chained_building'), Building)
-    room = ChainedModelChoiceField('room', reverse_lazy('core_chained_room'), Room)
+    room = ChainedModelChoiceField('building', reverse_lazy('core_chained_room'), Room)
 
     def __init__(self, *args, **kwargs):
         super(ResHallWiredPortCreateForm, self).__init__(*args, **kwargs)

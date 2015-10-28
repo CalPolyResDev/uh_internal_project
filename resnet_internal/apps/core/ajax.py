@@ -187,19 +187,11 @@ def get_tickets(request):
 
 class BuildingChainedAjaxView(ChainedSelectChoicesView):
 
-    def get_choices(self):
-        buildings = Building.objects.filter(community__id=self.parent_value)
-        building_names = buildings.values_list('name', flat=True)
-        building_ids = buildings.values_list('id', flat=True)
-
-        return tuple(zip(building_ids, building_names))
+    def get_child_set(self):
+        return Building.objects.filter(community__id=self.parent_value)
 
 
 class RoomChainedAjaxView(ChainedSelectChoicesView):
 
-    def get_choices(self):
-        rooms = Room.objects.filter(building__id=self.parent_value)
-        room_names = rooms.values_list('name', flat=True)
-        room_ids = rooms.values_list('id', flat=True)
-
-        return tuple(zip(room_ids, room_names))
+    def get_child_set(self):
+        return Room.objects.filter(building__id=self.parent_value)
