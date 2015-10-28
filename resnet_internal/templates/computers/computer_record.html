@@ -26,7 +26,7 @@
                 <th scope="col" width="12.5%">Border FW?</th>
                 <th scope="col" width="15%">TCP Ports</th>
                 <th scope="col" width="15%">UDP Ports</th>
-                <th scope="col" width="20%">SR Number</th>
+                <th scope="col" width="20">SR Status</th>
                 <th scope="col" width="10%" style="text-decoration: none !important">&nbsp;</th>
             </tr>
             {% if pinholes %}
@@ -45,7 +45,7 @@
                             {{ port }}{% if not forloop.last %}, {% endif %}
                         {% endfor %}
                     </td>
-                    <td>{% if pinhole.sr_number %}{{ pinhole.sr_number }} <a href="{% srs_edit_url pinhole.sr_number %}"><img src="{% static 'images/srs_edit_button.gif' %}"></a>{% endif %}</td> 
+                    <td>{% if pinhole.sr_number %}{{ pinhole.pinhole_request.status }} <a href="{% srs_edit_url pinhole.sr_number %}"><img src="{% static 'images/srs_edit_button.gif' %}"></a>{% else %}None{% endif %}</td> 
                     <td>{% if request.user|computer_record_modify_access %}<a style="color:red; cursor:pointer;" onclick="remove_pinhole('{{ pinhole.id }}')">Remove</a>{% endif %}</td>
                 </tr>
                 {% endfor %}
@@ -74,14 +74,14 @@
         <tbody>
             <tr>
                 <th scope="col" width="70%">Domain Name</th>
-                <th scope="col" width="20%">SR Number</th>
+                <th scope="col" width="20%">SR Status</th>
                 <th scope="col" width="10%" style="text-decoration: none !important">&nbsp;</th>
             </tr>
             {% if domain_names %}
                 {% for domain_name in domain_names %}
                 <tr id="domain_name_{{ domain_name.id }}">
                     <td>{{ domain_name.domain_name }}</td>
-                    <td>{% if domain_name.sr_number %}{{ domain_name.sr_number }} <a href="{% srs_edit_url domain_name.sr_number %}"><img src="{% static 'images/srs_edit_button.gif' %}"></a>{% endif %}</td>
+                    <td>{% if domain_name.sr_number %}{{ domain_name.domain_name_request.status }} <a href="{% srs_edit_url domain_name.sr_number %}"><img src="{% static 'images/srs_edit_button.gif' %}"></a>{% else %}None{% endif %}</td>
                     <td>{% if request.user|computer_record_modify_access %}<a style="color:red; cursor:pointer;" onclick="remove_domain_name('{{ domain_name.id }}')">Remove</a>{% endif %}</td>
                 </tr>
                 {% endfor %}
