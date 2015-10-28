@@ -43,9 +43,9 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
 
     column_definitions = OrderedDict()
     column_definitions["id"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "ID"}
-    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "related": True, "lookup_field": "name"}
-    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "related": True, "lookup_field": "name"}
-    column_definitions["room"] = {"width": "50px", "type": "string", "editable": False, "title": "Room"}
+    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
+    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
+    column_definitions["room"] = {"width": "50px", "type": "string", "editable": False, "title": "Room", "related": True, "lookup_field": "name"}
     column_definitions["switch_ip"] = {"width": "150px", "type": "ip-address", "title": "Switch IP"}
     column_definitions["switch_name"] = {"width": "100px", "type": "string", "title": "Switch Name"}
     column_definitions["jack"] = {"width": "50px", "type": "string", "editable": False, "title": "Jack"}

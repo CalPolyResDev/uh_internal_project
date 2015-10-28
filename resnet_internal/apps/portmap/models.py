@@ -12,6 +12,7 @@
 from django.db.models.base import Model
 from django.db.models.fields import CharField, GenericIPAddressField, BooleanField, PositiveSmallIntegerField
 from django.db.models.fields.related import ForeignKey, OneToOneField
+from django.utils.functional import cached_property
 
 from ..computers.fields import MACAddressField
 from ..core.models import Room
@@ -27,12 +28,20 @@ class ResHallWired(Model):
     vlan = CharField(max_length=7, verbose_name='vLan')
     active = BooleanField(default=True, verbose_name='Active')
 
+    @cached_property
+    def building(self):
+        return self.room.building
+
+    @cached_property
+    def community(self):
+        return self.room.building.community
+
     def __str__(self):
         return str(self.room) + ": " + self.jack
 
     def save(self, *args, **kwargs):
-        # Upper room and jack letters
-        for field_name in ['room', 'jack']:
+        # Upper jack letters
+        for field_name in ['jack']:
             value = getattr(self, field_name, None)
             if value:
                 setattr(self, field_name, value.upper())
