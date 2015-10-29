@@ -23,6 +23,9 @@ from django_ajax.decorators import ajax
 from paramiko import SSHClient, AutoAddPolicy
 from rmsconnector.utils import Resident
 
+from resnet_internal.apps.portmap.forms import AccessPointCreateForm
+from resnet_internal.apps.portmap.models import AccessPoint
+
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
 from .forms import ResHallWiredPortUpdateForm
@@ -203,6 +206,66 @@ def change_port_status(request):
     ssh_client.close()
 
     return redraw_row(request, PopulateResidenceHallWiredPorts, port_id)
+
+
+class PopulateResidenceHallAccessPoints(RNINDatatablesPopulateView):
+    """Renders the access point map."""
+
+    table_name = "residence_halls_access_point_map"
+    data_source = reverse_lazy('populate_residence_halls_access_points')
+    update_source = reverse_lazy('update_residence_halls_access_point')
+    model = AccessPoint
+    max_display_length = 1000
+
+    column_definitions = OrderedDict()
+    column_definitions["id"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "ID"}
+    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "port__room__building__community__name"}
+    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "port__room__building__name"}
+    column_definitions["room"] = {"width": "50px", "type": "string", "editable": False, "title": "Room", "custom_lookup": True, "lookup_field": "port__room"}
+    column_definitions["port"] = {"width": "50px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "jack"}
+    column_definitions["name"] = {"width": "55px", "type": "string", "className": "edit_trigger", "title": "Name"}
+    column_definitions["property_id"] = {"width": "55px", "type": "string", "title": "Property ID"}
+    column_definitions["serial_number"] = {"width": "55px", "type": "string", "title": "SN"}
+    column_definitions["mac_address"] = {"width": "55px", "type": "string", "title": "MAC"}
+    column_definitions["ip_address"] = {"width": "55px", "type": "string", "title": "IP Address"}
+    column_definitions["type"] = {"width": "55px", "type": "string", "title": "Type"}
+
+    extra_options = {
+        "language": {
+            "lengthMenu":
+                'Display <select>' +
+                '<option value="50">50</option>' +
+                '<option value="100">100</option>' +
+                '<option value="250">250</option>' +
+                '<option value="500">500</option>' +
+                '<option value="1000">1000</option>' +
+                '<option value="-1">All</option>' +
+                '</select> records:',
+            "search": "Filter records:",
+        },
+    }
+
+    def _initialize_write_permissions(self, user):
+        self.write_permissions = portmap_modify_access_test(user)
+
+    def render_column(self, row, column, class_names=None):
+        if not class_names:
+            class_names = []
+
+        if column in self.get_editable_columns() and self.get_write_permissions():
+            value = getattr(row, column)
+            editable_block = self.editable_block_template.format(value=value)
+            class_names.append("editable")
+
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+        else:
+            return super(PopulateResidenceHallAccessPoints, self).render_column(row, column, class_names)
+
+
+class UpdateResidenceHallAccessPoint(BaseDatatablesUpdateView):
+    form_class = AccessPointCreateForm
+    model = AccessPoint
+    populate_class = PopulateResidenceHallAccessPoints
 
 
 class PortChainedAjaxView(ChainedSelectChoicesView):

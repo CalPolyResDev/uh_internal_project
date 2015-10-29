@@ -30,8 +30,8 @@ from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView, EmailComposeView
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
-from .apps.portmap.ajax import PopulateResidenceHallWiredPorts, UpdateResidenceHallWiredPort, change_port_status, PortChainedAjaxView
-from .apps.portmap.views import ResidenceHallWiredPortsView
+from .apps.portmap.ajax import PopulateResidenceHallWiredPorts, UpdateResidenceHallWiredPort, change_port_status, PortChainedAjaxView, UpdateResidenceHallAccessPoint, PopulateResidenceHallAccessPoints
+from .apps.portmap.views import ResidenceHallWiredPortsView, ResidenceHallAccessPointsView
 from .apps.printerrequests.ajax import change_request_status, update_part_inventory, update_toner_inventory
 from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
 from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
@@ -175,6 +175,9 @@ urlpatterns += [
     url(r'^portmap/populate/$', login_required(portmap_access(PopulateResidenceHallWiredPorts.as_view())), name='populate_residence_halls_wired_ports'),
     url(r'^portmap/update/$', login_required(portmap_access(UpdateResidenceHallWiredPort.as_view())), name='update_residence_halls_wired_port'),
     url(r'^portmap/change_status/$', login_required(portmap_modify_access(change_port_status)), name='change_residence_halls_wired_port_status'),
+    url(r'^portmap/ap/$', login_required(portmap_access(ResidenceHallAccessPointsView.as_view())), name='residence_halls_access_points'),
+    url(r'^portmap/ap/populate/$', login_required(portmap_access(PopulateResidenceHallAccessPoints.as_view())), name='populate_residence_halls_access_points'),
+    url(r'^portmap/ap/update/$', login_required(portmap_access(UpdateResidenceHallAccessPoint.as_view())), name='update_residence_halls_access_point'),
     url(r'^portmap/ajax/chained_port/$', login_required(PortChainedAjaxView.as_view()), name='portmap_chained_port'),
 ]
 

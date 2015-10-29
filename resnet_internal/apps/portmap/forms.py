@@ -38,7 +38,7 @@ class ResHallWiredPortUpdateForm(ModelForm):
 
 
 class AccessPointCreateForm(ChainedChoicesModelForm):
-    community = ModelChoiceField(queryset=Community.objects.all(), required=True)
+    community = ModelChoiceField(queryset=Community.objects.all())
     building = ChainedModelChoiceField('community', reverse_lazy('core_chained_building'), Building)
     room = ChainedModelChoiceField('building', reverse_lazy('core_chained_room'), Room)
     port = ChainedModelChoiceField('room', reverse_lazy('portmap_chained_port'), ResHallWired)
@@ -46,3 +46,10 @@ class AccessPointCreateForm(ChainedChoicesModelForm):
     class Meta:
         model = AccessPoint
         fields = ['name', 'property_id', 'serial_number', 'mac_address', 'ip_address', 'type', 'community', 'building', 'room', 'port']
+
+
+class AccessPointUpdateForm(ModelForm):
+
+    class Meta:
+        model = AccessPoint
+        fields = ['name', 'property_id', 'serial_number', 'mac_address', 'ip_address', 'type']

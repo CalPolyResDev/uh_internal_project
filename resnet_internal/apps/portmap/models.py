@@ -66,3 +66,15 @@ class AccessPoint(Model):
     port = OneToOneField(ResHallWired, related_name='access_point')
     ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address')
     type = CharField(max_length=3, choices=TYPE_CHOICES, verbose_name='Type')
+
+    @cached_property
+    def room(self):
+        return self.port.room
+
+    @cached_property
+    def building(self):
+        return self.room.building
+
+    @cached_property
+    def community(self):
+        return self.building.community
