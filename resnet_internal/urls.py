@@ -24,14 +24,14 @@ from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.adgroups.views import ResTechListEditView
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
-from .apps.core.ajax import update_building, update_network_status, get_tickets
+from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView
 from .apps.core.views import IndexView, handler500, TicketSummaryView
 from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive, send_email, attachment_upload, attachment_delete
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView, EmailComposeView
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
-from .apps.portmap.ajax import PopulateResidenceHallWiredPorts, UpdateResidenceHallWiredPort, change_port_status
-from .apps.portmap.views import ResidenceHallWiredPortsView
+from .apps.portmap.ajax import PopulateResidenceHallWiredPorts, UpdateResidenceHallWiredPort, change_port_status, PortChainedAjaxView, UpdateResidenceHallAccessPoint, PopulateResidenceHallAccessPoints
+from .apps.portmap.views import ResidenceHallWiredPortsView, ResidenceHallAccessPointsView
 from .apps.printerrequests.ajax import change_request_status, update_part_inventory, update_toner_inventory
 from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
 from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
@@ -79,7 +79,6 @@ computer_record_modify_access = permissions_check(computer_record_modify_access_
 printers_access = permissions_check(printers_access_test)
 printers_modify_access = permissions_check(printers_modify_access_test)
 
-admin.autodiscover()
 
 handler500 = handler500
 
@@ -92,7 +91,8 @@ urlpatterns = [
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
     url(r'^login/$', auth_login, name='login'),
     url(r'^logout/$', auth_logout, name='logout', kwargs={'next_page': settings.CAS_LOGOUT_URL}),
-    url(r'^ajax/update_building/$', update_building, name='ajax_update_building'),
+    url(r'^ajax/chained_building/$', login_required(BuildingChainedAjaxView.as_view()), name='core_chained_building'),
+    url(r'^ajax/chained_room/$', login_required(RoomChainedAjaxView.as_view()), name='core_chained_room'),
     url(r'^core/network_status/update/$', update_network_status, name='core_update_network_status'),
     url(r'^core/tickets/list/$', login_required(technician_access(get_tickets)), name='core_get_tickets'),
     url(r'^core/tickets/list/(?P<ticket_id>\b[0-9]*\b)/$', login_required(technician_access(TicketSummaryView.as_view())), name='core_ticket_summary'),
@@ -175,6 +175,10 @@ urlpatterns += [
     url(r'^portmap/populate/$', login_required(portmap_access(PopulateResidenceHallWiredPorts.as_view())), name='populate_residence_halls_wired_ports'),
     url(r'^portmap/update/$', login_required(portmap_access(UpdateResidenceHallWiredPort.as_view())), name='update_residence_halls_wired_port'),
     url(r'^portmap/change_status/$', login_required(portmap_modify_access(change_port_status)), name='change_residence_halls_wired_port_status'),
+    url(r'^portmap/ap/$', login_required(portmap_access(ResidenceHallAccessPointsView.as_view())), name='residence_halls_access_points'),
+    url(r'^portmap/ap/populate/$', login_required(portmap_access(PopulateResidenceHallAccessPoints.as_view())), name='populate_residence_halls_access_points'),
+    url(r'^portmap/ap/update/$', login_required(portmap_access(UpdateResidenceHallAccessPoint.as_view())), name='update_residence_halls_access_point'),
+    url(r'^portmap/ajax/chained_port/$', login_required(PortChainedAjaxView.as_view()), name='portmap_chained_port'),
 ]
 
 # Raise errors on purpose

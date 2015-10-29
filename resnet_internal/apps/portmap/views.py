@@ -10,10 +10,12 @@
 
 from django.core.urlresolvers import reverse_lazy
 
+from resnet_internal.apps.portmap.forms import AccessPointCreateForm
+
 from ..datatables.views import DatatablesView
-from .ajax import PopulateResidenceHallWiredPorts
+from .ajax import PopulateResidenceHallWiredPorts, PopulateResidenceHallAccessPoints
 from .forms import ResHallWiredPortCreateForm
-from .models import ResHallWired
+from .models import ResHallWired, AccessPoint
 
 
 class ResidenceHallWiredPortsView(DatatablesView):
@@ -22,3 +24,11 @@ class ResidenceHallWiredPortsView(DatatablesView):
     populate_class = PopulateResidenceHallWiredPorts
     model = ResHallWired
     success_url = reverse_lazy('residence_halls_wired_ports')
+
+
+class ResidenceHallAccessPointsView(DatatablesView):
+    template_name = "portmap/apmap.html"
+    form_class = AccessPointCreateForm
+    populate_class = PopulateResidenceHallAccessPoints
+    model = AccessPoint
+    success_url = reverse_lazy('residence_halls_access_points')

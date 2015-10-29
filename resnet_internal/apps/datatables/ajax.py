@@ -154,12 +154,16 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         columns = self.get_columns()
         related_columns = self._get_columns_by_attribute("related", default=False)
+        custom_lookup_columns = self._get_columns_by_attribute("custom_lookup", default=False)
 
         for column_name in columns:
             # If the column is related, append the lookup field to the column name
             if column_name in related_columns:
                 related_column_name = column_name + "__" + self.column_definitions[column_name]["lookup_field"]
                 columns[columns.index(column_name)] = related_column_name
+            elif column_name in custom_lookup_columns:
+                custom_lookup_field = self.column_definitions[column_name]["lookup_field"]
+                columns[columns.index(column_name)] = custom_lookup_field
 
         return columns
 
@@ -168,12 +172,16 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         searchable_columns = self._get_columns_by_attribute("searchable")
         related_columns = self._get_columns_by_attribute("related", default=False)
+        custom_lookup_columns = self._get_columns_by_attribute("custom_lookup", default=False)
 
         for column_name in searchable_columns:
             # If the column is related, append the lookup field to the column name
             if column_name in related_columns:
                 related_column_name = column_name + "__" + self.column_definitions[column_name]["lookup_field"]
                 searchable_columns[searchable_columns.index(column_name)] = related_column_name
+            elif column_name in custom_lookup_columns:
+                custom_lookup_field = self.column_definitions[column_name]["lookup_field"]
+                searchable_columns[searchable_columns.index(column_name)] = custom_lookup_field
 
         return searchable_columns
 

@@ -53,6 +53,19 @@ class Building(Model):
         verbose_name = 'University Housing Building'
 
 
+class Room(Model):
+    """University Housing Room."""
+
+    name = CharField(max_length=10, verbose_name="Room Numbers")
+    building = ForeignKey(Building, verbose_name="Building", related_name="rooms")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'University Housing Room'
+
+
 class SubDepartment(Model):
     """University Housing Sub Departments."""
 

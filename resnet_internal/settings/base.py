@@ -289,6 +289,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 INSTALLED_APPS = (
+    'clever_selects',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',

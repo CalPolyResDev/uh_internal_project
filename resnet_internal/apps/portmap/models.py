@@ -11,16 +11,15 @@
 
 from django.db.models.base import Model
 from django.db.models.fields import CharField, GenericIPAddressField, BooleanField, PositiveSmallIntegerField
-from django.db.models.fields.related import ForeignKey
+from django.db.models.fields.related import ForeignKey, OneToOneField
+from django.utils.functional import cached_property
 
-from ..core.models import Community, Building
+from ..computers.fields import MACAddressField
+from ..core.models import Room
 
 
 class ResHallWired(Model):
-
-    community = ForeignKey(Community, verbose_name='Community')
-    building = ForeignKey(Building, verbose_name='Building')
-    room = CharField(max_length=10, verbose_name='Room')
+    room = ForeignKey(Room, verbose_name='Room', null=True)
     switch_ip = GenericIPAddressField(protocol='IPv4', verbose_name='Switch IP')
     switch_name = CharField(max_length=35, verbose_name='Switch Name')
     jack = CharField(max_length=5, verbose_name='Jack')
@@ -29,12 +28,20 @@ class ResHallWired(Model):
     vlan = CharField(max_length=7, verbose_name='vLan')
     active = BooleanField(default=True, verbose_name='Active')
 
+    @cached_property
+    def building(self):
+        return self.room.building
+
+    @cached_property
+    def community(self):
+        return self.room.building.community
+
     def __str__(self):
-        return str(self.community) + " - " + str(self.building) + " " + self.room + ": " + self.jack
+        return self.jack
 
     def save(self, *args, **kwargs):
-        # Upper room and jack letters
-        for field_name in ['room', 'jack']:
+        # Upper jack letters
+        for field_name in ['jack']:
             value = getattr(self, field_name, None)
             if value:
                 setattr(self, field_name, value.upper())
@@ -43,3 +50,31 @@ class ResHallWired(Model):
 
     class Meta:
         verbose_name = 'Residence Halls Wired Port'
+
+
+class AccessPoint(Model):
+    TYPE_CHOICES = (
+        ('5', '5 Ghz'),
+        ('2.4', '2.4 Ghz'),
+        ('AM', 'Air Monitor'),
+    )
+
+    name = CharField(max_length=30, verbose_name='DNS Name')
+    property_id = CharField(max_length=7, unique=True, verbose_name='Property ID')
+    serial_number = CharField(max_length=9, unique=True, verbose_name='Serial Number')
+    mac_address = MACAddressField(unique=True, verbose_name='MAC Address')
+    port = OneToOneField(ResHallWired, related_name='access_point')
+    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address')
+    type = CharField(max_length=3, choices=TYPE_CHOICES, verbose_name='Type')
+
+    @cached_property
+    def room(self):
+        return self.port.room
+
+    @cached_property
+    def building(self):
+        return self.room.building
+
+    @cached_property
+    def community(self):
+        return self.building.community
