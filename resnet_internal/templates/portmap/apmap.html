@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load core_user_tests %}
+{% load datatables %}
+
+{% block meta %}
+{{ block.super }}
+{% datatables_script %}
+{% endblock %}
+
+{% block subtitle %} | Residence Halls Access Point Map{% endblock %}
+
+{% block content %}
+<div id="content-2col">
+    <div id="content">
+        <div id="splashOuter">
+            <!--<div id="splash"></div>-->
+        </div>
+        <div id="topContent">
+            <h1>Residence Halls Access Point Map</h1>
+        </div>
+        {% if request.user|portmap_modify_access %}
+        <p style="color: red;">
+            {{ form.non_field_errors }}
+            {% for field in form %}
+            {{ field.errors }}
+            {% endfor %}
+        </p>
+        {% endif %}
+        <div class="clear"></div>
+        <table id="residence_halls_access_point_map">
+            <tfoot>
+                <tr>
+                    <th></th>
+                </tr>
+            </tfoot>
+        </table>
+        <div class="clear"></div>
+        {% if request.user|portmap_modify_access %}
+        <div>
+            <form method="post" id="add_access_point_form">
+                <fieldset>
+                <legend>
+                    Add a new port
+                </legend>
+                   {{ form.as_p }}
+                </fieldset>
+                    <p>
+                        <input type="submit" value="Add" />
+                    </p>
+                {% csrf_token %}
+            </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
