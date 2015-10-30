@@ -39,10 +39,18 @@
         <div>
             <form method="post" id="add_access_point_form">
                 <fieldset>
-                <legend>
-                    Add a new port
-                </legend>
-                   {{ form.as_p }}
+                    <legend>
+                        Add a new AP
+                    </legend>
+                    <p>
+                        {{ form.non_field_errors }}
+                        {% for field in form %}
+                        {{ field.errors }}
+                        {% endfor %}
+                    </p>
+                    <div class="horizontal_fields">
+                        {{ form.as_p }}
+                    </div>
                 </fieldset>
                     <p>
                         <input type="submit" value="Add" />

@@ -23,7 +23,8 @@ from django_ajax.decorators import ajax
 from paramiko import SSHClient, AutoAddPolicy
 from rmsconnector.utils import Resident
 
-from resnet_internal.apps.portmap.forms import AccessPointCreateForm
+from resnet_internal.apps.portmap.forms import AccessPointCreateForm,\
+    AccessPointUpdateForm
 from resnet_internal.apps.portmap.models import AccessPoint
 
 from ...settings.base import portmap_modify_access_test
@@ -263,7 +264,7 @@ class PopulateResidenceHallAccessPoints(RNINDatatablesPopulateView):
 
 
 class UpdateResidenceHallAccessPoint(BaseDatatablesUpdateView):
-    form_class = AccessPointCreateForm
+    form_class = AccessPointUpdateForm
     model = AccessPoint
     populate_class = PopulateResidenceHallAccessPoints
 
