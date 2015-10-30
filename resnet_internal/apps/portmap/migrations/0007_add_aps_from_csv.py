@@ -5,7 +5,7 @@ from csv import DictReader, DictWriter
 from pathlib import Path
 
 from django.conf import settings
-from django.db import migrations
+from django.db import migrations, transaction
 from django.db.migrations.operations.special import RunPython
 from django.db.utils import IntegrityError
 
@@ -35,7 +35,8 @@ def create_aps_from_csv(apps, schema_editor):
         new_ap.ip_address = access_point['ip_address']
         new_ap.type = access_point['type']
         try:
-            new_ap.save()
+            with transaction.atomic():
+                new_ap.save()
         except IntegrityError:
             print("Integrity error when adding: " + str(access_point))
             failed_aps.writerow(access_point)
