@@ -8,19 +8,20 @@
 from csv import DictReader, DictWriter
 from pathlib import Path
 
-from django.conf import settings
 from django.core.management import BaseCommand
 from django.db import transaction
 from django.db.utils import IntegrityError
 
-from ...core.models import Community, Building, Room
-from ..models import ResHallWired, AccessPoint
+from ...models import ResHallWired, AccessPoint
 
 
 class Command(BaseCommand):
     help = "Imports APs from aps.csv in media"
+    can_import_settings = True
 
     def handle(self, *args, **options):
+        from django.conf import settings
+
         ap_import = DictReader((Path(settings.MEDIA_ROOT) / 'aps.csv').open('r'))
         failed_aps = DictWriter((Path(settings.MEDIA_ROOT) / 'aps_failed.csv').open('w'),
                                 ['property_id', 'serial_number', 'mac_address', 'ip_address', 'name', 'type', 'room', 'building', 'community', 'jack', ''])
