@@ -14,15 +14,13 @@ import logging
 
 from django.core.urlresolvers import reverse_lazy
 from django.template import Template, RequestContext
-from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
-from resnet_internal.apps.core.forms import RoomUpdateForm
-from resnet_internal.settings.base import technician_access_test
-
-from ..core.models import Community, Building, Room
-from ..core.utils import NetworkReachabilityTester, get_ticket_list
+from ...settings.base import technician_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
+from .forms import RoomUpdateForm
+from .models import Building, Room
+from .utils import NetworkReachabilityTester, get_ticket_list
 
 
 logger = logging.getLogger(__name__)
