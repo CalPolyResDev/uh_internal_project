@@ -1,4 +1,4 @@
-property_id,serial_number,mac_address,ip_address,name,type,room,building,community,port
+property_id,serial_number,mac_address,ip_address,name,type,room,building,community,jack
 A016104,BN0016690,000B86816906,10.151.172.1,slo-rw171a-a101-b,5,A101-B,Aliso,Poly Canyon Village,W
 A016105,BN0016938,000B86816DDE,10.151.172.2,slo-rw171a-a101-c,2.4,A101-C,Aliso,Poly Canyon Village,W
 A016106,BN0016637,000B868167FD,10.151.172.3,slo-rw171a-a102-l,5,A102-L,Aliso,Poly Canyon Village,W
