@@ -56,11 +56,15 @@ class Building(Model):
 class Room(Model):
     """University Housing Room."""
 
-    name = CharField(max_length=10, verbose_name="Room Numbers")
+    name = CharField(max_length=10, verbose_name="Room Number")
     building = ForeignKey(Building, verbose_name="Building", related_name="rooms")
 
     def __str__(self):
         return self.name
+
+    @cached_property
+    def community(self):
+        return self.building.community
 
     class Meta:
         verbose_name = 'University Housing Room'

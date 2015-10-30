@@ -20,8 +20,10 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 from srsconnector.models import ServiceRequest
 
-from .forms import AutoFocusAuthenticationForm
-from .models import SiteAnnouncements
+from ..datatables.views import DatatablesView
+from .ajax import PopulateResidenceHallRooms
+from .forms import AutoFocusAuthenticationForm, RoomCreateForm
+from .models import SiteAnnouncements, Room
 
 
 class IndexView(TemplateView):
@@ -118,3 +120,11 @@ def handler500(request):
     template = loader.get_template('500.html')
 
     return HttpResponseServerError(template.render(RequestContext(request)))
+
+
+class ResidenceHallRoomsView(DatatablesView):
+    template_name = "core/rooms.html"
+    form_class = RoomCreateForm
+    populate_class = PopulateResidenceHallRooms
+    model = Room
+    success_url = reverse_lazy('residence_halls_rooms')
