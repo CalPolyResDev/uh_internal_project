@@ -221,7 +221,7 @@ class PopulateResidenceHallAccessPoints(RNINDatatablesPopulateView):
     column_definitions["id"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "ID"}
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "port__room__building__community__name"}
     column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "port__room__building__name"}
-    column_definitions["room"] = {"width": "50px", "type": "string", "editable": False, "title": "Room", "custom_lookup": True, "lookup_field": "port__room"}
+    column_definitions["room"] = {"width": "50px", "type": "string", "editable": False, "title": "Room", "custom_lookup": True, "lookup_field": "port__room__name"}
     column_definitions["port"] = {"width": "50px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "jack"}
     column_definitions["name"] = {"width": "55px", "type": "string", "className": "edit_trigger", "title": "Name"}
     column_definitions["property_id"] = {"width": "55px", "type": "string", "title": "Property ID"}
