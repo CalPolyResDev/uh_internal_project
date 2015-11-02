@@ -120,11 +120,14 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
                 if param[:1] == '?':
                     alias = param[1:]
 
-                    if alias != "":
+                    if alias:
                         try:
-                            resident = Resident(alias=alias)
-                            lookup = resident.get_address()
-                            params = [lookup['community'], lookup['building'], lookup['room']]
+                            resident = Resident(principal_name=alias + '@calpoly.edu')
+                            # Some rooms in RMS that have been doubled now contain an additional number at the end >:(
+                            if resident.address_dict['room'][-1].isdigit():
+                                resident.address_dict['room'] = resident.address_dict['room'][:-1]
+
+                            params = [resident.address_dict['community'], resident.address_dict['building'], resident.address_dict['room']]
                         except (ObjectDoesNotExist, ImproperlyConfigured):
                             params = ['Address', 'Not', 'Found']
                     break
