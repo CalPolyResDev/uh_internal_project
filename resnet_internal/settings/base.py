@@ -331,7 +331,7 @@ LOGGING = {
     'disable_existing_loggers': True,
     'root': {
         'level': 'INFO',
-        'handlers': ['console'],
+        'handlers': ['sentry'],
     },
     'formatters': {
         'verbose': {
