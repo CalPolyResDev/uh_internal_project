@@ -377,7 +377,7 @@ LOGGING = {
         },
         'paramiko': {
             'level': 'WARNING',
-            'handlers': ['console'],
+            'handlers': ['sentry'],
             'propagate': True,
         },
         'resnet_internal': {
