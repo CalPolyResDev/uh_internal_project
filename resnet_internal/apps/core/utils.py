@@ -26,7 +26,7 @@ class NetworkReachabilityTester:
 
     @staticmethod
     def _is_device_reachable(ip_address):
-        response = os.system("ping -c 1 -t 1 " + ip_address + ' > /dev/null 2>&1') if platform == 'darwin' else os.system("ping -c 1 -w 1 " + ip_address + ' > /dev/null 2>&1')
+        response = os.system("ping -c 1 -t 2 " + ip_address + ' > /dev/null 2>&1') if platform == 'darwin' else os.system("ping -c 1 -w 2 " + ip_address + ' > /dev/null 2>&1')
         return True if response == 0 else False
 
     @staticmethod

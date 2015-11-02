@@ -7,7 +7,7 @@
 {% datatables_script %}
 {% endblock %}
 
-{% block subtitle %} | Residence Halls Wired Port Map{% endblock %}
+{% block subtitle %} | Residence Halls Access Point Map{% endblock %}
 
 {% block content %}
 <div id="content-2col">
@@ -16,7 +16,7 @@
             <!--<div id="splash"></div>-->
         </div>
         <div id="topContent">
-            <h1>Residence Halls Wired Port Map</h1>
+            <h1>Residence Halls Access Point Map</h1>
         </div>
         {% if request.user|portmap_modify_access %}
         <p style="color: red;">
@@ -27,7 +27,7 @@
         </p>
         {% endif %}
         <div class="clear"></div>
-        <table id="residence_halls_wired_port_map">
+        <table id="residence_halls_access_point_map">
             <tfoot>
                 <tr>
                     <th></th>
@@ -37,10 +37,10 @@
         <div class="clear"></div>
         {% if request.user|portmap_modify_access %}
         <div>
-            <form method="post" id="add_port_form">
+            <form method="post" id="add_access_point_form">
                 <fieldset>
                     <legend>
-                        Add a new port
+                        Add a new AP
                     </legend>
                     <p>
                         {{ form.non_field_errors }}

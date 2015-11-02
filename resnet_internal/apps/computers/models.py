@@ -9,6 +9,7 @@
 from django.db.models.base import Model
 from django.db.models.fields import BooleanField, CharField, IntegerField, GenericIPAddressField, DateField
 from django.db.models.fields.related import ForeignKey
+from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ..core.models import Department, SubDepartment
 from .fields import MACAddressField, ListField
@@ -77,6 +78,12 @@ class Pinhole(Model):
     def __str__(self):
         return 'Pinhole: ' + str(self.ip_address)
 
+    @property
+    def pinhole_request(self):
+        if self.sr_number:
+            return PinholeRequest.objects.get(ticket_id=self.sr_number)
+        return None
+
     class Meta:
         verbose_name = 'University Housing Pinhole'
 
@@ -90,6 +97,12 @@ class DomainName(Model):
 
     def __str__(self):
         return 'DNS Record: ' + str(self.ip_address)
+
+    @property
+    def domain_name_request(self):
+        if self.sr_number:
+            return DomainNameRequest.objects.get(ticket_id=self.sr_number)
+        return None
 
     class Meta:
         verbose_name = 'University Housing Domain Name'
