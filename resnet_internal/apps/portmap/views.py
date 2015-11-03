@@ -9,6 +9,7 @@
 """
 
 from django.core.urlresolvers import reverse_lazy
+from django.views.generic.detail import DetailView
 
 from resnet_internal.apps.portmap.forms import AccessPointCreateForm
 
@@ -32,3 +33,9 @@ class ResidenceHallAccessPointsView(DatatablesView):
     populate_class = PopulateResidenceHallAccessPoints
     model = AccessPoint
     success_url = reverse_lazy('residence_halls_access_points')
+
+
+class AccessPointFrameView(DetailView):
+    template_name = "portmap/ap_frame.html"
+    model = AccessPoint
+    context_object_name = 'ap'

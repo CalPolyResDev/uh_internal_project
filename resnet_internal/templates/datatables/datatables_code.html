@@ -22,6 +22,23 @@
     // initialize the dataTable
     $(document).ready(function() {
     	{{ datatable_name }} = $("#{{ datatable_name }}").dataTable({% autoescape off %}{{ datatable_options }}{% endautoescape %});
+    	
+    	$("#{{ datatable_name }}").on( 'draw.dt', function() {
+            $('[popover-data-url]').hover(function() {
+                var e=$(this);
+                e.off('hover');
+                $.get(e.attr('popover-data-url'),function(d) {
+                    e.popover({content: d,
+                                placement: 'left',
+                                html: true,
+                                container: 'body'
+                    }).popover('show');
+                });
+            }, function() {
+                var e=$(this);
+                e.popover('hide');
+            });
+        });
 
         {% if write_permission %}
         	$(document).on("dblclick", "#{{ datatable_name }} td", handle_edit);
