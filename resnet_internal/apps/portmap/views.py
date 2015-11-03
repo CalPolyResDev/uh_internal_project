@@ -36,6 +36,6 @@ class ResidenceHallAccessPointsView(DatatablesView):
 
 
 class AccessPointFrameView(DetailView):
-    template_name = "portmap/ap_frame.html"
+    template_name = "portmap/ap_popover.html"
     model = AccessPoint
     context_object_name = 'ap'
