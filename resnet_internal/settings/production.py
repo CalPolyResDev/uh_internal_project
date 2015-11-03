@@ -17,6 +17,7 @@ ALLOWED_HOSTS = [
     'dev.resdev.calpoly.edu',
     'prod.resdev.calpoly.edu',
     '.internal.resnet.calpoly.edu',
+    'testserver',  # Needed for django-clever-selects for some reason.
 ]
 
 # ======================================================================================================== #
