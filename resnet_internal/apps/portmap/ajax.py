@@ -104,7 +104,7 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
             else:
                 ap_url = reverse('ap_info_frame', kwargs={'pk': access_point.id})
                 ap_icon = self.icon_template.format(icon_url=static('images/icons/wifi-xxl.png'))
-                ap_block = self.popover_link_block_template.format(popover_title='AP Info', content_url=ap_url, link_style="", link_class_name="", link_text=ap_icon)
+                ap_block = self.popover_link_block_template.format(popover_title='AP Info', content_url=ap_url, link_style="", link_class_name="", link_text=ap_icon, link_url="#")
                 return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=ap_block, inline_images="", editable_block="")
         elif column in self.get_editable_columns() and self.get_write_permissions():
             value = getattr(row, column)
@@ -279,7 +279,7 @@ class PopulateResidenceHallAccessPoints(RNINDatatablesPopulateView):
             port = row.port
             port_url = reverse('port_info_frame', kwargs={'pk': port.id})
             port_icon = self.icon_template.format(icon_url=static('images/icons/icon_ethernet.png'))
-            port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_style="", link_class_name="", link_text=port_icon)
+            port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_style="", link_class_name="", link_text=port_icon, link_url="#")
             return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=port.jack, link_block=port_block, inline_images="", editable_block="")
         else:
             return super(PopulateResidenceHallAccessPoints, self).render_column(row, column, class_names)

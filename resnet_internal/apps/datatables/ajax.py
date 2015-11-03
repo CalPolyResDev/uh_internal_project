@@ -76,7 +76,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     editable_block_template = """<input type='text' class='editbox' value='{value}' />"""
     link_block_template = """<a href='{link_url}' onclick='{onclick_action}' target='{link_target}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
     icon_template = """<img src='{icon_url}' style='padding-left:5px;' align='top' width='16' height='16' border='0' />"""
-    popover_link_block_template = """<a href='#' title='{popover_title}' popover-data-url='{content_url}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
+    popover_link_block_template = """<a href='{link_url}' title='{popover_title}' popover-data-url='{content_url}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
 
     def format_select_block(self, queryset, value_field, text_field, value_match):
         choices = []
