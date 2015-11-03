@@ -39,3 +39,9 @@ class AccessPointFrameView(DetailView):
     template_name = "portmap/ap_popover.html"
     model = AccessPoint
     context_object_name = 'ap'
+
+
+class PortFrameView(DetailView):
+    template_name = "portmap/port_popover.html"
+    model = ResHallWired
+    context_object_name = 'port'

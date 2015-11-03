@@ -20,8 +20,6 @@ from django.views.defaults import permission_denied, page_not_found
 from django.views.generic import RedirectView
 from django_cas_ng.views import login as auth_login, logout as auth_logout
 
-from resnet_internal.apps.portmap.views import AccessPointFrameView
-
 from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.adgroups.views import ResTechListEditView
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
@@ -33,7 +31,7 @@ from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentReques
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
 from .apps.portmap.ajax import PopulateResidenceHallWiredPorts, UpdateResidenceHallWiredPort, change_port_status, PortChainedAjaxView, UpdateResidenceHallAccessPoint, PopulateResidenceHallAccessPoints
-from .apps.portmap.views import ResidenceHallWiredPortsView, ResidenceHallAccessPointsView
+from .apps.portmap.views import ResidenceHallWiredPortsView, ResidenceHallAccessPointsView, PortFrameView, AccessPointFrameView
 from .apps.printerrequests.ajax import change_request_status, update_part_inventory, update_toner_inventory
 from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
 from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
@@ -184,6 +182,7 @@ urlpatterns += [
     url(r'^portmap/ap/populate/$', login_required(portmap_access(PopulateResidenceHallAccessPoints.as_view())), name='populate_residence_halls_access_points'),
     url(r'^portmap/ap/update/$', login_required(portmap_access(UpdateResidenceHallAccessPoint.as_view())), name='update_residence_halls_access_point'),
     url(r'^portmap/ap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(AccessPointFrameView.as_view())), name='ap_info_frame'),
+    url(r'^portmap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(PortFrameView.as_view())), name='port_info_frame'),
     url(r'^portmap/ajax/chained_port/$', login_required(PortChainedAjaxView.as_view()), name='portmap_chained_port'),
 ]
 

@@ -7,12 +7,12 @@
 
 """
 
-from clever_selects.views import ChainedSelectChoicesView
 from collections import OrderedDict
 import logging
 import shlex
 import time
 
+from clever_selects.views import ChainedSelectChoicesView
 from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
@@ -271,6 +271,12 @@ class PopulateResidenceHallAccessPoints(RNINDatatablesPopulateView):
             class_names.append("editable")
 
             return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+        elif column == 'port':
+            port = row.port
+            port_url = reverse('port_info_frame', kwargs={'pk': port.id})
+            port_icon = self.icon_template.format(icon_url=static('images/icons/icon_ethernet.png'))
+            port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_style="", link_class_name="", link_text=port_icon)
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=port.jack, link_block=port_block, inline_images="", editable_block="")
         else:
             return super(PopulateResidenceHallAccessPoints, self).render_column(row, column, class_names)
 
