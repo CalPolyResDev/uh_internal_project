@@ -15,6 +15,7 @@ from django.core.urlresolvers import reverse
 from django.http.response import HttpResponse
 from django.template import Template, RequestContext
 from django.utils.encoding import smart_text
+from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from jfu.http import upload_receive, UploadResponse, JFUResponse
@@ -117,6 +118,7 @@ def remove_voicemail(request):
     return context
 
 
+@cache_page(60 * 60 * 24)
 def get_email_folders(request):
     with EmailManager() as email_manager:
         folder_response = email_manager.server.list_folders()
