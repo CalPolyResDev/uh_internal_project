@@ -7,12 +7,12 @@
 
 """
 
-from clever_selects.views import ChainedSelectChoicesView
 from collections import OrderedDict
 import logging
 import shlex
 import time
 
+from clever_selects.views import ChainedSelectChoicesView
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
@@ -254,8 +254,12 @@ class PopulateResidenceHallAccessPoints(RNINDatatablesPopulateView):
             class_names = []
 
         if column in self.get_editable_columns() and self.get_write_permissions():
-            value = getattr(row, column)
-            editable_block = self.editable_block_template.format(value=value)
+            if column == "type":
+                value = row.get_type_display()
+                editable_block = self.editable_block_template.format(value=row.type)
+            else:
+                value = getattr(row, column)
+                editable_block = self.editable_block_template.format(value=value)
             class_names.append("editable")
 
             return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
