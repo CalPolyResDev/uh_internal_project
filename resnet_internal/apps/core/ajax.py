@@ -148,13 +148,13 @@ def get_tickets(request):
 class BuildingChainedAjaxView(ChainedSelectChoicesView):
 
     def get_child_set(self):
-        return Building.objects.filter(community__id=self.parent_value)
+        return Building.objects.filter(community__id=self.parent_value).order_by('name')
 
 
 class RoomChainedAjaxView(ChainedSelectChoicesView):
 
     def get_child_set(self):
-        return Room.objects.filter(building__id=self.parent_value)
+        return Room.objects.filter(building__id=self.parent_value).order_by('name')
 
 
 class PopulateResidenceHallRooms(RNINDatatablesPopulateView):
