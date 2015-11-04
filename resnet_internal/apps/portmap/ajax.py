@@ -24,14 +24,10 @@ from django_ajax.decorators import ajax
 from paramiko import SSHClient, AutoAddPolicy
 from rmsconnector.utils import Resident
 
-from resnet_internal.apps.portmap.forms import AccessPointCreateForm,\
-    AccessPointUpdateForm
-from resnet_internal.apps.portmap.models import AccessPoint
-
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
-from .forms import ResHallWiredPortUpdateForm
-from .models import ResHallWired
+from .forms import ResHallWiredPortUpdateForm, AccessPointUpdateForm
+from .models import ResHallWired, AccessPoint
 
 
 logger = logging.getLogger(__name__)
@@ -132,11 +128,10 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
                 if param[:1] == '?':
                     alias = param[1:]
 
-                    if alias != "":
+                    if alias:
                         try:
-                            resident = Resident(alias=alias)
-                            lookup = resident.get_address()
-                            params = [lookup['community'], lookup['building'], lookup['room']]
+                            resident = Resident(principal_name=alias + '@calpoly.edu')
+                            params = [resident.address_dict['community'], resident.address_dict['building'], resident.address_dict['room']]
                         except (ObjectDoesNotExist, ImproperlyConfigured):
                             params = ['Address', 'Not', 'Found']
                     break
