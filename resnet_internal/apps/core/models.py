@@ -35,6 +35,10 @@ class Community(Model):
     def __str__(self):
         return self.name
 
+    @cached_property
+    def address(self):
+        return self.name
+
     class Meta:
         verbose_name = 'University Housing Community'
         verbose_name_plural = 'University Housing Communities'
@@ -48,6 +52,10 @@ class Building(Model):
 
     def __str__(self):
         return self.name
+
+    @cached_property
+    def address(self):
+        return self.community.address + ' ' + self.name
 
     class Meta:
         verbose_name = 'University Housing Building'
@@ -65,6 +73,10 @@ class Room(Model):
     @cached_property
     def community(self):
         return self.building.community
+
+    @cached_property
+    def address(self):
+        return self.building.address + ' ' + self.name
 
     class Meta:
         verbose_name = 'University Housing Room'
