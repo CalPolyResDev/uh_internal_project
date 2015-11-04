@@ -7,12 +7,12 @@
 
 """
 
+from clever_selects.views import ChainedSelectChoicesView
 from collections import OrderedDict
 import logging
 import shlex
 import time
 
-from clever_selects.views import ChainedSelectChoicesView
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
@@ -23,14 +23,10 @@ from django_ajax.decorators import ajax
 from paramiko import SSHClient, AutoAddPolicy
 from rmsconnector.utils import Resident
 
-from resnet_internal.apps.portmap.forms import AccessPointCreateForm,\
-    AccessPointUpdateForm
-from resnet_internal.apps.portmap.models import AccessPoint
-
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
-from .forms import ResHallWiredPortUpdateForm
-from .models import ResHallWired
+from .forms import ResHallWiredPortUpdateForm, AccessPointUpdateForm
+from .models import ResHallWired, AccessPoint
 
 
 logger = logging.getLogger(__name__)
