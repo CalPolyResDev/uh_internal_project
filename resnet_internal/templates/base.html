@@ -191,6 +191,17 @@
                 });
             {% endif %}
         </script>
+        <script type="text/javascript" src="https://taskmaster.its.calpoly.edu/s/218fb7ab581f4ac8ba1588798ae8d47d-T/en_USrqvfjr/64026/42/1.4.27/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=cdd699b5"></script>
+        <script type="text/javascript">
+            window.ATL_JQ_PAGE_PROPS =  {
+                "triggerFunction": function(showCollectorDialog) {
+                //Requires that jQuery is available! 
+                jQuery("#provide_feedback_link").click(function(e) {
+                    e.preventDefault();
+                    showCollectorDialog();
+                });
+            }}; 
+        </script>
         <noscript>
             <div id="noscript-warning">Many features of this website require that JavaScript be enabled. Please do so.</div>
         </noscript>
