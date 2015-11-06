@@ -50,8 +50,19 @@
                         <button class="button default" onclick="mark_selected_unread();">Mark as Unread</button>
                         <button class="button default" onclick="mark_selected_read();">Mark as Read</button>
                         <div class="input-group">
+                            <div class="input-group-btn">
+                                <div class="btn-group" data-toggle="buttons">
+                                    <label class="btn btn-primary active">
+                                        <input type="radio" name="options" id="search_this_mailbox" autocomplete="off" checked>This Mailbox
+                                    </label>
+                                    <label class="btn btn-secondary">
+                                        <input type="radio" name="options" id="search_all_mailboxes" autocomplete="off">All
+                                    </label>
+                                </div>
+                            </div>
                             <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
                             <input type="text" class="form-control" id="email_search" placeholder="Search...">
+                            <div class="input-group-btn"><span id="email_search_clr" class="glyphicon glyphicon-remove-circle"></span</div>
                         </div>
                     </div>
                     <table class="dataTable" id='email_table' style="">
@@ -62,6 +73,7 @@
                                 <th>Date</th>
                                 <th>From</th>
                                 <th>Subject</th>
+                                <th id="mailbox_name_header" style="display: none">Mailbox</th>
                             </tr>
                             <tr id="loading_email_record"><td colspan="5" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>
                         </tbody>
@@ -76,6 +88,7 @@
 {{ block.super }}
 <script type="text/javascript">
     var current_mailbox = 'INBOX';
+    var num_search_queries_running = 0;
     
     $(document).ready(function() {
             $('#jstree_folder_structure')
@@ -94,6 +107,10 @@
             });
             
             $('#email_search').keyup(_.debounce(search_messages, 1000));
+            $('#email_search_clear').click(function() {
+                $('#email_search').val('');
+                search_messages();
+            });
             refresh_messages('INBOX');
     });
 
@@ -123,15 +140,25 @@
     
     function search_messages() {
         var search_string = $('#email_search').val();
-        retrieve_messages(current_mailbox, search_string);
+        var search_this_mailbox = $('#search_this_mailbox').is(":checked");
+        if (!search_string.length) search_this_mailbox = true;
+        console.log("Search This Mailbox: " + search_this_mailbox.toString());
+        retrieve_messages(search_this_mailbox ? current_mailbox : '', search_string);
     };
     
     function retrieve_messages(mailbox, search_string) {
+        ++num_search_queries_running;
         current_mailbox = mailbox;
         $("#email_table tr:gt(0)").remove();
         $("#email_table").append('<tr id="loading_email_record"><td colspan="5" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
         ajaxPost("{% url 'email_get_mailbox_summary' %}", {"mailbox": mailbox, "search_string": search_string}, function(response_context) {
-            $("#refresh_button").attr("onclick","refresh_messages('" + mailbox + "');");
+            if (!(--num_search_queries_running)) {
+                console.log(mailbox.length);
+                console.log($('#mailbox_name_header'));
+                $('#mailbox_name_header').css('display', (mailbox.length > 0 ? 'none' : 'table-cell'));
+                $('#loading_email_record').replaceWith(response_context.response);
+                $("#refresh_button").attr("onclick","refresh_messages('" + mailbox + "');");
+            }
         });
     };
 
