@@ -1,0 +1,52 @@
+"""
+.. module:: resnet_internal.apps.portmap.management.import_ports
+   :synopsis: ResNet Internal Residence Halls Port Map Management Port Import
+
+.. moduleauthor:: Thomas Willson <thomas.willson@me.com>
+
+"""
+from csv import DictReader, DictWriter
+from pathlib import Path
+
+from django.core.management import BaseCommand
+from django.db import transaction
+from django.db.utils import IntegrityError
+
+from ....core.models import Room
+from ...models import ResHallWired
+
+
+class Command(BaseCommand):
+    help = "Imports Ports from ports.csv in media"
+    can_import_settings = True
+
+    def handle(self, *args, **options):
+        from django.conf import settings
+
+        port_import = DictReader((Path(settings.MEDIA_ROOT) / 'ports.csv').open('r'))
+        failed_ports = DictWriter((Path(settings.MEDIA_ROOT) / 'ports_failed.csv').open('w'),
+                                ['community', 'building', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan'])
+        failed_ports.writeheader()
+
+        for port in port_import:
+            room_query = Room.objects.filter(building__name=port['building'], building__community__name=port['community'], name=port['room'])
+            if not room_query.exists():
+                print("Could not add: " + str(port))
+                failed_ports.writerow(port)
+                continue
+
+            new_port = ResHallWired()
+            new_port.room = room_query.first()
+            new_port.switch_ip = port['switch_ip']
+            new_port.switch_name = port['switch_name']
+            new_port.jack = port['jack']
+            new_port.blade = int(port['blade'])
+            new_port.port = int(port['port'])
+            new_port.vlan = 999
+
+            try:
+                with transaction.atomic():
+                    new_port.save()
+            except IntegrityError:
+                print("Integrity error when adding: " + str(port))
+                failed_ports.writerow(port)
