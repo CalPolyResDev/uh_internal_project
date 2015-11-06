@@ -103,6 +103,7 @@ DATABASES = {
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_SRS_PASSWORD'),
         'HOST': 'srs.calpoly.edu/ewws/',
         'PORT': '443',
+        'NUM_CONNECTIONS': 40,
     },
 }
 

@@ -14,8 +14,9 @@ import shlex
 import time
 
 from django.conf import settings
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
-from django.core.urlresolvers import reverse_lazy
+from django.core.urlresolvers import reverse_lazy, reverse
 from django.db.models import Q
 from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
@@ -23,13 +24,10 @@ from django_ajax.decorators import ajax
 from paramiko import SSHClient, AutoAddPolicy
 from rmsconnector.utils import Resident
 
-from resnet_internal.apps.portmap.forms import AccessPointCreateForm
-from resnet_internal.apps.portmap.models import AccessPoint
-
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
-from .forms import ResHallWiredPortUpdateForm
-from .models import ResHallWired
+from .forms import ResHallWiredPortUpdateForm, AccessPointUpdateForm
+from .models import ResHallWired, AccessPoint
 
 
 logger = logging.getLogger(__name__)
@@ -55,6 +53,7 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
     column_definitions["blade"] = {"width": "50px", "type": "numeric", "title": "Blade"}
     column_definitions["port"] = {"width": "50px", "type": "numeric", "title": "Port"}
     column_definitions["vlan"] = {"width": "55px", "type": "string", "className": "edit_trigger", "title": "vLan"}
+    column_definitions["access_point"] = {"width": "10px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP"}
     column_definitions["active"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
@@ -93,6 +92,16 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
             link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="", link_style="color:red; cursor:pointer;", link_text="Deactivate" if getattr(row, column) else "Activate")
 
             return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=link_block, inline_images="", editable_block="")
+        elif column == 'access_point':
+            try:
+                access_point = row.access_point
+            except ObjectDoesNotExist:
+                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block="", inline_images="", editable_block="")
+            else:
+                ap_url = reverse('ap_info_frame', kwargs={'pk': access_point.id})
+                ap_icon = self.icon_template.format(icon_url=static('images/icons/wifi-xxl.png'))
+                ap_block = self.popover_link_block_template.format(popover_title='AP Info', content_url=ap_url, link_style="", link_class_name="", link_text=ap_icon, link_url="#")
+                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=ap_block, inline_images="", editable_block="")
         elif column in self.get_editable_columns() and self.get_write_permissions():
             value = getattr(row, column)
             editable_block = self.editable_block_template.format(value=value)
@@ -119,11 +128,10 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
                 if param[:1] == '?':
                     alias = param[1:]
 
-                    if alias != "":
+                    if alias:
                         try:
-                            resident = Resident(alias=alias)
-                            lookup = resident.get_address()
-                            params = [lookup['community'], lookup['building'], lookup['room']]
+                            resident = Resident(principal_name=alias + '@calpoly.edu')
+                            params = [resident.address_dict['community'], resident.address_dict['building'], resident.address_dict['room']]
                         except (ObjectDoesNotExist, ImproperlyConfigured):
                             params = ['Address', 'Not', 'Found']
                     break
@@ -253,17 +261,27 @@ class PopulateResidenceHallAccessPoints(RNINDatatablesPopulateView):
             class_names = []
 
         if column in self.get_editable_columns() and self.get_write_permissions():
-            value = getattr(row, column)
-            editable_block = self.editable_block_template.format(value=value)
+            if column == "type":
+                value = row.get_type_display()
+                editable_block = self.editable_block_template.format(value=row.type)
+            else:
+                value = getattr(row, column)
+                editable_block = self.editable_block_template.format(value=value)
             class_names.append("editable")
 
             return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+        elif column == 'port':
+            port = row.port
+            port_url = reverse('port_info_frame', kwargs={'pk': port.id})
+            port_icon = self.icon_template.format(icon_url=static('images/icons/icon_ethernet.png'))
+            port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_style="", link_class_name="", link_text=port_icon, link_url="#")
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=port.jack, link_block=port_block, inline_images="", editable_block="")
         else:
             return super(PopulateResidenceHallAccessPoints, self).render_column(row, column, class_names)
 
 
 class UpdateResidenceHallAccessPoint(BaseDatatablesUpdateView):
-    form_class = AccessPointCreateForm
+    form_class = AccessPointUpdateForm
     model = AccessPoint
     populate_class = PopulateResidenceHallAccessPoints
 

@@ -7,16 +7,20 @@
 """
 
 from clever_selects.views import ChainedSelectChoicesView
+from collections import OrderedDict
 from datetime import datetime, timedelta
 from operator import itemgetter
 import logging
 
+from django.core.urlresolvers import reverse_lazy
 from django.template import Template, RequestContext
-from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
-from ..core.models import Community, Building, Room
-from ..core.utils import NetworkReachabilityTester, get_ticket_list
+from ...settings.base import technician_access_test
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
+from .forms import RoomUpdateForm
+from .models import Building, Room
+from .utils import NetworkReachabilityTester, get_ticket_list
 
 
 logger = logging.getLogger(__name__)
@@ -144,10 +148,63 @@ def get_tickets(request):
 class BuildingChainedAjaxView(ChainedSelectChoicesView):
 
     def get_child_set(self):
-        return Building.objects.filter(community__id=self.parent_value)
+        return Building.objects.filter(community__id=self.parent_value).order_by('name')
 
 
 class RoomChainedAjaxView(ChainedSelectChoicesView):
 
     def get_child_set(self):
-        return Room.objects.filter(building__id=self.parent_value)
+        return Room.objects.filter(building__id=self.parent_value).order_by('name')
+
+
+class PopulateResidenceHallRooms(RNINDatatablesPopulateView):
+    """Renders the room listing."""
+
+    table_name = "residence_halls_rooms"
+    data_source = reverse_lazy('populate_residence_halls_rooms')
+    update_source = reverse_lazy('update_residence_halls_room')
+    model = Room
+    max_display_length = 1000
+
+    column_definitions = OrderedDict()
+    column_definitions["id"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "ID"}
+    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "building__community__name"}
+    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "related": True, "lookup_field": "name"}
+    column_definitions["name"] = {"width": "55px", "type": "string", "className": "edit_trigger", "title": "Name"}
+
+    extra_options = {
+        "language": {
+            "lengthMenu":
+                'Display <select>' +
+                '<option value="50">50</option>' +
+                '<option value="100">100</option>' +
+                '<option value="250">250</option>' +
+                '<option value="500">500</option>' +
+                '<option value="1000">1000</option>' +
+                '<option value="-1">All</option>' +
+                '</select> records:',
+            "search": "Filter records:",
+        },
+    }
+
+    def _initialize_write_permissions(self, user):
+        self.write_permissions = technician_access_test(user)
+
+    def render_column(self, row, column, class_names=None):
+        if not class_names:
+            class_names = []
+
+        if column in self.get_editable_columns() and self.get_write_permissions():
+            value = getattr(row, column)
+            editable_block = self.editable_block_template.format(value=value)
+            class_names.append("editable")
+
+            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+        else:
+            return super(PopulateResidenceHallRooms, self).render_column(row, column, class_names)
+
+
+class UpdateResidenceHallRoom(BaseDatatablesUpdateView):
+    form_class = RoomUpdateForm
+    model = Room
+    populate_class = PopulateResidenceHallRooms
