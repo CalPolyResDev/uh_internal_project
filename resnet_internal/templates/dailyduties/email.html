@@ -8,23 +8,39 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
 <style>
-.button.default {
-    padding: 6px 12px !important;
-}
+    .Toolbar {
+        position: relative;
+        display: table;
+        padding-bottom: 20px;
+    }
+    
+    .Toolbar > div {
+        display: table-cell;
+        padding-right: 8px;
+        vertical-align: top;
+    }
+    
+    .Toolbar {
+        .btn-group, .btn-group-vertical
+        {
+            vertical-align: inherit;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-    <div id="content">
-        <h1>ResNet Email Messages</h1>
-        <table>
-            <tr>
-                <td style="vertical-align: top;">
-                    <div id="jstree_folder_structure"></div>
-                </td>
-                <td style="vertical-align: top; width: 75%;">
-                    <div>
-                        <button class="button default" onclick="$.fancybox({href : '{% url 'email_compose' %}', 
+<h1>ResNet Email Messages</h1>
+<div class="row">
+    <div class="col-md-2">
+        <div id="jstree_folder_structure"></div>
+    </div>
+    <div class="col-md-8">
+        <div class="row">
+            <div class="Toolbar">
+                <div>
+                    <div class="btn-group btn-group-md">
+                        <button class="btn btn-primary" onclick="$.fancybox({href : '{% url 'email_compose' %}', 
                                                                             title : 'New Message', 
                                                                             type: 'iframe', 
                                                                             maxWidth: '85%', 
@@ -32,10 +48,10 @@
                                                                 $.fancybox.showLoading();">
                             New Message
                         </button>
-                        <button class="button default" onclick="$('input:checkbox').prop('checked', true);">Check All</button>
-                        <button class="button default" onclick="$('input:checkbox').prop('checked', false);">Uncheck All</button>
-                        <button class="button default" onclick="refresh_messages('INBOX');" id="refresh_button">Refresh</button>
-                        <button class="button default" id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
+                        <button class="btn btn-primary" onclick="$('input:checkbox').prop('checked', true);">Check All</button>
+                        <button class="btn btn-primary" onclick="$('input:checkbox').prop('checked', false);">Uncheck All</button>
+                        <button class="btn btn-primary" onclick="refresh_messages('INBOX');" id="refresh_button">Refresh</button>
+                        <button class="btn btn-primary" id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
                             data-content="<table class='dataTable'>
                                     <tbody>
                                         {% for folder, display_name in archive_folders %}
@@ -47,41 +63,40 @@
                                 </table>">
                             Archive
                         </button>
-                        <button class="button default" onclick="mark_selected_unread();">Mark as Unread</button>
-                        <button class="button default" onclick="mark_selected_read();">Mark as Read</button>
-                        <div class="input-group">
-                            <div class="input-group-btn">
-                                <div class="btn-group" data-toggle="buttons">
-                                    <label class="btn btn-primary active">
-                                        <input type="radio" name="options" id="search_this_mailbox" autocomplete="off" checked>This Mailbox
-                                    </label>
-                                    <label class="btn btn-secondary">
-                                        <input type="radio" name="options" id="search_all_mailboxes" autocomplete="off">All
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
-                            <input type="text" class="form-control" id="email_search" placeholder="Search...">
-                            <div class="input-group-btn"><span id="email_search_clr" class="glyphicon glyphicon-remove-circle"></span</div>
+                        <button class="btn btn-primary" onclick="mark_selected_unread();">Mark as Unread</button>
+                        <button class="btn btn-primary" onclick="mark_selected_read();">Mark as Read</button>
+                    </div>
+                </div>
+                <div>
+                    <div class="input-group input-group-md">
+                        <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+                        <div class="input-group-addon">
+                            <input type="radio" name="options" id="search_this_mailbox" autocomplete="off" checked> This Mailbox
+                            <input type="radio" name="options" id="search_all_mailboxes" autocomplete="off"> All
+                        </div>
+                        <input type="text" class="form-control" id="email_search" placeholder="Search...">
+                        <div class="input-group-addon">
+                            <span id="email_search_clear" class="glyphicon glyphicon-remove-circle"></span>
                         </div>
                     </div>
-                    <table class="dataTable" id='email_table' style="">
-                    <tbody>
-                            <tr>
-                                <th></th>
-                                <th></th>
-                                <th>Date</th>
-                                <th>From</th>
-                                <th>Subject</th>
-                                <th id="mailbox_name_header" style="display: none">Mailbox</th>
-                            </tr>
-                            <tr id="loading_email_record"><td colspan="5" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>
-                        </tbody>
-                    </table>
-                </td>
-            </tr>
-        </table>
+                </div>
+            </div>
+            <table class="table table-hover" id='email_table'>
+                <tbody>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th>Date</th>
+                            <th>From</th>
+                            <th>Subject</th>
+                            <th id="mailbox_name_header" style="display: none">Mailbox</th>
+                        </tr>
+                        <tr id="loading_email_record"><td colspan="100" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>
+                    </tbody>
+            </table>
+        </div>
     </div>
+</div>
 {% endblock %}
 
 {% block extra_script %}
@@ -150,7 +165,7 @@
         ++num_search_queries_running;
         current_mailbox = mailbox;
         $("#email_table tr:gt(0)").remove();
-        $("#email_table").append('<tr id="loading_email_record"><td colspan="5" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
+        $("#email_table").append('<tr id="loading_email_record"><td colspan="100" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
         ajaxPost("{% url 'email_get_mailbox_summary' %}", {"mailbox": mailbox, "search_string": search_string}, function(response_context) {
             if (!(--num_search_queries_running)) {
                 console.log(mailbox.length);

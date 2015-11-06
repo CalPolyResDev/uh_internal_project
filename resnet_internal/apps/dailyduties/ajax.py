@@ -193,7 +193,7 @@ def get_mailbox_summary(request):
             {% endfor %}
         {% else %}
         <tr>
-            <td colspan="4" style="text-align: center;">
+            <td colspan="100" style="text-align: center;">
                 {% if is_search %}
                     There are no messages matching '{{ search_string|escape }}'.
                 {% else %}
