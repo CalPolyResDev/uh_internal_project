@@ -244,7 +244,10 @@ class EmailManager(EmailConnectionMixin):
                 envelope = data[b'ENVELOPE']
                 date = envelope.date
                 subject = smart_text(envelope.subject)
-                message_from = envelope.from_[0]
+
+                message_from = envelope.from_[0] if envelope.from_ else None
+                message_to = envelope.to[0] if envelope.to else None
+                sender_address = message_to if mailbox_name == 'Sent Items' else message_from
 
                 messages.append({
                     'uid': uid,
@@ -252,8 +255,8 @@ class EmailManager(EmailConnectionMixin):
                     'replied': replied,
                     'date': date,
                     'subject': self.decode_header(subject),
-                    'from_name': smart_text(message_from.name) if message_from.name else '',
-                    'from_address': smart_text(message_from.mailbox) + '@' + smart_text(message_from.host)
+                    'sender_name': smart_text(sender_address.name) if sender_address else '',
+                    'sender_address': smart_text(sender_address.mailbox) + '@' + smart_text(sender_address.host) if sender_address else None,
                 })
 
         self.server.close_folder()
