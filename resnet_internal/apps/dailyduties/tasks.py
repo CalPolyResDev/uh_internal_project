@@ -16,13 +16,13 @@ from .utils import EmailManager
 
 
 @timer(60)
-def update_slack(self):
+def update_slack():
     previous_voicemail_messages = cache.get('previous_voicemail_messages')
 
     with EmailManager() as email_manager:
         current_voicemails = email_manager.get_all_voicemail_messages()
 
-    if self.previous_voicemail_messages is None:
+    if previous_voicemail_messages is None:
         previous_voicemail_messages = current_voicemails
     else:
         new_voicemails = [voicemail for voicemail in current_voicemails if voicemail not in previous_voicemail_messages]
