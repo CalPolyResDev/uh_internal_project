@@ -49,6 +49,10 @@
                         </button>
                         <button class="button default" onclick="mark_selected_unread();">Mark as Unread</button>
                         <button class="button default" onclick="mark_selected_read();">Mark as Read</button>
+                        <div class="input-group">
+                            <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+                            <input type="text" class="form-control" id="email_search" placeholder="Search...">
+                        </div>
                     </div>
                     <table class="dataTable" id='email_table' style="">
                     <tbody>
@@ -71,6 +75,8 @@
 {% block extra_script %}
 {{ block.super }}
 <script type="text/javascript">
+    var current_mailbox = 'INBOX';
+    
     $(document).ready(function() {
             $('#jstree_folder_structure')
             .on('select_node.jstree', function(event, data) {
@@ -86,6 +92,8 @@
                     }
                 }
             });
+            
+            $('#email_search').keyup(_.debounce(search_messages, 1000));
             refresh_messages('INBOX');
     });
 
@@ -109,9 +117,20 @@
     };
 
     function refresh_messages(mailbox) {
+        $('#email_search').val('');
+        retrieve_messages(mailbox, '');
+    };
+    
+    function search_messages() {
+        var search_string = $('#email_search').val();
+        retrieve_messages(current_mailbox, search_string);
+    };
+    
+    function retrieve_messages(mailbox, search_string) {
+        current_mailbox = mailbox;
         $("#email_table tr:gt(0)").remove();
         $("#email_table").append('<tr id="loading_email_record"><td colspan="5" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
-        ajaxPost("{% url 'email_get_mailbox_summary' %}", {"mailbox": mailbox}, function(response_context) {
+        ajaxPost("{% url 'email_get_mailbox_summary' %}", {"mailbox": mailbox, "search_string": search_string}, function(response_context) {
             $("#refresh_button").attr("onclick","refresh_messages('" + mailbox + "');");
         });
     };

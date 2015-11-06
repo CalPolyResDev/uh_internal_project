@@ -157,12 +157,13 @@ def get_email_folders(request):
 @require_POST
 def get_mailbox_summary(request):
     mailbox_name = request.POST["mailbox"]
+    search_string = request.POST["search_string"]
 
     if mailbox_name == 'root':
         mailbox_summary = None
     else:
         with EmailManager() as email_manager:
-            mailbox_summary = email_manager.get_mailbox_summary(mailbox_name)
+            mailbox_summary = email_manager.get_mailbox_summary(mailbox_name, search_string)
 
     raw_response = """
         {% load staticfiles %}
@@ -187,13 +188,23 @@ def get_mailbox_summary(request):
             {% endfor %}
         {% else %}
         <tr>
-            <td colspan="4" style="text-align: center;">There are currently no emails in this mailbox.</td>
+            <td colspan="4" style="text-align: center;">
+                {% if is_search %}
+                    There are no messages matching '{{ search_string|escape }}'.
+                {% else %}
+                    There are currently no emails in this mailbox.
+                {% endif %}
+            </td>
         </tr>
         {% endif %}
     """
 
     template = Template(raw_response)
-    context = RequestContext(request, {'emails': mailbox_summary, 'mailbox_name': mailbox_name})
+    context = RequestContext(request, {'emails': mailbox_summary,
+                                       'mailbox_name': mailbox_name,
+                                       'is_search': bool(search_string),
+                                       'search_string': search_string,
+                                       })
     response_html = template.render(context)
 
     data = {

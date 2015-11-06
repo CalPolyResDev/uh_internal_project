@@ -227,9 +227,9 @@ class EmailManager(EmailConnectionMixin):
 
         return voicemails
 
-    def get_mailbox_summary(self, mailbox_name):
+    def get_mailbox_summary(self, mailbox_name, search_string):
         self.server.select_folder(mailbox_name)
-        message_uids = self.server.search()
+        message_uids = self.server.search('TEXT ' + search_string if search_string else 'ALL')
         message_uid_fetch_groups = zip_longest(*(iter(message_uids),) * 500)
 
         messages = []

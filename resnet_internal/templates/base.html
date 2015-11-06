@@ -22,8 +22,10 @@
     	<script type="text/javascript" src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
         <script type="text/javascript" src="{% static 'fancybox/jquery.fancybox.pack.js' %}?v=2.1.5"></script>
         <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
     	{% block meta %}
     	{% endblock %}
+    	
     	<script type="text/javascript">
             $(document).ready(function() {
                 $(".popup_frame").fancybox({
