@@ -294,8 +294,6 @@ class EmailManager(EmailConnectionMixin):
             messages = []
             for mailbox in self.SEARCH_MAILBOXES:
                 mailbox_messages = self.get_mailbox_summary(mailbox, search_string, sorted=False)
-                print(mailbox)
-                print(mailbox_messages)
                 messages += mailbox_messages
 
             messages.sort(key=itemgetter('date'), reverse=True)

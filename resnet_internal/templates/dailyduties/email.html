@@ -157,7 +157,6 @@
         var search_string = $('#email_search').val();
         var search_this_mailbox = $('#search_this_mailbox').is(":checked");
         if (!search_string.length) search_this_mailbox = true;
-        console.log("Search This Mailbox: " + search_this_mailbox.toString());
         retrieve_messages(search_this_mailbox ? current_mailbox : '', search_string);
     };
     
@@ -168,8 +167,6 @@
         $("#email_table").append('<tr id="loading_email_record"><td colspan="100" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
         ajaxPost("{% url 'email_get_mailbox_summary' %}", {"mailbox": mailbox, "search_string": search_string}, function(response_context) {
             if (!(--num_search_queries_running)) {
-                console.log(mailbox.length);
-                console.log($('#mailbox_name_header'));
                 $('#mailbox_name_header').css('display', (mailbox.length > 0 ? 'none' : 'table-cell'));
                 $('#loading_email_record').replaceWith(response_context.response);
                 $("#refresh_button").attr("onclick","refresh_messages('" + mailbox + "');");
