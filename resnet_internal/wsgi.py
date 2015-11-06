@@ -1,15 +1,15 @@
 #!/usr/bin/python3.4
-import os
 from pathlib import Path
+import os
 import re
 import site
 import sys
 
 from colorama import init as color_init
-import django  # noqa
 from django.core.handlers.wsgi import WSGIHandler  # noqa
 from raven.contrib.django.raven_compat.middleware.wsgi import Sentry  # noqa
 from termcolor import colored
+import django  # noqa
 
 
 def get_env_variable(name):
@@ -86,6 +86,6 @@ activate_env()
 django.setup()
 
 # Import any functions with uWSGI decoraters here:
-
+from resnet_internal.apps.dailyduties.tasks import update_slack
 # Send any wsgi errors to Sentry
 application = Sentry(WSGIHandler())
