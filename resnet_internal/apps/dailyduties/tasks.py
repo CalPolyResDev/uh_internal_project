@@ -37,4 +37,4 @@ def update_slack(num):
 
             requests.post(url, data=json.dumps(payload), headers=headers)
 
-    cache.set('previous_voicemail_messages', 10 * 60)
+    cache.set('previous_voicemail_messages', previous_voicemail_messages, 10 * 60)
