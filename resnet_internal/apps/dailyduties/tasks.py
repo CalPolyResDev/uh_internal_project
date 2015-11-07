@@ -16,7 +16,7 @@ from .utils import EmailManager
 
 
 @timer(60)
-def update_slack():
+def update_slack(num):
     previous_voicemail_messages = cache.get('previous_voicemail_messages')
 
     with EmailManager() as email_manager:
