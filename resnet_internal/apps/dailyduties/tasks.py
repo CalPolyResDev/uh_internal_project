@@ -22,9 +22,7 @@ def update_slack(num):
     with EmailManager() as email_manager:
         current_voicemails = email_manager.get_all_voicemail_messages()
 
-    if previous_voicemail_messages is None:
-        previous_voicemail_messages = current_voicemails
-    else:
+    if previous_voicemail_messages is not None:
         new_voicemails = [voicemail for voicemail in current_voicemails if voicemail not in previous_voicemail_messages]
 
         for voicemail in new_voicemails:
@@ -37,4 +35,4 @@ def update_slack(num):
 
             requests.post(url, data=json.dumps(payload), headers=headers)
 
-    cache.set('previous_voicemail_messages', previous_voicemail_messages, 10 * 60)
+    cache.set('previous_voicemail_messages', current_voicemails, 10 * 60)
