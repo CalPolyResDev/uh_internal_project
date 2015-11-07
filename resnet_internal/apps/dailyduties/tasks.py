@@ -5,13 +5,13 @@
 .. moduleauthor:: Thomas Willson <thomas.willson@me.com
 """
 
-import json
 from urllib.parse import urljoin
+import json
 
 from django.conf import settings
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.contrib.staticfiles.templatetags.staticfiles import static
 from uwsgidecorators import timer
 import requests
 
@@ -19,7 +19,7 @@ from .utils import EmailManager
 
 
 @timer(60)
-def update_slack(num):
+def update_slack_voicemail(num):
     previous_voicemail_messages = cache.get('previous_voicemail_messages')
 
     with EmailManager() as email_manager:

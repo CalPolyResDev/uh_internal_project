@@ -86,6 +86,6 @@ activate_env()
 django.setup()
 
 # Import any functions with uWSGI decoraters here:
-from resnet_internal.apps.dailyduties.tasks import update_slack
+from resnet_internal.apps.dailyduties.tasks import update_slack_voicemail
 # Send any wsgi errors to Sentry
 application = Sentry(WSGIHandler())
