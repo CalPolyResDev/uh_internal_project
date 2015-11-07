@@ -62,3 +62,23 @@
     </div>
 </div>
 {% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script type="text/javascript">
+function confirm_status_change(port_id) {
+    var response = confirm('Are you sure you want to change the status of this port?');
+    if (response) {
+        ajaxPost("{% url 'change_residence_halls_wired_port_status' %}", {"port_id": port_id}, function(response_context) {
+            // Replace the edited columns with updated html
+            columns = response_context["rendered_columns"]
+            for (var column in columns) {
+                $("[id='" + port_id + "'][column='" + column + "']").parent().html(columns[column]);
+            }
+        });
+    } else {
+        return false;
+    }
+};
+</script>
+{% endblock %}
