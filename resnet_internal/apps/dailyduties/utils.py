@@ -198,7 +198,7 @@ class EmailManager(EmailConnectionMixin):
 
         # Check for empty inbox
         if not uids:
-            return None
+            return []
 
         response = self.server.fetch(uids, ['FLAGS', 'BODY[1]'])
 
