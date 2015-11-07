@@ -70,7 +70,7 @@ def update_slack_email(num):
                 slack_attachments.append(attachment)
 
             if new_emails:
-                payload = {'text': 'New Email Messages',
+                payload = {'text': 'New Email Messages!' if len(new_emails) > 1 else 'New Email Message!',
                            'icon_url': urljoin(settings.DEFAULT_BASE_URL, static('images/icons/email.png')),
                            'channel': settings.SLACK_EMAIL_CHANNEL,
                            'attachments': slack_attachments}
