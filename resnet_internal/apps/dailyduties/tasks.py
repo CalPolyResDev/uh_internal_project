@@ -11,7 +11,7 @@ from urllib.parse import urljoin
 from django.conf import settings
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from django.contrib.staticfiles.urls import static
+from django.contrib.staticfiles.templatetags.staticfiles import static
 from uwsgidecorators import timer
 import requests
 
@@ -33,7 +33,7 @@ def update_slack(num):
                                                           voicemail['sender'],
                                                           str(voicemail['date']))
 
-            icon_url = urljoin(settings.DEFAULT_BASE_URL, static('/images/icons/voicemail.png'))
+            icon_url = urljoin(settings.DEFAULT_BASE_URL, static('images/icons/voicemail.png'))
 
             payload = {'text': text, 'icon_url': icon_url, 'channel': settings.SLACK_VM_CHANNEL}
             url = settings.SLACK_WEBHOOK_URL
