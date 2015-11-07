@@ -70,11 +70,14 @@ def update_slack_email(num):
                 slack_attachments.append(attachment)
 
             if new_emails:
-                icon_url = urljoin(settings.DEFAULT_BASE_URL, static('images/icons/email.png'))
-                payload = {'text': 'New Email Messages', 'icon_url': icon_url, 'channel': '@thomaswillson', 'attachments': slack_attachments}
+                payload = {'text': 'New Email Messages',
+                           'icon_url': urljoin(settings.DEFAULT_BASE_URL, static('images/icons/email.png')),
+                           'channel': settings.SLACK_EMAIL_CHANNEL,
+                           'attachments': slack_attachments}
+
                 url = settings.SLACK_WEBHOOK_URL
                 headers = {'content-type': 'application/json'}
-                print(json.dumps(payload))
-                print(requests.post(url, data=json.dumps(payload), headers=headers))
+
+                requests.post(url, data=json.dumps(payload), headers=headers)
 
     cache.set('previous_email_messages', current_emails, 10 * 60)
