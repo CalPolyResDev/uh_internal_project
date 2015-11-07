@@ -5,15 +5,16 @@
 .. moduleauthor:: Thomas Willson <thomas.willson@me.com
 """
 
-from urllib.parse import urljoin
 import json
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
-from uwsgidecorators import timer
+from html2text import html2text
 import requests
+from uwsgidecorators import timer
 
 from .utils import EmailManager
 
@@ -41,3 +42,39 @@ def update_slack_voicemail(num):
             requests.post(url, data=json.dumps(payload), headers=headers)
 
     cache.set('previous_voicemail_messages', current_voicemails, 10 * 60)
+
+
+@timer(60)
+def update_slack_email(num):
+    previous_email_messages = cache.get('previous_email_messages')
+
+    with EmailManager() as email_manager:
+        current_emails = email_manager.get_mailbox_summary('INBOX')
+
+        if previous_email_messages is not None:
+            new_emails = [email for email in current_emails if email not in previous_email_messages]
+
+            slack_attachments = []
+
+            for email in new_emails:
+                email_message = email_manager.get_email_message('INBOX', email['uid'])
+
+                attachment = {
+                    'fallback': 'New email message from %s' % email['from_name'],
+                    'color': 'good',
+                    'author_name': email['from_name'] + ' (' + email['from_address'] + ')',
+                    'title': 'Subject: ' + email['subject'],
+                    'text': email_message['body_plain_text'] if email_message['body_plain_text'] else html2text(email_message['body_html']),
+
+                }
+                slack_attachments.append(attachment)
+
+            if new_emails:
+                icon_url = urljoin(settings.DEFAULT_BASE_URL, static('images/icons/email.png'))
+                payload = {'text': 'New Email Messages', 'icon_url': icon_url, 'channel': '@thomaswillson', 'attachments': slack_attachments}
+                url = settings.SLACK_WEBHOOK_URL
+                headers = {'content-type': 'application/json'}
+                print(json.dumps(payload))
+                print(requests.post(url, data=json.dumps(payload), headers=headers))
+
+    cache.set('previous_email_messages', current_emails, 10 * 60)

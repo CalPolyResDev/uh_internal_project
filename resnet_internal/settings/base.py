@@ -1,8 +1,8 @@
-from pathlib import Path
 import os
+from pathlib import Path
 
-from django.core.exceptions import ImproperlyConfigured
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 
 
 def get_env_variable(name):
@@ -147,6 +147,7 @@ DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
 SLACK_WEBHOOK_URL = get_env_variable('RESNET_INTERNAL_SLACK_WEBHOOK_URL')
 SLACK_VM_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_VM_CHANNEL')
+SLACK_EMAIL_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_EMAIL_CHANNEL')
 
 # ======================================================================================================== #
 #                                              Access Permissions                                          #
