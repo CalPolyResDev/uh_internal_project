@@ -145,7 +145,8 @@ DEFAULT_FROM_EMAIL = SERVER_EMAIL
 #                                            Slack Configuration                                           #
 # ======================================================================================================== #
 
-SLACK_VM_URL = get_env_variable('RESNET_INTERNAL_SLACK_VOICEMAIL_URL')
+SLACK_WEBHOOK_URL = get_env_variable('RESNET_INTERNAL_SLACK_WEBHOOK_URL')
+SLACK_VM_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_VM_CHANNEL')
 
 # ======================================================================================================== #
 #                                              Access Permissions                                          #

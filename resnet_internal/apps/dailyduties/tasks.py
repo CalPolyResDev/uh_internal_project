@@ -6,9 +6,12 @@
 """
 
 import json
+from urllib.parse import urljoin
 
 from django.conf import settings
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
+from django.contrib.staticfiles.urls import static
 from uwsgidecorators import timer
 import requests
 
@@ -26,13 +29,15 @@ def update_slack(num):
         new_voicemails = [voicemail for voicemail in current_voicemails if voicemail not in previous_voicemail_messages]
 
         for voicemail in new_voicemails:
-            text = '<https://internal.resnet.calpoly.edu/daily_duties/voicemail/list/|New Voicemail> from %s at %s!' % (voicemail['sender'], str(voicemail['date']))
-            icon_url = 'https://internal.resnet.calpoly.edu/static/images/icons/voicemail.png'
+            text = '<%s|New Voicemail> from %s at %s!' % (urljoin(settings.DEFAULT_BASE_URL, reverse('voicemail_list')),
+                                                          voicemail['sender'],
+                                                          str(voicemail['date']))
 
-            payload = {'text': text, 'icon_url': icon_url}
-            url = settings.SLACK_VM_URL
+            icon_url = urljoin(settings.DEFAULT_BASE_URL, static('/images/icons/voicemail.png'))
+
+            payload = {'text': text, 'icon_url': icon_url, 'channel': settings.SLACK_VM_CHANNEL}
+            url = settings.SLACK_WEBHOOK_URL
             headers = {'content-type': 'application/json'}
-
             requests.post(url, data=json.dumps(payload), headers=headers)
 
     cache.set('previous_voicemail_messages', current_voicemails, 10 * 60)
