@@ -1,139 +1,158 @@
 <!DOCTYPE html>
 {% load core_user_tests %}
+{% load compile_static %}
 {% load staticfiles %}
 {% load clever_selects_extras %}
 <html>
     <head>
-    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    	<meta name="layout" content="Cal Poly Web Template" />
-    	<meta name="author" content="Alex Kavanaugh - ResNet Development Team" />
-    	<meta name="keywords" content="Resnet Internal" />
-    	<meta name="description" content="Residential Networking Services Internal Tools" />
-    	<link href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}" rel="stylesheet" type="text/css" />
-    	<link href="{% static 'common/css/cp_screen_3.4.css' %}" rel="stylesheet" type="text/css" media="screen" />
-    	<link href="{% static 'common/css/cp_print_3.4.css' %}" rel="stylesheet" type="text/css" media="print" />
-    	<link href="{% static 'css/screen.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
-    	<link href="{% static 'css/print.css' %}" rel="stylesheet" type="text/css" media="print" />
-    	<link href="{% static 'css/table.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
-    	<link href="{% static 'fancybox/jquery.fancybox.css' %}?v=2.1.5" rel="stylesheet" type="text/css" media="screen" />
-    	<link href="{% static 'images/icons/favicon.ico' %}" rel="shortcut icon" />
-    	<link href="{% static 'css/bootstrap_tooltip.css' %}" rel="stylesheet" type="text/css" />
-    	<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
-    	<script type="text/javascript" src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'fancybox/jquery.fancybox.pack.js' %}?v=2.1.5"></script>
-        <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
-    	{% block meta %}
-    	{% endblock %}
-    	<script type="text/javascript">
-            $(document).ready(function() {
-                $(".popup_frame").fancybox({
-                    type: 'iframe',
-                    maxWidth    : 800,
-                    maxHeight   : 600,
-                    fitToView   : false,
-                    width       : '70%',
-                    height      : '70%',
-                    autoSize    : false,
-                    closeClick  : false,
-                    openEffect  : 'none',
-                    closeEffect : 'none',
-                });
-                $('[data-toggle="popover"]').popover({
-                    html: true,
-                });
-            });
-        </script>
-    	<title>ResNet Internal - Online Tools{% block subtitle %}{% endblock %}</title>
+        <meta charset="UTF-8">
+
+        <meta property="og:image" content="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/header/cp_logo.jpg" itemprop="thumbnailUrl">
+        <meta property="og:title" content="University Housing Internal">
+        <meta property="og:url" content="https://internal.housing.calpoly.edu">
+        <meta property="og:site_name" content="University Housing Internal">
+
+        <meta name="author" content="ResNet Development Team">
+        <meta name="keywords" content="University Housing Internal">
+        <meta name="description" content="University Housing Internal Tools and Services">
+
+        <link rel="shortcut icon" href="http://calpoly.edu/favicon.ico">
+
+        <link rel="stylesheet" href="{% compile 'less/base.less' %}?version=1.0">
+
+        <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>
+
+        <link rel='stylesheet prefetch' href='https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css'>
+        <link rel='stylesheet prefetch' href='https://cdn.datatables.net/responsive/2.0.0/css/responsive.bootstrap.min.css'>
+        <link rel='stylesheet prefetch' href='https://cdn.datatables.net/scroller/1.4.0/css/scroller.bootstrap.min.css'>
+
+        {% block meta %}{% endblock %}
+
+        <title>University Housing Internal{% block subtitle %}{% endblock %}</title>
     </head>
-    {% block body %}
     <body>
-        <noscript><div id="noscript-padding"></div></noscript>
-        <div id="container">
-            <div id="header">
-                <div id="cplogo">
-                    <a href="http://www.calpoly.edu/"><img src="{% static 'common/images/header/cp_logo.gif' %}" alt="Cal Poly" title="Go to Cal Poly Home" width="166" height="60" /></a>
+        {% block container %}
+        <div class="container-fluid">
+            <header class="row">
+                <div class="col-xs-12 logo-container">
+                    <a href="http://www.calpoly.edu">
+                        <img id="logo" src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/header/cp_logo.jpg" height="65px" alt="Cal Poly, San Luis Obispo" />
+                    </a>
+                    <h1 class="site-heading">
+                            University Housing Internal
+                       </h1>
                 </div>
-                <div id="headercontent">
-                    <a href="https://resnet.calpoly.edu"><img src="{% static 'images/resnetlogo.png' %}" alt="ResNet Logo" title="Go to the ResNet home page" id="headerimage" height="50" width="136.5" /></a>
-                    <div id="deptname">
-                        <p id="department_name">
-                            Residential Networking Services
-                        </p>
-                        <p id="optional_deptinfo">
-                            <a href="{% url 'home' %}">ResNet Online Tools</a><font color="red">&nbsp;&nbsp;Beta</font>
-                        </p>
-                    </div>
-                </div>
-                <!-- Begin Login Display Module -->
-                {% if request.user.is_authenticated %} {# User is logged in - display user information. #}
-                    <div class="loginDisplay">
-                        You are logged in as <span style="color: #A1B39C">{{ user_display_name }}</span>
-                        <br />
-                        {# Display User Specializations #}
-                        {% for title in user_specializations %}
-                            {{ title }}{% if not forloop.last %},&nbsp;{% endif %}
-                        {% endfor %}
-                        <br />
-                        (<a href="{% url 'logout' %}">Logout</a>)
-                    </div>
-                {% else %} {# User is not logged in - display log in link. #}
-                    <div class="loginDisplay">
-                            You are not currently logged in.
-                            <br />
-                            (<a href="{% url 'login' %}">Login</a>)
-                    </div>
-                {% endif %}
-                <!-- End Login Display Module -->
-                <div id="cp">
-                    <p>
-                        California Polytechnic State University
-                    </p>
-                </div>
+            </header>
+            <div class="row">
+                <noscript><div id="noscript-padding"></div></noscript>
             </div>
-            {% block sidenav %}
-            {% if request.user.is_authenticated and not request.user.is_new_tech %} {# User is logged in - display navigation bar. #}
-            <!-- Begin Navigation Bar -->
-            <div id="leftnav">
-                <h1>Navigation</h1>
-    			{{ navbar|safe }}
-    			<br />
-    		</div>
-    		<!-- End Navigation Bar -->
-    		{% endif %}
-    		{% endblock %}
-    		{% block content %}{% endblock %}
-    		<div id="footer">
-    			<div id="footer_links">
-    				<p><a href="http://get.adobe.com/reader/" title="Download Adobe Reader for viewing PDFs">Get Adobe Reader</a></p>
-    			</div>
-    			<div id="footer_deptlinks">
-    				<ul>
-    					<li class="removeBullet">
-    						<a href="https://housing.calpoly.edu">University Housing</a>
-    					</li>
-    					<li>
-    						<a href="https://residentiallife.calpoly.edu">Residential Life &amp; Education</a>
-    					</li>
-    					<li>
-    						<a href="https://resnet.calpoly.edu">Residential Networking Services</a>
-    					</li>
-    				</ul>
-    				<img src="{% static 'images/django_logo_negative.png' %}" width="136px" height="60px" class="djangoLogo" />
-    			</div>
-    			<div id="footer_deptinfo">
-    				<p>
-    					ResNet Development Team
-    					<br />
-    					California Polytechnic State University
-    					<br />
-    					San Luis Obispo, CA 93401
-    					<br />
-    					<a href="mailto:resdev@calpoly.edu">resdev@calpoly.edu</a>
-    				</p>
-    			</div>
-    		</div>
-    	</div>
+            <div class="row" id="content">
+                <div id="nav-wrapper">
+                    <nav>
+                        <div class="text-center nav-heading" id="drawer-trigger">
+                            <h4>Navigation&nbsp;<span class="glyphicon" aria-hidden="true"></span></h4>
+                        </div>
+        
+                        <div id="drawer">
+                            <div class="link-group-heading">
+                                Daily Duties
+                            </div>
+                            <div class="link-group">
+                                <ul>
+                                    <li>
+                                        <a id="email-link">
+                                            <img src="http://icons.iconarchive.com/icons/martz90/circle/512/firefox-icon.png" height="16px" class="link-icon" aria-hidden="true" /> Email
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a id="voicemail-link">
+                                            <img src="http://icons.iconarchive.com/icons/martz90/circle/512/firefox-icon.png" height="16px" class="link-icon" aria-hidden="true" /> Voicemail
+                                        </a>
+                                    </li>
+                                    <ul>
+                                        <li>
+                                            asdfasdf
+                                        </li>
+                                    </ul>
+                                </ul>
+                            </div>
+        
+                            <div class="link-group-heading">
+                                General Resources
+                            </div>
+                            <div class="link-group">
+                                <ul>
+                                    <li>
+                                        <a id="portal-link">
+                                            <img src="http://icons.iconarchive.com/icons/martz90/circle/512/firefox-icon.png" height="16px" class="link-icon" aria-hidden="true" /> Portal
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a id="rlin-link">
+                                            <img src="http://icons.iconarchive.com/icons/martz90/circle/512/firefox-icon.png" height="16px" class="link-icon" aria-hidden="true" /> ResLife Internal
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            {{ navbar|safe }}
+                            
+                        </div>
+                    </nav>
+                </div>
+                <main class="container-fluid">
+                    {% block main %}
+                    {% endblock %}
+                </main>
+            </div>
+        </div>
+        {% endblock %}
+        
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+        <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
+
+        <script src='https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js'></script>
+        <script src='https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js'></script>
+        <script src='https://cdn.datatables.net/responsive/2.0.0/js/dataTables.responsive.min.js'></script>
+        <script src='https://cdn.datatables.net/responsive/2.0.0/js/responsive.bootstrap.min.js'></script>
+        <script src='https://cdn.datatables.net/scroller/1.4.0/js/dataTables.scroller.min.js'></script>
+        
+        <script src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
+        
         <script type="text/javascript">
+            // Nav javascript
+            $("#drawer").collapse();
+            
+            $("#drawer-trigger").on("click", function() {
+                if (window.innerWidth < 615) {
+                    $("#drawer").collapse("toggle");
+                }
+            });
+            
+            $(window).on("load resize", function() {
+                if (window.innerWidth < 615) {
+                    $("#drawer").collapse("hide");
+                } else {
+                    $("#drawer").collapse("show");
+                }
+            });
+            
+            $('#drawer').on('hidden.bs.collapse', function() {
+                $("#drawer-trigger .glyphicon").addClass("glyphicon-menu-down");
+                $("#drawer-trigger .glyphicon").removeClass("glyphicon-menu-up");
+            });
+            
+            $('#drawer').on('shown.bs.collapse', function() {
+                $("#drawer-trigger .glyphicon").removeClass("glyphicon-menu-down");
+            
+                if (window.innerWidth < 615) {
+                    $("#drawer-trigger .glyphicon").addClass("glyphicon-menu-up");
+                } else {
+                    $("#drawer-trigger .glyphicon").removeClass("glyphicon-menu-up");
+                }
+            });
+
+            // Daily duties
             {% if request.user.is_authenticated %}
                 function add_duties() {
                     var duties_links = ['email_link', 'ticket_manager_link', 'voicemail_link', 'printer_requests_link'];
@@ -198,5 +217,4 @@
         {% block extra_script %}
         {% endblock %}
     </body>
-    {% endblock %}
 </html>

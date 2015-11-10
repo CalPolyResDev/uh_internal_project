@@ -7,12 +7,12 @@
 
 """
 
-from clever_selects.views import ChainedSelectChoicesView
 from collections import OrderedDict
 import logging
 import shlex
 import time
 
+from clever_selects.views import ChainedSelectChoicesView
 from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
@@ -22,6 +22,7 @@ from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from paramiko import SSHClient, AutoAddPolicy
+
 from rmsconnector.utils import Resident
 
 from ...settings.base import portmap_modify_access_test

@@ -58,6 +58,11 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         "lengthChange": True,
         "autoWidth": False,
         "dom": '<lrf><"clear">t<ip><"clear">',
+
+        "responsive": True,
+        "scrollY": 50,
+        "deferRender": True,
+        "scroller": True
     }
 
     extra_options = {}

@@ -1,0 +1,205 @@
+@polydarkgreen: rgb(41, 85, 26);
+
+@polywhite: rgb(255, 254, 250);
+
+@polyreallylightgrey: rgb(253, 253, 252);
+@polylightgrey: rgb(248, 248, 247);
+@polymediumgrey: rgb(243,243,237);
+@polydarkgrey: rgb(238,238,231);
+
+@lightgreyborder: rgb(198, 198, 198);
+@hovergrey: rgb(243, 243, 241);
+
+// Resposive table hack. See http://getbootstrap.com/css/#tables-responsive
+@-moz-document url-prefix() {
+    fieldset { display: table-cell; }
+}
+
+a, a:hover, a:active {
+    color: @polydarkgreen;
+}
+
+h1 {
+    margin: 0;
+    margin-top: 10px;
+    padding-left: 30px;
+    line-height: 55px;
+    display: inline-block;
+
+    color: rgb(24, 59, 13);
+}
+
+body {
+    background-color: rgb(255, 254, 250);
+}
+
+header {
+    min-height: 80px;
+    border-bottom: 5px solid @polydarkgreen;
+}
+
+#logo {
+    /* Fix from h1 */
+    margin-top: -10px;
+
+    padding-left: 15px;
+    padding-right: 30px;
+}
+
+.site-heading {
+    border-left: 2px solid rgb(204, 204, 204);
+}
+
+#nav-wrapper {
+    /* background-color: red; */
+    padding-top: 25px;
+    padding-left: 30px;
+    padding-right: 30px;
+
+    width: 260px;
+    float: left;
+}
+
+nav {
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 2px;
+
+    height: 100%;
+
+    a {
+        color: rbg(142, 142, 142) !important;
+    }
+}
+
+.nav-heading {
+    background-color: @polydarkgrey;
+
+    h4 {
+        margin: 0;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+}
+
+#drawer-trigger .glyphicon {
+    vertical-align: top;
+}
+
+.link-group-heading {
+    background-color: @polymediumgrey;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+
+    border-top: 1px solid @lightgreyborder;
+    border-bottom: 1px solid @lightgreyborder;
+
+    font-size: 16px;
+    color: rbg(102, 102, 102);
+}
+
+.link-group {
+    padding-left: 0;
+    padding-right: 0;
+
+    img {
+        margin-top: -2px;
+        margin-right: 3px;
+    }
+
+    ul {
+        padding: 0;
+        margin: 0;
+    }
+    ul li {
+        list-style: none;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        padding-left: 15px;
+
+        background-color: @polylightgrey;
+    }
+
+    ul li:hover {
+        background-color: @hovergrey;
+        cursor: pointer;
+    }
+
+    ul li:hover a {
+        text-decoration: underline;
+    }
+
+    ul > ul > li {
+        padding-left: 37px;
+
+        border-top: 1px dashed @lightgreyborder;
+
+        background-color: @polyreallylightgrey;
+    }
+
+    ul > ul > li:before {
+        content: "\00BB";
+        margin-right: 2px;
+    }
+}
+
+main {
+    margin-top: 25px;
+    margin-right: 30px !important;
+    margin-left: 260px !important;
+    margin-bottom: 15px;
+
+    padding-top: 10px;
+}
+
+.table-wrapper-cutoff {
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+
+@media (max-width: 615px) {
+    #logo {
+        margin-top: 10px;
+        padding-left: 30px;
+    }
+
+    .logo-container {
+        text-align: center;
+    }
+
+    .site-heading {
+        border-left: 0;
+        padding-bottom: 15px;
+        margin-top: 0px;
+    }
+
+    h1 {
+        padding-left: 0;
+    }
+
+    #drawer-trigger:hover {
+        background-color: @hovergrey;
+        cursor: pointer;
+    }
+
+    #nav-wrapper {
+        float: none;
+        width: auto;
+        padding: 0;
+        border-bottom: 2px solid @lightgreyborder;
+    }
+
+    nav {
+        border-radius: 0;
+    }
+
+    main {
+        margin: 0px !important;
+        margin: 0px !important;
+    }
+    
+    .table-wrapper-cutoff {
+        max-height: 400px;
+    }
+}

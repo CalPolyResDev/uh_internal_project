@@ -1,8 +1,8 @@
-from pathlib import Path
 import os
+from pathlib import Path
 
-from django.core.exceptions import ImproperlyConfigured
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 
 
 def get_env_variable(name):
@@ -240,6 +240,9 @@ STATIC_ROOT = str(PROJECT_DIR.joinpath("static").resolve())
 
 # URL prefix for static files. Make sure to use a trailing slash.
 STATIC_URL = '/static/'
+
+STATIC_PRECOMPILER_OUTPUT_DIR = ""
+STATIC_PRECOMPILER_PREPEND_STATIC_URL = True
 
 # Additional locations of static files
 STATICFILES_DIRS = (
