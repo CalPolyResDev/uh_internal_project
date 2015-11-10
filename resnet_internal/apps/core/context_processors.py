@@ -93,16 +93,16 @@ def navbar(request):
 
                     if link.is_link_group:
                         onclick_text = 'onclick="' + ('$(\'#' + link.html_id + '_list\').toggle()' if not link.onclick else link.onclick) + '" '
-                        navbar = navbar + '<a id="' + link.html_id + '_link" ' + (onclick_text if not link.url else 'href="' + link.url + '" ') + 'style="cursor: pointer !important;">' + a_inner_html(link) + '</a>\n'
+                        navbar = navbar + '<a id="' + link.html_id + '_link" ' + (onclick_text if not link.url else 'href="' + link.url + '" ') + '>' + a_inner_html(link) + '</a>\n'
                         navbar = navbar + '</li>\n'
                         navbar = navbar + '<ul id="' + link.html_id + '_list" ' + ('style="display: none;"' if not link.url and not link.onclick else '') + '>\n'
 
                         for sublink in links_for_user.filter(parent_group__id=link.id).order_by('sequence_index'):
-                            navbar = navbar + '<li><a ' + ('onclick="' + sublink.onclick + '" ' if sublink.onclick else '') + ((' href="' + sublink.url + '"') if sublink.url else '') + ' class="sublink" target="' + sublink.target + '">' + sublink.display_name + '</a></li>\n'
+                            navbar = navbar + '<li><a ' + ('onclick="' + sublink.onclick + '" ' if sublink.onclick else '') + ((' href="' + sublink.url + '"') if sublink.url else '') + ' target="' + sublink.target + '">' + sublink.display_name + '</a></li>\n'
 
                         navbar = navbar + '</ul>\n'
                     else:
-                        navbar = navbar + '<a id="' + link.html_id + '_link" style="cursor: pointer;"' + (('onclick="' + link.onclick + '"') if link.onclick else '') + \
+                        navbar = navbar + '<a id="' + link.html_id + '_link"' + (('onclick="' + link.onclick + '"') if link.onclick else '') + \
                             (('href="' + link.url + '"') if link.url else '') + 'target="' + link.target + '">\n' + a_inner_html(link) + '</a>\n'
                         navbar = navbar + '</li>\n'
 
