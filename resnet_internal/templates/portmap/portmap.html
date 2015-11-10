@@ -2,39 +2,31 @@
 {% load core_user_tests %}
 {% load datatables %}
 
-{% block meta %}
-{{ block.super }}
-{% datatables_script %}
-{% endblock %}
+{% block subtitle %} | Port Map{% endblock %}
 
-{% block subtitle %} | Residence Halls Wired Port Map{% endblock %}
-
-{% block content %}
-<div id="content-2col">
-    <div id="content">
-        <div id="splashOuter">
-            <!--<div id="splash"></div>-->
-        </div>
-        <div id="topContent">
-            <h1>Residence Halls Wired Port Map</h1>
-        </div>
+{% block main %}
+<div class="row">
+    <div class="col-xs-12">
         {% if request.user|portmap_modify_access %}
-        <p style="color: red;">
-            {{ form.non_field_errors }}
-            {% for field in form %}
-            {{ field.errors }}
-            {% endfor %}
-        </p>
+            <p style="color: red;">
+                {{ form.non_field_errors }}
+                {% for field in form %}
+                {{ field.errors }}
+                {% endfor %}
+            </p>
         {% endif %}
-        <div class="clear"></div>
-        <table id="residence_halls_wired_port_map">
-            <tfoot>
-                <tr>
-                    <th></th>
-                </tr>
-            </tfoot>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
+        <table id="portmap">
         </table>
-        <div class="clear"></div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12">
         {% if request.user|portmap_modify_access %}
         <div>
             <form method="post" id="add_port_form">
@@ -61,4 +53,9 @@
         {% endif %}
     </div>
 </div>
+{% endblock %}
+
+{% block extra_script %}
+    {{ block.super }}
+    {% datatables_script %}
 {% endblock %}

@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
     """Renders the port map."""
 
-    table_name = "residence_halls_wired_port_map"
+    table_name = "portmap"
     data_source = reverse_lazy('populate_residence_halls_wired_ports')
     update_source = reverse_lazy('update_residence_halls_wired_port')
     model = ResHallWired

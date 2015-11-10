@@ -60,7 +60,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         "dom": '<lrf><"clear">t<ip><"clear">',
 
         "responsive": True,
-        "scrollY": 50,
+        "scrollY": "85vh",
         "deferRender": True,
         "scroller": True
     }

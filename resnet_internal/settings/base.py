@@ -253,6 +253,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'static_precompiler.finders.StaticPrecompilerFinder',
 )
 
 TEMPLATE_DIRS = (
@@ -302,6 +303,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'raven.contrib.django.raven_compat',
     'django_ajax',
+    'static_precompiler',
     'rmsconnector',
     'srsconnector',
     'django_ewiz',

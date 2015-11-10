@@ -1,6 +1,10 @@
 {% load staticfiles %}
-<script type="text/javascript" src="https://cdn.datatables.net/1.10.2/js/jquery.dataTables.min.js"></script>
-<!--<script type="text/javascript" src="https://cdn.datatables.net/plug-ins/725b2a2115b/sorting/ip-address.js"></script>-->
+<script src='https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js'></script>
+<script src='https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js'></script>
+<script src='https://cdn.datatables.net/responsive/2.0.0/js/dataTables.responsive.min.js'></script>
+<script src='https://cdn.datatables.net/responsive/2.0.0/js/responsive.bootstrap.min.js'></script>
+<script src='https://cdn.datatables.net/scroller/1.4.0/js/dataTables.scroller.min.js'></script>
+
 <script type="text/javascript">
     jQuery.fn.dataTableExt.aTypes.unshift(
         function (data) {
@@ -9,7 +13,7 @@
                 return 'ip-address';
             }
 
-			// MAC Address Filter for dataTables
+            // MAC Address Filter for dataTables
             if (/^([0-9a-fA-F]{2}([:]?|$)){6}$/.test(data)) {
                 return 'mac-address';
             }
@@ -21,10 +25,10 @@
 
     // initialize the dataTable
     $(document).ready(function() {
-    	{{ datatable_name }} = $("#{{ datatable_name }}").dataTable({% autoescape off %}{{ datatable_options }}{% endautoescape %});
-    	
-    	$("#{{ datatable_name }}").on('draw.dt', 
-    	   function() {
+        {{ datatable_name }} = $("#{{ datatable_name }}").dataTable({% autoescape off %}{{ datatable_options }}{% endautoescape %});
+        
+        $("#{{ datatable_name }}").on('draw.dt', 
+           function() {
                 $('[popover-data-url]').hover(
                     function() {
                         var element = $(this);
@@ -48,68 +52,68 @@
             });
 
         {% if write_permission %}
-        	$(document).on("dblclick", "#{{ datatable_name }} td", handle_edit);
-			$(document).on("click", "#{{ datatable_name }} .edit_trigger", handle_edit);
+            $(document).on("dblclick", "#{{ datatable_name }} td", handle_edit);
+            $(document).on("click", "#{{ datatable_name }} .edit_trigger", handle_edit);
 
-	        function handle_edit() {
-	            row_id = $(this).children("div").attr("id");
-	            editable_columns = $("#"+ row_id + ".editable");
+            function handle_edit() {
+                row_id = $(this).children("div").attr("id");
+                editable_columns = $("#"+ row_id + ".editable");
 
-	            editable_columns.children(".display_data").hide(); // Hide the display field
-	            editable_columns.children(".editbox").show(); // Show the edit field
+                editable_columns.children(".display_data").hide(); // Hide the display field
+                editable_columns.children(".editbox").show(); // Show the edit field
 
-				$(".editbox").unbind('change'); // Strange fix to prevent multiple ajax calls for one change.
-	            $(".editbox").change(function() {
-	                row_data = {};
-	                row_data["csrfmiddlewaretoken"] = getCookie('csrftoken');
-	                row_data["id"] = row_id;
+                $(".editbox").unbind('change'); // Strange fix to prevent multiple ajax calls for one change.
+                $(".editbox").change(function() {
+                    row_data = {};
+                    row_data["csrfmiddlewaretoken"] = getCookie('csrftoken');
+                    row_data["id"] = row_id;
 
-	                // Generate a request string
-	                editable_columns.children(".editbox").each(function () {
-	                    column_name = $(this).parent().attr("column");
-	                    value = $(this).val();
-	                    row_data[column_name] = value;
-	                });
+                    // Generate a request string
+                    editable_columns.children(".editbox").each(function () {
+                        column_name = $(this).parent().attr("column");
+                        value = $(this).val();
+                        row_data[column_name] = value;
+                    });
 
-	                // Attempt to send the data
-                	// Add a temporary loading image to the first column in the edited row
-                	icon_url = "{% static 'images/datatables/load.gif' %}"
-                	first_col = $("#" + row_id + ":eq(0)");
-                	first_col_data = first_col.html()
-    				first_col.html("<img src='" + icon_url + "' />");
+                    // Attempt to send the data
+                    // Add a temporary loading image to the first column in the edited row
+                    icon_url = "{% static 'images/datatables/load.gif' %}"
+                    first_col = $("#" + row_id + ":eq(0)");
+                    first_col_data = first_col.html()
+                    first_col.html("<img src='" + icon_url + "' />");
 
-                	ajaxPost("{{ datatable_update_url }}", row_data, function(response_context) {
-                		// Replace the loading image on success
-                		first_col.html(first_col_data);
+                    ajaxPost("{{ datatable_update_url }}", row_data, function(response_context) {
+                        // Replace the loading image on success
+                        first_col.html(first_col_data);
 
-				        if (response_context["form_valid"]) {
-				        	// Replace the edited columns with updated html
-				        	columns = response_context["rendered_columns"]
-				        	for (var column in columns) {
-				        		$("[id='" + row_id + "'][column='" + column + "']").parent().html(columns[column]);
-				        	}
+                        if (response_context["form_valid"]) {
+                            // Replace the edited columns with updated html
+                            columns = response_context["rendered_columns"]
+                            for (var column in columns) {
+                                $("[id='" + row_id + "'][column='" + column + "']").parent().html(columns[column]);
+                            }
 
-				        	// Redraw the table
-				        	// {{ datatable_name }}.draw()
-				        }
-				        else {
-				        	alert("The update was unsuccessful:\n" + response_context["form_errors"].join("\n") + response_context["field_errors"].join("\n"));
-				        	return false;
-				        }
-				    });
-	            });
+                            // Redraw the table
+                            // {{ datatable_name }}.draw()
+                        }
+                        else {
+                            alert("The update was unsuccessful:\n" + response_context["form_errors"].join("\n") + response_context["field_errors"].join("\n"));
+                            return false;
+                        }
+                    });
+                });
 
-	            // Edit input box click action
-	            $("#" + row_id).parent().parent().mouseup(function() {
-	                return false;
-	            });
+                // Edit input box click action
+                $("#" + row_id).parent().parent().mouseup(function() {
+                    return false;
+                });
 
-	            // Outside click action
-	            $(document).mouseup(function() {
-	                $(".editbox").hide();
-	                $(".display_data").show();
-	            });
-	        };
+                // Outside click action
+                $(document).mouseup(function() {
+                    $(".editbox").hide();
+                    $(".display_data").show();
+                });
+            };
         {% endif %}
     });
 </script>
