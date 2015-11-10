@@ -375,7 +375,7 @@ class EmailManager(EmailConnectionMixin):
                 email_message.content_subtype = 'html'
 
             email_message.send()
-            self.server.append('Sent Items', email_message.message().as_bytes())
+            self.server.append('Sent Items', email_message.message().as_bytes(), flags=[b'\\Seen'])
 
 
 class GetDutyData(EmailConnectionMixin):
