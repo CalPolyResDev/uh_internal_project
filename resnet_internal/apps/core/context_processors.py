@@ -92,7 +92,7 @@ def navbar(request):
                     navbar = navbar + '<li>'
 
                     if link.is_link_group:
-                        onclick_text = 'onclick="' + ('$(\'#' + link.html_id + '_list\').toggle()' if not link.onclick else link.onclick) + '" '
+                        onclick_text = 'onclick="' + ('toggle_sublinks(\'#' + link.html_id + '_list\')' if not link.onclick else link.onclick) + '" '
                         navbar = navbar + '<a id="' + link.html_id + '_link" ' + (onclick_text if not link.url else 'href="' + link.url + '" ') + '>' + a_inner_html(link) + '</a>\n'
                         navbar = navbar + '</li>\n'
                         navbar = navbar + '<ul id="' + link.html_id + '_list" ' + ('style="display: none;"' if not link.url and not link.onclick else '') + '>\n'
