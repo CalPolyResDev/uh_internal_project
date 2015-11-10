@@ -83,10 +83,10 @@ def navbar(request):
             navbar = ''
 
             def a_inner_html(link):
-                return '<img src="' + static(link.icon) + '" align="top" width="16" height="16" border="0"><span id="' + link.html_id + '_text">' + link.display_name + '</span>'
+                return '<img class="link-icon" aria-hidden="true" src="' + static(link.icon) + '" height="16">' + link.display_name
 
             for parent_link in links_for_user.filter(parent_group__isnull=True).order_by('sequence_index'):
-                navbar = navbar + '<h2>' + parent_link.display_name + '</h2>\n<ul>\n'
+                navbar = navbar + '<div class="link-group-heading">' + parent_link.display_name + '</div>\n<div class="link-group">\n<ul>\n'
 
                 for link in links_for_user.filter(parent_group__id=parent_link.id).order_by('sequence_index'):
                     navbar = navbar + '<li>'
@@ -105,7 +105,7 @@ def navbar(request):
                             (('href="' + link.url + '"') if link.url else '') + 'target="' + link.target + '">\n' + a_inner_html(link) + '</a>\n'
                     navbar = navbar + '</li>\n'
 
-                navbar = navbar + '</ul>\n'
+                navbar = navbar + '</ul>\n</div>\n'
 
             cache.set(cache_key, navbar, 60 * 60 * 4)
 
