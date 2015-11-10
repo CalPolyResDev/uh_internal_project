@@ -7,13 +7,13 @@
 """
 from datetime import datetime, timedelta
 from email import header
-from itertools import zip_longest
-from operator import itemgetter
-from ssl import SSLError, SSLEOFError
 import email
+from itertools import zip_longest
 import logging
+from operator import itemgetter
 import os
 import socket
+from ssl import SSLError, SSLEOFError
 
 from django.conf import settings
 from django.core import mail
@@ -21,8 +21,8 @@ from django.core.cache import cache
 from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
-from srsconnector.models import ServiceRequest
 import imapclient
+from srsconnector.models import ServiceRequest
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
@@ -196,7 +196,7 @@ class EmailManager(EmailConnectionMixin):
 
         # Check for empty inbox
         if not uids:
-            return None
+            return []
 
         response = self.server.fetch(uids, ['FLAGS', 'BODY[1]'])
 
@@ -291,14 +291,14 @@ class EmailManager(EmailConnectionMixin):
 
             return output_list
 
-        response = cache.get('email:raw:' + mailbox_name + ':' + uid)
+        response = cache.get('email:raw:' + mailbox_name + ':' + str(uid))
 
         if not response:
             self.server.select_folder(mailbox_name, readonly=True)
             response = self.server.fetch(int(uid), ['ENVELOPE', 'BODY[]'])
             self.server.close_folder()
 
-            cache.set('email:raw:' + mailbox_name + ':' + uid, response, 172800)
+            cache.set('email:raw:' + mailbox_name + ':' + str(uid), response, 172800)
 
         message = email.message_from_bytes(response[int(uid)][b'BODY[]'])
         envelope = response[int(uid)][b'ENVELOPE']
@@ -337,7 +337,7 @@ class EmailManager(EmailConnectionMixin):
             'body_plain_text': body_plain_text,
             'attachments': attachments,
             'is_html': len(body_html) > len(body_plain_text),
-            'path': mailbox_name + '/' + uid,
+            'path': mailbox_name + '/' + str(uid),
             'mailbox': mailbox_name,
             'uid': uid,
             'in_reply_to': envelope.in_reply_to,
