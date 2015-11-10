@@ -94,6 +94,7 @@ def navbar(request):
                     if link.is_link_group:
                         onclick_text = 'onclick="' + ('$(\'#' + link.html_id + '_list\').toggle()' if not link.onclick else link.onclick) + '" '
                         navbar = navbar + '<a id="' + link.html_id + '_link" ' + (onclick_text if not link.url else 'href="' + link.url + '" ') + 'style="cursor: pointer !important;">' + a_inner_html(link) + '</a>\n'
+                        navbar = navbar + '</li>\n'
                         navbar = navbar + '<ul id="' + link.html_id + '_list" ' + ('style="display: none;"' if not link.url and not link.onclick else '') + '>\n'
 
                         for sublink in links_for_user.filter(parent_group__id=link.id).order_by('sequence_index'):
@@ -103,7 +104,7 @@ def navbar(request):
                     else:
                         navbar = navbar + '<a id="' + link.html_id + '_link" style="cursor: pointer;"' + (('onclick="' + link.onclick + '"') if link.onclick else '') + \
                             (('href="' + link.url + '"') if link.url else '') + 'target="' + link.target + '">\n' + a_inner_html(link) + '</a>\n'
-                    navbar = navbar + '</li>\n'
+                        navbar = navbar + '</li>\n'
 
                 navbar = navbar + '</ul>\n</div>\n'
 
