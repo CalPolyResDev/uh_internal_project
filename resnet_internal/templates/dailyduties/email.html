@@ -5,18 +5,18 @@
 
 {% block meta %}
     {{ block.super }}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+    <link rel="stylesheet" href="https://cdn.rawgit.com/orangehill/jstree-bootstrap-theme/16bbc350e6a37b3cfedcb96aac9fa9926e2e3e46/dist/themes/proton/style.min.css" />
 {% endblock %}
 
 {% block main %}
 {{ block.super }}
 <div class="row">
-    <div class="col-lg-2 col-md-4 col-xs-12" style="display: block;">
+    <div class="col-lg-2 col-md-4 col-xs-12">
         <div id="jstree_folder_structure"></div>
     </div>
-    <div class="col-lg-10 col-md-6 col-xs-12">
-        <div class="row">
-            <div class="btn-toolbar col-lg-6 col-md-6 col-xs-12">
+    <div class="col-lg-10 col-md-8 col-xs-12">
+        <div id="toolbar" class="row">
+            <div id="buttons" class="btn-toolbar col-lg-6 col-md-5 col-xs-12">
                 <div class="btn-group btn-group-md">
                     <button class="btn btn-primary" onclick="$.fancybox({href : '{% url 'email_compose' %}', 
                                                                         title : 'New Message', 
@@ -47,14 +47,14 @@
                     <button class="btn btn-primary" onclick="mark_selected_read();">Mark Read</button>
                 </div>
             </div>
-            <div class="col-lg-4 col-md-6 col-xs-12">
-                <div class="input-group input-group-xs">
+            <div id="search" class="col-lg-4 col-md-3 col-xs-12">
+                <div class="input-group input-group-md">
                     <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
                     <div class="input-group-addon">
                         <input type="radio" name="options" id="search_this_mailbox" autocomplete="off" checked> This Mailbox
                         <input type="radio" name="options" id="search_all_mailboxes" autocomplete="off"> All
                     </div>
-                    <input type="text" class="form-control" id="email_search" placeholder="Search...">
+                    <input type="text" class="form-control" id="email_search" placeholder="Search..." style="min-width: 150px;">
                     <div class="input-group-addon">
                         <span id="email_search_clear" class="glyphicon glyphicon-remove-circle"></span>
                     </div>
@@ -62,7 +62,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6 col-lg-10 col-xs-12">
+            <div class="col-md-8 col-lg-10 col-xs-12">
                 <table class="table table-hover" id='email_table'>
                     <tbody>
                             <tr>
@@ -101,6 +101,10 @@
                         'data': function(node) {
                             return { 'id': node.text };
                         }
+                    },
+                    'themes': {
+                        'name': 'proton',
+                        'responsive': true
                     }
                 }
             });
