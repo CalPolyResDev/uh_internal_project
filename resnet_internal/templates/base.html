@@ -26,10 +26,10 @@
         
         <link rel="stylesheet prefetch" href="{% compile 'less/base.less' %}?version=1.0">
 
-        {% block meta %}{% endblock %}
+        {% block extra_head %}{% endblock %}
 
         <title>University Housing Internal{% block subtitle %}{% endblock %}</title>
-    	
+
     </head>
     <body>
         {% block container %}
@@ -40,7 +40,7 @@
                         <img id="logo" src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/header/cp_logo.jpg" height="65px" alt="Cal Poly, San Luis Obispo" />
                     </a>
                     <h1 class="site-heading">
-                            University Housing Internal
+                            <a href="/">University Housing Internal</a>
                        </h1>
                 </div>
             </header>
@@ -48,6 +48,7 @@
                 <noscript><div id="noscript-padding"></div></noscript>
             </div>
             <div class="row" id="content">
+                {% block nav %}
                 <div id="nav-wrapper">
                     <nav>
                         <div class="text-center nav-heading" id="drawer-trigger">
@@ -58,6 +59,7 @@
                         </div>
                     </nav>
                 </div>
+                {% endblock %}
                 <main>
                     {% block main %}
                     {% endblock %}

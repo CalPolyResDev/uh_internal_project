@@ -1,9 +1,10 @@
-{% extends "base.html" %}
-{% block body %}
-    <body style="background: none; background-color: rgb(253, 253, 253); min-width: 0; width: inherit;">
-        <div id="content">
-            {% block content %}{% endblock %}
+{% block container %}
+        <div class="container-fluid">
+            <div class="row" id="content">
+                <main>
+                    {% block main %}
+                    {% endblock %}
+                </main>
+            </div>
         </div>
-    </body>
-    {% block extra_script %}{% endblock %}
 {% endblock %}
