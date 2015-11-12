@@ -6,12 +6,12 @@
 
 """
 
-from clever_selects.views import ChainedSelectChoicesView
 from collections import OrderedDict
 from datetime import datetime, timedelta
-from operator import itemgetter
 import logging
+from operator import itemgetter
 
+from clever_selects.views import ChainedSelectChoicesView
 from django.core.urlresolvers import reverse_lazy
 from django.template import Template, RequestContext
 from django_ajax.decorators import ajax
@@ -32,24 +32,26 @@ def update_network_status(request):
     network_reachability.sort(key=itemgetter('status', 'display_name'))
 
     raw_response = """
-        <table class="dataTable">
-            <tbody>
+        <table class="table table-hover">
+            <thead>
                 <tr>
-                    <th scope="col">Name</th>
+                    <th>Name</th>
                     {% if request.user.is_authenticated %}
-                    <th scope="col">DNS Address</th>
-                    <th scope="col">IP Address</th>
+                    <th>DNS Address</th>
+                    <th>IP Address</th>
                     {% endif %}
-                    <th scope="col">Status</th>
+                    <th>Status</th>
                 </tr>
+            </thead>
+            <tbody>
                 {% for reachability_result in network_reachability %}
-                <tr id="reachability_{% ">
-                        <td>{{ reachability_result.display_name }}</td>
-                        {% if request.user.is_authenticated %}
-                        <td>{{ reachability_result.dns_name }}</td>
-                        <td>{{ reachability_result.ip_address }}</td>
-                        {% endif %}
-                        <td style='color:{% if reachability_result.status %}green;'>UP{% else %}red;'>DOWN{% endif %}</td>
+                <tr>
+                    <td>{{ reachability_result.display_name }}</td>
+                    {% if request.user.is_authenticated %}
+                    <td>{{ reachability_result.dns_name }}</td>
+                    <td>{{ reachability_result.ip_address }}</td>
+                    {% endif %}
+                    <td style='color:{% if reachability_result.status %}green;'>UP{% else %}red;'>DOWN{% endif %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -62,7 +64,7 @@ def update_network_status(request):
 
     data = {
         'inner-fragments': {
-            '#network_status_response': response_html
+            '#network-status-response': response_html
         },
     }
 
@@ -75,15 +77,17 @@ def get_tickets(request):
         {% load staticfiles %}
         {% load core_filters %}
         {% load srs_urls %}
-        <table class="dataTable">
-            <tbody>
+        <table class="table">
+            <thead>
                 <tr>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Summary</th>
+                    <th></th>
+                    <th></th>
+                    <th>Requestor</th>
+                    <th>Status</th>
+                    <th>Summary</th>
                 </tr>
+            </thead>
+            <tbody>
                 {% for ticket in tickets %}
                 <tr id="ticket_{{ ticket.ticket_id }}" class={{ ticket.display_class }}>
                     <td>
@@ -104,17 +108,16 @@ def get_tickets(request):
             </tbody>
         </table>"""
 
-    tickets = get_ticket_list(request.user)
     now = datetime.today()
 
-    tickets[:] = [ticket for ticket in tickets if ticket['assigned_person'].strip() != 'ResnetAPI']
+    tickets = [ticket for ticket in get_ticket_list(request.user) if ticket['assigned_person'].strip() != 'ResnetAPI']
 
     for ticket in tickets:
         if ((not ticket['assigned_person'] or ticket['assigned_person'] == request.user.get_full_name()) and
                 (ticket['status'] != 'Pending Information' or ticket['updater_is_technician'] == False or
                  ticket['date_updated'] + timedelta(weeks=1) < datetime.today())):
 
-            time_difference = (now - ticket['date_updated']).total_seconds() / 86400
+            time_difference = (now - ticket['date_updated']).total_seconds() / 86400  # 24 hours
             if time_difference < 3:
                 ticket['display_class'] = 'bg-success'
                 ticket['sort_order'] = 1
@@ -138,7 +141,7 @@ def get_tickets(request):
 
     data = {
         'inner-fragments': {
-            '#tickets_response': response_html
+            '#tickets-response': response_html
         }
     }
 
