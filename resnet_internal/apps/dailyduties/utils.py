@@ -52,10 +52,10 @@ def get_archive_folders():
         ('Archives/Internal/Docs', 'Internal - Docs'),
         ('Archives/Internal/Forms', 'Internal - Forms'),
         ('Archives/Internal/Scheduling', 'Internal - Scheduling'),
-        ('Archives/Internal/SRS', 'Internal - SRS'),
+        ('Archives/Internal/SRS General', 'Internal - SRS'),
         ('Archives/Internal/UHTV', 'Internal - UHTV'),
-        ('Archives/Internal/Software', 'Software'),
-        ('Archives/Internal/Software/VM', 'Software - VM'),
+        ('Archives/Software', 'Software'),
+        ('Archives/Software/VM', 'Software - VM'),
         ('Junk Email', 'Junk'),
         ('Job Applicants', 'Job Applicants'),
     ]
@@ -139,6 +139,29 @@ class EmailConnectionMixin(object):
 
 class EmailManager(EmailConnectionMixin):
     server = None
+
+    SEARCH_MAILBOXES = [
+        'Archives/Aruba Ethernet',
+        'Archives/Aruba WiFi',
+        'Archives/Device Registration',
+        "Archives/DMCA Abuse Complaints",
+        'Archives/General Questions and Complaints',
+        'Archives/Hardware',
+        'Archives/Internal',
+        'Archives/Internal/Accounts',
+        'Archives/Internal/Dev Team',
+        'Archives/Internal/Docs',
+        'Archives/Internal/Forms',
+        'Archives/Internal/Scheduling',
+        'Archives/Internal/SRS General',
+        'Archives/Internal/UHTV',
+        'Archives/Software',
+        'Archives/Software/VM',
+        'Junk Email',
+        'Job Applicants',
+        'INBOX',
+        'Sent Items',
+    ]
 
     def decode_header(self, header_bytes):
         """ From https://github.com/maxiimou/imapclient/blob/decode_imap_bytes/imapclient/response_types.py
@@ -227,9 +250,9 @@ class EmailManager(EmailConnectionMixin):
 
         return voicemails
 
-    def get_mailbox_summary(self, mailbox_name):
+    def get_mailbox_summary(self, mailbox_name, search_string, **kwargs):
         self.server.select_folder(mailbox_name)
-        message_uids = self.server.search()
+        message_uids = self.server.search('TEXT ' + search_string if search_string else 'ALL')
         message_uid_fetch_groups = zip_longest(*(iter(message_uids),) * 500)
 
         messages = []
@@ -247,6 +270,7 @@ class EmailManager(EmailConnectionMixin):
                 message_from = envelope.from_[0]
 
                 messages.append({
+                    'mailbox': mailbox_name,
                     'uid': uid,
                     'unread': unread,
                     'replied': replied,
@@ -258,8 +282,22 @@ class EmailManager(EmailConnectionMixin):
 
         self.server.close_folder()
 
-        messages.sort(key=itemgetter('date'), reverse=True)
+        if kwargs.get('sorted', True):
+            messages.sort(key=itemgetter('date'), reverse=True)
+
         return messages
+
+    def get_messages(self, mailbox_name, search_string):
+        if mailbox_name:
+            return self.get_mailbox_summary(mailbox_name, search_string)
+        else:
+            messages = []
+            for mailbox in self.SEARCH_MAILBOXES:
+                mailbox_messages = self.get_mailbox_summary(mailbox, search_string, sorted=False)
+                messages += mailbox_messages
+
+            messages.sort(key=itemgetter('date'), reverse=True)
+            return messages
 
     def mark_message_read(self, mailbox_name, uid):
         self.server.select_folder(mailbox_name)

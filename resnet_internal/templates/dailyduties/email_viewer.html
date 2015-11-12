@@ -22,16 +22,13 @@
     .popover {
         max-width: 800px;
     }
-    .btn.btn-default {
-        margin-right: 5px;
-    }
 </style>
 {% endblock %}
 
 
 {% block content %}
     {% if message %}
-    <span id="buttons">
+    <div class="btn-group" role="group" id="buttons">
         <button class="btn btn-default" type="button" onclick="reply();">Reply</button>
         <button class="btn btn-default" type="button" onclick="reply_all();">Reply All</button>
         <button class="btn btn-default" type="button" onclick="forward();">Forward</button>
@@ -47,7 +44,7 @@
                     </table>">
             Archive
         </button>
-    </span>
+    </div>
     <br />
     <h1 id="subject">{{ message.subject }}</h1>
         <h3 id="from_header">{{ message.from }}</h3>
