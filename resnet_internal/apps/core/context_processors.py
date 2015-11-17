@@ -118,8 +118,8 @@ def navbar(request):
                         for sublink in links_for_user.filter(parent_group__id=link.id).order_by('sequence_index'):
                             navbar += '<li>'
 
-                            onclick_text = 'onclick="{onclick}"'.format(onclick=sublink.onclick if sublink.onclick else '')
-                            href_text = ' href="{link_url}"'.format(link_url=sublink.url if sublink.url else '')
+                            onclick_text = 'onclick="{onclick}"'.format(onclick=sublink.onclick) if sublink.onclick else ''
+                            href_text = ' href="{link_url}"'.format(link_url=sublink.url) if sublink.url else ''
 
                             navbar += '<a {onclick}{href} target="{target}">{sublink_name}</a>'.format(onclick=onclick_text,
                                                                                                        href=href_text,
@@ -132,8 +132,8 @@ def navbar(request):
                     else:
                         navbar += '<li>'
 
-                        onclick_text = 'onclick="{onclick}"'.format(onclick=link.onclick if link.onclick else '')
-                        href_text = ' href="{link_url}"'.format(link_url=link.url if link.url else '')
+                        onclick_text = 'onclick="{onclick}"'.format(onclick=link.onclick) if link.onclick else ''
+                        href_text = ' href="{link_url}"'.format(link_url=link.url) if link.url else ''
 
                         navbar += '<a id="{link_id}_link" {onclick}{href} target="{target}">{inner_html}</a>\n'.format(link_id=link.html_id,
                                                                                                                        onclick=onclick_text,

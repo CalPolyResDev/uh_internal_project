@@ -37,5 +37,9 @@
             ajaxGet("{% url 'core_get_tickets' %}");
         {% endif %}
     });
+    function openTicketSummary(ticket_id, ticket_summary_url) {
+        $('#ticket-summary-modal-' + ticket_id).modal({show: true});
+        $('#ticket-summary-modal-body-' + ticket_id).load(ticket_summary_url);
+    };
 </script>
 {% endblock %}
