@@ -2,40 +2,25 @@
 {% load core_user_tests %}
 {% load datatables %}
 
-{% block meta %}
-{{ block.super }}
-{% datatables_script %}
-{% endblock %}
-
 {% block subtitle %} | Residence Halls Rooms{% endblock %}
 
-{% block content %}
-<div id="content-2col">
-    <div id="content">
-        <div id="splashOuter">
-            <!--<div id="splash"></div>-->
-        </div>
-        <div id="topContent">
-            <h1>Residence Halls Rooms</h1>
-        </div>
-        {% if request.user|technician_access %}
+{% block main %}
+    <div class="col-xs-12">
         <p style="color: red;">
             {{ form.non_field_errors }}
             {% for field in form %}
             {{ field.errors }}
             {% endfor %}
         </p>
-        {% endif %}
-        <div class="clear"></div>
+    </div>
+
+    <div class="col-xs-12">
         <table id="residence_halls_rooms">
-            <tfoot>
-                <tr>
-                    <th></th>
-                </tr>
-            </tfoot>
         </table>
-        <div class="clear"></div>
-        {% if request.user|technician_access %}
+    </div>
+
+
+    <div class="col-xs-12">
         <div>
             <form method="post" id="add_room_form">
                 <fieldset>
@@ -52,13 +37,16 @@
                         {{ form.as_p }}
                     </div>
                 </fieldset>
-                    <p>
-                        <input type="submit" value="Add" />
-                    </p>
+                <p>
+                    <input type="submit" value="Add" />
+                </p>
                 {% csrf_token %}
             </form>
         </div>
-        {% endif %}
     </div>
-</div>
+{% endblock %}
+
+{% block extra_script %}
+    {{ block.super }}
+    {% datatables_script %}
 {% endblock %}

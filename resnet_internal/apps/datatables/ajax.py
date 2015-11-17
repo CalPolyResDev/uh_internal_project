@@ -39,28 +39,15 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     options = {
         "order": [[1, "asc"], [2, "asc"], [3, "asc"]],
         "language": {
-            "lengthMenu":
-                'Display <select>' +
-                '<option value="25">25</option>' +
-                '<option value="50">50</option>' +
-                '<option value="100">100</option>' +
-                '<option value="150">150</option>' +
-                '<option value="200">200</option>' +
-                '<option value="-1">All</option>' +
-                '</select> records:',
             "search": "Filter records: ",
             "zeroRecords": "No records to display."
         },
         "processing": True,
         "serverSide": True,
-        "pageLength": 50,
-        "pagingType": "full_numbers",
-        "lengthChange": True,
+        "lengthChange": False,
         "autoWidth": False,
-        "dom": '<lrf><"clear">t<ip><"clear">',
 
-        "responsive": True,
-        "scrollY": "85vh",
+        "scrollY": "75vh",
         "deferRender": True,
         "scroller": True
     }

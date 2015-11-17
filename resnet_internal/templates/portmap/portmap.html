@@ -5,7 +5,6 @@
 {% block subtitle %} | Port Map{% endblock %}
 
 {% block main %}
-<div class="row">
     <div class="col-xs-12">
         {% if request.user|portmap_modify_access %}
             <p style="color: red;">
@@ -16,16 +15,12 @@
             </p>
         {% endif %}
     </div>
-</div>
 
-<div class="row">
     <div class="col-xs-12">
         <table id="portmap">
         </table>
     </div>
-</div>
 
-<div class="row">
     <div class="col-xs-12">
         {% if request.user|portmap_modify_access %}
         <div>
@@ -52,7 +47,6 @@
         </div>
         {% endif %}
     </div>
-</div>
 {% endblock %}
 
 {% block extra_script %}
