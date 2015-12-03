@@ -24,7 +24,7 @@ class Command(BaseCommand):
 
         ap_import = DictReader((Path(settings.MEDIA_ROOT) / 'aps.csv').open('r'))
         failed_aps = DictWriter((Path(settings.MEDIA_ROOT) / 'aps_failed.csv').open('w'),
-                                ['property_id', 'serial_number', 'mac_address', 'ip_address', 'name', 'type', 'room', 'building', 'community', 'jack', ''])
+                                ['property_id', 'serial_number', 'mac_address', 'ip_address', 'name', 'type', 'room', 'building', 'community', 'jack', 'Status', 'Reason Unable To Fix/Notes'])
         failed_aps.writeheader()
 
         for access_point in ap_import:
