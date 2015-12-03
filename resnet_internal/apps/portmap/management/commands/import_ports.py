@@ -30,23 +30,33 @@ class Command(BaseCommand):
 
         for port in port_import:
             room_query = Room.objects.filter(building__name=port['building'], building__community__name=port['community'], name=port['room'])
+
             if not room_query.exists():
                 print("Could not add: " + str(port))
                 failed_ports.writerow(port)
                 continue
 
-            new_port = ResHallWired()
-            new_port.room = room_query.first()
-            new_port.switch_ip = port['switch_ip']
-            new_port.switch_name = port['switch_name']
-            new_port.jack = port['jack']
-            new_port.blade = int(port['blade'])
-            new_port.port = int(port['port'])
-            new_port.vlan = 999
+            port_query = ResHallWired.objects.filter(port=port['port'],
+                                                     blade=port['blade'],
+                                                     jack=port['jack'],
+                                                     switch_name=port['switch_name'],
+                                                     switch_ip=port['switch_ip'],
+                                                     room=room_query.first(),
+                                                     )
 
-            try:
-                with transaction.atomic():
-                    new_port.save()
-            except IntegrityError:
-                print("Integrity error when adding: " + str(port))
-                failed_ports.writerow(port)
+            if not port_query.exists():
+                new_port = ResHallWired()
+                new_port.room = room_query.first()
+                new_port.switch_ip = port['switch_ip']
+                new_port.switch_name = port['switch_name']
+                new_port.jack = port['jack']
+                new_port.blade = int(port['blade'])
+                new_port.port = int(port['port'])
+                new_port.vlan = 999
+
+                try:
+                    with transaction.atomic():
+                        new_port.save()
+                except IntegrityError:
+                    print("Integrity error when adding: " + str(port))
+                    failed_ports.writerow(port)
