@@ -78,6 +78,15 @@ class Room(Model):
     def address(self):
         return self.building.address + ' ' + self.name
 
+    def save(self, *args, **kwargs):
+        # Upper name letters
+        for field_name in ['name']:
+            value = getattr(self, field_name, None)
+            if value:
+                setattr(self, field_name, value.upper())
+
+        super(Room, self).save(*args, **kwargs)
+
     class Meta:
         verbose_name = 'University Housing Room'
 
