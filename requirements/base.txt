@@ -18,7 +18,11 @@ imapclient~=0.13
 django-jfu~=2.0.9
 django-uwsgi-cache~=1.0.1
 dj_database_url~=0.3.0
+<<<<<<< HEAD
 django-static-precompiler~=1.0.1
+=======
+html2text==2015.11.4
+>>>>>>> development
 
 git+https://github.com/CalPolyResDev/django-clever-selects.git
 
