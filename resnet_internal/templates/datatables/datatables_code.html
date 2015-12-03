@@ -1,119 +1,143 @@
 {% load staticfiles %}
 <script src='https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js'></script>
-<!-- <script src='https://cdn.datatables.net/responsive/2.0.0/js/dataTables.responsive.min.js'></script>
-<script src='https://cdn.datatables.net/responsive/2.0.0/js/responsive.bootstrap.min.js'></script> -->
 <script src='https://cdn.datatables.net/scroller/1.4.0/js/dataTables.scroller.min.js'></script>
 
 <script type="text/javascript">
-    jQuery.fn.dataTableExt.aTypes.unshift(
-        function (data) {
-            // IP Address Filter for dataTables
-            if (/^\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b$/.test(data)) {
-                return 'ip-address';
-            }
+    function objectEquals(x, y) {
+        'use strict';
+    
+        if (x === null || x === undefined || y === null || y === undefined) { return x === y; }
+        // after this just checking type of one would be enough
+        if (x.constructor !== y.constructor) { return false; }
+        // if they are functions, they should exactly refer to same one (because of closures)
+        if (x instanceof Function) { return x === y; }
+        // if they are regexps, they should exactly refer to same one (it is hard to better equality check on current ES)
+        if (x instanceof RegExp) { return x === y; }
+        if (x === y || x.valueOf() === y.valueOf()) { return true; }
+        if (Array.isArray(x) && x.length !== y.length) { return false; }
+    
+        // if they are dates, they must had equal valueOf
+        if (x instanceof Date) { return false; }
+    
+        // if they are strictly equal, they both need to be object at least
+        if (!(x instanceof Object)) { return false; }
+        if (!(y instanceof Object)) { return false; }
+    
+        // recursive object equality check
+        var p = Object.keys(x);
+        return Object.keys(y).every(function (i) { return p.indexOf(i) !== -1; }) &&
+            p.every(function (i) { return objectEquals(x[i], y[i]); });
+    }
 
-            // MAC Address Filter for dataTables
-            if (/^([0-9a-fA-F]{2}([:]?|$)){6}$/.test(data)) {
-                return 'mac-address';
-            }
-            return null;
-        }
-    );
 
     var {{ datatable_name }};
 
     // initialize the dataTable
     $(document).ready(function() {
-        {{ datatable_name }} = $("#{{ datatable_name }}").dataTable({% autoescape off %}{{ datatable_options }}{% endautoescape %});
+        {{ datatable_name }} = $("#{{ datatable_name }}").DataTable({% autoescape off %}{{ datatable_options }}{% endautoescape %});
         
-        $("#{{ datatable_name }}").on('draw.dt', 
-           function() {
-                $('[popover-data-url]').hover(
-                    function() {
-                        var element = $(this);
-                        element.off('hover');
-                        
-                        $.get(element.attr('popover-data-url'), function(content) {
-                            if (element.filter(":hover").length) {
-                                element.popover({content: content,
-                                            placement: 'left',
-                                            html: true,
-                                            container: 'body'
-                                }).popover('show');
-                            }
-                        });
-        
-                    }, 
-                    function() {
-                        var element = $(this);
-                        element.popover('hide');
+        // Add the popover to hoverable items
+        {{ datatable_name }}.on('draw.dt', function() {
+            $('[popover-data-url]').hover(
+                function() {
+                    var element = $(this);
+                    element.off('hover');
+                    
+                    $.get(element.attr('popover-data-url'), function(content) {
+                        if (element.filter(":hover").length) {
+                            element.popover({content: content,
+                                        placement: 'left',
+                                        html: true,
+                                        container: 'body'
+                            }).popover('show');
+                        }
                     });
-            });
+    
+                },
+                function() {
+                    var element = $(this);
+                    element.popover('hide');
+                });
+        });
+
+        // Create the overlay effect when processing
+        {{ datatable_name }}.on('processing.dt', function(event, settings, processing) {
+            if (processing) {
+                $(".dataTables_scrollBody").addClass("processing");
+            }
+            else {
+                $(".dataTables_scrollBody").removeClass("processing");
+            }
+            
+            $("#{{ datatable_name }} tr.even").css('background-color', processing ? 'transparent' : 'rgb(255, 255, 255)');
+            
+        });
 
         {% if write_permission %}
-            $(document).on("dblclick", "#{{ datatable_name }} td", handle_edit);
-            $(document).on("click", "#{{ datatable_name }} .edit_trigger", handle_edit);
+            $("#{{ datatable_name }} tbody").on("dblclick", "tr", function () {
+                var row_object = this;
+                var row_id = $(this).attr("id");
 
-            function handle_edit() {
-                row_id = $(this).children("div").attr("id");
-                editable_columns = $("#"+ row_id + ".editable");
+                // Switch to write mode
+                $("#" + row_id + " .value-display").hide();
+                $("#" + row_id + " .editbox").show();
 
-                editable_columns.children(".display_data").hide(); // Hide the display field
-                editable_columns.children(".editbox").show(); // Show the edit field
-
-                $(".editbox").unbind('change'); // Strange fix to prevent multiple ajax calls for one change.
-                $(".editbox").change(function() {
-                    row_data = {};
-                    row_data["csrfmiddlewaretoken"] = getCookie('csrftoken');
-                    row_data["id"] = row_id;
-
-                    // Generate a request string
-                    editable_columns.children(".editbox").each(function () {
+                var editable_columns = $("#" + row_id + " .editbox:not([readonly])")
+                
+                // Construct initial data array
+                var initial_data = {};
+                
+                editable_columns.each(function () {
+                    column_name = $(this).parent().attr("column");
+                    value = $(this).val();
+                    initial_data[column_name] = value;
+                });
+                
+                // Set focus to first editable input
+                editable_columns.first().focus()
+                
+                // Unbind previous actions
+                $(this).unbind("focusout");
+                
+                // User focused out of the row
+                $(this).on("focusout", function() {
+                    var changed_data = {}
+                    
+                    // Get data post edit
+                    editable_columns.each(function () {
                         column_name = $(this).parent().attr("column");
                         value = $(this).val();
-                        row_data[column_name] = value;
+                        changed_data[column_name] = value;
                     });
+                    
+                    // Only send a change request if the data actually changed
+                    if (!objectEquals(initial_data, changed_data)) {
+                        // Attempt to send the data
+                        var row_data = changed_data;
+                        row_data["csrfmiddlewaretoken"] = getCookie('csrftoken');
+                        row_data["id"] = row_id;
 
-                    // Attempt to send the data
-                    // Add a temporary loading image to the first column in the edited row
-                    icon_url = "{% static 'images/datatables/load.gif' %}"
-                    first_col = $("#" + row_id + ":eq(0)");
-                    first_col_data = first_col.html()
-                    first_col.html("<img src='" + icon_url + "' />");
+                        ajaxPost("{{ datatable_update_url }}", row_data, function(response_context) {
+                            if (response_context["form_valid"]) {
+                                // Replace the edited row with updated html
+                                var rendered_row = response_context["rendered_row"];
 
-                    ajaxPost("{{ datatable_update_url }}", row_data, function(response_context) {
-                        // Replace the loading image on success
-                        first_col.html(first_col_data);
-
-                        if (response_context["form_valid"]) {
-                            // Replace the edited columns with updated html
-                            columns = response_context["rendered_columns"]
-                            for (var column in columns) {
-                                $("[id='" + row_id + "'][column='" + column + "']").parent().html(columns[column]);
+                                {{ datatable_name }}.row(row_object).data(rendered_row).draw('page');
                             }
+                            else {
+                                alert("The update was unsuccessful:\n" + response_context["form_errors"].join("\n") + response_context["field_errors"].join("\n"));
+                                return false;
+                            }
+                        });
+                        
+                    }
 
-                            // Redraw the table
-                            // {{ datatable_name }}.draw()
-                        }
-                        else {
-                            alert("The update was unsuccessful:\n" + response_context["form_errors"].join("\n") + response_context["field_errors"].join("\n"));
-                            return false;
-                        }
-                    });
+                    // Switch back to read mode
+                    $("#" + row_id + " .editbox").hide();
+                    $("#" + row_id + " .value-display").show();
                 });
-
-                // Edit input box click action
-                $("#" + row_id).parent().parent().mouseup(function() {
-                    return false;
-                });
-
-                // Outside click action
-                $(document).mouseup(function() {
-                    $(".editbox").hide();
-                    $(".display_data").show();
-                });
-            };
+            });
         {% endif %}
     });
 </script>

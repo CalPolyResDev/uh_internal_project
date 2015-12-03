@@ -37,7 +37,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
     column_definitions = OrderedDict()
     options = {
-        "order": [[1, "asc"], [2, "asc"], [3, "asc"]],
+        "order": [[0, "asc"], [1, "asc"], [2, "asc"]],
         "language": {
             "search": "Filter records: ",
             "zeroRecords": "No records to display."
@@ -45,7 +45,6 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         "processing": True,
         "serverSide": True,
         "lengthChange": False,
-        "autoWidth": False,
 
         "scrollY": "75vh",
         "deferRender": True,
@@ -55,17 +54,18 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     extra_options = {}
 
     base_column_template = """
-        <div id='{id}' class='{class_name}' column='{column}'>
-        <div class='display_data' title='{value}'>
-            {value}
-            {link_block}
-            {inline_images}
-        </div>
-        {editable_block}
+        <div class='wrapper' column='{column}'>
+            <div class='value-display' title='{value}'>
+                {value}
+                {link_block}
+                {inline_images}
+            </div>
+            {editable_block}
         </div>
     """
 
-    editable_block_template = """<input type='text' class='editbox' value='{value}' />"""
+    editable_block_template = """<input type='text' class='form-control editbox' value='{value}' />"""
+    readonly_block_template = """<input type='text' class='form-control editbox' value='{value}' readonly="readonly" disabled="disabled" />"""
     link_block_template = """<a href='{link_url}' onclick='{onclick_action}' target='{link_target}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
     icon_template = """<img src='{icon_url}' style='padding-left:5px;' align='top' width='16' height='16' border='0' />"""
     popover_link_block_template = """<a href='{link_url}' title='{popover_title}' popover-data-url='{content_url}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
@@ -184,6 +184,15 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     def get_ip_address_columns(self):
         return self._get_columns_by_attribute("type", "", "ip-address")
 
+    def get_row_id(self, row):
+        return str(row.id)
+
+    def get_row_class(self, row):
+        return None
+
+    def get_row_data_attributes(self, row):
+        return None
+
     def render_column(self, row, column, class_names=None):
         """Renders columns with customized HTML.
 
@@ -205,9 +214,34 @@ class RNINDatatablesPopulateView(BaseDatatableView):
             editable_block = self.editable_block_template.format(value=value)
             class_names.append("editable")
 
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+            return self.base_column_template.format(class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
         else:
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block="")
+            readonly_block = self.readonly_block_template.format(value=value)
+            return self.base_column_template.format(class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=readonly_block)
+
+    def prepare_results(self, qs):
+        data = []
+
+        for item in qs:
+            row = {}
+            row_id = self.get_row_id(item)
+            row_class = self.get_row_class(item)
+            row_data_attributes = self.get_row_data_attributes(item)
+
+            if row_id:
+                row.update({"DT_RowId": row_id})
+
+            if row_class:
+                row.update({"DT_RowClass": row_class})
+
+            if row_data_attributes:
+                row.update({"DT_RowAttr": row_data_attributes})
+
+            for column in self.get_columns():
+                row.update({str(self.get_columns().index(column)): self.render_column(item, column)})
+
+            data.append(row)
+        return data
 
     def filter_queryset(self, qs):
         """ Filters the QuerySet by submitted search parameters.
@@ -230,18 +264,18 @@ class RNINDatatablesPopulateView(BaseDatatableView):
                 params = shlex.split(search_parameters)
             except ValueError:
                 params = search_parameters.split(" ")
-            columnQ = Q()
-            paramQ = Q()
+            column_q = Q()
+            param_q = Q()
 
             for param in params:
                 if param != "":
                     for searchable_column in searchable_columns:
-                        columnQ |= Q(**{searchable_column + "__icontains": param})
+                        column_q |= Q(**{searchable_column + "__icontains": param})
 
-                    paramQ.add(columnQ, Q.AND)
-                    columnQ = Q()
-            if paramQ:
-                qs = qs.filter(paramQ)
+                    param_q.add(column_q, Q.AND)
+                    column_q = Q()
+            if param_q:
+                qs = qs.filter(param_q)
 
         return qs
 
@@ -282,14 +316,12 @@ class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
     def form_valid(self, form):
         self.object = form.save()
 
-        rendered_columns = {}
-
-        for field in self.fields:
-            rendered_columns[field] = self.populate_class_instance.render_column(self.object, field)
+        # Only one row is passed
+        rendered_row = self.populate_class_instance.prepare_results([self.object])[0]
 
         context = {}
         context["form_valid"] = True
-        context["rendered_columns"] = rendered_columns
+        context["rendered_row"] = rendered_row
 
         return context
 

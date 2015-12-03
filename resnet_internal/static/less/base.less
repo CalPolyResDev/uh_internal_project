@@ -37,6 +37,11 @@ h3 small {
     white-space: nowrap;
 }
 
+.form-control {
+    border-radius: 0;
+    height: 26px;
+}
+
 body {
     background-color: rgb(255, 254, 250);
 }
@@ -167,14 +172,54 @@ main {
 }
 
 /* Datatable styles */
-table {
+table.dataTable {
     .editbox {
         display: none;
-        /* background-color: #ffffcc;
-        border:solid 1px #000; */
+        width: 100%;
+        height: auto;
+        padding: 0 4px;
+    }
+    
+    .value-display {
+        padding-left: 4px;
+    }
+
+    tbody tr {
+        line-height: 22px;
+    }
+    
+    tbody tr:hover {
+        background-color: @polydarkgrey !important;
+        cursor: cell;
     }
 }
 
+.dataTables_scrollBody {
+    background: rgb(248, 248, 247) !important;
+}
+
+.dataTables_processing {
+    z-index: 1000;
+}
+
+.dataTables_scrollBody:after {
+    content:'\A';
+    position: absolute;
+    width:100%; height:100%;
+    top:0; left:0;
+    background-color: rgba(0,0,0,0.6) !important;
+    opacity: 0;
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+}
+
+.dataTables_scrollBody.processing:after {
+    opacity: 1;
+}
+
+table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::after, table.dataTable thead .sorting::after {
+    margin-bottom: -8px;
+}
 
 
 /* media queries */

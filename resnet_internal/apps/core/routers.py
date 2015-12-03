@@ -16,7 +16,7 @@ class CommonRouter(object):
 
     ALIAS = "common"
     APP_NAME = "core"
-    MODELS = ('staffmapping')
+    MODELS = ['staffmapping', 'printertype', 'toner', 'part', 'request', 'request_toner', 'request_parts']  # HERE BE DRAGONS... This takes care of all unmigratable tables
 
     def _app(self, model):
         """ A shortcut to retrieve the provided model's application label.
@@ -53,3 +53,20 @@ class CommonRouter(object):
         if self._app(model) == self.APP_NAME and self._mod(model) in self.MODELS:
             return self.ALIAS
         return None
+
+    # HERE BE DRAGONS... This takes care of all unmigratable tables
+    def allow_migrate(self, db, app_label, model_name=None, **hints):
+        """Provides no constraints on table synchronization."""
+
+        if model_name in self.MODELS:
+            return False
+
+        if app_label in ["rmsconnector", "srsconnector"]:
+            return False
+
+        if str(db) in ["default"]:
+#             import sys
+#             print(db, app_label, model_name, file=sys.stderr)
+            return True
+        else:
+            return False
