@@ -92,7 +92,7 @@ def get_tickets(request):
                         </a>
                     </td>
                     <td>
-                        <a href="{% srs_edit_url ticket.sr_number %}" target="_blank">
+                        <a href="{% srs_edit_url ticket.ticket_id %}" target="_blank">
                             <img src="{% static 'images/srs_edit_button.gif' %}">
                         </a>
                     </td>
