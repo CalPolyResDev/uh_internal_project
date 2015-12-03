@@ -27,7 +27,7 @@ class Command(BaseCommand):
         failed_rooms.writeheader()
 
         for room in room_import:
-            room_query = Room.objects.filter(name=room['name'], building__name=room['building'], building__community__name=room['communit'])
+            room_query = Room.objects.filter(name=room['name'], building__name=room['building'], building__community__name=room['community'])
             if not room_query.exists():
                 building_query = Building.objects.filter(name=room['building'], community__name=room['community'])
 
