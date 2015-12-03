@@ -25,7 +25,7 @@ class Command(BaseCommand):
 
         port_import = DictReader((Path(settings.MEDIA_ROOT) / 'ports.csv').open('r'))
         failed_ports = DictWriter((Path(settings.MEDIA_ROOT) / 'ports_failed.csv').open('w'),
-                                ['community', 'building', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan'])
+                                ['community', 'building', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan', 'notes'])
         failed_ports.writeheader()
 
         for port in port_import:
