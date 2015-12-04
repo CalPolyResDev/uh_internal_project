@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load staticfiles %}
+{% load modal_frames %}
 
 {% block subtitle %} | Email{% endblock %}
 
@@ -9,10 +10,10 @@
 
 {% block main %}
 {{ block.super }}
-<div class="col-lg-2 col-md-4 col-xs-12">
+<div class="col-lg-3 col-md-4 col-xs-12" style="overflow: hidden;">
     <div id="jstree_folder_structure"></div>
 </div>
-<div class="col-lg-10 col-md-8 col-xs-12">
+<div class="col-lg-9 col-md-8 col-xs-12">
     <div id="toolbar" class="row">
         <div id="buttons" class="btn-toolbar col-lg-8 col-md-12 col-xs-12">
             <div class="btn-group btn-group-md">
@@ -218,4 +219,5 @@
         });
     };
 </script>
+{% modal_frame_support %}
 {% endblock %}

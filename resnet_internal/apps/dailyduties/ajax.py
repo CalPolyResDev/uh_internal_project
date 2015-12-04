@@ -165,16 +165,21 @@ def get_mailbox_summary(request):
         with EmailManager() as email_manager:
             mailbox_summary = email_manager.get_messages(mailbox_name, search_string)
 
+    for email in mailbox_summary:
+        email['full_id'] = email['mailbox'] + '/' + str(email['uid'])
+
     print(mailbox_summary)
 
     raw_response = """
         {% load staticfiles %}
+        {% load modal_frames %}
         {% if emails %}
             {% for email in emails %}
-            <tr id="{{ email.mailbox }}/{{ email.uid }}" {% if email.unread %}class="bg-info"{% endif %}>
+            <tr id="{{ email.full_id }}" {% if email.unread %}class="bg-info"{% endif %}>
                 <td>
-                    <input type="checkbox" name="email_selection" value="{{ email.uid }}" id="checkbox_{{ email.mailbox }}/{{ email.uid }}">
-                    <div id="spinner_{{ mailbox_name }}/{{ email.uid }}" class="spinner" style="display:none;">
+                    {% modal_frame modal_title='Email' modal_id=email.full_id %}
+                    <input type="checkbox" name="email_selection" value="{{ email.uid }}" id="checkbox_{{ email.full_id }}">
+                    <div id="spinner_{{ email.full_id }}" class="spinner" style="display:none;">
                         <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
                     </div>
                 </td>
@@ -183,11 +188,11 @@ def get_mailbox_summary(request):
                         <img src="{% static 'images/mail_reply.png' %}"></img>
                     {% endif %}
                 </td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.mailbox }}/{{ email.uid }}')).removeClass('bg-info');$.fancybox({href : '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.date }}</td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.mailbox }}/{{ email.uid }}')).removeClass('bg-info');$.fancybox({href : '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.sender_name }} &lt;{{email.sender_address }}&gt;</td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.mailbox }}/{{ email.uid }}')).removeClass('bg-info');$.fancybox({href : '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.subject }}</td>
+                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.full_id }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.date }}</td>
+                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.full_id }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.sender_name }} &lt;{{email.sender_address }}&gt;</td>
+                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.full_id }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.subject }}</td>
                 {% if mailbox_name|length == 0 %}
-                    <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.mailbox }}/{{ email.uid }}')).removeClass('bg-info');$.fancybox({href : '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">{{ email.mailbox }}</td>
+                    <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.full_id }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.mailbox }}</td>
                 {% endif %}
             </tr>
             {% endfor %}
@@ -211,6 +216,8 @@ def get_mailbox_summary(request):
                                        'search_string': search_string,
                                        })
     response_html = template.render(context)
+
+    print(response_html)
 
     return {'response': response_html}
 
