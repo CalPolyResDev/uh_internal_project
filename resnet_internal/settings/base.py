@@ -304,13 +304,13 @@ MIDDLEWARE_CLASSES = (
 )
 
 INSTALLED_APPS = (
-    'clever_selects',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.admin',
     'django.contrib.staticfiles',
+    'django_cas_ng',
     'raven.contrib.django.raven_compat',
     'django_ajax',
     'static_precompiler',
@@ -319,6 +319,7 @@ INSTALLED_APPS = (
     'django_ewiz',
     'paramiko',
     'jfu',
+    'clever_selects',
     'crispy_forms',
     'resnet_internal.apps.core',
     'resnet_internal.apps.core.templatetags.__init__.default_app_config',
