@@ -1,9 +1,11 @@
 from django.contrib import admin
 from django.db import connection, transaction
 
-from resnet_internal.apps.core.models import NavbarLink
+from clever_selects.admin import ChainedSelectAdminMixin
 
-from .models import Community, Building, Room, Department, SubDepartment, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser, NetworkDevice, ADGroup
+from .forms import RoomCreateForm
+from .models import (Community, Building, Room, Department, SubDepartment, SiteAnnouncements,
+                     StaffMapping, TechFlair, ResNetInternalUser, NetworkDevice, ADGroup, NavbarLink)
 
 
 class SiteAnnouncementsAdmin(admin.ModelAdmin):
@@ -34,9 +36,10 @@ class BuildingAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'community']
 
 
-class RoomAdmin(admin.ModelAdmin):
+class RoomAdmin(ChainedSelectAdminMixin, admin.ModelAdmin):
     list_display = ['name', 'building']
     list_filter = ['building']
+    form = RoomCreateForm
 
 
 class ADGroupAdmin(admin.ModelAdmin):

@@ -1,17 +1,19 @@
 from django.contrib import admin
 
-from resnet_internal.apps.portmap.forms import AccessPointCreateForm
+from clever_selects.admin import ChainedSelectAdminMixin
 
+from .forms import AccessPointCreateForm, ResHallWiredPortCreateForm
 from .models import ResHallWired, AccessPoint
 
 
-class ResHallWiredAdmin(admin.ModelAdmin):
+class ResHallWiredAdmin(ChainedSelectAdminMixin, admin.ModelAdmin):
     list_display = ('room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan', 'active',)
+    form = ResHallWiredPortCreateForm
 
 admin.site.register(ResHallWired, ResHallWiredAdmin)
 
 
-class AccessPointAdmin(admin.ModelAdmin):
+class AccessPointAdmin(ChainedSelectAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'mac_address', 'ip_address', 'port')
     form = AccessPointCreateForm
 
