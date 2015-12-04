@@ -10,11 +10,7 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
-# ======================================================================================================== #
-#                                          Database Configuration                                          #
-# ======================================================================================================== #
-
-DATABASES['default'] = dj_database_url.config(default="sqlite:///" + str(PROJECT_DIR.joinpath("test.db").resolve()))
+DEFAULT_BASE_URL = 'http://localhost:1500'
 
 # ======================================================================================================== #
 #                                        Authentication Configuration                                      #

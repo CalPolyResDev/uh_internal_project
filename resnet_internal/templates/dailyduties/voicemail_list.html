@@ -4,11 +4,9 @@
 
 {% block subtitle %} | ResNet Voicemail Messages{% endblock %}
 
-{% block content %}
-    <div id="content">
-        <h1>ResNet Voicemail Messages</h1>
-    
-        <table class="dataTable">
+{% block main %}
+    <div class="col-xs-12">    
+        <table class="table table-hover">
             <tbody>
                 <tr>
                     <th scope="col">Date</th>
@@ -53,7 +51,7 @@
     {{ block.super }}
     <script type="text/javascript">
         function remove_voicemail(message_uid)  {
-            // Cannot use JQuery here: $ signs and other character in UUID break the query
+            // Cannot use JQuery here: $ signs and other characters in UUID break the query
             var archive_link = document.getElementById('archive_' + message_uid);
             archive_link.style.display = 'none';
             
@@ -66,7 +64,7 @@
             });
         }
         function mark_new(message_uid)  {
-            // Cannot use JQuery here: $ signs and other character in UUID break the query
+            // Cannot use JQuery here: $ signs and other characters in UUID break the query
             var mark_new_link = document.getElementById('marknew_' + message_uid);
             mark_new_link.style.display = 'none';
             
