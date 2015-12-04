@@ -77,6 +77,7 @@ def get_tickets(request):
         {% load staticfiles %}
         {% load core_filters %}
         {% load srs_urls %}
+        {% load modal_frames %}
         <table class="table">
             <thead>
                 <tr>
@@ -91,7 +92,7 @@ def get_tickets(request):
                 {% for ticket in tickets %}
                 <tr id="ticket_{{ ticket.ticket_id }}" class={{ ticket.display_class }}>
                     <td>
-                        <a onclick="openTicketSummary('{{ ticket.ticket_id}}', '{% url 'core_ticket_summary' ticket_id=ticket.ticket_id %}');" style="cursor:pointer;">
+                        <a onclick="openModalFrame('{{ ticket.modal_id }}', '{% url 'core_ticket_summary' ticket_id=ticket.ticket_id %}');" style="cursor:pointer;">
                             <img src="{% static 'images/srs_view_button.gif' %}">
                         </a>
                     </td>
@@ -103,28 +104,7 @@ def get_tickets(request):
                     <td>{{ ticket.requestor_full_name }}</td>
                     <td>{{ ticket.status }}</td>
                     <td>{{ ticket.summary|clean_srs_escapes }}</td>
-                    <div class="modal fade" id="ticket-summary-modal-{{ ticket.ticket_id }}" tabindex="-1" role="dialog" aria-labelledby="ticket-summary-modal">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title">Ticket Summary</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <div id="ticket-summary-modal-body-{{ ticket.ticket_id}}">
-                                        <div class="progress">
-                                            <div  class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
-                                                <span class="sr-only">Loading...</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div><!-- /.modal-content -->
-                        </div><!-- /.modal-dialog -->
-                    </div>
+                    {% modal_frame modal_title='Ticket Summary' modal_id=ticket.modal_id %}
                 </tr>
                 {% endfor %}
             </tbody>
@@ -155,6 +135,8 @@ def get_tickets(request):
         else:
             ticket['display_class'] = 'bg-muted'
             ticket['sort_order'] = 5
+
+        ticket['modal_id'] = 'ticket_' + ticket['ticket_id']
 
     tickets.sort(key=itemgetter('sort_order'))
     template = Template(raw_response)

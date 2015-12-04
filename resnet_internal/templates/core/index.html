@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load core_user_tests %}
+{% load modal_frames %}
 
 {% block main %}
     <div class="col-xs-12 col-md-12 col-lg-4">
@@ -37,9 +38,6 @@
             ajaxGet("{% url 'core_get_tickets' %}");
         {% endif %}
     });
-    function openTicketSummary(ticket_id, ticket_summary_url) {
-        $('#ticket-summary-modal-' + ticket_id).modal({show: true});
-        $('#ticket-summary-modal-body-' + ticket_id).load(ticket_summary_url);
-    };
 </script>
+{% modal_frame_support %}
 {% endblock %}
