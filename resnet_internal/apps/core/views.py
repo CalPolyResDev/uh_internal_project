@@ -13,6 +13,8 @@ from django.template.context import RequestContext
 from django.views.generic import TemplateView
 from srsconnector.models import ServiceRequest
 
+from clever_selects.views import ChainedSelectFormViewMixin
+
 from ..datatables.views import DatatablesView
 from .ajax import PopulateResidenceHallRooms
 from .forms import RoomCreateForm
@@ -52,7 +54,7 @@ class TicketSummaryView(TemplateView):
         return context
 
 
-class ResidenceHallRoomsView(DatatablesView):
+class ResidenceHallRoomsView(ChainedSelectFormViewMixin, DatatablesView):
     template_name = "core/rooms.html"
     form_class = RoomCreateForm
     populate_class = PopulateResidenceHallRooms

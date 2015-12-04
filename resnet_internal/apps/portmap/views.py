@@ -17,9 +17,10 @@ from ..datatables.views import DatatablesView
 from .ajax import PopulateResidenceHallWiredPorts, PopulateResidenceHallAccessPoints
 from .forms import ResHallWiredPortCreateForm
 from .models import ResHallWired, AccessPoint
+from clever_selects.views import ChainedSelectFormViewMixin
 
 
-class ResidenceHallWiredPortsView(DatatablesView):
+class ResidenceHallWiredPortsView(ChainedSelectFormViewMixin, DatatablesView):
     template_name = "portmap/portmap.html"
     form_class = ResHallWiredPortCreateForm
     populate_class = PopulateResidenceHallWiredPorts
@@ -27,7 +28,7 @@ class ResidenceHallWiredPortsView(DatatablesView):
     success_url = reverse_lazy('residence_halls_wired_ports')
 
 
-class ResidenceHallAccessPointsView(DatatablesView):
+class ResidenceHallAccessPointsView(ChainedSelectFormViewMixin, DatatablesView):
     template_name = "portmap/apmap.html"
     form_class = AccessPointCreateForm
     populate_class = PopulateResidenceHallAccessPoints
