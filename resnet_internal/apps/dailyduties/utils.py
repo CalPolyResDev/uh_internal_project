@@ -308,15 +308,16 @@ class EmailManager(EmailConnectionMixin):
         attachments = []
 
         for part in message.walk():
-            if part.get_content_type().startswith('multipart'):
+            if part.get_content_type().startswith('multipart') or part.get_content_type().startswith('message'):
                 continue
             elif part.get_content_type() is None:
                 continue
             elif part.get_content_type() == 'text/html':
                 body_html += smart_text(part.get_payload(decode=True), errors='replace')
             elif part.get_content_type() == 'text/plain':
-                body_plain_text += smart_text(part.get_payload(decode=True), errors='replace')
+                body_plain_text += '\n' + smart_text(part.get_payload(decode=True), errors='replace')
             else:
+                print(part.get_content_type())
                 attachment = {
                     'filename': part.get_filename(),
                     'filedata': part.get_payload(decode=True),
