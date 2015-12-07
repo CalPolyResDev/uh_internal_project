@@ -1,25 +1,29 @@
 <script type="text/javascript">
-    function jQueryEscapeStr(str) 
-    {
+    function jQueryEscapeStr(str) {
         if (str)
             return str.replace(/([ #;?%&,.+*~\':"!^$[\]()=>|\/@])/g,'\\$1');      
     
         return str;
-    }
-    function resize_iframe(iframe) {
+    };
+    function show_iframe(iframe, modalID) {
+        $('#' + modalID + '-modal-progress-bar').css('display', 'none');
+        $('#' + modalID + '-modal-iframe-div').css('display', '');
         iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
-    }
-    function openModalFrame(modal_id, url) {
-        modal_id = jQueryEscapeStr(modal_id);
-        $('#' + modal_id + '-modal').modal({show: true});
+    };
+    function openModalFrame(modalID, url) {
+        var escapedModalID = jQueryEscapeStr(modalID);
+        $('#' + escapedModalID + '-modal').modal({show: true}).on('hidden.bs.modal', function(e) {
+            modalClosed(escapedModalID);
+        });;
 
-        $.ajax({
-            url: url,
-            success: function(iframeSource){
-                var escapedSource = iframeSource.replace(/\"/g,'&quot;');
-                var replacementHTML = '<iframe width="100%" onload="resize_iframe(this)" frameborder="0" srcdoc="' + escapedSource + '"></iframe></div>';
-                $('#' + modal_id + '-modal-body').html(replacementHTML);
-            }
-        });
+        var replacementHTML = '<div id="' + modalID + '-modal-iframe-div" style="display: none"><iframe id="modal-iframe" width="100%" frameborder="0" src="' + url + '"></iframe></div>';
+        $('#' + escapedModalID + '-modal-body').append(replacementHTML);
+        document.getElementById('modal-iframe').onload = function() {
+            show_iframe(document.getElementById('modal-iframe'), escapedModalID);
+        };
+    };
+    function modalClosed(modalID) {
+        $('#' + modalID + '-modal-iframe-div').remove();
+        $('#' + modalID + '-modal-progress-bar').css('display', '');
     };
 </script>

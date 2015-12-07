@@ -1,12 +1,10 @@
 {% extends "base.html" %}
 
 {% block container %}
-        <div class="container-fluid">
-            <div class="row" id="content">
-                <main>
-                    {% block main %}
-                    {% endblock %}
-                </main>
-            </div>
+    <div class="container-fluid">
+        <div class="row" id="content">
+            {% block main %}
+            {% endblock %}
         </div>
+    </div>
 {% endblock %}

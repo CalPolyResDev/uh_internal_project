@@ -1,8 +1,9 @@
+{% extends "base_frame.html" %}
 {% load staticfiles %}
 {% load jfu_escaped %}
 {% block subtitle %} | Email{% endblock %}
 
-{% block meta %}
+{% block extra_head %}
 <style>
     input {
         min-width: 90% !important;
@@ -20,9 +21,11 @@
     .popover {
         max-width: 800px;
     }
-    
     .modal-dialog {
         max-height: 80%;
+    }
+    body {
+        background-color: white;
     }
 </style>
 {% endblock %}
@@ -30,56 +33,58 @@
 
 {% block main %}
     {% if message %}
-    <div class="btn-group" role="group" id="buttons">
-        <button class="btn btn-default" type="button" onclick="reply();">Reply</button>
-        <button class="btn btn-default" type="button" onclick="reply_all();">Reply All</button>
-        <button class="btn btn-default" type="button" onclick="forward();">Forward</button>
-        <button class="btn btn-default" type="button" id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
-                data-content="<table class='table table-hover table-condensed'>
-                        <tbody>
-                            {% for folder, display_name in archive_folders %}
-                                <tr id='{{ folder }}' style='cursor: pointer;' onclick='$(&quot;#archive_button&quot;).popover(&quot;hide&quot;);archive(&quot;{{ folder }}&quot;);'>
-                                    <td style='padding: 2px; border-top: 0px;'>{{ display_name }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>">
-            Archive
-        </button>
-    </div>
-    <br />
-    <h1 id="subject">{{ message.subject }}</h1>
-        <h3 id="from_header">{{ message.from }}</h3>
-
-        <p><hr id="to_hr" style="display: none;"><strong>To:</strong> <span id="to">{{ message.to }}<br/></span>
-            <strong>CC:</strong> <span id="cc">{{ message.cc }}</span>
-            <span id="date"><br /><strong>Date:</strong> {{ message.date }}</span>
-            <span id="reply_to"><br /><strong>Reply To:</strong> {{ message.reply_to }}</span>
-            <span id="attachments">
-                {% if message.attachments %}<br /><strong>Attachments:</strong>
-                    {% for attachment in message.attachments %}
-                        <a href="{{ attachment.url }}" target="_blank">
-                            <img style="display: inline-block" src="{{ attachment.icon }}" />
-                            {{ attachment.filename }} ({{ attachment.size|filesizeformat }})
-                        </a>
-                    {% endfor %}
-                {% endif %}
-                <hr>
-            </span>
-        </p>
-        {% if message.is_html %}
-            <script language="javascript" type="text/javascript">
-                function resize_iframe(iframe) {
-                    iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
-                  }
-            </script>
-            <iframe id="email_body" frameborder="0" srcdoc="{{ message.body_html }}" width="100%" onload="resize_iframe(this)"></iframe>
+    <div class="col-lg-12">
+        <div class="btn-group" role="group" id="buttons">
+            <button class="btn btn-default" type="button" onclick="reply();">Reply</button>
+            <button class="btn btn-default" type="button" onclick="reply_all();">Reply All</button>
+            <button class="btn btn-default" type="button" onclick="forward();">Forward</button>
+            <button class="btn btn-default" type="button" id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
+                    data-content="<table class='table table-hover table-condensed'>
+                            <tbody>
+                                {% for folder, display_name in archive_folders %}
+                                    <tr id='{{ folder }}' style='cursor: pointer;' onclick='$(&quot;#archive_button&quot;).popover(&quot;hide&quot;);archive(&quot;{{ folder }}&quot;);'>
+                                        <td style='padding: 2px; border-top: 0px;'>{{ display_name }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>">
+                Archive
+            </button>
+        </div>
+        <br />
+        <h1 id="subject">{{ message.subject }}</h1>
+            <h3 id="from_header">{{ message.from }}</h3>
+    
+            <p><hr id="to_hr" style="display: none;"><strong>To:</strong> <span id="to">{{ message.to }}<br/></span>
+                <strong>CC:</strong> <span id="cc">{{ message.cc }}</span>
+                <span id="date"><br /><strong>Date:</strong> {{ message.date }}</span>
+                <span id="reply_to"><br /><strong>Reply To:</strong> {{ message.reply_to }}</span>
+                <span id="attachments">
+                    {% if message.attachments %}<br /><strong>Attachments:</strong>
+                        {% for attachment in message.attachments %}
+                            <a href="{{ attachment.url }}" target="_blank">
+                                <img style="display: inline-block" src="{{ attachment.icon }}" />
+                                {{ attachment.filename }} ({{ attachment.size|filesizeformat }})
+                            </a>
+                        {% endfor %}
+                    {% endif %}
+                    <hr>
+                </span>
+            </p>
+            {% if message.is_html %}
+                <script language="javascript" type="text/javascript">
+                    function resize_iframe(iframe) {
+                        iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
+                      }
+                </script>
+                <iframe id="email_body" frameborder="0" srcdoc="{{ message.body_html }}" width="100%" onload="resize_iframe(this)"></iframe>
+            {% else %}
+                <p id="email_body">{{ message.body_plain_text|linebreaksbr|urlize }}</p>
+            {% endif %}
         {% else %}
-            <p id="email_body">{{ message.body_plain_text|linebreaksbr|urlize }}</p>
+            <p>Could not retrieve email.</p>
         {% endif %}
-    {% else %}
-        <p>Could not retrieve email.</p>
-    {% endif %}
+    </div>
 {% endblock %}
 
 {% block extra_script %}
