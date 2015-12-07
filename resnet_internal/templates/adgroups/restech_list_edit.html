@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block subtitle %} | {{ subtitle }}{% endblock %}
-{% block meta %}
+
+{% block extra_head %}
     {{ block.super }}
     <style type="text/css">
         table th {
@@ -9,70 +10,56 @@
     </style>
 {% endblock %}
 
-{% block content %}
-<div id="content-2col">
-    <div id="content">
-        <div id="topContent">
-            <h1>{{ subtitle }} {% if group_members %}({{ group_members|length }}){% endif %}</h1>
-        </div>
-        <div class="clear"></div>
-        {% if valid_user %}
-        <table class="dataTable">
-            <tbody>
-                <tr>
-                    <th scope="col" width="15%">Full Name</th>
-                    <th scope="col" width="10%">Email Address</th>
-                    {% if request.user.is_developer %}
-                    <th scope="col" width="65%">Distinguished Name</th>
-                    {% endif %}
-                    <th scope="col" width="10%" style="text-decoration: none !important">&nbsp;</th>
-                </tr>
-                {% if group_members %}
-                    {% for member in group_members %}
-                    <tr {% if member.buckley %}style="color:red"{% endif %} id="member_{{ member.userPrincipalName }}">
-                        <td>{{ member.full_name }}</td>
-                        <td>{{ member.user_principal_name }}</td>
-                        {% if request.user.is_developer %}
-                        <td>{{ member.dn }}</td>
-                        {% endif %}
-                        <td><a style="color:red; cursor:pointer;" onclick="remove_tech('{{ member.userPrincipalName }}')">Remove</a></td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                <tr>
-                    <td></td>
-                    <td></td>
-                    {% if request.user.is_developer %}
-                    <td></td>
-                    {% endif %}
-                    <td></td>
-                </tr>
+{% block main %}
+<div class="col-xs-12">
+    {% if valid_user %}
+    <table class="table table-hover">
+        <tbody>
+            <tr>
+                <th scope="col" width="15%">Full Name</th>
+                <th scope="col" width="10%">Email Address</th>
+                {% if request.user.is_developer %}
+                <th scope="col" width="65%">Distinguished Name</th>
                 {% endif %}
-            </tbody>
-        </table>
-        <div class="clear"></div>
-        <div>
-            <form method="post" id="add_ad_user_form">
-                <fieldset>
-                <legend>
-                    Add a new technician
-                </legend>
-                    {{ form.non_field_errors }}
-                    <p>
-                        {{ form.user_principal_name.errors }}
-                        <label for="id_alias">{{ form.user_principal_name.label }}:</label>
-                        {{ form.user_principal_name }}&nbsp;&nbsp;&nbsp;&nbsp;
-                    </p>
-                </fieldset>
-                    <p>
-                        <input type="submit" value="Add" />
-                    </p>
-                {% csrf_token %}
-            </form>
-        </div>
-        {% endif %}
-    </div>
+                <th scope="col" width="10%" style="text-decoration: none !important">&nbsp;</th>
+            </tr>
+            {% if group_members %}
+                {% for member in group_members %}
+                <tr {% if member.buckley %}style="color:red"{% endif %} id="member_{{ member.userPrincipalName }}">
+                    <td>{{ member.full_name }}</td>
+                    <td>{{ member.user_principal_name }}</td>
+                    {% if request.user.is_developer %}
+                    <td>{{ member.dn }}</td>
+                    {% endif %}
+                    <td><a style="color:red; cursor:pointer;" onclick="remove_tech('{{ member.userPrincipalName }}')">Remove</a></td>
+                </tr>
+                {% endfor %}
+            {% else %}
+            <tr>
+                <td></td>
+                <td></td>
+                {% if request.user.is_developer %}
+                <td></td>
+                {% endif %}
+                <td></td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+        <form method="post" id="add_ad_user_form" class="form-inline">
+            <legend>
+                Add a new technician
+            </legend>
+                {{ form.non_field_errors }}
+                    {{ form.user_principal_name.errors }}
+                    <label for="id_alias">{{ form.user_principal_name.label }}:</label>
+                    {{ form.user_principal_name }}
+                    <button type="submit" value="Add" class="btn btn-primary">Add</button>
+            {% csrf_token %}
+        </form>
+    {% endif %}
 </div>
+{% endblock %}
 
 {% block extra_script %}
 {{ block.super }}
@@ -96,5 +83,4 @@
         }
     };
 </script>
-{% endblock %}
 {% endblock %}
