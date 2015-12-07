@@ -117,64 +117,17 @@
                 });
             });
 
-            // Daily duties
+            // Daily Duties URLs
             {% if request.user.is_authenticated %}
-                function add_duties() {
-                    var duties_links = ['email_link', 'ticket_manager_link', 'voicemail_link', 'printer_requests_link'];
-                    var duties_titles = ['Email', 'Tickets', 'Voicemail', 'Printer Requests'];
-                    
-                    for (var i=0; i < duties_links.length; ++i) {
-                        var link = $('#' + duties_links[i]);
-                        link.attr('title', duties_titles[i]);
-                        link.attr('data-content', 'Loading...');
-                        link.attr('data-toggle', 'popover');
-                        link.attr('data-trigger', 'hover');
-                    }
-                    
-                    $('[data-toggle="popover"]').popover({
-                        html: true,
-                    });
-                };
-                function refreshDuties() {
-                    ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
-                        $("#email_link").attr('data-content', response_context.email_content);
-                        $("#ticket_manager_link").attr('data-content', response_context.tickets_content);
-                        $("#voicemail_link").attr('data-content', response_context.voicemail_content);
-                        $("#printer_requests_link").attr('data-content', response_context.printer_requests_content);
-                    });
-                };
-                function updateEmail() {
-                    updateDuty('email', '{% url 'email_list' %}', '_self');
-                };
-                function updateVoicemail() {
-                    updateDuty('voicemail', '{% url 'voicemail_list' %}', '_self');
-                };
-                function updatePrinterRequests() {
-                    updateDuty('printerrequests', '{% url 'printer_request_list' %}', '_self');
-                };
-                function updateTickets() {
-                    updateDuty('tickets', 'https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Main', '_blank');
-                };
-                function updateDuty(duty, redirect_url, target) {
-                    if (target === '_blank') {  // Popup-Blocking Workaround
-                        window.open(redirect_url, target);
-                    }
-                    ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
-                        if (redirect_url && target !== '_blank') {
-                            window.open(redirect_url, target);
-                        }
-                        else {
-                            refreshDuties();
-                        }
-                    });
-                };
-                
-                $(document).ready(function() {
-                    add_duties();
-                    refreshDuties();
-                });
+                var daily_duties_refresh_url = "{% url 'daily_duties_refresh_duties' %}";
+                var daily_duties_update_url = "{% url 'daily_duties_update_duty' %}";
+                var daily_duties_email_redir_url = '{% url 'email_list' %}';
+                var daily_duties_voicemail_redir_url = '{% url 'voicemail_list' %}';
+                var daily_duties_printer_requests_redir_url = '{% url 'printer_request_list' %}';
             {% endif %}
         </script>
+        <script src="{% static 'js/dailyduties.js' %}?version=1.0"></script>
+        
         <script type="text/javascript" src="https://taskmaster.its.calpoly.edu/s/218fb7ab581f4ac8ba1588798ae8d47d-T/en_USrqvfjr/64026/42/1.4.27/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=cdd699b5"></script>
         <script type="text/javascript">
             window.ATL_JQ_PAGE_PROPS =  {
