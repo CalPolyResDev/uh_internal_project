@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 {% load staticfiles %}
-{% load modal_frames %}
 
 {% block subtitle %} | Email{% endblock %}
 
@@ -14,11 +13,10 @@
     <div id="jstree_folder_structure"></div>
 </div>
 <div class="col-lg-9 col-md-8 col-xs-12">
-    {% modal_frame modal_title='Compose Email' modal_id='compose_email' %}
     <div id="toolbar" class="row">
         <div id="buttons" class="btn-toolbar col-lg-8 col-md-12 col-xs-12">
             <div class="btn-group btn-group-md">
-                <button class="btn btn-primary" onclick="openModalFrame('compose_email', '{% url 'email_compose' %}');">
+                <button class="btn btn-primary" onclick="openModalFrame('Compose Email', '{% url 'email_compose' %}');">
                     New
                 </button>
                 <button class="btn btn-primary" onclick="$('input:checkbox').prop('checked', true);">Check All</button>
@@ -215,5 +213,4 @@
         });
     };
 </script>
-{% modal_frame_support %}
 {% endblock %}
