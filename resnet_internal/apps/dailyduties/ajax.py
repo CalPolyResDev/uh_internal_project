@@ -167,17 +167,16 @@ def get_mailbox_summary(request):
 
     for email in mailbox_summary:
         email['full_id'] = email['mailbox'] + '/' + str(email['uid'])
+        email['modal_title'] = 'Email'
 
     print(mailbox_summary)
 
     raw_response = """
         {% load staticfiles %}
-        {% load modal_frames %}
         {% if emails %}
             {% for email in emails %}
             <tr id="{{ email.full_id }}" {% if email.unread %}class="bg-info"{% endif %}>
                 <td>
-                    {% modal_frame modal_title='Email' modal_id=email.full_id %}
                     <input type="checkbox" name="email_selection" value="{{ email.uid }}" id="checkbox_{{ email.full_id }}">
                     <div id="spinner_{{ email.full_id }}" class="spinner" style="display:none;">
                         <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
@@ -188,11 +187,11 @@ def get_mailbox_summary(request):
                         <img src="{% static 'images/mail_reply.png' %}"></img>
                     {% endif %}
                 </td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.full_id|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.date }}</td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.full_id|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.sender_name }} &lt;{{email.sender_address }}&gt;</td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.full_id|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.subject }}</td>
+                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.date }}</td>
+                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.sender_name }} &lt;{{email.sender_address }}&gt;</td>
+                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.subject }}</td>
                 {% if mailbox_name|length == 0 %}
-                    <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.full_id }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.mailbox }}</td>
+                    <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.mailbox }}</td>
                 {% endif %}
             </tr>
             {% endfor %}
