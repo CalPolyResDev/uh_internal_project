@@ -17,6 +17,7 @@ from rmsconnector.constants import SIERRA_MADRE, YOSEMITE, CERRO_VISTA, POLY_CAN
 
 from .forms import GenerationForm, AddressRangeSearchForm
 from .utils import room_list_generator
+from operator import itemgetter
 
 MIN_ROOM = 'A'
 MAX_ROOM = 'R'
@@ -62,10 +63,10 @@ class BaseGenerateView(FormView):
             for resident in kwargs.pop('resident_list', []):
                 if self.request.POST['mode'] == "csv":
                     resident_data.append([getattr(resident, attribute) for attribute in self.attribute_list])
-                    resident_data.sort(key=lambda x: (x[2]))
+                    resident_data.sort(key=itemgetter(2))
                 else:
                     resident_data.append({attribute: getattr(resident, attribute) for attribute in self.attribute_list})
-                    resident_data.sort(key=lambda x: (x["address"]))
+                    resident_data.sort(key=itemgetter('address'))
             else:
                 context['error_message'] = self.empty_error_message_html
 
