@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta http-equiv="content-language" content="en" />
+        <meta name="language" content="en" />
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+        <meta name="author" content="Alex Kavanaugh - ResNet Development Team" />
+        <link href="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/css/cp_screen.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/css/cp_print.min.css" rel="stylesheet" type="text/css" media="print" />
+        <!--[if IE 8]>
+        <link href="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/css/ie8_screen.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/css/ie8_print.min.css" rel="stylesheet" type="text/css" media="print" />
+        <![endif]-->
+        <!--[if IE 7]>
+        <link href="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/css/ie7_screen.min.css" rel="stylesheet" type="text/css" />
+        <link href="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/css/ie7_print.min.css" rel="stylesheet" type="text/css" media="print" />
+        <![endif]-->
+        <link href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'css/screen.css' %}" rel="stylesheet" type="text/css" />
+        <link href="{% static 'css/print.css' %}" rel="stylesheet" type="text/css" media="print" />
+
+        <link rel="shortcut icon" href="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/favicon.ico" type="image/x-icon" />
+        <title>{{ hall }} CSD Hall Roster</title>
+    </head>
+    <body style="border-bottom: none; background: none;">
+        <div id="container" style="width:960px; height:1260px;">
+            <br />
+            <div align="right" id="date"><h3>{% now "DATE_FORMAT" %}</h3></div>
+            <div align="center" id="pageTitle"><h2>{{ hall }} CSD Hall Roster</h2><br /><span style="color:red; padding-top: 5px;">Buckley in Red</span></div>
+            <br />
+            <br />
+            <table border="1" class="table_directory">
+                <tbody>
+                    <tr>
+                        <th scope="col" width="13%">Name</th>
+                        <th scope="col" width="2%">Sex</th>
+                        <th scope="col" width="31%">Dorm Address</th>
+                        <th scope="col" width="8%">Cell Phone</th>
+                        <th scope="col" width="8%">Dorm Phone</th>
+                        <th scope="col" width="6%">College</th>
+                        <th scope="col" width="5%">Major</th>
+                        <th scope="col" width="5%">Academic Standing</th>
+                        <th scope="col" width="12%">E-mail Address</th>
+                        <th scope="col" width="2%">Pic?</th>
+                        <th scope="col" width="8%">Signature</th>
+                    </tr>
+                    {% if resident_data %}
+                        {% for resident in resident_data %}
+                        <tr {% if resident.is_buckley %}style="color:red"{% endif %}>
+                            <td>{{ resident.full_name }}</td>
+                            <td>{{ resident.sex }}</td>
+                            <td>{{ resident.address }}</td>
+                            <td>{{ resident.cell_phone }}</td>
+                            <td>{{ resident.dorm_phone }}</td>
+                            <td>{{ resident.college }}</td>
+                            <td>{{ resident.major }}</td>
+                            <td>{{ resident.course_year }}</td>
+                            <td>{{ resident.email }}</td>
+                            <td><input type="checkbox" /></td>
+                            <td>&nbsp;</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr><td colspan="11" style="text-align: center">{{ error_message }}</td></tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

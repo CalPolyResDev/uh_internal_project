@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block subtitle %} | Front Desk Roster Generator{% endblock %}
+{% block meta %}
+{{ block.super }}
+<script type="text/javascript">
+    function disable_button() {
+        buttons = $('#submit_container').find('input[type="submit"]');
+        buttons.attr('disabled', 'disabled');
+        buttons.attr('autocomplete','off');
+    }
+</script>
+{% endblock %}
+
+{% block content %}
+    <div id="content">
+        <div id="mainLeftFull">
+            <h1>Front Desk Roster Generator</h1>
+            <p>This tool is used to create building rosters. Simply choose your community and building from the drop-down menu and click generate. The generated roster will open in a new window, where you may print or save it directly. If the <i>Generate</i> button is greyed out, please reload this page.</p>
+            <p><b>NOTE: The generator must retrieve a massive number of entries from the RMS database. Please be patient as your request is processed.</b></p>
+            <div>
+                <form method="post" action="{% url 'fd_roster' %}" id="fd_generation_form">
+                    <fieldset>
+                        <legend>
+                            Select a Dorm Address Range
+                        </legend>
+                        <p>
+                        {{ form.non_field_errors }}
+                        {% for field in form %}
+                            {{ field.errors }}
+                        {% endfor %}
+                        </p>
+						<p>
+                            <label for="id_community">Community:</label>
+                            <select id="id_community" name="community" size="1">
+                                {% for value, label in form.community.field.choices %}
+	                                {% if value == form.community.value %}
+			                            <option value="{{ value }}" selected="selected">{{ label }}</option>
+			                        {% else %}
+			                        	<option value="{{ value }}">{{ label }}</option>
+			                        {% endif %}
+                            	{% endfor %}
+                            </select>
+                        </p>
+                        <p>
+                            <label for="id_building">Building:</label>
+                            <select id="id_building" name="building" size="1">
+                            {% if form.building.value %}
+	                            <option value="{{ form.building.value }}" selected="selected">{{ form.building.label }}</option>
+	                        {% else %}
+	                        	<option value="" selected="selected">---------</option>
+	                        {% endif %}
+                            </select>
+                        </p>
+                        <p>
+                            <label for="id_start_room">{{ form.start_room.label }}:</label>
+                            {{ form.start_room }}
+                        </p>
+                        <p>
+                            <label for="id_end_room">{{ form.end_room.label }}:</label>
+                            {{ form.end_room }}
+                        </p>
+                    </fieldset>
+                    <p id="submit_container">
+                        <input type="hidden" value="" name="mode" id="id_mode" />
+                        <input type="submit" value="Generate" onclick="$('#id_mode').val('normal'); disable_button(); this.form.submit(); return true;" />  {# submit called here because of stupid chrome bug #}
+                        <input type="submit" value="Generate CSV" onclick="$('#id_mode').val('csv'); disable_button(); this.form.submit(); return true;" /> {# submit called here because of stupid chrome bug #}
+                    </p>
+                    {% csrf_token %}
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block extra_script %}
+{{ block.super }}
+<script type="text/javascript">
+	$("#id_community").change(function () {
+		ajaxPost("{% url 'ajax_update_building' %}", {'community': $(this).val()});
+	});
+
+	{% if form.building.value %}
+	$(document).ready(function () {
+		ajaxPost("{% url 'ajax_update_building' %}", {'community': '{{ form.community.value }}', 'building_selection': '{{ form.building.value }}'});
+	});
+	{% endif %}
+</script>
+{% endblock %}
