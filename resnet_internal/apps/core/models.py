@@ -224,6 +224,13 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     is_rn_staff = BooleanField(default=False)  # access to all tools as well as staff tools
     is_developer = BooleanField(default=False)  # full access to resnet internal
 
+    # RLIN Legacy flags
+    is_csd = BooleanField(default=False)
+    is_ral = BooleanField(default=False)
+    is_ral_manager = BooleanField(default=False)
+    is_ra = BooleanField(default=False)
+    is_fd_staff = BooleanField(default=False)
+
     #
     # A set of flags that keeps a record of each user's orientation progress.
     #

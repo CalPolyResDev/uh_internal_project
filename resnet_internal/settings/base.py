@@ -164,6 +164,9 @@ computers_access_test = (lambda user: user.is_developer or user.is_rn_staff or u
 computers_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag)
 computer_record_modify_access_test = (lambda user: user.is_developer or user.is_net_admin or user.is_tag)
 
+csd_access_test = (lambda user: user.is_developer or user.is_ral_manager or user.is_csd)
+ral_manager_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_ral_manager)
+
 printers_access_test = computers_access_test
 printers_modify_access_test = computers_modify_access_test
 

@@ -20,6 +20,8 @@ from django.views.defaults import permission_denied, page_not_found
 from django.views.generic import RedirectView
 from django_cas_ng.views import login as auth_login, logout as auth_logout
 
+from .apps.rosters.views import FDGenerateView, CSDGenerateView
+
 from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.adgroups.views import ResTechListEditView
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
@@ -38,7 +40,7 @@ from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
 from .apps.printers.views import PrintersView
 from .settings.base import (technician_access_test, staff_access_test, printers_access_test, printers_modify_access_test,
                             portmap_access_test, portmap_modify_access_test, computers_access_test, computers_modify_access_test,
-                            computer_record_modify_access_test)
+                            computer_record_modify_access_test, csd_access_test, ral_manager_access_test)
 
 
 def permissions_check(test_func, raise_exception=True):
@@ -78,6 +80,9 @@ computer_record_modify_access = permissions_check(computer_record_modify_access_
 
 printers_access = permissions_check(printers_access_test)
 printers_modify_access = permissions_check(printers_modify_access_test)
+
+csd_access = permissions_check(csd_access_test)
+ral_manager_access = permissions_check(ral_manager_access_test)
 
 
 handler500 = handler500
@@ -184,6 +189,12 @@ urlpatterns += [
     url(r'^portmap/ap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(AccessPointFrameView.as_view())), name='ap_info_frame'),
     url(r'^portmap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(PortFrameView.as_view())), name='port_info_frame'),
     url(r'^portmap/ajax/chained_port/$', login_required(PortChainedAjaxView.as_view()), name='portmap_chained_port'),
+]
+
+# Roster Generator
+urlpatterns += [
+    url(r'^rosters/fd_roster/$', login_required(FDGenerateView.as_view()), name='fd_roster'),
+    url(r'^rosters/csd_roster/$', login_required(csd_access(CSDGenerateView.as_view())), name='csd_roster'),
 ]
 
 # Raise errors on purpose

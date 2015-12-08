@@ -15,6 +15,7 @@ from ldap_groups.exceptions import InvalidGroupDN
 from ldap_groups.groups import ADGroup as LDAPADGroup
 
 from ..core.models import ADGroup
+from resnet_internal.settings.base import ral_manager_access_test
 
 
 logger = logging.getLogger(__name__)
@@ -76,28 +77,28 @@ class CASLDAPBackend(CASBackend):
                 rn_staff_list = get_group_members('CN=UH-RN-Staff,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
                 developer_list = get_group_members('CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
 
-                if principal_name in net_admin_list:
-                    user.is_net_admin = True
+                csd_list = get_group_members('CN=UH-CSD,OU=Residential Life,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
+                ral_list = get_group_members('CN=UH-RAL,OU=Residential Life,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
+                ral_manager_list = get_group_members('CN=UH-RAL-Managers,OU=User Groups,OU=Websites,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
+                ra_list = get_group_members('CN=UH-RA,OU=Residential Life,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
+                fd_staff_list = get_group_members('CN=UH-FD-Staff,OU=Front Desk,OU=Residential Life,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
 
-                if principal_name in telecom_list:
-                    user.is_telecom = True
+                user.is_net_admin = principal_name in net_admin_list
+                user.is_telecom = principal_name in telecom_list
+                user.is_tag = principal_name in tag_list
+                user.is_tag_readonly = principal_name in tag_readonly_list
+                user.is_technician = principal_name in technician_list
+                user.is_rn_staff = principal_name in rn_staff_list
 
-                if principal_name in tag_list:
-                    user.is_tag = True
+                user.is_developer = principal_name in developer_list
+                user.is_staff = principal_name in developer_list
+                user.is_superuser = principal_name in developer_list
 
-                if principal_name in tag_readonly_list:
-                    user.is_tag_readonly = True
-
-                if principal_name in technician_list:
-                    user.is_technician = True
-
-                if principal_name in rn_staff_list:
-                    user.is_rn_staff = True
-
-                if principal_name in developer_list:
-                    user.is_developer = True
-                    user.is_staff = True
-                    user.is_superuser = True
+                user.is_csd = principal_name in csd_list
+                user.is_ral = principal_name in ral_list
+                user.is_ral_manager = principal_name in ral_manager_list
+                user.is_ra = principal_name in ra_list
+                user.is_fd_staff = principal_name in fd_staff_list
 
                 user.full_name = user_info["displayName"]
                 user.first_name = user_info["givenName"]
