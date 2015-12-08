@@ -87,8 +87,8 @@ class FDGenerateView(BaseGenerateView):
     def form_valid(self, form):
         self.template_name = self.report_template_name
 
-        community = form.cleaned_data['community']
-        building = form.cleaned_data['building']
+        community = form.cleaned_data['community'].name
+        building = form.cleaned_data['building'].name
         start_room = form.cleaned_data['start_room']
         end_room = form.cleaned_data['end_room']
 
