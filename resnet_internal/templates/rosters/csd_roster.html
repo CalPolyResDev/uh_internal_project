@@ -1,38 +1,37 @@
 {% extends "base.html" %}
 {% block subtitle %} | CSD Hall Roster Generator{% endblock %}
-{% block meta %}
+
+{% block extra_head %}
 {{ block.super }}
-<script type="text/javascript">
-    function disable_button() {
-        buttons = $('#submit_container').find('input[type="submit"]');
-        buttons.attr('disabled', 'disabled');
-        buttons.attr('autocomplete','off');
-    }
-</script>
+    <script type="text/javascript">
+        function disable_button() {
+            buttons = $('#submit_container').find('input[type="submit"]');
+            buttons.attr('disabled', 'disabled');
+            buttons.attr('autocomplete','off');
+        }
+    </script>
 {% endblock %}
 
-{% block content %}
-    <div id="content">
-        <div id="mainLeftFull">
-            <h1>CSD Hall Roster Generator</h1>
-            <p>This tool is used to create hall rosters. Simply choose your hall from the drop-down menu and click generate. The generated roster will open in a new window, where you may print or save it directly. If the <i>Generate</i> button is greyed out, please reload this page.</p>
-            <p><b>NOTE: The generator must retrieve a massive number of entries from the RMS database. Please be patient as your request is processed.</b></p>
-            <div>
-                <form method="post" action="{% url 'csd_roster' %}" id="csd_generation_form">
-                    <fieldset>
-                        <legend>
-                            Select a hall
-                        </legend>
-                        {{ form.as_p }}
-                    </fieldset>
-                    <p id="submit_container">
-                        <input type="hidden" value="" name="mode" id="id_mode" />
-                        <input type="submit" value="Generate" onclick="$('#id_mode').val('normal'); disable_button(); this.form.submit(); return true;" />  {# submit called here because of stupid chrome bug #}
-                        <input type="submit" value="Generate CSV" onclick="$('#id_mode').val('csv'); disable_button(); this.form.submit(); return true;" /> {# submit called here because of stupid chrome bug #}
-                    </p>
-                    {% csrf_token %}
-                </form>
-            </div>
+{% block main %}
+    <div class="col-xs-12">
+        <h1>CSD Hall Roster Generator</h1>
+        <p>This tool is used to create hall rosters. Simply choose your hall from the drop-down menu and click generate. The generated roster will open in a new window, where you may print or save it directly. If the <i>Generate</i> button is greyed out, please reload this page.</p>
+        <p><b>NOTE: The generator must retrieve a massive number of entries from the RMS database. Please be patient as your request is processed.</b></p>
+        <div>
+            <form method="post" action="{% url 'csd_roster' %}" id="csd_generation_form">
+                <fieldset>
+                    <legend>
+                        Select a hall
+                    </legend>
+                    {{ form.as_p }}
+                </fieldset>
+                <p id="submit_container">
+                    <input type="hidden" value="" name="mode" id="id_mode" />
+                    <input type="submit" value="Generate" onclick="$('#id_mode').val('normal'); disable_button(); this.form.submit(); return true;" />  {# submit called here because of stupid chrome bug #}
+                    <input type="submit" value="Generate CSV" onclick="$('#id_mode').val('csv'); disable_button(); this.form.submit(); return true;" /> {# submit called here because of stupid chrome bug #}
+                </p>
+                {% csrf_token %}
+            </form>
         </div>
     </div>
 {% endblock %}

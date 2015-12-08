@@ -8,9 +8,13 @@
 
 import re
 
-from django.forms import Form, CharField, ChoiceField, ValidationError
+from clever_selects.form_fields import ChainedModelChoiceField
+from django.forms import Form, CharField, ChoiceField, ValidationError, ModelChoiceField
+from django.core.urlresolvers import reverse_lazy
 
-from rmsconnector.constants import CSD_DOMAINS, COMMUNITIES, SIERRA_MADRE, YOSEMITE, ALL_BUILDINGS
+from rmsconnector.constants import CSD_DOMAINS, SIERRA_MADRE, YOSEMITE
+
+from ..core.models import Building, Community
 
 
 class GenerationForm(Form):
@@ -24,17 +28,13 @@ class GenerationForm(Form):
 
 
 class AddressRangeSearchForm(Form):
-    community = ChoiceField(label='Community', error_messages={'required': 'A community is required'})
-    building = ChoiceField(label='Building', error_messages={'required': 'A building is required'})
+    community = ModelChoiceField(queryset=Community.objects.all())
+    building = ChainedModelChoiceField('community', reverse_lazy('core_chained_building'), Building, label="Building", error_messages={'required': 'A building is required'})
     start_room = CharField(label='Start Room', error_messages={'required': 'A starting room number is required'})
     end_room = CharField(label='End Room', error_messages={'required': 'An ending room number is required'})
 
     def __init__(self, *args, **kwargs):
         super(AddressRangeSearchForm, self).__init__(*args, **kwargs)
-
-        self.fields["community"].choices.append(("", "-------------"))
-        self.fields["community"].choices.extend([(community, community) for community in COMMUNITIES])
-        self.fields["building"].choices.extend([(building, building) for building in ALL_BUILDINGS])
 
     def clean(self):
         cleaned_data = super(AddressRangeSearchForm, self).clean()
