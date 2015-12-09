@@ -15,7 +15,6 @@ from ldap_groups.exceptions import InvalidGroupDN
 from ldap_groups.groups import ADGroup as LDAPADGroup
 
 from ..core.models import ADGroup
-from resnet_internal.settings.base import ral_manager_access_test
 
 
 logger = logging.getLogger(__name__)
