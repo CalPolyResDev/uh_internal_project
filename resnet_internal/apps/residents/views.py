@@ -6,15 +6,16 @@
 
 """
 
+from clever_selects.views import ChainedSelectFormViewMixin
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import FormView
-
-from rmsconnector.utils import reverse_address_lookup, Resident
 from rmsconnector.models import ResidentProfile, StudentAddress
+from rmsconnector.utils import reverse_address_lookup, Resident
 
 from .forms import FullNameSearchForm, PrincipalNameSearchForm, AddressSearchForm
+
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +33,10 @@ class SearchView(FormView):
     def get(self, request, *args, **kwargs):
         full_name_form = self.get_form(self.full_name_form_class)
         principal_name_form = self.get_form(self.principal_name_form_class)
-        address_form = self.get_form(self.address_form_class)
+
+        address_form_kwargs = self.get_form_kwargs()
+        address_form_kwargs['user'] = self.request.user
+        address_form = self.address_form_class(**address_form_kwargs)
 
         return self.render_to_response(self.get_context_data(full_name_form=full_name_form,
                                                              principal_name_form=principal_name_form,
@@ -41,7 +45,10 @@ class SearchView(FormView):
     def post(self, *args, **kwargs):
         full_name_form = self.get_form(self.full_name_form_class)
         principal_name_form = self.get_form(self.principal_name_form_class)
-        address_form = self.get_form(self.address_form_class)
+
+        address_form_kwargs = self.get_form_kwargs()
+        address_form_kwargs['user'] = self.request.user
+        address_form = self.address_form_class(**address_form_kwargs)
 
         if self.request.POST["lookup_type"] == "full_name":
             if full_name_form.is_valid():
@@ -121,8 +128,8 @@ class SearchView(FormView):
                                                                  resident_list=resident_list))
 
     def address_form_valid(self, form):
-        community = self.request.POST['community']
-        building = self.request.POST['building']
+        community = form.cleaned_data['community'].name
+        building = form.cleaned_data['building'].name
         room = self.request.POST['room']
 
         try:
@@ -159,4 +166,3 @@ class SearchView(FormView):
                                                              principal_name_form=self.principal_name_form_class(),
                                                              address_form=self.address_form_class(),
                                                              resident_list=[]))
-

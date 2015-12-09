@@ -6,9 +6,11 @@
 
 """
 
-from django.forms import Form, CharField, ChoiceField
+from clever_selects.forms import ChainedModelChoiceField, ChainedChoicesForm
+from django.core.urlresolvers import reverse_lazy
+from django.forms import Form, CharField, ModelChoiceField
 
-from rmsconnector.constants import COMMUNITIES, ALL_BUILDINGS
+from ..core.models import Building, Community
 
 
 class FullNameSearchForm(Form):
@@ -20,14 +22,7 @@ class PrincipalNameSearchForm(Form):
     principal_name = CharField(label='Email Address', max_length=20, error_messages={'required': 'A cal poly email address is required'})
 
 
-class AddressSearchForm(Form):
-    community = ChoiceField(label='Community', error_messages={'required': 'A community is required'})
-    building = ChoiceField(label='Building', error_messages={'required': 'A building is required'})
+class AddressSearchForm(ChainedChoicesForm):
+    community = ModelChoiceField(queryset=Community.objects.all(), label='Community', error_messages={'required': 'A community is required'})
+    building = ChainedModelChoiceField('community', reverse_lazy('core_chained_building'), Building, label='Building', error_messages={'required': 'A building is required'})
     room = CharField(label='Room', error_messages={'required': 'A room number is required'})
-
-    def __init__(self, *args, **kwargs):
-        super(AddressSearchForm, self).__init__(*args, **kwargs)
-
-        self.fields["community"].choices.append(("", "---------"))
-        self.fields["community"].choices.extend([(community, community) for community in COMMUNITIES])
-        self.fields["building"].choices.extend([(building, building) for building in ALL_BUILDINGS])
