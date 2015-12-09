@@ -5,19 +5,21 @@
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
+
+from clever_selects.views import ChainedSelectFormViewMixin
 import csv
+from operator import itemgetter
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 from django.views.decorators.cache import cache_control
 from django.views.generic.edit import FormView
-
-from rmsconnector.utils import reverse_address_lookup
 from rmsconnector.constants import SIERRA_MADRE, YOSEMITE, CERRO_VISTA, POLY_CANYON_VILLAGE, POLY_CANYON_VILLAGE_BUILDINGS
+from rmsconnector.utils import reverse_address_lookup
 
 from .forms import GenerationForm, AddressRangeSearchForm
 from .utils import room_list_generator
-from operator import itemgetter
+
 
 MIN_ROOM = 'A'
 MAX_ROOM = 'R'
@@ -75,7 +77,7 @@ class BaseGenerateView(FormView):
         return context
 
 
-class FDGenerateView(BaseGenerateView):
+class FDGenerateView(ChainedSelectFormViewMixin, BaseGenerateView):
 
     template_name = 'rosters/fd_roster.html'
     report_template_name = 'rosters/fd_roster_report.html'

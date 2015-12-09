@@ -6,12 +6,11 @@
 
 """
 
+from clever_selects.forms import ChainedChoicesForm, ChainedModelChoiceField
 import re
 
-from clever_selects.form_fields import ChainedModelChoiceField
-from django.forms import Form, CharField, ChoiceField, ValidationError, ModelChoiceField
 from django.core.urlresolvers import reverse_lazy
-
+from django.forms import Form, CharField, ChoiceField, ValidationError, ModelChoiceField
 from rmsconnector.constants import CSD_DOMAINS, SIERRA_MADRE, YOSEMITE
 
 from ..core.models import Building, Community
@@ -27,7 +26,7 @@ class GenerationForm(Form):
         self.fields["hall"].choices = [(hall, hall) for hall in CSD_DOMAINS]
 
 
-class AddressRangeSearchForm(Form):
+class AddressRangeSearchForm(ChainedChoicesForm):
     community = ModelChoiceField(queryset=Community.objects.all())
     building = ChainedModelChoiceField('community', reverse_lazy('core_chained_building'), Building, label="Building", error_messages={'required': 'A building is required'})
     start_room = CharField(label='Start Room', error_messages={'required': 'A starting room number is required'})
