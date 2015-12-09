@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block subtitle %} | Resident Lookup{% endblock %}
+
+{% block content %}
+    <div id="content">
+        <div id="mainLeftFull">
+            <h1>Resident Lookup</h1>
+            <p>This tool is used to perform user lookups. Choose to look up by full name, email, or dorm address. The apartment and full name searches can return multiple names - this is useful when searching by address, as inputting the apartment number will return all occupants.</p>
+            <div class="left_column">
+                <form method="post" action="{% url 'resident_lookup' %}" id="search_form_full_name">
+                    <fieldset>
+                        <legend>
+                            Search by Full Name
+                        </legend>
+                        {{ full_name_form.as_p }}
+                    </fieldset>
+                    <p>
+                        <input type="hidden" name="lookup_type" value="full_name" />
+                        <input type="submit" value="Submit" />
+                    </p>
+                    {% csrf_token %}
+                </form>
+            </div>
+            <div class="right_column">
+                <form method="post" action="{% url 'resident_lookup' %}" id="search_form_principal_name">
+                    <fieldset>
+                        <legend>
+                            Search by Email Address
+                        </legend>
+                        {{ principal_name_form.as_p }}
+                    </fieldset>
+                    <p>
+                        <input type="hidden" name="lookup_type" value="principal_name" />
+                        <input type="submit" value="Submit" />
+                    </p>
+                    {% csrf_token %}
+                </form>
+            </div>
+            <div class="clear"></div>
+            <br />
+            <div>
+                <form method="post" action="{% url 'resident_lookup' %}" id="search_form_address">
+                    <fieldset>
+                        <legend>
+                            Search by Dorm Address
+                        </legend>
+                        <p>
+                        {{ address_form.non_field_errors }}
+                        {% for field in address_form %}
+                            {{ field.errors }}
+                        {% endfor %}
+                        </p>
+                        <p>
+                            <label for="id_community">Community:</label>
+                            <select id="id_community" name="community" size="1">
+                                {% for value, label in address_form.community.field.choices %}
+	                                {% if value == address_form.community.value %}
+			                            <option value="{{ value }}" selected="selected">{{ label }}</option>
+			                        {% else %}
+			                        	<option value="{{ value }}">{{ label }}</option>
+			                        {% endif %}
+                            	{% endfor %}
+                            </select>
+                        </p>
+                        <p>
+                            <label for="id_building">Building:</label>
+                            <select id="id_building" name="building" size="1">
+                            {% if address_form.building.value %}
+	                            <option value="{{ address_form.building.value }}" selected="selected">{{ address_form.building.label }}</option>
+	                        {% else %}
+	                        	<option value="" selected="selected">---------</option>
+	                        {% endif %}
+                            </select>
+                        </p>
+                        <p>
+                            <label for="id_room">{{ address_form.room.label }}:</label>
+                            {{ address_form.room }}
+                        </p>
+                    </fieldset>
+                    <p>
+                        <input type="hidden" name="lookup_type" value="address" />
+                        <input type="submit" value="Submit" />
+                    </p>
+                    {% csrf_token %}
+                </form>
+            </div>
+            <div class="clear"></div>
+            <h3>Results</h3>
+            <table border="1" class="table_directory">
+                <tbody>
+                    <tr>
+                        <th scope="col" width="25%">Name</th>
+                        <th scope="col" width="10%">Email</th>
+                        <th scope="col" width="15%">Cell Phone</th>
+                        <th scope="col" width="15%">Dorm Phone</th>
+                        <th scope="col" width="35%">Dorm Address</th>
+                    </tr>
+                    {% if search_results %}
+                        {% for resident in search_results %}
+                        <tr>
+                            <td>{{ resident.full_name }}</td>
+                            <td>{{ resident.email }}</td>
+                            <td>{{ resident.cell_phone }}</td>
+                            <td>{{ resident.dorm_phone }}</td>
+                            <td>{{ resident.address }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+{% block extra_script %}
+{{ block.super }}
+<script type="text/javascript">
+	$("#id_community").change(function () {
+		ajaxPost("{% url 'ajax_update_building' %}", {'community': $(this).val()});
+	});
+
+	{% if address_form.building.value %}
+	$(document).ready(function () {
+		ajaxPost("{% url 'ajax_update_building' %}", {'community': '{{ address_form.community.value }}', 'building_selection': '{{ address_form.building.value }}'});
+	});
+	{% endif %}
+</script>
+{% endblock %}
