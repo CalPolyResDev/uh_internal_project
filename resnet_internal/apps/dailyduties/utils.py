@@ -185,9 +185,7 @@ class EmailManager(EmailConnectionMixin):
         self.server.close_folder()
 
     def delete_voicemail_message(self, uid):
-        self.server.select_folder('Voicemails')
         self.move_message('Voicemails', uid, 'Archives/Voicemails')
-        self.server.close_folder()
 
     def get_all_voicemail_messages(self):
         """Get the voicemail messages."""
