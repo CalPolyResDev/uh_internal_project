@@ -31,7 +31,7 @@ class RoomCreateForm(ChainedChoicesModelForm):
         self.helper.field_class = 'col-sm-10 col-md-8'
 
         submit_button = Submit('submit', 'Add Room')
-        submit_button.field_classes = 'btn btn-default'
+        submit_button.field_classes = 'btn btn-primary'
 
         self.helper.layout = Layout(
             Fieldset(
