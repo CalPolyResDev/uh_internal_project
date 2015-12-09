@@ -23,8 +23,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from django.conf import settings
 
-        port_import = DictReader((Path(settings.MEDIA_ROOT) / 'ports.csv').open('r'))
-        failed_ports = DictWriter((Path(settings.MEDIA_ROOT) / 'ports_failed.csv').open('w'),
+        port_import = DictReader((settings.IMPORT_DATA_PATH / 'ports.csv').open('r'))
+
+        failed_ports = DictWriter((settings.IMPORT_DATA_PATH / 'ports_failed.csv').open('w'),
                                 ['community', 'building', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan', 'notes'])
         failed_ports.writeheader()
 

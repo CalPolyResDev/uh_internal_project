@@ -22,8 +22,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from django.conf import settings
 
-        ap_import = DictReader((Path(settings.MEDIA_ROOT) / 'aps.csv').open('r'))
-        failed_aps = DictWriter((Path(settings.MEDIA_ROOT) / 'aps_failed.csv').open('w'),
+        ap_import = DictReader((settings.IMPORT_DATA_PATH / 'aps.csv').open('r'))
+        failed_aps = DictWriter((settings.IMPORT_DATA_PATH / 'aps_failed.csv').open('w'),
                                 ['property_id', 'serial_number', 'mac_address', 'ip_address', 'name', 'type', 'room', 'building', 'community', 'jack', 'Status', 'Reason Unable to Fix/Notes'])
         failed_aps.writeheader()
 

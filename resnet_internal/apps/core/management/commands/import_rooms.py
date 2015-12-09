@@ -11,8 +11,9 @@ from django.core.management import BaseCommand
 from django.db import transaction
 from django.db.utils import IntegrityError
 
-from ...models import Room
 from resnet_internal.apps.core.models import Building
+
+from ...models import Room
 
 
 class Command(BaseCommand):
@@ -22,8 +23,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from django.conf import settings
 
-        room_import = DictReader((Path(settings.MEDIA_ROOT) / 'rooms.csv').open('r'))
-        failed_rooms = DictWriter((Path(settings.MEDIA_ROOT) / 'rooms_failed.csv').open('w'), ['community', 'building', 'name'])
+        room_import = DictReader((settings.DATA_IMPORT_PATH / 'rooms.csv').open('r'))
+        failed_rooms = DictWriter((settings.DATA_IMPORT_PATH / 'rooms_failed.csv').open('w'), ['community', 'building', 'name'])
         failed_rooms.writeheader()
 
         for room in room_import:

@@ -235,6 +235,10 @@ SECRET_KEY = get_env_variable('RESNET_INTERNAL_SECRET_KEY')
 
 PROJECT_DIR = Path(__file__).parents[2]
 
+# The directory that will hold any files for data imports from management commands.
+# A good place to save source data in case of future corruption or other data loss.
+IMPORT_DATA_PATH = PROJECT_DIR / 'import_data'
+
 # The directory that will hold user-uploaded files.
 MEDIA_ROOT = str(PROJECT_DIR.joinpath("media").resolve())
 
@@ -244,14 +248,14 @@ MEDIA_URL = '/media/'
 # The directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
-STATIC_ROOT = str(PROJECT_DIR.joinpath("static").resolve())
+STATIC_ROOT = (PROJECT_DIR / "static").resolve().as_posix()
 
 # URL prefix for static files. Make sure to use a trailing slash.
 STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    str(PROJECT_DIR.joinpath("resnet_internal", "static").resolve()),
+    (PROJECT_DIR / "resnet_internal" / "static").resolve().as_posix(),
 )
 
 # List of finder classes that know how to find static files in various locations.
@@ -261,7 +265,7 @@ STATICFILES_FINDERS = (
 )
 
 TEMPLATE_DIRS = (
-    str(PROJECT_DIR.joinpath("resnet_internal", "templates").resolve()),
+    PROJECT_DIR.joinpath("resnet_internal", "templates").resolve().as_posix(),
 )
 
 # List of callables that know how to import templates from various sources.
