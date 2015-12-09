@@ -90,6 +90,7 @@
         var editor = '';
         var attachments = [];
         var attachment_details = [];
+        var resnet_email_regex = /[,a-zA-Z0-9 <]*resnet@calpoly\.edu[>]*/i;
         
         $.ajaxSetup({ cache: true });
         
@@ -153,17 +154,19 @@
                 subject = 'Re: ' + subject;
             }
             $('#subject').val(subject);
-            if ('{{ message.reply_to|escapejs }}'.search(/[a-zA-Z0-9 <]*resnet@calpoly\.edu[>]*/i) != -1) {
+            if ('{{ message.reply_to|escapejs }}'.search(resnet_email_regex) != -1) {
                 $('#to').val('{{ message.to|escapejs }}');
             }
             else {
-                $('#to').val('{{ message.reply_to|escapejs }}');
+                $('#to').val('{{ message.reply_to|escapejs }}' + ', {{ message.to|escapejs }}');
+                $('#to').val($('#to').val().replace(resnet_email_regex, ''));
             }
         };
 
         function reply_all() {
             reply();
             $('#cc').val('{{ message.cc|escapejs }}');
+            $('#cc').val($('#cc').val().replace(resnet_email_regex, ''));
         };
 
         function forward() {

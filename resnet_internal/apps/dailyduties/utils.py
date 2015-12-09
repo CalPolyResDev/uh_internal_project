@@ -7,13 +7,13 @@
 """
 from datetime import datetime, timedelta
 from email import header
-from itertools import zip_longest
-from operator import itemgetter
-from ssl import SSLError, SSLEOFError
 import email
+from itertools import zip_longest
 import logging
+from operator import itemgetter
 import os
 import socket
+from ssl import SSLError, SSLEOFError
 
 from django.conf import settings
 from django.core import mail
@@ -21,8 +21,8 @@ from django.core.cache import cache
 from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
-from srsconnector.models import ServiceRequest
 import imapclient
+from srsconnector.models import ServiceRequest
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
@@ -196,7 +196,7 @@ class EmailManager(EmailConnectionMixin):
 
         # Check for empty inbox
         if not uids:
-            return None
+            return []
 
         response = self.server.fetch(uids, ['FLAGS', 'BODY[1]'])
 
@@ -242,7 +242,10 @@ class EmailManager(EmailConnectionMixin):
                 envelope = data[b'ENVELOPE']
                 date = envelope.date
                 subject = smart_text(envelope.subject)
-                message_from = envelope.from_[0]
+
+                message_from = envelope.from_[0] if envelope.from_ else None
+                message_to = envelope.to[0] if envelope.to else None
+                sender_address = message_to if mailbox_name == 'Sent Items' else message_from
 
                 messages.append({
                     'uid': uid,
@@ -250,8 +253,8 @@ class EmailManager(EmailConnectionMixin):
                     'replied': replied,
                     'date': date,
                     'subject': self.decode_header(subject),
-                    'from_name': smart_text(message_from.name) if message_from.name else '',
-                    'from_address': smart_text(message_from.mailbox) + '@' + smart_text(message_from.host)
+                    'sender_name': smart_text(sender_address.name) if sender_address else '',
+                    'sender_address': smart_text(sender_address.mailbox) + '@' + smart_text(sender_address.host) if sender_address else None,
                 })
 
         self.server.close_folder()
@@ -288,14 +291,14 @@ class EmailManager(EmailConnectionMixin):
 
             return output_list
 
-        response = cache.get('email:raw:' + mailbox_name + ':' + uid)
+        response = cache.get('email:raw:' + mailbox_name + ':' + str(uid))
 
         if not response:
             self.server.select_folder(mailbox_name, readonly=True)
             response = self.server.fetch(int(uid), ['ENVELOPE', 'BODY[]'])
             self.server.close_folder()
 
-            cache.set('email:raw:' + mailbox_name + ':' + uid, response, 172800)
+            cache.set('email:raw:' + mailbox_name + ':' + str(uid), response, 172800)
 
         message = email.message_from_bytes(response[int(uid)][b'BODY[]'])
         envelope = response[int(uid)][b'ENVELOPE']
@@ -305,15 +308,16 @@ class EmailManager(EmailConnectionMixin):
         attachments = []
 
         for part in message.walk():
-            if part.get_content_type().startswith('multipart'):
+            if part.get_content_type().startswith('multipart') or part.get_content_type().startswith('message'):
                 continue
             elif part.get_content_type() is None:
                 continue
             elif part.get_content_type() == 'text/html':
                 body_html += smart_text(part.get_payload(decode=True), errors='replace')
             elif part.get_content_type() == 'text/plain':
-                body_plain_text += smart_text(part.get_payload(decode=True), errors='replace')
+                body_plain_text += '\n' + smart_text(part.get_payload(decode=True), errors='replace')
             else:
+                print(part.get_content_type())
                 attachment = {
                     'filename': part.get_filename(),
                     'filedata': part.get_payload(decode=True),
@@ -334,7 +338,7 @@ class EmailManager(EmailConnectionMixin):
             'body_plain_text': body_plain_text,
             'attachments': attachments,
             'is_html': len(body_html) > len(body_plain_text),
-            'path': mailbox_name + '/' + uid,
+            'path': mailbox_name + '/' + str(uid),
             'mailbox': mailbox_name,
             'uid': uid,
             'in_reply_to': envelope.in_reply_to,
@@ -375,7 +379,7 @@ class EmailManager(EmailConnectionMixin):
                 email_message.content_subtype = 'html'
 
             email_message.send()
-            self.server.append('Sent Items', email_message.message().as_bytes())
+            self.server.append('Sent Items', email_message.message().as_bytes(), flags=[b'\\Seen'])
 
 
 class GetDutyData(EmailConnectionMixin):

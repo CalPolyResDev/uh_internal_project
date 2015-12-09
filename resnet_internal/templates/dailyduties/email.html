@@ -56,7 +56,7 @@
                                 <th></th>
                                 <th></th>
                                 <th>Date</th>
-                                <th>From</th>
+                                <th id="sender_header">From</th>
                                 <th>Subject</th>
                             </tr>
                             <tr id="loading_email_record"><td colspan="5" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>
@@ -114,6 +114,13 @@
         ajaxPost("{% url 'email_get_mailbox_summary' %}", {"mailbox": mailbox}, function(response_context) {
             $("#refresh_button").attr("onclick","refresh_messages('" + mailbox + "');");
         });
+        
+        if (mailbox === 'Sent Items') {
+            $('#sender_header').text('To');
+        }
+        else {
+            $('#sender_header').text('From');
+        }
     };
 
     function array_to_ajax(array, prefix) {
