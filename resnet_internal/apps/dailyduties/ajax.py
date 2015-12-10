@@ -125,8 +125,8 @@ def get_email_folders(request):
 
     html_response = "<ul><li class='jstree-open' id='root'>ResNet Email<ul>"
     current_parents = []
-    hide_list = ('Journal', 'Notes', 'Tasks', 'Voicemails', 'Deleted Items',
-                 'Archives/Voicemails', 'Archive', 'Clutter', 'Drafts', 'Outbox')
+    hide_list = ('Journal', 'Notes', 'Tasks', 'Voicemails', 'Archives/Voicemails',
+                 'Archive', 'Clutter', 'Drafts', 'Outbox')
 
     for flags, delimiter, folder_name in folder_response:
         hierarchical_list = folder_name.split(smart_text(delimiter))
@@ -138,7 +138,7 @@ def get_email_folders(request):
         if folder_name in hide_list:
             continue
 
-        if folder_name.startswith(('Calendar', 'Contacts')):
+        if folder_name.startswith(('Calendar', 'Contacts', 'Deleted Items')):
             continue
 
         if b'\\HasChildren' in flags:
