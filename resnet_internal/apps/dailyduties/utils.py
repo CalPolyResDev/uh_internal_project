@@ -250,7 +250,7 @@ class EmailManager(EmailConnectionMixin):
                     'replied': replied,
                     'date': date,
                     'subject': self.decode_header(subject),
-                    'from_name': smart_text(message_from.name) if message_from.name else '',
+                    'from_name': self.decode_header(message_from.name) if message_from.name else '',
                     'from_address': smart_text(message_from.mailbox) + '@' + smart_text(message_from.host)
                 })
 
