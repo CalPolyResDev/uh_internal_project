@@ -40,21 +40,6 @@ h3 small {
     white-space: nowrap;
 }
 
-.form-control {
-    border-radius: 0;
-    height: 26px;
-    padding: 3px 8px;
-}
-
-.input-group .form-control {
-    height: 34px;
-}
-
-.form-control:focus {
-    border-color: @polylightgreen;
-    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(69, 144, 44, 0.6);
-}
-
 body {
     background-color: rgb(255, 254, 250);
 }
@@ -230,7 +215,7 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
     margin-bottom: -8px;
 }
 
-.datatable-add-form {
+.table-add-form {
     padding-top: 20px;
 }
 
@@ -304,9 +289,28 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
     border-color: darken(@polydarkgreen, 10%);
 }
 
-.btn-primary:hover {
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
     background-color: darken(@polydarkgreen, 5%);
     border-color: darken(darken(@polydarkgreen, 5%), 10%);
+}
+
+.form-horizontal .control-label {
+    padding-top: 0;
+}
+
+.form-control {
+    border-radius: 0;
+    height: 26px;
+    padding: 3px 8px;
+}
+
+.input-group .form-control {
+    height: 34px;
+}
+
+.form-control:focus {
+    border-color: @polylightgreen;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(69, 144, 44, 0.6);
 }
 
 /* Source: http://cpratt.co/twitter-bootstrap-callout-css-styles/ */

@@ -121,9 +121,9 @@
             {% if request.user.is_authenticated %}
                 var daily_duties_refresh_url = "{% url 'daily_duties_refresh_duties' %}";
                 var daily_duties_update_url = "{% url 'daily_duties_update_duty' %}";
-                var daily_duties_email_redir_url = '{% url 'email_list' %}';
-                var daily_duties_voicemail_redir_url = '{% url 'voicemail_list' %}';
-                var daily_duties_printer_requests_redir_url = '{% url 'printer_request_list' %}';
+                var daily_duties_email_redir_url = "{% url 'email_list' %}";
+                var daily_duties_voicemail_redir_url = "{% url 'voicemail_list' %}";
+                var daily_duties_printer_requests_redir_url = "{% url 'printer_request_list' %}";
             {% endif %}
         </script>
         {% if request.user.is_authenticated %}
