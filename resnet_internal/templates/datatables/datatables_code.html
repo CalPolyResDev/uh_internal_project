@@ -105,7 +105,7 @@
                     var changed_data = {}
                     
                     // Get data post edit
-                    editable_columns.each(function () {
+                    editable_columns.each(function() {
                         column_name = $(this).parent().attr("column");
                         value = $(this).val();
                         changed_data[column_name] = value;
@@ -124,18 +124,26 @@
                                 var rendered_row = response_context["rendered_row"];
 
                                 {{ datatable_name }}.row(row_object).data(rendered_row).draw('page');
+                                
+                                // Switch back to read mode
+                                $("#" + row_id + " .editbox").hide();
+                                $("#" + row_id + " .value-display").show();
+
+                                editable_columns.each(function() {
+                                    $(this).parent().removeClass("has-error");
+                                });
                             }
                             else {
                                 alert("The update was unsuccessful:\n" + response_context["form_errors"].join("\n") + response_context["field_errors"].join("\n"));
+
+                                editable_columns.each(function() {
+                                    $(this).parent().addClass("has-error");
+                                });
+
                                 return false;
                             }
                         });
-                        
                     }
-
-                    // Switch back to read mode
-                    $("#" + row_id + " .editbox").hide();
-                    $("#" + row_id + " .value-display").show();
                 });
             });
         {% endif %}
