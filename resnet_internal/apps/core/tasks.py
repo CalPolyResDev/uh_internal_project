@@ -39,7 +39,7 @@ def update_slack_network_status(num):
             attachment = {
                 'fallback': 'Network Device Down: ' + device['display_name'],
                 'color': 'danger',
-                'title': device['display_name'] + ' is down!',
+                'title': device['display_name'],
                 'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('home')),
                 'fields': [
                     {'title': 'IP Address', 'value': device['ip_address']},
