@@ -25,9 +25,9 @@ def update_slack_network_status(num):
     if previous_down_devices is None:
         previous_down_devices = []
 
-    device_reachability_results = NetworkReachabilityTester.get_network_device_reachability(10)
+    device_statuses = NetworkReachabilityTester.get_network_device_reachability(10)
 
-    down_devices = [reachability_result for reachability_result in device_reachability_results if not reachability_result['status']]
+    down_devices = [device for device in device_statuses if not device['status']]
     new_down_devices = [down_device for down_device in down_devices if down_device not in previous_down_devices]
 
     cache.set('core_slack_previous_down_devices', down_devices, 10 * 60)
@@ -48,7 +48,7 @@ def update_slack_network_status(num):
             }
             slack_attachments.append(attachment)
 
-        payload = {'text': 'Network Devices are Down!' if len(new_down_devices) > 1 else 'A Network Device is Down!!',
+        payload = {'text': 'Network Devices are Down!' if len(new_down_devices) > 1 else 'A Network Device is Down!',
                            'icon_url': urljoin(settings.DEFAULT_BASE_URL, static('images/icons/aruba.png')),
                            'channel': settings.SLACK_NETWORK_STATUS_CHANNEL,
                            'attachments': slack_attachments}
