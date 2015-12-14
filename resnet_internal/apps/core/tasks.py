@@ -15,7 +15,7 @@ from django.core.urlresolvers import reverse
 from uwsgidecorators import timer
 import requests
 
-from resnet_internal.apps.core.utils import NetworkReachabilityTester
+from .utils import NetworkReachabilityTester
 
 
 @timer(60)
