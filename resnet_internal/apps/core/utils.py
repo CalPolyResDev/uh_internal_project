@@ -26,7 +26,11 @@ class NetworkReachabilityTester:
 
     @staticmethod
     def _is_device_reachable(ip_address, timeout):
-        response = os.system("ping -c 1 -t 2 " + ip_address + ' > /dev/null 2>&1') if platform == 'darwin' else os.system("ping -c 1 -w " + str(timeout) + " " + ip_address + ' > /dev/null 2>&1')
+        if platform == 'darwin':
+            response = os.system("ping -c 1 -t " + str(timeout) + " " + ip_address + ' > /dev/null 2>&1')
+        else:
+            response = os.system("ping -c 1 -w " + str(timeout) + " " + ip_address + ' > /dev/null 2>&1')
+
         return True if response == 0 else False
 
     @staticmethod
@@ -39,7 +43,7 @@ class NetworkReachabilityTester:
             reachability_responses.append({'display_name': network_device.display_name,
                                            'dns_name': network_device.dns_name,
                                            'ip_address': network_device.ip_address,
-                                           'status': NetworkReachabilityTester._is_device_reachable(network_device.ip_address, 2),
+                                           'status': NetworkReachabilityTester._is_device_reachable(network_device.ip_address, timeout),
                                            })
         return reachability_responses
 
