@@ -20,7 +20,7 @@ ALLOWED_HOSTS = [
     'testserver',  # Needed for django-clever-selects for some reason.
 ]
 
-DEFAULT_BASE_URL = 'https://internal.resnet.calpoly.edu'
+DEFAULT_BASE_URL = 'https://staging.internal.resnet.calpoly.edu'
 
 # ======================================================================================================== #
 #                                      Cache Configuration                                                 #
