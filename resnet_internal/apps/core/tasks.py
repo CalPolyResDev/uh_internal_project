@@ -49,7 +49,7 @@ def update_slack_network_status(num):
             slack_attachments.append(attachment)
 
         payload = {'text': 'Network Devices are Down!' if len(new_down_devices) > 1 else 'A Network Device is Down!!',
-                           'icon_url': urljoin(settings.DEFAULT_BASE_URL, static('images/icons/aruba.png')),
+                           'icon_url': urljoin(settings.DEFAULT_BASE_URL, static('images/icons/aruba.ico')),
                            'channel': settings.SLACK_NETWORK_STATUS_CHANNEL,
                            'attachments': slack_attachments}
 
