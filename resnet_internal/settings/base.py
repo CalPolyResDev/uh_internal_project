@@ -114,6 +114,8 @@ DATABASE_ROUTERS = (
     'srsconnector.routers.SRSRouter',
 )
 
+DBBACKUP_DATABASES = ['default', 'common', 'printers']
+
 # ======================================================================================================== #
 #                                            E-Mail Configuration                                          #
 # ======================================================================================================== #
@@ -260,6 +262,10 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
+# The directory that will hold database backups on the application server.
+DBBACKUP_BACKUP_DIRECTORY = (PROJECT_DIR / 'backups').resolve().as_posix()
+
+
 TEMPLATE_DIRS = (
     str(PROJECT_DIR.joinpath("resnet_internal", "templates").resolve()),
 )
@@ -312,6 +318,7 @@ INSTALLED_APPS = (
     'django_ewiz',
     'paramiko',
     'jfu',
+    'dbbackup',
     'resnet_internal.apps.core',
     'resnet_internal.apps.core.templatetags.__init__.default_app_config',
     'resnet_internal.apps.dailyduties',
@@ -393,5 +400,10 @@ LOGGING = {
             'handlers': ['sentry'],
             'propagate': True,
         },
+        'dbbackup': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
+            'propagate': True,
+        }
     }
 }

@@ -24,9 +24,12 @@ build
 # Logs:
 *.log
 
-# Secret Files
+# Secret Files:
 *.secret
 .env
 
 # OS X Files:
 .DS_Store
+
+# Backup Files:
+backups/
