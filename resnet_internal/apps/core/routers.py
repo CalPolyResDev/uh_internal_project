@@ -65,8 +65,6 @@ class CommonRouter(object):
             return False
 
         if str(db) in ["default"]:
-#             import sys
-#             print(db, app_label, model_name, file=sys.stderr)
             return True
         else:
             return False
