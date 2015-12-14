@@ -400,10 +400,15 @@ LOGGING = {
             'handlers': ['sentry'],
             'propagate': True,
         },
-        'dbbackup': {
+        'dbbackup.command': {
             'level': 'WARNING',
             'handlers': ['sentry'],
             'propagate': True,
-        }
+        },
+        'dbbackup.dbbcommands': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
+            'propagate': True,
+        },
     }
 }
