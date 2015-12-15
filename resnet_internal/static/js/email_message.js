@@ -35,7 +35,7 @@ function change_to_editor() {
         editor.setData(message_reply_html);
     }
     else {
-        $('#email_body').replaceWith('<textarea name="email_editor" id="email_editor" style="min-height: 300px; min-width: 100%;">{{ message.reply_plain_text|escapejs }}</textarea>');
+        $('#email_body').replaceWith('<textarea name="email_editor" id="email_editor" style="min-height: 300px; min-width: 100%;">' + message_reply_plain_text + '</textarea>');
     }
 
     $('#to_hr').css('display', 'block');
@@ -48,8 +48,17 @@ function change_to_editor() {
     $('#attachments').remove();
     $('#from_header').remove();
     $('#buttons').html('');
-    add_button('Send', 'send_email();', 'send_button');
+    add_button('Send', 'send_email(false);', 'send_button');
     
+    add_button('Send & Archive', '', 'send_and_archive_button');
+    $('#send_and_archive_button').attr('title', 'Archive To:');
+    $('#send_and_archive_button').attr('data-container', 'body');
+    $('#send_and_archive_button').attr('data-toggle', 'popover');
+    $('#send_and_archive_button').attr('data-placement', 'bottom');
+    $('#send_and_archive_button').attr('data-content', reply_and_archive_popover_content);
+    $('#send_and_archive_button').popover({
+        html: true
+    })
     
     $('#buttons').append('<button class="btn btn-default" type="button" id="attach_button">Attach</button>');
     $('#attach_button').popover({
@@ -67,7 +76,7 @@ function reply() {
     }
     $('#subject').val(subject);
     if (message_reply_to.search(resnet_email_regex) != -1) {
-        $('#to').val('{{ message.to|escapejs }}');
+        $('#to').val(message_to);
     }
     else {
         $('#to').val(message_reply_to + ', ' + message_to);
@@ -100,11 +109,11 @@ function archive(destination_folder) {
         function(response_context) {
             $.unblockUI();
             $(parent.document.getElementById(message_path)).remove();
-            parent.$.fancybox.close();
+            parent.$('#modal').modal('hide');
     });
 }
 
-function send_email() {
+function send_email(archive_folder) {
     var to = $('#to').val();
     var cc = $('#cc').val();
     var reply_to = $('#reply_to').val();
@@ -123,7 +132,7 @@ function send_email() {
     
     var in_reply_to = '';
     if (subject.search(/^Re:/i) != -1) {
-        in_reply_to = '{{ message.path|escapejs }}';
+        in_reply_to = message_path;
     }
     
     $.blockUI({ message: '<h1>Sending...</h1>'});
@@ -146,7 +155,12 @@ function send_email() {
                 if (message_path) {
                     parent.refresh_messages(message_path.rsplit('/', 1)[0]);
                 }
-                parent.$.fancybox.close();
+                if (!archive_folder) {
+                    parent.$('#modal').modal('hide');
+                }
+                else {
+                    archive(archive_folder);
+                }
             }
             else {
                 if (response_context['reason']) {

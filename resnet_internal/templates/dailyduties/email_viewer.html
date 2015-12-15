@@ -83,6 +83,17 @@
             <p>Could not retrieve email.</p>
         {% endif %}
     </div>
+    <div style="display: none;" id="send_and_archive_popover_content">
+        <table class='table table-hover table-condensed'>
+            <tbody>
+                {% for folder, display_name in archive_folders %}
+                    <tr id='{{ folder }}' style='cursor: pointer;' onclick='$("#archive_button").popover("hide");send_email("{{ folder }}");'>
+                        <td style='padding: 2px; border-top: 0px;'>{{ display_name }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
 
 {% block extra_script %}
@@ -91,6 +102,7 @@
     <script language="javascript" type="text/javascript">
         var message_is_html = {{ message.is_html|yesno:"true,false" }};
         var message_reply_html = '{{ message.reply_html|escapejs }}';
+        var message_reply_plain_text = '{{ message.reply_plain_text|escapejs }}';
         var message_subject = '{{ message.subject|escapejs }}';
         var message_reply_to = '{{ message.reply_to|escapejs }}';
         var message_to = '{{ message.to|escapejs }}';
@@ -98,6 +110,7 @@
         var attach_button_content = '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' %}</span>';
         var email_archive_url = "{% url 'email_archive' %}";
         var send_email_url = "{% url 'send_email' %}";
+        var reply_and_archive_popover_content = $('#send_and_archive_popover_content').html();
     </script>
     <script src="{% static 'js/email_message.js' %}"></script>
 {% endblock %}
