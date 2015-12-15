@@ -15,6 +15,7 @@ static/*
 # Editor temp files:
 *.swp
 *~
+\#*#
 
 # Sphinx docs:
 build
