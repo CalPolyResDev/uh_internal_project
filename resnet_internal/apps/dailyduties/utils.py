@@ -262,7 +262,7 @@ class EmailManager(EmailConnectionMixin):
             if message_range[1] > len(message_uids) - 1:
                 message_range[1] = len(message_uids) - 1
 
-            message_uids = message_uids[message_range[0]:message_range[1]]
+            message_uids = message_uids[message_range[0]:message_range[1] + 1]
 
         message_uid_fetch_groups = zip_longest(*(iter(message_uids),) * 500)
 

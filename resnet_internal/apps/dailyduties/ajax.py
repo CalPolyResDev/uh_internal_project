@@ -8,6 +8,7 @@
 
 from datetime import datetime
 import logging
+from urllib.parse import unquote
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
@@ -155,14 +156,15 @@ def get_email_folders(request):
 
 
 @ajax
-def get_mailbox_summary(request):
-    kwargs = request.kwargs
-    mailbox_name = kwargs["mailbox"]
-    search_string = kwargs["search_string"]
+def get_mailbox_summary(request, **kwargs):
+    mailbox_name = unquote(kwargs["mailbox_name"])
+    search_string = unquote(kwargs["search_string"])
 
     MESSAGES_PER_GROUP = 100
     message_group = kwargs.get('message_group')
-    message_range = [message_group * MESSAGES_PER_GROUP, (message_group + 1) * MESSAGES_PER_GROUP - 1] if message_group else None
+    message_range = [int(message_group) * MESSAGES_PER_GROUP, (int(message_group) + 1) * MESSAGES_PER_GROUP - 1] if int(message_group) is not None else None
+
+    print(message_range)
 
     if mailbox_name and mailbox_name == 'root':
         messages = None
@@ -179,7 +181,7 @@ def get_mailbox_summary(request):
         if message_range[1] + 2 > num_available_messages:
             next_group_url = None
         else:
-            next_group_url = reverse('email_get_mailbox_summary_range', mailbox=mailbox_name, search_string=search_string, message_group=message_group + 1)
+            next_group_url = reverse('email_get_mailbox_summary_range', kwargs={'mailbox_name': mailbox_name, 'search_string': search_string, 'message_group': str(int(message_group) + 1)})
     else:
         next_group_url = None
 
@@ -220,7 +222,7 @@ def get_mailbox_summary(request):
         {% endif %}
 
         {% if next_group_url %}
-            <a href="{% next_group_url %}" id="next_group_url_href" style="display: none;"></a>
+            <a href="{{ next_group_url }}" id="next_group_url_href" style="display: none;"></a>
         {% else %}
             <a id='next_group_url_href" style="display: none;"></a>
         {% endif %}

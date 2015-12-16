@@ -65,7 +65,8 @@ function retrieve_messages(mailbox, search_string) {
     current_mailbox = mailbox;
     $("#email_table tr:gt(0)").remove();
     $("#email_table").append('<tr id="loading_email_record"><td colspan="100" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
-    ajaxPost(email_mailbox_summary_url, {"mailbox": mailbox, "search_string": search_string}, function(response_context) {
+    // TODO: Change hardcoded URL to use django-reverse-js. 
+    ajaxGet(encodeURI('/daily_duties/email/get_mailbox_summary/'+ encodeURIComponent(mailbox) + '/' + encodeURIComponent(search_string) + '/0/'), function(response_context) {
         if (!(--num_search_queries_running)) {
             $('#mailbox_name_header').css('display', (mailbox.length > 0 ? 'none' : 'table-cell'));
             $('#loading_email_record').replaceWith(response_context.response);
