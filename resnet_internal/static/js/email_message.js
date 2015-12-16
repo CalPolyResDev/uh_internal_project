@@ -114,13 +114,16 @@ function archive(destination_folder) {
 }
 
 function create_ticket() {
+    // Popup blocking workaround: opening new windows must be a direct
+    // consequence of user action. Therefore, open the window before the ajax
+    // request completes then navigate to the edit ticket url.
     var newTicketWindow = window.open('', 'newTicketWindow');
     newTicketWindow.document.body.innerHTML = '<h1>Creating Ticket...</h1>';
+    
     var requestor_username = $('#ticket_requestor_username').val();
     ajaxPost(create_ticket_url,
         {'message_path': message_path, 'requestor_username': requestor_username},
         function(response) {
-            console.log(response)
             if (response['redirect_url']) {
                 newTicketWindow.location.href = response['redirect_url'];
             } 
