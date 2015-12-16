@@ -7,13 +7,13 @@
 """
 from datetime import datetime, timedelta
 from email import header
-import email
 from itertools import zip_longest
-import logging
 from operator import itemgetter
+from ssl import SSLError, SSLEOFError
+import email
+import logging
 import os
 import socket
-from ssl import SSLError, SSLEOFError
 
 from django.conf import settings
 from django.core import mail
@@ -23,7 +23,7 @@ from django.db import DatabaseError
 from django.utils.encoding import smart_text
 from html2text import html2text
 import imapclient
-from srsconnector.models import ServiceRequest, CONTACT_CHOICES, STATUS_CHOICES
+from srsconnector.models import ServiceRequest
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
