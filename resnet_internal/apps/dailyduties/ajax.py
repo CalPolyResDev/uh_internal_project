@@ -155,11 +155,11 @@ def get_email_folders(request):
 
 
 @ajax
-@require_POST
 def get_mailbox_summary(request):
-    mailbox_name = request.POST["mailbox"]
-    search_string = request.POST["search_string"]
-    message_range = request.POST.get('message_range')
+    kwargs = request.kwargs
+    mailbox_name = kwargs["mailbox"]
+    search_string = kwargs["search_string"]
+    message_range = [kwargs['message_range_start'], kwargs['message_range_end']] if (kwargs.get('message_range_start') and kwargs.get('message_range_end')) else None
 
     if mailbox_name and mailbox_name == 'root':
         messages = None
