@@ -166,6 +166,7 @@ def get_mailbox_summary(request):
 
     if mailbox_name and mailbox_name == 'root':
         messages = None
+        num_available_messages = 0
     else:
         with EmailManager() as email_manager:
             (messages, num_available_messages) = email_manager.get_messages(mailbox_name, search_string, range=message_range)
@@ -173,6 +174,14 @@ def get_mailbox_summary(request):
     for email in messages:
         email['full_id'] = email['mailbox'] + '/' + str(email['uid'])
         email['modal_title'] = 'Email'
+
+    if message_range and num_available_messages > 0:
+        if message_range[1] + 2 > num_available_messages:
+            next_group_url = None
+        else:
+            next_group_url = reverse('email_get_mailbox_summary_range', mailbox=mailbox_name, search_string=search_string, message_group=message_group + 1)
+    else:
+        next_group_url = None
 
     raw_response = """
         {% load staticfiles %}
@@ -209,6 +218,12 @@ def get_mailbox_summary(request):
             </td>
         </tr>
         {% endif %}
+
+        {% if next_group_url %}
+            <a href="{% next_group_url %}" id="next_group_url_href" style="display: none;"></a>
+        {% else %}
+            <a id='next_group_url_href" style="display: none;"></a>
+        {% endif %}
     """
 
     template = Template(raw_response)
@@ -216,7 +231,7 @@ def get_mailbox_summary(request):
                                        'mailbox_name': mailbox_name,
                                        'is_search': bool(search_string),
                                        'search_string': search_string,
-                                       'num_available_messages': num_available_messages,
+                                       'next_group_url': next_group_url,
                                        })
     response_html = template.render(context)
 
