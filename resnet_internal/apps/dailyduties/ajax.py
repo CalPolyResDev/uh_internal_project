@@ -159,7 +159,10 @@ def get_mailbox_summary(request):
     kwargs = request.kwargs
     mailbox_name = kwargs["mailbox"]
     search_string = kwargs["search_string"]
-    message_range = [kwargs['message_range_start'], kwargs['message_range_end']] if (kwargs.get('message_range_start') and kwargs.get('message_range_end')) else None
+
+    MESSAGES_PER_GROUP = 100
+    message_group = kwargs.get('message_group')
+    message_range = [message_group * MESSAGES_PER_GROUP, (message_group + 1) * MESSAGES_PER_GROUP - 1] if message_group else None
 
     if mailbox_name and mailbox_name == 'root':
         messages = None
