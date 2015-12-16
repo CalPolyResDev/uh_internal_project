@@ -1,5 +1,6 @@
 var current_mailbox = 'INBOX';
 var num_search_queries_running = 0;
+var next_group_url = '';
 
 $(document).ready(function() {
         $('#jstree_folder_structure')
@@ -63,15 +64,18 @@ function search_messages() {
 function retrieve_messages(mailbox, search_string) {
     ++num_search_queries_running;
     current_mailbox = mailbox;
+    $(document).unbind('scroll');
     $("#email_table tr:gt(0)").remove();
     $("#email_table").append('<tr id="loading_email_record"><td colspan="100" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
     // TODO: Change hardcoded URL to use django-reverse-js. 
     $.get(encodeURI('/daily_duties/email/get_mailbox_summary/'+ encodeURIComponent(mailbox) + '/' + encodeURIComponent(search_string) + '/0/'), function(response) {
         if (!(--num_search_queries_running)) {
-            console.log(response);
+            console.log(response.content);
             $('#mailbox_name_header').css('display', (mailbox.length > 0 ? 'none' : 'table-cell'));
-            $('#loading_email_record').replaceWith(response);
+            $('#loading_email_record').replaceWith(response.content.html);
             $("#refresh_button").attr("onclick","refresh_messages('" + mailbox + "');");
+            next_group_url = response.content.next_group_url;
+            $(document).scroll(infiniteScrollHandler);
         }
     });
 }
@@ -134,3 +138,38 @@ function remove_voicemail(message_uid)  {
         row.parentNode.removeChild(row);
     });
 }
+
+// Infinite Scroll
+// Source: http://dumpk.com/2013/06/02/how-to-create-infinite-scroll-with-ajax-on-jquery/
+
+function element_in_scroll(elem)
+{
+    var docViewTop = $(window).scrollTop();
+    var docViewBottom = docViewTop + $(window).height();
+
+    var elemTop = $(elem).offset().top;
+    var elemBottom = elemTop + $(elem).height();
+
+    return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+}
+
+var infiniteScrollHandler = function(e){
+    if (element_in_scroll("#email_table tbody tr:last")) {
+        $(document).unbind('scroll');
+        if (next_group_url) {
+            $('#email_table tbody').append('<tr id="loading_additional_emails"><td style="text-align: center;" colspan="5">Loading...<img style="width: 16px; height: 16px;" src="' + spinner_url + '"></td></tr>');
+            $.ajax({
+                type: "GET",
+                url: next_group_url
+            }).done(function( response ) {
+                $('#loading_additional_emails').remove();
+                $("#email_table tbody").append(response.content.html);
+                next_group_url = response.content.next_group_url;
+                console.log(next_group_url);
+                if (next_group_url) {
+                    $(document).scroll(infiniteScrollHandler);
+                }
+            });
+        }
+    }
+};
