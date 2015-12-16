@@ -356,7 +356,6 @@ class EmailManager(EmailConnectionMixin):
             elif part.get_content_type() == 'text/plain':
                 body_plain_text += '\n' + smart_text(part.get_payload(decode=True), errors='replace')
             else:
-                print(part.get_content_type())
                 attachment = {
                     'filename': part.get_filename(),
                     'filedata': part.get_payload(decode=True),

@@ -170,8 +170,6 @@ def get_mailbox_summary(request):
         email['full_id'] = email['mailbox'] + '/' + str(email['uid'])
         email['modal_title'] = 'Email'
 
-    print(mailbox_summary)
-
     raw_response = """
         {% load staticfiles %}
         {% if emails %}
@@ -216,8 +214,6 @@ def get_mailbox_summary(request):
                                        'search_string': search_string,
                                        })
     response_html = template.render(context)
-
-    print(response_html)
 
     return {'response': response_html}
 
