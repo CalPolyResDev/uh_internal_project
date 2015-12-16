@@ -159,14 +159,15 @@ def get_email_folders(request):
 def get_mailbox_summary(request):
     mailbox_name = request.POST["mailbox"]
     search_string = request.POST["search_string"]
+    message_range = request.POST.get('message_range')
 
     if mailbox_name and mailbox_name == 'root':
-        mailbox_summary = None
+        messages = None
     else:
         with EmailManager() as email_manager:
-            mailbox_summary = email_manager.get_messages(mailbox_name, search_string)
+            (messages, num_available_messages) = email_manager.get_messages(mailbox_name, search_string, range=message_range)
 
-    for email in mailbox_summary:
+    for email in messages:
         email['full_id'] = email['mailbox'] + '/' + str(email['uid'])
         email['modal_title'] = 'Email'
 
@@ -208,10 +209,11 @@ def get_mailbox_summary(request):
     """
 
     template = Template(raw_response)
-    context = RequestContext(request, {'emails': mailbox_summary,
+    context = RequestContext(request, {'emails': messages,
                                        'mailbox_name': mailbox_name,
                                        'is_search': bool(search_string),
                                        'search_string': search_string,
+                                       'num_available_messages': num_available_messages,
                                        })
     response_html = template.render(context)
 

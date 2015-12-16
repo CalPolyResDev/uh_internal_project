@@ -251,7 +251,19 @@ class EmailManager(EmailConnectionMixin):
 
     def get_mailbox_summary(self, mailbox_name, search_string, **kwargs):
         self.server.select_folder(mailbox_name)
+
         message_uids = self.server.search('TEXT ' + search_string if search_string else 'ALL')
+        message_range = kwargs.get('range')
+        num_available_messages = len(message_uids)
+
+        if message_range:
+            if message_range[0] > len(message_uids) - 1:
+                message_range[0] = 0
+            if message_range[1] > len(message_uids) - 1:
+                message_range[1] = len(message_uids) - 1
+
+            message_uids = message_uids[message_range[0]:message_range[1]]
+
         message_uid_fetch_groups = zip_longest(*(iter(message_uids),) * 500)
 
         messages = []
@@ -287,19 +299,23 @@ class EmailManager(EmailConnectionMixin):
         if kwargs.get('sorted', True):
             messages.sort(key=itemgetter('date'), reverse=True)
 
-        return messages
+        return (messages, num_available_messages)
 
-    def get_messages(self, mailbox_name, search_string):
+    def get_messages(self, mailbox_name, search_string, **kwargs):
+        message_range = kwargs.get('range')
+
         if mailbox_name:
-            return self.get_mailbox_summary(mailbox_name, search_string)
+            return self.get_mailbox_summary(mailbox_name, search_string, range=message_range)
         else:
             messages = []
+            total_available_messages = 0
             for mailbox in self.SEARCH_MAILBOXES:
-                mailbox_messages = self.get_mailbox_summary(mailbox, search_string, sorted=False)
+                mailbox_messages, num_available_messages = self.get_mailbox_summary(mailbox, search_string, sorted=False, range=message_range)
                 messages += mailbox_messages
+                total_available_messages += num_available_messages
 
             messages.sort(key=itemgetter('date'), reverse=True)
-            return messages
+            return (messages, total_available_messages)
 
     def mark_message_read(self, mailbox_name, uid):
         self.server.select_folder(mailbox_name)
