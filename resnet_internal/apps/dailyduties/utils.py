@@ -250,9 +250,30 @@ class EmailManager(EmailConnectionMixin):
         return voicemails
 
     def get_mailbox_summary(self, mailbox_name, search_string, **kwargs):
-        self.server.select_folder(mailbox_name)
+        def create_uid_fetch_groups(uids):
+            return zip_longest(*(iter(uids),) * 500)
 
-        message_uids = self.server.search('TEXT ' + search_string if search_string else 'ALL')
+        self.server.select_folder(mailbox_name)
+        imap_search_string = 'TEXT ' + search_string if search_string else 'ALL'
+
+        if settings.EMAIL_IMAP_SORT_SUPPORTED:
+            message_uids = self.server.sort('ARRIVAL', criteria=imap_search_string)
+        else:
+            # I really wish Office365's IMAP support was more complete/modern...
+            unsorted_message_uids = self.server.search(imap_search_string)
+            message_uid_fetch_groups = create_uid_fetch_groups(unsorted_message_uids)
+            unsorted_messages = []
+
+            for message_uid_group in message_uid_fetch_groups:
+                message_uid_group = list(filter(None.__ne__, message_uid_group))
+                response = self.server.fetch(message_uid_group, ['INTERNALDATE'])
+
+                for uid, data in response.items():
+                    unsorted_messages.append((uid, data[b'INTERNALDATE']))
+
+            sorted_messages = sorted(unsorted_messages, key=itemgetter(1), reverse=True)
+            message_uids = [message[0] for message in sorted_messages]
+
         message_range = kwargs.get('range')
         num_available_messages = len(message_uids)
 
@@ -264,7 +285,7 @@ class EmailManager(EmailConnectionMixin):
 
             message_uids = message_uids[message_range[0]:message_range[1] + 1]
 
-        message_uid_fetch_groups = zip_longest(*(iter(message_uids),) * 500)
+        message_uid_fetch_groups = create_uid_fetch_groups(message_uids)
 
         messages = []
 
