@@ -155,7 +155,6 @@ def get_email_folders(request):
     return HttpResponse(html_response)
 
 
-@ajax
 def get_mailbox_summary(request, **kwargs):
     mailbox_name = unquote(kwargs["mailbox_name"])
     search_string = unquote(kwargs["search_string"])
@@ -221,11 +220,16 @@ def get_mailbox_summary(request, **kwargs):
         </tr>
         {% endif %}
 
-        {% if next_group_url %}
-            <a href="{{ next_group_url }}" id="next_group_url_href" style="display: none;"></a>
-        {% else %}
-            <a id='next_group_url_href" style="display: none;"></a>
-        {% endif %}
+        <!-- Must be valid HTML or it won't be included in the DOM.-->
+        <tr style="display: none;">
+            <td>
+                {% if next_group_url %}
+                    <a href="{{ next_group_url }}" id="next_group_url_href">Link</a>
+                {% else %}
+                    <a id="next_group_url_href">Link</a>
+                {% endif %}
+            </td>
+        </tr>
     """
 
     template = Template(raw_response)
@@ -237,7 +241,7 @@ def get_mailbox_summary(request, **kwargs):
                                        })
     response_html = template.render(context)
 
-    return {'response': response_html}
+    return HttpResponse(response_html)
 
 
 @ajax
