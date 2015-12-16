@@ -22,6 +22,7 @@ from jfu.http import upload_receive, UploadResponse, JFUResponse
 
 from .models import DailyDuties
 from .utils import GetDutyData, EmailManager
+from ..core.templatetags.srs_urls import srs_edit_url
 
 
 logger = logging.getLogger(__name__)
@@ -320,3 +321,17 @@ def attachment_delete(request, pk):
         success = False
 
     return JFUResponse(request, success)
+
+
+@ajax
+@require_POST
+def ticket_from_email(request):
+    post_items = request.POST
+
+    [mailbox_name, uid] = post_items['message_path'].rsplit('/', 1)
+    user_full_name = request.user.get_full_name()
+
+    with EmailManager() as email_manager:
+        ticket_number = email_manager.create_ticket_from_email(mailbox_name, uid, post_items['requestor_username'], user_full_name)
+
+    return {'redirect_url': srs_edit_url(ticket_number)}

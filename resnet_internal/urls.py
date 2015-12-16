@@ -26,7 +26,7 @@ from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_d
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
 from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView, PopulateResidenceHallRooms, UpdateResidenceHallRoom
 from .apps.core.views import IndexView, handler500, TicketSummaryView, ResidenceHallRoomsView
-from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive, send_email, attachment_upload, attachment_delete
+from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive, send_email, attachment_upload, attachment_delete, ticket_from_email
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView, EmailComposeView
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
@@ -121,6 +121,7 @@ urlpatterns += [
     url(r'^daily_duties/update_duty/$', login_required(technician_access(update_duty)), name='daily_duties_update_duty'),
     url(r"^daily_duties/voicemail/(?P<message_uid>\b[0-9]+\b)/$", login_required(technician_access(VoicemailAttachmentRequestView.as_view())), name='voicemail_attachment_request'),
     url(r"^daily_duties/remove_voicemail/$", login_required(technician_access(remove_voicemail)), name='remove_voicemail'),
+    url(r"^daily_duties/create_ticket_from_email/$", login_required(technician_access(ticket_from_email)), name='email_create_ticket'),
 ]
 
 # ResNet Technician Orientation

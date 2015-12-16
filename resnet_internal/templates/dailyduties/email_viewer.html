@@ -33,6 +33,15 @@
     {% if message %}
     <div class="col-lg-12">
         <div class="btn-group" role="group" id="buttons">
+            <button class="btn btn-default" type="button" id="create_ticket_button" title="Requestor Username:"
+                data-container="body" data-toggle="popover" data-placement="bottom"
+                data-content='  <div class="input-group">
+                                    <input type="text" class="form-control" id="ticket_requestor_username">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" onclick="create_ticket()">Create</button>
+                                    </span>
+                                </div><!-- /input-group -->
+                '>Create Ticket</button>
             <button class="btn btn-default" type="button" onclick="reply();">Reply</button>
             <button class="btn btn-default" type="button" onclick="reply_all();">Reply All</button>
             <button class="btn btn-default" type="button" onclick="forward();">Forward</button>
@@ -108,9 +117,11 @@
         var message_to = '{{ message.to|escapejs }}';
         var message_path = '{{ message.path|escapejs }}';
         var attach_button_content = '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' %}</span>';
+        var reply_and_archive_popover_content = $('#send_and_archive_popover_content').html();
+        
         var email_archive_url = "{% url 'email_archive' %}";
         var send_email_url = "{% url 'send_email' %}";
-        var reply_and_archive_popover_content = $('#send_and_archive_popover_content').html();
+        var create_ticket_url = "{% url 'email_create_ticket' %}";
     </script>
     <script src="{% static 'js/email_message.js' %}"></script>
 {% endblock %}

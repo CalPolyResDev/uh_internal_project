@@ -113,6 +113,24 @@ function archive(destination_folder) {
     });
 }
 
+function create_ticket() {
+    var newTicketWindow = window.open('', 'newTicketWindow');
+    newTicketWindow.document.body.innerHTML = '<h1>Creating Ticket...</h1>';
+    var requestor_username = $('#ticket_requestor_username').val();
+    ajaxPost(create_ticket_url,
+        {'message_path': message_path, 'requestor_username': requestor_username},
+        function(response) {
+            console.log(response)
+            if (response['redirect_url']) {
+                newTicketWindow.location.href = response['redirect_url'];
+            } 
+            else {
+                newTicketWindow.document.body.innerHTML = '<h1>Ticket Creation Failed!</h1>';
+            }
+        }
+    );
+}
+
 function send_email(archive_folder) {
     var to = $('#to').val();
     var cc = $('#cc').val();
