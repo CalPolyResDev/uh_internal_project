@@ -12,6 +12,7 @@ from email import header
 from itertools import zip_longest
 from operator import itemgetter
 from ssl import SSLError, SSLEOFError
+from threading import Lock
 import email
 import logging
 import os
@@ -74,6 +75,7 @@ def get_plaintext_signature(technician_name):
 
 class EmailConnectionMixin(object):
     connection_list = None
+    lock = Lock()
 
     def __init__(self, *args, **kwargs):
         super(EmailConnectionMixin, self).__init__(*args, **kwargs)
@@ -101,35 +103,38 @@ class EmailConnectionMixin(object):
         return connection
 
     @classmethod
-    def _get_connection(obj):
-        if not obj.connection_list:
-            obj.connection_list = [(obj._new_connection(), True)]
-            return obj.connection_list[0][0]
+    def _get_connection(cls):
+        with cls.lock:
+            if not cls.connection_list:
+                cls.connection_list = [(cls._new_connection(), True)]
+                return cls.connection_list[0][0]
 
-        for index in range(0, len(obj.connection_list)):
-            if obj.connection_list[index][1] is False:
-                obj.connection_list[index] = (obj.connection_list[index][0], True)
-                return obj.connection_list[index][0]
+            for index in range(0, len(cls.connection_list)):
+                if cls.connection_list[index][1] is False:
+                    cls.connection_list[index] = (cls.connection_list[index][0], True)
+                    return cls.connection_list[index][0]
 
-        return_connection = obj._new_connection()
-        obj.connection_list.append((return_connection, True))
-        return return_connection
+            return_connection = cls._new_connection()
+            cls.connection_list.append((return_connection, True))
+            return return_connection
 
     @classmethod
-    def _release_connection(obj, connection):
-        for index in range(0, len(obj.connection_list)):
-            if obj.connection_list[index][0] is connection:
-                obj.connection_list[index] = (connection, False)
-                return
-        Exception('Could not find connection.')
+    def _release_connection(cls, connection):
+        with cls.lock:
+            for index in range(0, len(cls.connection_list)):
+                if cls.connection_list[index][0] is connection:
+                    cls.connection_list[index] = (connection, False)
+                    return
+            Exception('Could not find connection.')
 
     @classmethod
     def _reinitialize_connection(cls, connection):
-        for index in range(0, len(cls.connection_list)):
-            if cls.connection_list[index][0] is connection:
-                cls.connection_list[index] = (cls._new_connection(), True)
-                return cls.connection_list[index][0]
-        Exception('Could not find connection to reinitialize it.')
+        with cls.lock:
+            for index in range(0, len(cls.connection_list)):
+                if cls.connection_list[index][0] is connection:
+                    cls.connection_list[index] = (cls._new_connection(), True)
+                    return cls.connection_list[index][0]
+            Exception('Could not find connection to reinitialize it.')
 
     def _init_mail_connection(self):
         self.server = EmailConnectionMixin._get_connection()
