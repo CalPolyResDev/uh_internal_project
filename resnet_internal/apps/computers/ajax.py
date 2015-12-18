@@ -149,8 +149,8 @@ class PopulateComputers(RNINDatatablesPopulateView):
                 return self.base_column_template.format(column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
             else:
                 editable_block = self.editable_block_template.format(value=value)
-
-                link_block = self.link_block_template.format(link_url=record_url, onclick_action="", link_target="", link_class_name="popup_frame", link_style="", link_text=value)
+                onclick = """openModalFrame("Association Record for {ip_address}", "{url}");""".format(ip_address=value, url=record_url)
+                link_block = self.link_block_template.format(link_url="#", onclick_action=onclick, link_target="", link_class_name="", link_style="", link_text=value)
 
                 pinholes = self.icon_template.format(icon_url=static('images/icons/pinholes.png'))
                 domain_names = self.icon_template.format(icon_url=static('images/icons/domain_names.png'))
@@ -177,7 +177,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
                 return self.base_column_template.format(column=column, value="", link_block=link_block, inline_images="", editable_block="")
         elif column == 'remove':
             onclick = "confirm_remove({id});return false;".format(id=row.id)
-            link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="", link_style="color:red; cursor:pointer;", link_text="Remove")
+            link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="remove", link_style="", link_text="Remove")
 
             return self.base_column_template.format(column=column, value="", link_block=link_block, inline_images="", editable_block="")
         else:
