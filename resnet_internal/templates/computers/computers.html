@@ -54,7 +54,6 @@
         
         $(document).ready(function() {
             $('.dateinput').datepicker({
-                minDate: 0,
                 dateFormat: 'yy-mm-dd',
             });
             
@@ -62,11 +61,11 @@
 
             $('input[type=radio][name=dhcp]').change(function() {
                 if (this.value == 'static') {
-                    $(".ip_address_field").show();
+                    $(this).siblings(".ip_address_field").show();
                 }
                 else {
-                    $(".ip_address_field").hide();
-                    $(".ip_address_field").val("");
+                    $(this).siblings(".ip_address_field").hide();
+                    $(this).siblings(".ip_address_field").val("");
                 }
             });
         });

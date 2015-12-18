@@ -58,6 +58,10 @@ class ComputerForm(ChainedChoicesModelForm):
 
         self.fields["date_purchased"].widget.attrs['class'] = "dateinput"
 
+        # Make error messages a bit more readable
+        for field_name in self.fields:
+            self.fields[field_name].error_messages = {'required': 'A ' + field_name + ' is required.'}
+
     def clean_dn(self):
         data = self.cleaned_data['dn']
         dn_pieces = data.split(",")

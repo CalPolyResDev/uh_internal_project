@@ -59,7 +59,8 @@
                 function() {
                     var element = $(this);
                     element.popover('hide');
-                });
+                }
+            );
         });
 
         // Create the overlay effect when processing
@@ -79,6 +80,11 @@
             $("#{{ datatable_name }} tbody").on("dblclick", "tr", function () {
                 var row_object = this;
                 var row_id = $(this).attr("id");
+                
+                // Initialize any date inputs
+                $("#" + row_id + " .dateinput").datepicker({
+                    dateFormat: 'yy-mm-dd',
+                });
 
                 // Switch to write mode
                 $("#" + row_id + " .value-display").hide();
@@ -121,15 +127,8 @@
                 // Keypress actions
                 // http://stackoverflow.com/a/1160109
                 $(document).keyup(function(e) {
-                    if (e.keyCode == 13) {  // enter
+                    if (e.keyCode == 13 || e.keyCode == 27) {
                         handle_edit();
-                        $(this).unbind("blur");
-                        $(this).unbind("focus");
-                    }
-                    if (e.keyCode == 27) {  // esc
-                        switch_to_read_mode();
-                        $(this).unbind("blur");
-                        $(this).unbind("focus");
                     }
                 });
 
@@ -157,7 +156,7 @@
                                 var rendered_row = response_context["rendered_row"];
 
                                 {{ datatable_name }}.row(row_object).data(rendered_row).draw('page');
-                                
+
                                 switch_to_read_mode();
 
                                 editable_columns.each(function() {
@@ -168,7 +167,11 @@
                                 alert("The update was unsuccessful:\n" + response_context["form_errors"].join("\n") + response_context["field_errors"].join("\n"));
 
                                 editable_columns.each(function() {
-                                    $(this).parent().addClass("has-error");
+                                    column_name = $(this).parent().attr("column");
+                                    
+                                    if ($.inArray(column_name, response_context["fields_with_errors"]) != -1) {
+                                        $(this).parent().addClass("has-error");
+                                    }
                                 });
 
                                 return false;

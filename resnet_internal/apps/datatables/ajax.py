@@ -206,7 +206,10 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         else:
             form = self.cached_forms[row.id]
 
-        form.fields[column].widget.attrs['class'] = "form-control editbox"
+        if 'class' in form.fields[column].widget.attrs:
+            form.fields[column].widget.attrs['class'] += " form-control editbox"
+        else:
+            form.fields[column].widget.attrs['class'] = " form-control editbox"
 
         if not(column in self.get_editable_columns() and self.get_write_permissions()):
             form.fields[column].widget.attrs['readonly'] = "readonly"
@@ -326,6 +329,8 @@ class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
 
         context = {}
         context["form_valid"] = False
+
+        context["fields_with_errors"] = [field.name for field in form if field.errors]
         context["form_errors"] = form_errors
         context["field_errors"] = field_errors
 
