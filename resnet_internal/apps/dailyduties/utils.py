@@ -269,7 +269,7 @@ class EmailManager(EmailConnectionMixin):
             for uid, data in response.items():
                 unsorted_messages.append((uid, data[b'INTERNALDATE']))
 
-        self.server.close_folder(mailbox_name)
+        self.server.close_folder()
         return sorted(unsorted_messages, key=itemgetter(1), reverse=True)
 
     def _get_message_summaries(self, mailbox_name, message_uids):
@@ -358,7 +358,7 @@ class EmailManager(EmailConnectionMixin):
             for message in message_results:
                 message_results_by_mailbox[message['mailbox_name']].append(message)
 
-            for mailbox_name, partial_messages in message_results_by_mailbox:
+            for mailbox_name, partial_messages in message_results_by_mailbox.items():
                 messages += self._get_message_summaries(mailbox_name, [message['uid'] for message in partial_messages])
 
             # Sort and return

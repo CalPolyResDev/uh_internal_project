@@ -162,7 +162,7 @@ def get_mailbox_summary(request, **kwargs):
 
     MESSAGES_PER_GROUP = 100
     message_group = kwargs.get('message_group')
-    message_range = [int(message_group) * MESSAGES_PER_GROUP, (int(message_group) + 1) * MESSAGES_PER_GROUP - 1] if int(message_group) is not None else None
+    message_range = [int(message_group) * MESSAGES_PER_GROUP, (int(message_group) + 1) * MESSAGES_PER_GROUP - 1] if message_group and int(message_group) is not None else None
 
     print(message_range)
 
