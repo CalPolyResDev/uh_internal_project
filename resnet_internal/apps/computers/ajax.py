@@ -138,6 +138,9 @@ class PopulateComputers(RNINDatatablesPopulateView):
             value = getattr(row, column)
             value = value if value else "DHCP"
 
+            # A bit of a hack to help people with DHCP
+            self.editable_block_template = self.editable_block_template.replace(" />", 'title="Submit an empty value for DHCP." />')
+
             try:
                 record_url = reverse('view_uh_computer_record', kwargs={'ip_address': row.ip_address})
             except NoReverseMatch:
