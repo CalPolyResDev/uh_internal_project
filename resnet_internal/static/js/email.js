@@ -23,6 +23,7 @@ $(document).ready(function() {
         });
         
         $('#email_search').keyup(_.debounce(search_messages, 1000));
+        $('#search_scope_select input:radio').change(search_messages);
         $('#email_search_clear').click(function() {
             $('#email_search').val('');
             search_messages();
@@ -51,19 +52,18 @@ function set_spinner_status(emails, status) {
 
 function refresh_messages(mailbox) {
     $('#email_search').val('');
+    current_mailbox = mailbox;
     retrieve_messages(mailbox, '');
 }
 
 function search_messages() {
     var search_string = $('#email_search').val();
     var search_this_mailbox = $('#search_this_mailbox').is(":checked");
-    if (!search_string.length) search_this_mailbox = true;
     retrieve_messages(search_this_mailbox ? current_mailbox : '', search_string);
 }
 
 function retrieve_messages(mailbox, search_string) {
     ++num_search_queries_running;
-    current_mailbox = mailbox;
     $(document).unbind('scroll');
     $("#email_table tr:gt(0)").remove();
     $("#email_table").append('<tr id="loading_email_record"><td colspan="100" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
