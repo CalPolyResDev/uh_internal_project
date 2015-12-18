@@ -136,7 +136,6 @@ EMAIL_PORT = 25  # The port to use. Defaul values: 25, 587
 EMAIL_USE_TLS = True  # Whether or not to use SSL (Boolean)
 EMAIL_HOST_USER = INCOMING_EMAIL['IMAP4']['USER']  # The username to use. The full email address is what most servers require.
 EMAIL_HOST_PASSWORD = INCOMING_EMAIL['IMAP4']['PASSWORD']  # The password to use. Note that only clearText authentication is supported.
-EMAIL_IMAP_SORT_SUPPORTED = False
 
 # Set the server's email address (for sending emails only)
 SERVER_EMAIL = 'ResDev Mail Relay Server <resdev@calpoly.edu>'

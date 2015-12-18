@@ -5,6 +5,8 @@
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
+
+from collections import defaultdict
 from datetime import datetime, timedelta
 from email import header
 from itertools import zip_longest
@@ -22,8 +24,8 @@ from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
 from html2text import html2text
-import imapclient
 from srsconnector.models import ServiceRequest
+import imapclient
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
@@ -249,43 +251,31 @@ class EmailManager(EmailConnectionMixin):
 
         return voicemails
 
-    def get_mailbox_summary(self, mailbox_name, search_string, **kwargs):
-        def create_uid_fetch_groups(uids):
-            return zip_longest(*(iter(uids),) * 500)
+    def _create_uid_fetch_groups(self, uids):
+        return zip_longest(*(iter(uids),) * 500)
 
+    def _get_uids_and_dates_for_mailbox(self, mailbox_name, search_string):
         self.server.select_folder(mailbox_name)
         imap_search_string = 'TEXT ' + search_string if search_string else 'ALL'
 
-        if settings.EMAIL_IMAP_SORT_SUPPORTED:
-            message_uids = self.server.sort('ARRIVAL', criteria=imap_search_string)
-        else:
-            # I really wish Office365's IMAP support was more complete/modern...
-            unsorted_message_uids = self.server.search(imap_search_string)
-            message_uid_fetch_groups = create_uid_fetch_groups(unsorted_message_uids)
-            unsorted_messages = []
+        unsorted_message_uids = self.server.search(imap_search_string)
+        message_uid_fetch_groups = self._create_uid_fetch_groups(unsorted_message_uids)
+        unsorted_messages = []
 
-            for message_uid_group in message_uid_fetch_groups:
-                message_uid_group = list(filter(None.__ne__, message_uid_group))
-                response = self.server.fetch(message_uid_group, ['INTERNALDATE'])
+        for message_uid_group in message_uid_fetch_groups:
+            message_uid_group = list(filter(None.__ne__, message_uid_group))
+            response = self.server.fetch(message_uid_group, ['INTERNALDATE'])
 
-                for uid, data in response.items():
-                    unsorted_messages.append((uid, data[b'INTERNALDATE']))
+            for uid, data in response.items():
+                unsorted_messages.append((uid, data[b'INTERNALDATE']))
 
-            sorted_messages = sorted(unsorted_messages, key=itemgetter(1), reverse=True)
-            message_uids = [message[0] for message in sorted_messages]
+        self.server.close_folder(mailbox_name)
+        return sorted(unsorted_messages, key=itemgetter(1), reverse=True)
 
-        message_range = kwargs.get('range')
-        num_available_messages = len(message_uids)
+    def _get_message_summaries(self, mailbox_name, message_uids):
+        self.server.select_folder(mailbox_name)
 
-        if message_range:
-            if message_range[0] > len(message_uids) - 1:
-                message_range[0] = 0
-            if message_range[1] > len(message_uids) - 1:
-                message_range[1] = len(message_uids) - 1
-
-            message_uids = message_uids[message_range[0]:message_range[1] + 1]
-
-        message_uid_fetch_groups = create_uid_fetch_groups(message_uids)
+        message_uid_fetch_groups = self._create_uid_fetch_groups(message_uids)
 
         messages = []
 
@@ -317,24 +307,61 @@ class EmailManager(EmailConnectionMixin):
 
         self.server.close_folder()
 
-        if kwargs.get('sorted', True):
-            messages.sort(key=itemgetter('date'), reverse=True)
-
-        return (messages, num_available_messages)
+        return messages
 
     def get_messages(self, mailbox_name, search_string, **kwargs):
         message_range = kwargs.get('range')
 
         if mailbox_name:
-            return self.get_mailbox_summary(mailbox_name, search_string, range=message_range)
-        else:
-            messages = []
-            total_available_messages = 0
-            for mailbox in self.SEARCH_MAILBOXES:
-                mailbox_messages, num_available_messages = self.get_mailbox_summary(mailbox, search_string, sorted=False, range=message_range)
-                messages += mailbox_messages
-                total_available_messages += num_available_messages
+            message_uids = [message[0] for message in sorted(self._get_uids_and_dates_for_mailbox(mailbox_name, search_string), key=itemgetter(1), reverse=True)]
 
+            num_available_messages = len(message_uids)
+
+            if message_range:
+                if message_range[0] > len(message_uids) - 1:
+                    message_range[0] = 0
+                if message_range[1] > len(message_uids) - 1:
+                    message_range[1] = len(message_uids) - 1
+
+                message_uids = message_uids[message_range[0]:message_range[1] + 1]
+
+            return (self._get_message_summaries(mailbox_name, message_uids), num_available_messages)
+        else:
+            message_results = []
+
+            # Retrieve results for all mailboxes
+            for mailbox_name in self.SEARCH_MAILBOXES:
+                uids_and_dates = self._get_uids_and_dates_for_mailbox(mailbox_name, search_string)
+                for uid, date in uids_and_dates:
+                    message_results.append({
+                        'uid': uid,
+                        'date': date,
+                        'mailbox_name': mailbox_name,
+                    })
+
+            # Sort and select range
+            message_results.sort(key=itemgetter('date'), reverse=True)
+            total_available_messages = len(message_results)
+
+            if message_range:
+                if message_range[0] > len(message_results) - 1:
+                    message_range[0] = 0
+                if message_range[1] > len(message_results) - 1:
+                    message_range[1] = len(message_results) - 1
+
+                message_results = message_results[message_range[0]:message_range[1] + 1]
+
+            message_results_by_mailbox = defaultdict(list)
+
+            # Retrieve messages one mailbox at a time.
+            messages = []
+            for message in message_results:
+                message_results_by_mailbox[message['mailbox_name']].append(message)
+
+            for mailbox_name, partial_messages in message_results_by_mailbox:
+                messages += self._get_message_summaries(mailbox_name, [message['uid'] for message in partial_messages])
+
+            # Sort and return
             messages.sort(key=itemgetter('date'), reverse=True)
             return (messages, total_available_messages)
 
