@@ -282,9 +282,21 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
     display: none;
 }
 
+#email_tree {
+    overflow: hidden;
+}
+
+#email_tree, #email_buttons, #email_search_wrapper {
+    padding-bottom: 20px;
+}
+
+#mailbox_name_header {
+    display: none;
+}
+
 /* media queries */
 
-@media (max-width: 615px) {
+@media (max-width: 768px) {
     #logo {
         margin-top: 10px;
         padding-left: 30px;
@@ -342,6 +354,10 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
     background-color: darken(@polydarkgreen, 5%) !important;
     border-color: darken(darken(@polydarkgreen, 5%), 10%) !important;
+}
+
+.btn-group > .btn:first-child {
+    margin-left: -1px;
 }
 
 .form-horizontal .control-label {
