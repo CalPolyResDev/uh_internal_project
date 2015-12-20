@@ -60,7 +60,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
 
     extra_options = {
         "language": {
-            "search": "Filter records: (Use ?pinhole, ?domain, ?dhcp, and/or ?replace to narrow results.) ",
+            "search": "Filter records: (?pinhole, ?domain, ?dhcp, ?replace) ",
         },
     }
 

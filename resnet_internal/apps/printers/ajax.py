@@ -52,7 +52,7 @@ class PopulatePrinters(RNINDatatablesPopulateView):
 
     extra_options = {
         "language": {
-            "search": "Filter records: (Use ?dhcp and/or ?replace to narrow results.) ",
+            "search": "Filter records: (?dhcp, ?replace) ",
         },
     }
 

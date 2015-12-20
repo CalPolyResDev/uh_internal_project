@@ -57,7 +57,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
 
     extra_options = {
         "language": {
-            "search": "Filter records: (Use ?email to narrow results.)",
+            "search": "Filter records: (?email)",
         },
     }
 
