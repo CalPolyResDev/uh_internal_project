@@ -70,7 +70,6 @@ function retrieve_messages(mailbox, search_string) {
     // TODO: Change hardcoded URL to use django-reverse-js. 
     $.get(encodeURI('/daily_duties/email/get_mailbox_summary/'+ encodeURIComponent(mailbox) + '/' + encodeURIComponent(search_string) + '/0/'), function(response) {
         if (!(--num_search_queries_running)) {
-            console.log(response.content);
             $('#mailbox_name_header').css('display', (mailbox.length > 0 ? 'none' : 'table-cell'));
             $('#loading_email_record').replaceWith(response.content.html);
             $("#refresh_button").attr("onclick","refresh_messages('" + mailbox + "');");
@@ -164,8 +163,8 @@ var infiniteScrollHandler = function(e){
             }).done(function( response ) {
                 $('#loading_additional_emails').remove();
                 $("#email_table tbody").append(response.content.html);
+                
                 next_group_url = response.content.next_group_url;
-                console.log(next_group_url);
                 if (next_group_url) {
                     $(document).scroll(infiniteScrollHandler);
                 }

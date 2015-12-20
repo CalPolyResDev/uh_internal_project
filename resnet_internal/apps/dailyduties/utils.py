@@ -103,8 +103,7 @@ class EmailConnectionMixin(object):
         while not connection:
             try:
                 connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
-            except OSError:
-                print('Trying again')
+            except OSError:  # Office 365 seems to randomly reject connections and trying again usually results in a connection.
                 connection = None
         connection.login(username, password)
 
@@ -291,7 +290,6 @@ class EmailManager(EmailConnectionMixin):
                 unsorted_messages.append((uid, data[b'INTERNALDATE']))
 
         server.close_folder()
-        print('Unsorted Messages: ' + str(unsorted_messages))
         return sorted(unsorted_messages, key=itemgetter(1), reverse=True)
 
     def _get_message_summaries(self, mailbox_name, message_uids, **kwargs):
@@ -330,8 +328,6 @@ class EmailManager(EmailConnectionMixin):
                 })
 
         server.close_folder()
-
-        print('Message Summaries: ' + mailbox_name + ': ' + str(messages))
         return messages
 
     def get_messages(self, mailbox_name, search_string, **kwargs):

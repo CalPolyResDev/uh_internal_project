@@ -164,8 +164,6 @@ def get_mailbox_summary(request, **kwargs):
     message_group = kwargs.get('message_group')
     message_range = [int(message_group) * MESSAGES_PER_GROUP, (int(message_group) + 1) * MESSAGES_PER_GROUP - 1] if message_group and int(message_group) is not None else None
 
-    print(message_range)
-
     if mailbox_name and mailbox_name == 'root':
         messages = None
         num_available_messages = 0
@@ -177,7 +175,6 @@ def get_mailbox_summary(request, **kwargs):
         email['full_id'] = email['mailbox'] + '/' + str(email['uid'])
         email['modal_title'] = 'Email'
 
-    print('Available Messages: %d' % num_available_messages)
     if message_range and num_available_messages > 0:
         if message_range[1] + 2 > num_available_messages:
             next_group_url = None
