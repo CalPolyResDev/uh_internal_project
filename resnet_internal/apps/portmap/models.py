@@ -5,6 +5,7 @@
    Major credit to Kyle Fast for saving a couple months' worth of work entering database info.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Thomas Willson <thomas.willson@me.com>
 
 
 """
@@ -18,7 +19,7 @@ from ..computers.fields import MACAddressField
 from ..core.models import Room
 
 
-class ResHallWired(Model):
+class Port(Model):
     room = ForeignKey(Room, verbose_name='Room', null=True)
     switch_ip = GenericIPAddressField(protocol='IPv4', verbose_name='Switch IP')
     switch_name = CharField(max_length=35, verbose_name='Switch Name')
@@ -46,10 +47,7 @@ class ResHallWired(Model):
             if value:
                 setattr(self, field_name, value.upper())
 
-        super(ResHallWired, self).save(*args, **kwargs)
-
-    class Meta:
-        verbose_name = 'Residence Halls Wired Port'
+        super(Port, self).save(*args, **kwargs)
 
 
 class AccessPoint(Model):
@@ -63,7 +61,7 @@ class AccessPoint(Model):
     property_id = CharField(max_length=7, unique=True, verbose_name='Property ID')
     serial_number = CharField(max_length=9, unique=True, verbose_name='Serial Number')
     mac_address = MACAddressField(unique=True, verbose_name='MAC Address')
-    port = OneToOneField(ResHallWired, related_name='access_point')
+    port = OneToOneField(Port, related_name='access_point')
     ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address')
     type = CharField(max_length=3, choices=TYPE_CHOICES, verbose_name='Type')
 

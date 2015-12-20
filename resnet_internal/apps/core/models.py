@@ -28,7 +28,6 @@ logger = logging.getLogger(__name__)
 
 
 class Community(Model):
-    """University Housing Community."""
 
     name = CharField(max_length=30, verbose_name="Community Name")
 
@@ -40,12 +39,10 @@ class Community(Model):
         return self.name
 
     class Meta:
-        verbose_name = 'University Housing Community'
-        verbose_name_plural = 'University Housing Communities'
+        verbose_name_plural = 'Communities'
 
 
 class Building(Model):
-    """University Housing Building."""
 
     name = CharField(max_length=30, verbose_name="Building Name")
     community = ForeignKey(Community, verbose_name="Community", related_name="buildings")
@@ -57,12 +54,8 @@ class Building(Model):
     def address(self):
         return self.community.address + ' ' + self.name
 
-    class Meta:
-        verbose_name = 'University Housing Building'
-
 
 class Room(Model):
-    """University Housing Room."""
 
     name = CharField(max_length=10, verbose_name="Room Number")
     building = ForeignKey(Building, verbose_name="Building", related_name="rooms")
@@ -87,24 +80,16 @@ class Room(Model):
 
         super(Room, self).save(*args, **kwargs)
 
-    class Meta:
-        verbose_name = 'University Housing Room'
-
 
 class Department(Model):
-    """University Housing Departments."""
 
     name = CharField(max_length=50, verbose_name='Department Name')
 
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name = 'University Housing Department'
-
 
 class SubDepartment(Model):
-    """University Housing Sub Departments."""
 
     name = CharField(max_length=50, verbose_name='Sub Department Name')
     department = ForeignKey(Department, verbose_name="Department", null=True, related_name="sub_departments")
@@ -113,7 +98,7 @@ class SubDepartment(Model):
         return self.name
 
     class Meta:
-        verbose_name = 'University Housing Sub Department'
+        verbose_name = 'Sub Department'
 
 
 class NetworkDevice(Model):

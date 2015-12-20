@@ -11,37 +11,37 @@ from django.core.urlresolvers import reverse_lazy
 from django.forms import ModelChoiceField, ModelForm
 
 from ..core.models import Community, Building, Room
-from .models import ResHallWired, AccessPoint
+from .models import Port, AccessPoint
 
 
-class ResHallWiredPortCreateForm(ChainedChoicesModelForm):
+class PortCreateForm(ChainedChoicesModelForm):
     community = ModelChoiceField(queryset=Community.objects.all())
     building = ChainedModelChoiceField('community', reverse_lazy('core_chained_building'), Building)
     room = ChainedModelChoiceField('building', reverse_lazy('core_chained_room'), Room)
 
     def __init__(self, *args, **kwargs):
-        super(ResHallWiredPortCreateForm, self).__init__(*args, **kwargs)
+        super(PortCreateForm, self).__init__(*args, **kwargs)
 
         for field_name in self.fields:
             self.fields[field_name].error_messages = {'required': 'A ' + field_name + ' is required.'}
 
     class Meta:
-        model = ResHallWired
-        fields = ['id', 'community', 'building', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan']
+        model = Port
+        fields = ['community', 'building', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port', 'vlan']
 
 
-class ResHallWiredPortUpdateForm(ModelForm):
+class PortUpdateForm(ModelForm):
 
     class Meta:
-        model = ResHallWired
-        fields = ['id', 'switch_ip', 'switch_name', 'blade', 'port', 'vlan']
+        model = Port
+        fields = ['switch_ip', 'switch_name', 'blade', 'port', 'vlan']
 
 
 class AccessPointCreateForm(ChainedChoicesModelForm):
     community = ModelChoiceField(queryset=Community.objects.all())
     building = ChainedModelChoiceField('community', reverse_lazy('core_chained_building'), Building)
     room = ChainedModelChoiceField('building', reverse_lazy('core_chained_room'), Room)
-    port = ChainedModelChoiceField('room', reverse_lazy('portmap_chained_port'), ResHallWired)
+    port = ChainedModelChoiceField('room', reverse_lazy('portmap_chained_port'), Port)
 
     class Meta:
         model = AccessPoint

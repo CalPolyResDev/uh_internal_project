@@ -27,20 +27,20 @@ from rmsconnector.utils import Resident
 
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
-from .forms import ResHallWiredPortUpdateForm, AccessPointUpdateForm
-from .models import ResHallWired, AccessPoint
+from .forms import PortUpdateForm, AccessPointUpdateForm
+from .models import Port, AccessPoint
 
 
 logger = logging.getLogger(__name__)
 
 
-class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
+class PopulatePorts(RNINDatatablesPopulateView):
     """Renders the port map."""
 
     table_name = "portmap"
     data_source = reverse_lazy('populate_residence_halls_wired_ports')
     update_source = reverse_lazy('update_residence_halls_wired_port')
-    model = ResHallWired
+    model = Port
     max_display_length = 1000
 
     column_definitions = OrderedDict()
@@ -76,7 +76,7 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
         if self.get_write_permissions():
             self.column_definitions["active"] = {"width": "50px", "type": "string", "editable": False, "title": "&nbsp;"}
 
-        return super(PopulateResidenceHallWiredPorts, self).get_options()
+        return super(PopulatePorts, self).get_options()
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = portmap_modify_access_test(user)
@@ -110,7 +110,7 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
 
             return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
         else:
-            return super(PopulateResidenceHallWiredPorts, self).render_column(row, column, class_names)
+            return super(PopulatePorts, self).render_column(row, column, class_names)
 
     def filter_queryset(self, qs):
         search_parameters = self.request.GET.get('search[value]', None)
@@ -150,10 +150,10 @@ class PopulateResidenceHallWiredPorts(RNINDatatablesPopulateView):
         return qs
 
 
-class UpdateResidenceHallWiredPort(BaseDatatablesUpdateView):
-    form_class = ResHallWiredPortUpdateForm
-    model = ResHallWired
-    populate_class = PopulateResidenceHallWiredPorts
+class UpdatePort(BaseDatatablesUpdateView):
+    form_class = PortUpdateForm
+    model = Port
+    populate_class = PopulatePorts
 
 
 @ajax
@@ -169,7 +169,7 @@ def change_port_status(request):
     # Pull post parameters
     port_id = request.POST["port_id"]
 
-    port_instance = ResHallWired.objects.get(id=port_id)
+    port_instance = Port.objects.get(id=port_id)
 
     # Set up paramiko ssh client
     ssh_client = SSHClient()
@@ -214,10 +214,10 @@ def change_port_status(request):
     ssh_shell.close()
     ssh_client.close()
 
-    return redraw_row(request, PopulateResidenceHallWiredPorts, port_id)
+    return redraw_row(request, PopulatePorts, port_id)
 
 
-class PopulateResidenceHallAccessPoints(RNINDatatablesPopulateView):
+class PopulateAccessPoints(RNINDatatablesPopulateView):
     """Renders the access point map."""
 
     table_name = "residence_halls_access_point_map"
@@ -278,16 +278,16 @@ class PopulateResidenceHallAccessPoints(RNINDatatablesPopulateView):
             port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_style="", link_class_name="", link_text=port_icon, link_url="#")
             return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=port.jack, link_block=port_block, inline_images="", editable_block="")
         else:
-            return super(PopulateResidenceHallAccessPoints, self).render_column(row, column, class_names)
+            return super(PopulateAccessPoints, self).render_column(row, column, class_names)
 
 
-class UpdateResidenceHallAccessPoint(BaseDatatablesUpdateView):
+class UpdateAccessPoint(BaseDatatablesUpdateView):
     form_class = AccessPointUpdateForm
     model = AccessPoint
-    populate_class = PopulateResidenceHallAccessPoints
+    populate_class = PopulateAccessPoints
 
 
 class PortChainedAjaxView(ChainedSelectChoicesView):
 
     def get_child_set(self):
-        return ResHallWired.objects.filter(room__id=self.parent_value)
+        return Port.objects.filter(room__id=self.parent_value)

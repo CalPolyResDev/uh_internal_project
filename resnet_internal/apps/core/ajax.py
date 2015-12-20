@@ -168,7 +168,7 @@ class SubDepartmentChainedAjaxView(ChainedSelectChoicesView):
         return SubDepartment.objects.filter(department__id=self.parent_value).order_by('name')
 
 
-class PopulateResidenceHallRooms(RNINDatatablesPopulateView):
+class PopulateRooms(RNINDatatablesPopulateView):
     """Renders the room listing."""
 
     table_name = "residence_halls_rooms"
@@ -190,7 +190,7 @@ class PopulateResidenceHallRooms(RNINDatatablesPopulateView):
         self.write_permissions = technician_access_test(user)
 
 
-class UpdateResidenceHallRoom(BaseDatatablesUpdateView):
+class UpdateRoom(BaseDatatablesUpdateView):
     form_class = RoomUpdateForm
     model = Room
-    populate_class = PopulateResidenceHallRooms
+    populate_class = PopulateRooms
