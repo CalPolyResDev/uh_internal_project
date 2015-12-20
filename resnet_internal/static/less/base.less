@@ -340,8 +340,8 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
-    background-color: darken(@polydarkgreen, 5%);
-    border-color: darken(darken(@polydarkgreen, 5%), 10%);
+    background-color: darken(@polydarkgreen, 5%) !important;
+    border-color: darken(darken(@polydarkgreen, 5%), 10%) !important;
 }
 
 .form-horizontal .control-label {
@@ -361,6 +361,11 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 .form-control:focus {
     border-color: @polylightgreen;
     box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(69, 144, 44, 0.6);
+}
+
+.page-header {
+    margin-top: 0;
+    padding-bottom: 0;
 }
 
 /* Source: http://cpratt.co/twitter-bootstrap-callout-css-styles/ */
