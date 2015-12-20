@@ -200,7 +200,6 @@ class EmailManager(EmailConnectionMixin):
         try:
             self.server.copy(int(uid), destination_folder)
         except:
-            print('Copy Failed!')
             return
 
         self.server.delete_messages(int(uid))
