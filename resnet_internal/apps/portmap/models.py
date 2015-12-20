@@ -26,7 +26,6 @@ class Port(Model):
     jack = CharField(max_length=5, verbose_name='Jack')
     blade = PositiveSmallIntegerField(verbose_name='Blade')
     port = PositiveSmallIntegerField(verbose_name='Port')
-    vlan = CharField(max_length=7, verbose_name='vLan')
     active = BooleanField(default=True, verbose_name='Active')
 
     @cached_property
