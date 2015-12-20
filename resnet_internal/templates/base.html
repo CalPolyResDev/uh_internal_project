@@ -22,13 +22,15 @@
 
         <link rel='stylesheet prefetch' href='https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css'>
         <link rel='stylesheet prefetch' href='https://cdn.datatables.net/scroller/1.4.0/css/scroller.bootstrap.min.css'>
-        
+
+        <link rel="stylesheet prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.css">
+        <link rel="stylesheet prefetch" href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}">
+
         <link rel="stylesheet prefetch" href="{% compile 'less/base.less' %}?version=1.0">
 
         {% block extra_head %}{% endblock %}
 
         <title>University Housing Internal{% block subtitle %}{% endblock %}</title>
-
     </head>
     <body>
         <!-- These are here only because django-clever-selects throws js inline that requires jQuery... -->
@@ -71,7 +73,7 @@
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title"></h4>
+                                    <h2 class="modal-title"></h2>
                                 </div>
                                 <div class="modal-body">
                                     <div id="modal-body">
@@ -96,7 +98,10 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
         <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'></script>
- 
+
+        <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js"></script>
+
         <script src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
         <script src="{% static 'js/jquery.blockUI.js' %}"></script>
         <script src="{% static 'js/modal-frames.js' %}?version=1.0"></script>
@@ -122,9 +127,9 @@
             {% if request.user.is_authenticated %}
                 var daily_duties_refresh_url = "{% url 'daily_duties_refresh_duties' %}";
                 var daily_duties_update_url = "{% url 'daily_duties_update_duty' %}";
-                var daily_duties_email_redir_url = '{% url 'email_list' %}';
-                var daily_duties_voicemail_redir_url = '{% url 'voicemail_list' %}';
-                var daily_duties_printer_requests_redir_url = '{% url 'printer_request_list' %}';
+                var daily_duties_email_redir_url = "{% url 'email_list' %}";
+                var daily_duties_voicemail_redir_url = "{% url 'voicemail_list' %}";
+                var daily_duties_printer_requests_redir_url = "{% url 'printer_request_list' %}";
             {% endif %}
         </script>
         {% if request.user.is_authenticated %}

@@ -7,7 +7,7 @@ termcolor==1.1.0
 
 django-cas-ng==3.4.2
 python-dateutil==2.4.2
-djangoajax==2.3.1
+djangoajax==2.3.3
 django-datatables-view==1.13.0
 ldap-groups==4.2.0
 raven~=5.8
