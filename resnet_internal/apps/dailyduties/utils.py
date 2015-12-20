@@ -5,7 +5,7 @@
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
-
+from concurrent.futures import ThreadPoolExecutor
 from collections import defaultdict
 from datetime import datetime, timedelta
 from email import header
@@ -30,6 +30,7 @@ import imapclient
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
+import itertools
 
 
 imapclient.imapclient.imaplib._MAXLINE = 1000000
@@ -97,7 +98,14 @@ class EmailConnectionMixin(object):
         username = settings.INCOMING_EMAIL['IMAP4']['USER']
         password = settings.INCOMING_EMAIL['IMAP4']['PASSWORD']
         ssl = settings.INCOMING_EMAIL['IMAP4']['USE_SSL']
-        connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
+
+        connection = None
+        while not connection:
+            try:
+                connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
+            except OSError:
+                print('Trying again')
+                connection = None
         connection.login(username, password)
 
         return connection
@@ -136,13 +144,19 @@ class EmailConnectionMixin(object):
                     return cls.connection_list[index][0]
             Exception('Could not find connection to reinitialize it.')
 
-    def _init_mail_connection(self):
-        self.server = EmailConnectionMixin._get_connection()
+    @classmethod
+    def _get_tested_connection(cls):
+        connection = cls._get_connection()
 
         try:
-            self.server.noop()
+            connection.noop()
         except:
-            self.server = EmailConnectionMixin._reinitialize_connection(self.server)
+            connection = cls._reinitialize_connection(connection)
+
+        return connection
+
+    def _init_mail_connection(self):
+        self.server = EmailConnectionMixin._get_tested_connection()
 
 
 class EmailManager(EmailConnectionMixin):
@@ -259,26 +273,31 @@ class EmailManager(EmailConnectionMixin):
     def _create_uid_fetch_groups(self, uids):
         return zip_longest(*(iter(uids),) * 500)
 
-    def _get_uids_and_dates_for_mailbox(self, mailbox_name, search_string):
-        self.server.select_folder(mailbox_name)
+    def _get_uids_and_dates_for_mailbox(self, mailbox_name, search_string, **kwargs):
+        server = kwargs.get('connection', self.server)
+
+        server.select_folder(mailbox_name)
         imap_search_string = 'TEXT ' + search_string if search_string else 'ALL'
 
-        unsorted_message_uids = self.server.search(imap_search_string)
+        unsorted_message_uids = server.search(imap_search_string)
         message_uid_fetch_groups = self._create_uid_fetch_groups(unsorted_message_uids)
         unsorted_messages = []
 
         for message_uid_group in message_uid_fetch_groups:
             message_uid_group = list(filter(None.__ne__, message_uid_group))
-            response = self.server.fetch(message_uid_group, ['INTERNALDATE'])
+            response = server.fetch(message_uid_group, ['INTERNALDATE'])
 
             for uid, data in response.items():
                 unsorted_messages.append((uid, data[b'INTERNALDATE']))
 
-        self.server.close_folder()
+        server.close_folder()
+        print('Unsorted Messages: ' + str(unsorted_messages))
         return sorted(unsorted_messages, key=itemgetter(1), reverse=True)
 
-    def _get_message_summaries(self, mailbox_name, message_uids):
-        self.server.select_folder(mailbox_name)
+    def _get_message_summaries(self, mailbox_name, message_uids, **kwargs):
+        server = kwargs.get('connection', self.server)
+
+        server.select_folder(mailbox_name)
 
         message_uid_fetch_groups = self._create_uid_fetch_groups(message_uids)
 
@@ -286,7 +305,7 @@ class EmailManager(EmailConnectionMixin):
 
         for message_uid_group in message_uid_fetch_groups:
             message_uid_group = list(filter(None.__ne__, message_uid_group))
-            response = self.server.fetch(message_uid_group, ['ALL'])
+            response = server.fetch(message_uid_group, ['ALL'])
 
             for uid, data in response.items():
                 unread = b'\\Seen' not in data[b'FLAGS']
@@ -310,8 +329,9 @@ class EmailManager(EmailConnectionMixin):
                     'sender_address': smart_text(sender_address.mailbox) + '@' + smart_text(sender_address.host) if sender_address else None,
                 })
 
-        self.server.close_folder()
+        server.close_folder()
 
+        print('Message Summaries: ' + mailbox_name + ': ' + str(messages))
         return messages
 
     def get_messages(self, mailbox_name, search_string, **kwargs):
@@ -332,17 +352,24 @@ class EmailManager(EmailConnectionMixin):
 
             return (self._get_message_summaries(mailbox_name, message_uids), num_available_messages)
         else:
-            message_results = []
+            def retrieve_results_for_mailbox(mailbox_name):
+                message_results = []
+                connection = EmailConnectionMixin._get_tested_connection()
 
-            # Retrieve results for all mailboxes
-            for mailbox_name in self.SEARCH_MAILBOXES:
-                uids_and_dates = self._get_uids_and_dates_for_mailbox(mailbox_name, search_string)
+                uids_and_dates = self._get_uids_and_dates_for_mailbox(mailbox_name, search_string, connection=connection)
                 for uid, date in uids_and_dates:
                     message_results.append({
                         'uid': uid,
                         'date': date,
                         'mailbox_name': mailbox_name,
                     })
+
+                EmailConnectionMixin._release_connection(connection)
+                return message_results
+
+            with ThreadPoolExecutor(max_workers=10) as pool:
+                message_results = pool.map(retrieve_results_for_mailbox, self.SEARCH_MAILBOXES)
+            message_results = list(itertools.chain(*message_results))  # Flatten list of lists
 
             # Sort and select range
             message_results.sort(key=itemgetter('date'), reverse=True)
@@ -358,13 +385,19 @@ class EmailManager(EmailConnectionMixin):
 
             message_results_by_mailbox = defaultdict(list)
 
-            # Retrieve messages one mailbox at a time.
+            # Retrieve messages from mailboxes
             messages = []
+
+            def retrieve_messages_for_mailbox(mailbox_name, partial_messages):
+                connection = EmailConnectionMixin._get_tested_connection()
+                messages.extend(self._get_message_summaries(mailbox_name, [message['uid'] for message in partial_messages], connection=connection))
+                EmailConnectionMixin._release_connection(connection)
+
             for message in message_results:
                 message_results_by_mailbox[message['mailbox_name']].append(message)
 
-            for mailbox_name, partial_messages in message_results_by_mailbox.items():
-                messages += self._get_message_summaries(mailbox_name, [message['uid'] for message in partial_messages])
+            with ThreadPoolExecutor(max_workers=10) as pool:
+                pool.map(lambda mailbox_results: retrieve_messages_for_mailbox(mailbox_results[0], mailbox_results[1]), message_results_by_mailbox.items())
 
             # Sort and return
             messages.sort(key=itemgetter('date'), reverse=True)
