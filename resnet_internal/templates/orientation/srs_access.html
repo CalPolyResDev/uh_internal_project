@@ -1,51 +1,42 @@
-{% extends "orientation/base_checklist_item.html" %}
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
 
-{% block content %}
-<div id="content">
-	<div id="mainLeftFull">
-		<h1>Orientation - SRS Access</h1>
-		<p>
-			The SRS (Service Request System) is a tool we technicians use on a daily basis to log troubleshooting efforts and request service from other departments. More information on what the SRS is used for, along with how it is used, can be found in the wiki.
-		</p>
-		<p>
-			To gain access to the SRS Manager, you must first fill out this <a href="{{MEDIA_URL}}forms/RUP_Student_Agreement.pdf" target="_blank">Responsible Use Policy Agreement (RUP)</a>, sign it, scan it, and then upload it below.
-		</p>
+{% block main %}
+    <div class="col-xs-12">
+        <h2>Orientation - SRS Access</h2>
+        <p>The SRS (Service Request System) is a tool we technicians use on a daily basis to log troubleshooting efforts and request service from other departments. More information on what the SRS is used for, along with how it is used, can be found in the wiki.<p><br />
 
-		<p>
-			Once you upload your signed RUP, an account request will be created in your name. It can take up to a week to process the request, so please be patient.
-		</p>
+        <div class="panel panel-default">
+            <div class="panel-heading">RUP Download</div>
+            
+            <div class="panel-body">
+                <p>To gain access to the SRS Manager, you must first fill out the linked Responsible Use Policy, sign it, scan it, and then upload it using the form below. Once you upload your signed RUP, an account request will be created in your name. It can take up to a week to process the request, so please be patient.</p>
+            </div>
+    
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a href="{{MEDIA_URL}}forms/RUP_Student_Agreement.pdf" target="_blank">Responsible Use Policy Agreement (RUP)</a>
+                </li>
+            </ul>
+        </div>
+        <br />
+    </div>
 
-	</div>
-	<div>
-		<form method="post" enctype="multipart/form-data" id="srs_upload_form">
-			<fieldset>
-				<legend>
-					Please upload your signed RUP below. It must be a .pdf file:
-				</legend>
-				<p>
-					{{ form.non_field_errors }}
-				</p>
-				{% for field in form %}
-				<p>
-					{{ field.errors }}
-					{{ field }}
-				</p>
-				{% endfor %}
-			</fieldset>
-			<p>
-				<input type="submit" value="Upload" />
-			</p>
-			{% csrf_token %}
-		</form>
-	</div>
+    <div class="col-xs-12">
+        {% crispy form form.helper %}
+    </div>
 
-	<div>
-		<p>
-			Once you gain access to the SRS, click the following button to take this item off the checklist:
-		</p>
-		<p>
-			<input type="button" onclick="complete_task('srs')" value="I am Able to Access the SRS" />
-		</p>
-	</div>
+    <div class="col-xs-12">
+        <br /><p>Once you gain access to the SRS, click the following button to take this item off the checklist:</p>
+        <br /><button class="btn btn-primary" onclick="complete_task('srs')">I am Able to Access the SRS</button>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript">
+        function complete_task(task) {
+            ajaxPost("{% url 'orientation_complete_task' %}", {"task": task});
+        };
+    </script>
 {% endblock %}

@@ -24,7 +24,7 @@ from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.adgroups.views import ResTechListEditView
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, update_sub_department, remove_computer, remove_pinhole, remove_domain_name
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
-from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView, PopulateResidenceHallRooms, UpdateResidenceHallRoom
+from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, PopulateResidenceHallRooms, UpdateResidenceHallRoom
 from .apps.core.views import IndexView, handler500, TicketSummaryView, ResidenceHallRoomsView
 from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive, send_email, attachment_upload, attachment_delete
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView, EmailComposeView
@@ -91,8 +91,9 @@ urlpatterns = [
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
     url(r'^login/$', auth_login, name='login'),
     url(r'^logout/$', auth_logout, name='logout', kwargs={'next_page': settings.CAS_LOGOUT_URL}),
-    url(r'^ajax/chained_building/$', login_required(BuildingChainedAjaxView.as_view()), name='core_chained_building'),
-    url(r'^ajax/chained_room/$', login_required(RoomChainedAjaxView.as_view()), name='core_chained_room'),
+    url(r'^ajax/chained_building/$', BuildingChainedAjaxView.as_view(), name='core_chained_building'),
+    url(r'^ajax/chained_room/$', RoomChainedAjaxView.as_view(), name='core_chained_room'),
+    url(r'^ajax/chained_sub_department/$', SubDepartmentChainedAjaxView.as_view(), name='core_chained_sub_department'),
     url(r'^core/network_status/update/$', update_network_status, name='core_update_network_status'),
     url(r'^core/tickets/list/$', login_required(technician_access(get_tickets)), name='core_get_tickets'),
     url(r'^core/tickets/list/(?P<ticket_id>\b[0-9]*\b)/$', login_required(technician_access(TicketSummaryView.as_view())), name='core_ticket_summary'),
