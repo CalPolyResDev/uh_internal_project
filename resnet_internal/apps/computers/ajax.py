@@ -55,7 +55,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
     column_definitions["location"] = {"width": "150px", "type": "string", "title": "Location"}
     column_definitions["date_purchased"] = {"width": "100px", "type": "string", "searchable": False, "title": "Date Purchased"}
     column_definitions["dn"] = {"width": "250px", "type": "string", "title": "Distinguished Name"}
-    column_definitions["description"] = {"width": "250px", "type": "string", "className": "edit_trigger", "title": "Description"}
+    column_definitions["description"] = {"width": "250px", "type": "string", "title": "Description"}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
