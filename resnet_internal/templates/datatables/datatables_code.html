@@ -1,6 +1,7 @@
 {% load staticfiles %}
 <script src='https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js'></script>
+
 <script src='https://cdn.datatables.net/scroller/1.4.0/js/dataTables.scroller.min.js'></script>
 
 <script type="text/javascript">
@@ -36,14 +37,14 @@
     // initialize the dataTable
     $(document).ready(function() {
         {{ datatable_name }} = $("#{{ datatable_name }}").DataTable({% autoescape off %}{{ datatable_options }}{% endautoescape %});
-        
+
         // Add the popover to hoverable items
         {{ datatable_name }}.on('draw.dt', function() {
             $('[popover-data-url]').hover(
                 function() {
                     var element = $(this);
                     element.off('hover');
-                    
+
                     $.get(element.attr('popover-data-url'), function(content) {
                         if (element.filter(":hover").length) {
                             element.popover({content: content,
@@ -53,12 +54,13 @@
                             }).popover('show');
                         }
                     });
-    
+
                 },
                 function() {
                     var element = $(this);
                     element.popover('hide');
-                });
+                }
+            );
         });
 
         // Create the overlay effect when processing
@@ -78,39 +80,69 @@
             $("#{{ datatable_name }} tbody").on("dblclick", "tr", function () {
                 var row_object = this;
                 var row_id = $(this).attr("id");
+                
+                // Initialize any date inputs
+                $("#" + row_id + " .dateinput").datepicker({
+                    dateFormat: 'yy-mm-dd',
+                });
 
                 // Switch to write mode
                 $("#" + row_id + " .value-display").hide();
                 $("#" + row_id + " .editbox").show();
 
-                var editable_columns = $("#" + row_id + " .editbox:not([readonly])")
-                
+                var editable_columns = $("#" + row_id + " .editbox:not([readonly])");
+
                 // Construct initial data array
                 var initial_data = {};
-                
+
                 editable_columns.each(function () {
                     column_name = $(this).parent().attr("column");
                     value = $(this).val();
                     initial_data[column_name] = value;
                 });
-                
+
                 // Set focus to first editable input
                 editable_columns.first().focus()
-                
+
                 // Unbind previous actions
-                $(this).unbind("focusout");
+                $(this).unbind("blur");
+                $(this).unbind("focus");
                 
+                // http://stackoverflow.com/a/16886052
+                var delayed_function, blurred_from;
+
+                $(this).on('blur', ':input', function(event) {
+                    blurred_from = event.delegateTarget;
+                    delayed_function = setTimeout(function() {
+                        handle_edit();
+                    }, 0);
+                });
+
+                $(this).on('focus', ':input', function(event) {
+                    if (blurred_from === event.delegateTarget) {
+                        clearTimeout(delayed_function);
+                    }
+                });
+                
+                // Keypress actions
+                // http://stackoverflow.com/a/1160109
+                $(document).keyup(function(e) {
+                    if (e.keyCode == 13 || e.keyCode == 27) {
+                        handle_edit();
+                    }
+                });
+
                 // User focused out of the row
-                $(this).on("focusout", function() {
+                function handle_edit() {
                     var changed_data = {}
-                    
+
                     // Get data post edit
                     editable_columns.each(function() {
                         column_name = $(this).parent().attr("column");
                         value = $(this).val();
                         changed_data[column_name] = value;
                     });
-                    
+
                     // Only send a change request if the data actually changed
                     if (!objectEquals(initial_data, changed_data)) {
                         // Attempt to send the data
@@ -124,10 +156,8 @@
                                 var rendered_row = response_context["rendered_row"];
 
                                 {{ datatable_name }}.row(row_object).data(rendered_row).draw('page');
-                                
-                                // Switch back to read mode
-                                $("#" + row_id + " .editbox").hide();
-                                $("#" + row_id + " .value-display").show();
+
+                                switch_to_read_mode();
 
                                 editable_columns.each(function() {
                                     $(this).parent().removeClass("has-error");
@@ -137,14 +167,27 @@
                                 alert("The update was unsuccessful:\n" + response_context["form_errors"].join("\n") + response_context["field_errors"].join("\n"));
 
                                 editable_columns.each(function() {
-                                    $(this).parent().addClass("has-error");
+                                    column_name = $(this).parent().attr("column");
+                                    
+                                    if ($.inArray(column_name, response_context["fields_with_errors"]) != -1) {
+                                        $(this).parent().addClass("has-error");
+                                    }
                                 });
 
                                 return false;
                             }
                         });
                     }
-                });
+                    else {
+                        switch_to_read_mode();
+                    }
+                };
+                
+                function switch_to_read_mode() {
+                    // Switch back to read mode
+                    $("#" + row_id + " .editbox").hide();
+                    $("#" + row_id + " .value-display").show();
+                }
             });
         {% endif %}
     });

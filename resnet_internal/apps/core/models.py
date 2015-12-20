@@ -91,29 +91,29 @@ class Room(Model):
         verbose_name = 'University Housing Room'
 
 
-class SubDepartment(Model):
-    """University Housing Sub Departments."""
-
-    name = CharField(max_length=50, verbose_name='Sub Department Name')
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'University Housing Sub Department'
-
-
 class Department(Model):
     """University Housing Departments."""
 
     name = CharField(max_length=50, verbose_name='Department Name')
-    sub_departments = ManyToManyField(SubDepartment)
 
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name = 'University Housing Department'
+
+
+class SubDepartment(Model):
+    """University Housing Sub Departments."""
+
+    name = CharField(max_length=50, verbose_name='Sub Department Name')
+    department = ForeignKey(Department, verbose_name="Department", null=True, related_name="sub_departments")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'University Housing Sub Department'
 
 
 class NetworkDevice(Model):
