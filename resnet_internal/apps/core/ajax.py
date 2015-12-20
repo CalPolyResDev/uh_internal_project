@@ -18,8 +18,8 @@ from django_ajax.decorators import ajax
 
 from ...settings.base import technician_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
-from .forms import RoomUpdateForm
-from .models import Building, Room
+from .forms import RoomCreateForm, RoomUpdateForm
+from .models import Building, Room, SubDepartment
 from .utils import NetworkReachabilityTester, get_ticket_list
 
 
@@ -162,18 +162,29 @@ class RoomChainedAjaxView(ChainedSelectChoicesView):
         return Room.objects.filter(building__id=self.parent_value).order_by('name')
 
 
+class SubDepartmentChainedAjaxView(ChainedSelectChoicesView):
+
+    def get_child_set(self):
+        return SubDepartment.objects.filter(department__id=self.parent_value).order_by('name')
+
+
 class PopulateResidenceHallRooms(RNINDatatablesPopulateView):
     """Renders the room listing."""
 
     table_name = "residence_halls_rooms"
     data_source = reverse_lazy('populate_residence_halls_rooms')
     update_source = reverse_lazy('update_residence_halls_room')
+    form_class = RoomCreateForm
     model = Room
 
     column_definitions = OrderedDict()
     column_definitions["community"] = {"type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "building__community__name"}
     column_definitions["building"] = {"type": "string", "editable": False, "title": "Building", "related": True, "lookup_field": "name"}
     column_definitions["name"] = {"type": "string", "title": "Name"}
+
+    extra_options = {
+        "scrollX": False,
+    }
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = technician_access_test(user)

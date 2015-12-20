@@ -49,6 +49,15 @@ header {
     border-bottom: 5px solid @polydarkgreen;
 }
 
+hr {
+    margin-top: 10px;
+}
+
+.remove {
+    color: red !important;
+    cursor: pointer;
+}
+
 #logo {
     /* Fix from h1 */
     margin-top: -10px;
@@ -77,6 +86,14 @@ nav {
         color: rbg(142, 142, 142) !important;
         display: block;
     }
+}
+
+#checklist {
+    list-style-image: url('/static/images/checkbox_unchecked.png')
+}
+
+#checklist .checked {
+    list-style-image: url('/static/images/checkbox_checked.png')
 }
 
 .nav-heading {
@@ -185,6 +202,39 @@ table.dataTable {
     tbody tr:hover {
         background-color: @polydarkgrey !important;
         cursor: cell;
+    }
+    
+    .old {
+        background-color: rgb(255,226,77) !important;
+    }
+    
+    .older {
+        background-color: rgb(255,151,77) !important;
+    }
+    
+    .replace {
+        background-color: rgb(255,107,77) !important;
+    }
+    
+    .old:hover {
+        background-color: rgb(255,222,52) !important;
+    }
+
+    .older:hover {
+        background-color: rgb(255,136,52) !important;
+    }
+
+    .replace:hover {
+        background-color: rgb(255,86,52) !important;
+    }
+    
+    .disabled {
+        background-color: rgb(180,180,180) !important;
+        color: rgb(100,100,100);
+    }
+    
+    .disabled a {
+        color: rgb(100,100,100);
     }
 }
 
