@@ -39,9 +39,6 @@ class ComputerForm(ChainedChoicesModelForm):
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10 col-md-8'
 
-        submit_button = Submit('submit', 'Add Computer')
-        submit_button.field_classes = 'btn btn-primary'
-
         self.helper.layout = Layout(
             Fieldset(
                 'Add a new computer',
@@ -58,7 +55,9 @@ class ComputerForm(ChainedChoicesModelForm):
                 Field('dn', placeholder=self.fields['dn'].label),
                 Field('description', placeholder=self.fields['description'].label),
             ),
-            FormActions(submit_button)
+            FormActions(
+                Submit('submit', 'Add Computer'),
+            )
         )
 
         self.fields["date_purchased"].widget.attrs['class'] = "dateinput"
@@ -112,9 +111,6 @@ class RequestPinholeForm(Form):
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10'
 
-        submit_button = Submit('submit', 'Submit')
-        submit_button.field_classes = 'btn btn-primary'
-
         self.helper.layout = Layout(
             Fieldset(
                 'Request a Pinhole',
@@ -131,7 +127,9 @@ class RequestPinholeForm(Form):
                 Field('tcp_ports', placeholder=self.fields['tcp_ports'].label),
                 Field('udp_ports', placeholder=self.fields['udp_ports'].label),
             ),
-            FormActions(submit_button)
+            FormActions(
+                Submit('submit', 'Submit'),
+            )
         )
 
         self.fields["priority"].choices = PRIORITY_CHOICES
@@ -167,8 +165,6 @@ class RequestDomainNameForm(Form):
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10'
 
-        submit_button = Submit('submit', 'Submit')
-        submit_button.field_classes = 'btn btn-primary'
         self.helper.layout = Layout(
             Fieldset(
                 'Request a Domain Name (CNAME)',
@@ -177,7 +173,9 @@ class RequestDomainNameForm(Form):
                 Field('requestor_username', placeholder=self.fields['requestor_username'].label),
                 Field('domain_names', placeholder=self.fields['domain_names'].label),
             ),
-            FormActions(submit_button)
+            FormActions(
+                Submit('submit', 'Submit'),
+            )
         )
 
         self.fields["priority"].choices = PRIORITY_CHOICES

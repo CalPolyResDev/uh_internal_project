@@ -28,16 +28,13 @@ class SRSUploadForm(Form):
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10 col-md-8'
 
-        submit_button = Submit('submit', 'Upload')
-        submit_button.field_classes = 'btn btn-primary'
-
         self.helper.layout = Layout(
             Fieldset(
                 'Upload your signed RUP (PDF only)',
                 Field('signed_rup', placeholder=self.fields['signed_rup'].label),
             ),
             FormActions(
-                submit_button,
+                Submit('submit', 'Upload'),
             ),
         )
 
@@ -67,9 +64,6 @@ class OnityEmailForm(Form):
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10 col-md-8'
 
-        submit_button = Submit('submit', 'Send')
-        submit_button.field_classes = 'btn btn-primary'
-
         self.helper.layout = Layout(
             Fieldset(
                 'Send an email (optional)',
@@ -77,7 +71,7 @@ class OnityEmailForm(Form):
                 Hidden('to_email', '{{ onity_staff_email }}'),
             ),
             FormActions(
-                submit_button,
+                Submit('submit', 'Send'),
                 Reset('reset', 'Reset'),
             ),
         )

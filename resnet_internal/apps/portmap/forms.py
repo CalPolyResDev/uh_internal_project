@@ -34,9 +34,6 @@ class PortCreateForm(ChainedChoicesModelForm):
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10 col-md-8'
 
-        submit_button = Submit('submit', 'Add Port')
-        submit_button.field_classes = 'btn btn-primary'
-
         self.helper.layout = Layout(
             Fieldset(
                 'Add a new port',
@@ -49,7 +46,9 @@ class PortCreateForm(ChainedChoicesModelForm):
                 Field('blade', placeholder=self.fields['ip_address'].label),
                 Field('port', placeholder=self.fields['model'].label),
             ),
-            FormActions(submit_button)
+            FormActions(
+                Submit('submit', 'Add Port'),
+            )
         )
 
         # Make error messages a bit more readable
@@ -85,9 +84,6 @@ class AccessPointCreateForm(ChainedChoicesModelForm):
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10 col-md-8'
 
-        submit_button = Submit('submit', 'Add Access Point')
-        submit_button.field_classes = 'btn btn-primary'
-
         self.helper.layout = Layout(
             Fieldset(
                 'Add a new access point',
@@ -102,7 +98,9 @@ class AccessPointCreateForm(ChainedChoicesModelForm):
                 Field('room', autocomplete='off'),
                 Field('port', autocomplete='off'),
             ),
-            FormActions(submit_button)
+            FormActions(
+                Submit('submit', 'Add Port'),
+            )
         )
 
         # Make error messages a bit more readable

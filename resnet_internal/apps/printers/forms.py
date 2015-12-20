@@ -31,9 +31,6 @@ class PrinterForm(ChainedChoicesModelForm):
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10 col-md-8'
 
-        submit_button = Submit('submit', 'Add Printer')
-        submit_button.field_classes = 'btn btn-primary'
-
         self.helper.layout = Layout(
             Fieldset(
                 'Add a new printer',
@@ -49,7 +46,9 @@ class PrinterForm(ChainedChoicesModelForm):
                 Field('date_purchased', css_class="dateinput", placeholder=self.fields['date_purchased'].label),
                 Field('description', placeholder=self.fields['description'].label),
             ),
-            FormActions(submit_button)
+            FormActions(
+                Submit('submit', 'Add Printer'),
+            )
         )
 
         self.fields["date_purchased"].widget.attrs['class'] = "dateinput"
