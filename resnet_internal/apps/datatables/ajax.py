@@ -45,6 +45,9 @@ class RNINDatatablesPopulateView(BaseDatatableView):
             "search": "Filter records: ",
             "zeroRecords": "No records to display."
         },
+        "dom": "<'row'<'col-sm-12'f>>" +
+               "<'row'<'col-sm-12'tr>>" +
+               "<'row'<'col-sm-12'i>>",
         "processing": True,
         "serverSide": True,
         "lengthChange": False,
