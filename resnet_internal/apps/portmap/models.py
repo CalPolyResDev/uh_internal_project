@@ -20,6 +20,7 @@ from ..core.models import Room
 
 
 class Port(Model):
+
     room = ForeignKey(Room, verbose_name='Room', null=True)
     switch_ip = GenericIPAddressField(protocol='IPv4', verbose_name='Switch IP')
     switch_name = CharField(max_length=35, verbose_name='Switch Name')
@@ -49,12 +50,11 @@ class Port(Model):
         super(Port, self).save(*args, **kwargs)
 
 
+AP_TYPES = ['5 Ghz', '2.4 Ghz', 'Air Monitor']
+AP_TYPE_CHOICES = [(AP_TYPES.index(ap_type), ap_type) for ap_type in AP_TYPES]
+
+
 class AccessPoint(Model):
-    TYPE_CHOICES = (
-        ('5', '5 Ghz'),
-        ('2.4', '2.4 Ghz'),
-        ('AM', 'Air Monitor'),
-    )
 
     name = CharField(max_length=30, verbose_name='DNS Name')
     property_id = CharField(max_length=7, unique=True, verbose_name='Property ID')
@@ -62,7 +62,7 @@ class AccessPoint(Model):
     mac_address = MACAddressField(unique=True, verbose_name='MAC Address')
     port = OneToOneField(Port, related_name='access_point')
     ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address')
-    type = CharField(max_length=3, choices=TYPE_CHOICES, verbose_name='Type')
+    ap_type = PositiveSmallIntegerField(choices=AP_TYPE_CHOICES, verbose_name='Type')
 
     @cached_property
     def room(self):
