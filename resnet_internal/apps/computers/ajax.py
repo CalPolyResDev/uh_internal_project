@@ -33,51 +33,6 @@ OLDER_YEARS = 4
 REPLACE_YEARS = 5
 
 
-@ajax
-@require_POST
-def update_sub_department(request):
-    """ Update sub-department drop-down choices based on the department chosen.
-
-    :param department_id: The department for which to display sub-department choices.
-    :type department_id: str
-
-    :param sub_department_selection_id (optional): The sub_department selected before form submission.
-    :type sub_department_selection_id (optional): str
-
-    :param css_target (optional): The target of which to replace inner HTML. Defaults to #id_sub_department.
-    :type css_target (optional): str
-
-    """
-
-    # Pull post parameters
-    department_id = request.POST.get("department_id", None)
-    sub_department_selection_id = request.POST.get("sub_department_selection_id", None)
-    css_target = request.POST.get("css_target", '#id_sub_department')
-
-    choices = []
-
-    # Add options iff a department is selected
-    if department_id:
-        department_instance = Department.objects.get(id=int(department_id))
-
-        for sub_department in department_instance.sub_departments.all():
-            if sub_department_selection_id and sub_department.id == int(sub_department_selection_id):
-                choices.append("<option value='{id}' selected='selected'>{name}</option>".format(id=sub_department.id, name=sub_department.name))
-            else:
-                choices.append("<option value='{id}'>{name}</option>".format(id=sub_department.id, name=sub_department.name))
-    else:
-        logger.warning("A department wasn't passed via POST.")
-        choices.append("<option value='{id}'>{name}</option>".format(id="", name="---------"))
-
-    data = {
-        'inner-fragments': {
-            css_target: ''.join(choices)
-        },
-    }
-
-    return data
-
-
 class PopulateComputers(RNINDatatablesPopulateView):
     """Renders the computer index."""
 
