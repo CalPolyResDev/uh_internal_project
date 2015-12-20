@@ -20,7 +20,7 @@ from django_ajax.decorators import ajax
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ...settings.base import computers_modify_access_test
-from ..core.models import StaffMapping, Department
+from ..core.models import StaffMapping
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
 from .forms import ComputerForm
 from .models import Computer, Pinhole, DomainName
