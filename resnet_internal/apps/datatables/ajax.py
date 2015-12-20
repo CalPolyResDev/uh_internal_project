@@ -33,7 +33,10 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     table_name = "datatable"
     data_source = None
     update_source = None
+    form_class = None
     max_display_length = 200
+
+    cached_forms = None
 
     column_definitions = OrderedDict()
     options = {
@@ -46,9 +49,10 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         "serverSide": True,
         "lengthChange": False,
 
+        "scrollX": True,
         "scrollY": "75vh",
         "deferRender": True,
-        "scroller": True
+        "scroller": True,
     }
 
     extra_options = {}
@@ -69,17 +73,6 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     link_block_template = """<a href='{link_url}' onclick='{onclick_action}' target='{link_target}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
     icon_template = """<img src='{icon_url}' style='padding-left:5px;' align='top' width='16' height='16' border='0' />"""
     popover_link_block_template = """<a href='{link_url}' title='{popover_title}' popover-data-url='{content_url}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
-
-    def format_select_block(self, queryset, value_field, text_field, value_match):
-        choices = []
-
-        for entry in queryset:
-            if getattr(entry, value_field) == value_match:
-                choices.append("<option value='{value}' selected='selected'>{text}</option>".format(value=getattr(entry, value_field), text=getattr(entry, text_field)))
-            else:
-                choices.append("<option value='{value}'>{text}</option>".format(value=getattr(entry, value_field), text=getattr(entry, text_field)))
-
-        return """<select class='editbox'>{choices}</select>""".format(choices="".join(choices))
 
     def initialize(self, *args, **kwargs):
         super(RNINDatatablesPopulateView, self).initialize(*args, **kwargs)
@@ -181,9 +174,6 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     def get_editable_columns(self):
         return self._get_columns_by_attribute("editable")
 
-    def get_ip_address_columns(self):
-        return self._get_columns_by_attribute("type", "", "ip-address")
-
     def get_row_id(self, row):
         return str(row.id)
 
@@ -193,7 +183,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     def get_row_data_attributes(self, row):
         return None
 
-    def render_column(self, row, column, class_names=None):
+    def render_column(self, row, column):
         """Renders columns with customized HTML.
 
         :param row: A dictionary containing row data.
@@ -204,20 +194,28 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         """
 
-        if not class_names:
-            class_names = []
+        raw_value = getattr(row, column)
+        value = smart_str(raw_value) if raw_value else ""
 
-        value = getattr(row, column)
-        value = smart_str(value) if value else ""
+        if not self.cached_forms:
+            self.cached_forms = {}
 
-        if column in self.get_editable_columns() and self.get_write_permissions():
-            editable_block = self.editable_block_template.format(value=value)
-            class_names.append("editable")
-
-            return self.base_column_template.format(class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+        if row.id not in self.cached_forms:
+            form = self.form_class(instance=row, auto_id="id_{id}-%s".format(id=row.id))
+            self.cached_forms[row.id] = form
         else:
-            readonly_block = self.readonly_block_template.format(value=value)
-            return self.base_column_template.format(class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=readonly_block)
+            form = self.cached_forms[row.id]
+
+        if 'class' in form.fields[column].widget.attrs:
+            form.fields[column].widget.attrs['class'] += " form-control editbox"
+        else:
+            form.fields[column].widget.attrs['class'] = " form-control editbox"
+
+        if not(column in self.get_editable_columns() and self.get_write_permissions()):
+            form.fields[column].widget.attrs['readonly'] = "readonly"
+            form.fields[column].widget.attrs['disabled'] = "disabled"
+
+        return self.base_column_template.format(column=column, value=value, link_block="", inline_images="", editable_block=str(form[column]))
 
     def prepare_results(self, qs):
         data = []
@@ -331,6 +329,8 @@ class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
 
         context = {}
         context["form_valid"] = False
+
+        context["fields_with_errors"] = [field.name for field in form if field.errors]
         context["form_errors"] = form_errors
         context["field_errors"] = field_errors
 
