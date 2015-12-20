@@ -60,9 +60,9 @@ def update_slack_email(num):
                 email_message = email_manager.get_email_message('INBOX', email['uid'])
 
                 attachment = {
-                    'fallback': 'New email message from %s' % email['from_name'],
+                    'fallback': 'New email message from %s' % email['sender_name'],
                     'color': 'good',
-                    'author_name': email['from_name'] + ' (' + email['from_address'] + ')',
+                    'author_name': email['sender_name'] + ' (' + email['sender_address'] + ')',
                     'title': 'Subject: ' + email['subject'],
                     'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('email_view_message', kwargs={'mailbox_name': 'INBOX', 'uid': email['uid']})),
                     'text': email_message['body_plain_text'] if email_message['body_plain_text'] else html2text(email_message['body_html']),
