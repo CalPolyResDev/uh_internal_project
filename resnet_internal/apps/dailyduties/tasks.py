@@ -16,7 +16,7 @@ from html2text import html2text
 import requests
 from uwsgidecorators import timer
 
-from .utils import EmailManager
+from .utils import EmailManager, EmailConnectionMixin
 
 
 @timer(60)
@@ -82,3 +82,8 @@ def update_slack_email(num):
                 requests.post(url, data=json.dumps(payload), headers=headers)
 
     cache.set('previous_email_messages', current_emails, 10 * 60)
+
+
+@timer(60 * 10)
+def keep_imap_alive():
+    EmailConnectionMixin.send_noop_to_all_connections()
