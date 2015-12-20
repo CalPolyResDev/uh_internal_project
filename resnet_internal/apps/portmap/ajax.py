@@ -27,7 +27,7 @@ from rmsconnector.utils import Resident
 
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
-from .forms import PortUpdateForm, AccessPointUpdateForm
+from .forms import PortCreateForm, PortUpdateForm, AccessPointUpdateForm
 from .models import Port, AccessPoint
 
 
@@ -40,77 +40,58 @@ class PopulatePorts(RNINDatatablesPopulateView):
     table_name = "portmap"
     data_source = reverse_lazy('populate_residence_halls_wired_ports')
     update_source = reverse_lazy('update_residence_halls_wired_port')
+    form_class = PortCreateForm
     model = Port
-    max_display_length = 1000
 
     column_definitions = OrderedDict()
-    column_definitions["id"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "ID"}
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
     column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
-    column_definitions["room"] = {"width": "50px", "type": "string", "editable": False, "title": "Room", "related": True, "lookup_field": "name"}
+    column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "related": True, "lookup_field": "name"}
     column_definitions["switch_ip"] = {"width": "150px", "type": "ip-address", "title": "Switch IP"}
     column_definitions["switch_name"] = {"width": "100px", "type": "string", "title": "Switch Name"}
     column_definitions["jack"] = {"width": "50px", "type": "string", "editable": False, "title": "Jack"}
     column_definitions["blade"] = {"width": "50px", "type": "numeric", "title": "Blade"}
     column_definitions["port"] = {"width": "50px", "type": "numeric", "title": "Port"}
-    column_definitions["vlan"] = {"width": "55px", "type": "string", "className": "edit_trigger", "title": "vLan"}
-    column_definitions["access_point"] = {"width": "10px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP"}
+    column_definitions["access_point"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP"}
     column_definitions["active"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
         "language": {
-            "lengthMenu":
-                'Display <select>' +
-                '<option value="50">50</option>' +
-                '<option value="100">100</option>' +
-                '<option value="250">250</option>' +
-                '<option value="500">500</option>' +
-                '<option value="1000">1000</option>' +
-                '<option value="-1">All</option>' +
-                '</select> records:',
-            "search": "Filter records: (Use ?alias to narrow results.)",
+            "search": "Filter records: (Use ?email to narrow results.)",
         },
     }
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["active"] = {"width": "50px", "type": "string", "editable": False, "title": "&nbsp;"}
+            self.column_definitions["active"] = {"width": "80px", "type": "string", "editable": False, "title": "&nbsp;"}
 
         return super(PopulatePorts, self).get_options()
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = portmap_modify_access_test(user)
 
-    def render_column(self, row, column, class_names=None):
-        if not class_names:
-            class_names = []
-
+    def get_row_class(self, row):
         if not row.active:
-            class_names.append("disabled")
+            return "disabled"
 
-        if column == 'active':
-            onclick = "confirm_status_change({id});return false;".format(id=row.id)
-            link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="", link_style="color:red; cursor:pointer;", link_text="Deactivate" if getattr(row, column) else "Activate")
-
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=link_block, inline_images="", editable_block="")
-        elif column == 'access_point':
+    def render_column(self, row, column):
+        if column == 'access_point':
             try:
                 access_point = row.access_point
             except ObjectDoesNotExist:
-                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block="", inline_images="", editable_block="")
+                return self.base_column_template.format(column=column, value="", link_block="", inline_images="", editable_block="")
             else:
                 ap_url = reverse('ap_info_frame', kwargs={'pk': access_point.id})
                 ap_icon = self.icon_template.format(icon_url=static('images/icons/wifi-xxl.png'))
                 ap_block = self.popover_link_block_template.format(popover_title='AP Info', content_url=ap_url, link_style="", link_class_name="", link_text=ap_icon, link_url="#")
-                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=ap_block, inline_images="", editable_block="")
-        elif column in self.get_editable_columns() and self.get_write_permissions():
-            value = getattr(row, column)
-            editable_block = self.editable_block_template.format(value=value)
-            class_names.append("editable")
+                return self.base_column_template.format(column=column, value="", link_block=ap_block, inline_images="", editable_block="")
+        elif column == 'active':
+            onclick = "confirm_status_change({id});return false;".format(id=row.id)
+            link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="remove", link_style="", link_text="Deactivate" if getattr(row, column) else "Activate")
 
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+            return self.base_column_template.format(column=column, value="", link_block=link_block, inline_images="", editable_block="")
         else:
-            return super(PopulatePorts, self).render_column(row, column, class_names)
+            return super(PopulatePorts, self).render_column(row, column)
 
     def filter_queryset(self, qs):
         search_parameters = self.request.GET.get('search[value]', None)
@@ -127,11 +108,11 @@ class PopulatePorts(RNINDatatablesPopulateView):
             # Check for pinhole / domain flags
             for param in params:
                 if param[:1] == '?':
-                    alias = param[1:]
+                    email = param[1:]
 
-                    if alias:
+                    if email:
                         try:
-                            resident = Resident(principal_name=alias + '@calpoly.edu')
+                            resident = Resident(principal_name=email)
                             params = [resident.address_dict['community'], resident.address_dict['building'], resident.address_dict['room']]
                         except (ObjectDoesNotExist, ImproperlyConfigured):
                             params = ['Address', 'Not', 'Found']
@@ -230,55 +211,27 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     column_definitions["id"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "ID"}
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "port__room__building__community__name"}
     column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "port__room__building__name"}
-    column_definitions["room"] = {"width": "50px", "type": "string", "editable": False, "title": "Room", "custom_lookup": True, "lookup_field": "port__room__name"}
-    column_definitions["port"] = {"width": "50px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "jack"}
-    column_definitions["name"] = {"width": "55px", "type": "string", "className": "edit_trigger", "title": "Name"}
-    column_definitions["property_id"] = {"width": "55px", "type": "string", "title": "Property ID"}
-    column_definitions["serial_number"] = {"width": "55px", "type": "string", "title": "SN"}
-    column_definitions["mac_address"] = {"width": "55px", "type": "string", "title": "MAC"}
-    column_definitions["ip_address"] = {"width": "55px", "type": "string", "title": "IP Address"}
-    column_definitions["type"] = {"width": "55px", "type": "string", "title": "Type"}
-
-    extra_options = {
-        "language": {
-            "lengthMenu":
-                'Display <select>' +
-                '<option value="50">50</option>' +
-                '<option value="100">100</option>' +
-                '<option value="250">250</option>' +
-                '<option value="500">500</option>' +
-                '<option value="1000">1000</option>' +
-                '<option value="-1">All</option>' +
-                '</select> records:',
-            "search": "Filter records:",
-        },
-    }
+    column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "custom_lookup": True, "lookup_field": "port__room__name"}
+    column_definitions["port"] = {"width": "80px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "jack"}
+    column_definitions["name"] = {"width": "80px", "type": "string", "className": "edit_trigger", "title": "Name"}
+    column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
+    column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "SN"}
+    column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC"}
+    column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
+    column_definitions["type"] = {"width": "80px", "type": "string", "title": "Type"}
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = portmap_modify_access_test(user)
 
-    def render_column(self, row, column, class_names=None):
-        if not class_names:
-            class_names = []
-
-        if column in self.get_editable_columns() and self.get_write_permissions():
-            if column == "type":
-                value = row.get_type_display()
-                editable_block = self.editable_block_template.format(value=row.type)
-            else:
-                value = getattr(row, column)
-                editable_block = self.editable_block_template.format(value=value)
-            class_names.append("editable")
-
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
-        elif column == 'port':
+    def render_column(self, row, column):
+        if column == 'port':
             port = row.port
             port_url = reverse('port_info_frame', kwargs={'pk': port.id})
             port_icon = self.icon_template.format(icon_url=static('images/icons/icon_ethernet.png'))
             port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_style="", link_class_name="", link_text=port_icon, link_url="#")
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=port.jack, link_block=port_block, inline_images="", editable_block="")
+            return self.base_column_template.format(column=column, value=port.jack, link_block=port_block, inline_images="", editable_block="")
         else:
-            return super(PopulateAccessPoints, self).render_column(row, column, class_names)
+            return super(PopulateAccessPoints, self).render_column(row, column)
 
 
 class UpdateAccessPoint(BaseDatatablesUpdateView):
