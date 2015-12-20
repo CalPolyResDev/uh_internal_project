@@ -5,9 +5,15 @@
 {% load crispy_forms_tags %}
 
 
-{% block subtitle %} | Printer Index{% endblock %}
+{% block subtitle %} | Printers{% endblock %}
 
 {% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>Printers</h2>
+        </div>
+    </div>
+
     {% if form.errors %}
     <div class="col-xs-12">
         <div class="bs-callout bs-callout-danger">

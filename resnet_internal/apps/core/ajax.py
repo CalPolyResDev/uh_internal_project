@@ -171,7 +171,7 @@ class SubDepartmentChainedAjaxView(ChainedSelectChoicesView):
 class PopulateRooms(RNINDatatablesPopulateView):
     """Renders the room listing."""
 
-    table_name = "residence_halls_rooms"
+    table_name = "rooms"
     data_source = reverse_lazy('populate_residence_halls_rooms')
     update_source = reverse_lazy('update_residence_halls_room')
     form_class = RoomCreateForm

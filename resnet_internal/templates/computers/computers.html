@@ -5,9 +5,15 @@
 {% load crispy_forms_tags %}
 
 
-{% block subtitle %} | Computer Index{% endblock %}
+{% block subtitle %} | Computers{% endblock %}
 
 {% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>Computers</h2>
+        </div>
+    </div>
+
     {% if form.errors %}
     <div class="col-xs-12">
         <div class="bs-callout bs-callout-danger">
