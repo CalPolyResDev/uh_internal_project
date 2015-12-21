@@ -9,6 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 from collections import defaultdict
 from datetime import datetime, timedelta
 from email import header
+from imaplib.IMAP4 import error
 from itertools import zip_longest
 from operator import itemgetter
 from ssl import SSLError, SSLEOFError
@@ -103,9 +104,9 @@ class EmailConnectionMixin(object):
         while not connection:
             try:
                 connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
-            except OSError:  # Office 365 seems to randomly reject connections and trying again usually results in a connection.
+                connection.login(username, password)
+            except (OSError, error):  # Office 365 seems to randomly reject connections and trying again usually results in a connection.
                 connection = None
-        connection.login(username, password)
 
         return connection
 
