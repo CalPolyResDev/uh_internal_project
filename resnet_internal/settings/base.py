@@ -248,14 +248,14 @@ MEDIA_URL = '/media/'
 # The directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
-STATIC_ROOT = (PROJECT_DIR / "static").resolve().as_posix()
+STATIC_ROOT = str((PROJECT_DIR / "static").resolve())
 
 # URL prefix for static files. Make sure to use a trailing slash.
 STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    (PROJECT_DIR / "resnet_internal" / "static").resolve().as_posix(),
+    str((PROJECT_DIR / "resnet_internal" / "static").resolve()),
 )
 
 # List of finder classes that know how to find static files in various locations.
