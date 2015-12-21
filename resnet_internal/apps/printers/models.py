@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.printers.models
-   :synopsis: ResNet Internal Printer Index Models.
+   :synopsis: University Housing Internal Printer Index Models.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -15,7 +15,6 @@ from ..core.models import Department, SubDepartment
 
 
 class Printer(Model):
-    """University Housing printers."""
 
     department = ForeignKey(Department, verbose_name='Department')
     sub_department = ForeignKey(SubDepartment, verbose_name='Sub Department')
@@ -55,6 +54,3 @@ class Printer(Model):
             self.ip_address = None
 
         super(Printer, self).save(*args, **kwargs)
-
-    class Meta:
-        verbose_name = 'University Housing Printer'

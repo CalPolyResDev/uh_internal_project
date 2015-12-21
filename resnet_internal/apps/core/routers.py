@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.core.routers
-   :synopsis: ResNet Internal Core Database Routers.
+   :synopsis: University Housing Internal Core Database Routers.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

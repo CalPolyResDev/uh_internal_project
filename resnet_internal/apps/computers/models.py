@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.computers.models
-   :synopsis: ResNet Internal Computer Index Models.
+   :synopsis: University Housing Internal Computer Index Models.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -16,7 +16,6 @@ from .fields import MACAddressField, ListField
 
 
 class Computer(Model):
-    """University Housing computers."""
 
     department = ForeignKey(Department, verbose_name='Department')
     sub_department = ForeignKey(SubDepartment, verbose_name='Sub Department')
@@ -60,12 +59,9 @@ class Computer(Model):
 
         super(Computer, self).save(*args, **kwargs)
 
-    class Meta:
-        verbose_name = 'University Housing Computer'
-
 
 class Pinhole(Model):
-    """University Housing Firewall Pinholes."""
+    """Firewall Pinholes."""
 
     ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address')
     service_name = CharField(max_length=50, verbose_name='Service Name')
@@ -84,12 +80,9 @@ class Pinhole(Model):
             return PinholeRequest.objects.get(ticket_id=self.sr_number)
         return None
 
-    class Meta:
-        verbose_name = 'University Housing Pinhole'
-
 
 class DomainName(Model):
-    """University Housing Domain Names."""
+    """Domain Names."""
 
     ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address')
     domain_name = CharField(max_length=100, verbose_name='Domain Name')
@@ -105,4 +98,4 @@ class DomainName(Model):
         return None
 
     class Meta:
-        verbose_name = 'University Housing Domain Name'
+        verbose_name = 'Domain Name'

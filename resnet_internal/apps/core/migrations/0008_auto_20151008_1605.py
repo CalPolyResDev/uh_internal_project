@@ -1,22 +1,23 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.contrib.auth import get_user_model
 from django.db import migrations
 
 
 def forwards_func(apps, schema_editor):
-    ResNetInternalUser = apps.get_model('core', 'ResNetInternalUser')
+    User = get_user_model()
     db_alias = schema_editor.connection.alias
-    for user in ResNetInternalUser.objects.using(db_alias).all():
+    for user in User.objects.using(db_alias).all():
         if not user.username.endswith('@calpoly.edu'):
             user.username = user.username + '@calpoly.edu'
             user.save()
 
 
 def reverse_func(apps, schema_editor):
-    ResNetInternalUser = apps.get_model('core', 'ResNetInternalUser')
+    User = get_user_model()
     db_alias = schema_editor.connection.alias
-    for user in ResNetInternalUser.objects.using(db_alias).all():
+    for user in User.objects.using(db_alias).all():
         if user.username.endswith('@calpoly.edu'):
             user.username = user.username[0:user.username.find('@calpoly.edu')]
             user.save()

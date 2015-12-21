@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.core.backends
-   :synopsis: ResNet Internal Core Authentication Backends.
+   :synopsis: University Housing Internal Core Authentication Backends.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

@@ -39,13 +39,20 @@
         {% block container %}
         <div class="container-fluid">
             <header class="row">
-                <div class="col-xs-12 logo-container">
+                <div class="col-xs-12 col-md-8 logo-container">
                     <a href="http://www.calpoly.edu">
                         <img id="logo" src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/header/cp_logo.jpg" height="65px" alt="Cal Poly, San Luis Obispo" />
                     </a>
                     <h1 class="site-heading">
-                            <a href="/">University Housing Internal</a>
-                       </h1>
+                        <a href="/">University Housing Internal</a>
+                    </h1>
+                </div>
+                <div class="col-xs-12 col-md-4 login-display">
+                    {% if request.user.is_authenticated %}
+                    <p>You are logged in as <b>{{ user_display_name }}</b>. (<a href="{% url 'logout' %}">Logout</a>)</p>
+                    {% else %}
+                    <p>You are not currently logged in. (<a href="{% url 'login' %}">Login</a>)</p>
+                    {% endif %}
                 </div>
             </header>
             <div class="row">
@@ -53,6 +60,7 @@
             </div>
             <div class="row" id="content">
                 {% block nav %}
+                {% if request.user.is_authenticated %}
                 <div id="nav-wrapper">
                     <nav>
                         <div class="text-center nav-heading" id="drawer-trigger">
@@ -63,6 +71,7 @@
                         </div>
                     </nav>
                 </div>
+                {% endif %}
                 {% endblock %}
                 <main>
                     {% block main %}
