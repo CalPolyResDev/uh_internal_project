@@ -17,7 +17,7 @@ ALLOWED_HOSTS = [
     'dev.resdev.calpoly.edu',
     'prod.resdev.calpoly.edu',
     '.internal.resnet.calpoly.edu',
-    'clever_selects.client',
+    'clever-selects.client',
 ]
 
 DEFAULT_BASE_URL = 'https://internal.resnet.calpoly.edu'
