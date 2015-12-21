@@ -20,7 +20,7 @@ String.prototype.rsplit = function(sep, maxsplit) { // Missing Python
 };
 
 function add_button(button_text, onclick_text, id) {
-    $('#buttons').append('<button id="' + id + '" class="btn btn-default" type="button" onclick="' + onclick_text +'">' + button_text + '</button>');
+    $('#email_buttons').append('<button id="' + id + '" class="btn btn-default" type="button" onclick="' + onclick_text +'">' + button_text + '</button>');
 }
 
 function change_to_editor() {
@@ -47,7 +47,7 @@ function change_to_editor() {
     $('#date').remove();
     $('#attachments').remove();
     $('#from_header').remove();
-    $('#buttons').html('');
+    $('#email_buttons').html('');
     add_button('Send', 'send_email(false);', 'send_button');
     
     add_button('Send & Archive', '', 'send_and_archive_button');

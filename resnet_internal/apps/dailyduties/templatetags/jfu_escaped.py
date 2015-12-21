@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.dailyduties.templatetags.jfu_escapd
-   :synopsis: ResNet Internal Daily Duties Template Tags.
+   :synopsis: University Housing Internal Daily Duties Template Tags.
 
 .. moduleauthor:: Thomas Willson <thomas.willson@me.com>
 

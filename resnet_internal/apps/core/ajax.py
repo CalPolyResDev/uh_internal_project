@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.core.ajax
-   :synopsis: ResNet Internal Core AJAX Methods.
+   :synopsis: University Housing Internal Core AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -168,12 +168,12 @@ class SubDepartmentChainedAjaxView(ChainedSelectChoicesView):
         return SubDepartment.objects.filter(department__id=self.parent_value).order_by('name')
 
 
-class PopulateResidenceHallRooms(RNINDatatablesPopulateView):
+class PopulateRooms(RNINDatatablesPopulateView):
     """Renders the room listing."""
 
-    table_name = "residence_halls_rooms"
-    data_source = reverse_lazy('populate_residence_halls_rooms')
-    update_source = reverse_lazy('update_residence_halls_room')
+    table_name = "rooms"
+    data_source = reverse_lazy('populate_rooms')
+    update_source = reverse_lazy('update_room')
     form_class = RoomCreateForm
     model = Room
 
@@ -190,7 +190,7 @@ class PopulateResidenceHallRooms(RNINDatatablesPopulateView):
         self.write_permissions = technician_access_test(user)
 
 
-class UpdateResidenceHallRoom(BaseDatatablesUpdateView):
+class UpdateRoom(BaseDatatablesUpdateView):
     form_class = RoomUpdateForm
     model = Room
-    populate_class = PopulateResidenceHallRooms
+    populate_class = PopulateRooms

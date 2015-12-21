@@ -5,9 +5,15 @@
 {% load crispy_forms_tags %}
 
 
-{% block subtitle %} | Residence Halls Rooms{% endblock %}
+{% block subtitle %} | Rooms{% endblock %}
 
 {% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>Rooms</h2>
+        </div>
+    </div>
+
     {% if form.errors %}
     <div class="col-xs-12">
         <div class="bs-callout bs-callout-danger">
@@ -18,7 +24,7 @@
     {% endif %}
 
     <div class="col-xs-12">
-        <table id="residence_halls_rooms"></table>
+        <table id="rooms"></table>
     </div>
 
     <div class="col-xs-12">
