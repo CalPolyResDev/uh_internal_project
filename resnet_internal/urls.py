@@ -97,9 +97,9 @@ urlpatterns = [
     url(r'^core/network_status/update/$', update_network_status, name='core_update_network_status'),
     url(r'^core/tickets/list/$', login_required(technician_access(get_tickets)), name='core_get_tickets'),
     url(r'^core/tickets/list/(?P<ticket_id>\b[0-9]*\b)/$', login_required(technician_access(TicketSummaryView.as_view())), name='core_ticket_summary'),
-    url(r'^core/rooms/$', login_required(technician_access(RoomsView.as_view())), name='residence_halls_rooms'),
-    url(r'^core/rooms/populate/$', login_required(technician_access(PopulateRooms.as_view())), name='populate_residence_halls_rooms'),
-    url(r'^core/rooms/update/$', login_required(technician_access(UpdateRoom.as_view())), name='update_residence_halls_room'),
+    url(r'^core/rooms/$', login_required(technician_access(RoomsView.as_view())), name='rooms'),
+    url(r'^core/rooms/populate/$', login_required(technician_access(PopulateRooms.as_view())), name='populate_rooms'),
+    url(r'^core/rooms/update/$', login_required(technician_access(UpdateRoom.as_view())), name='update_room'),
 ]
 
 # Daily Duties
@@ -174,13 +174,13 @@ urlpatterns += [
 
 # Portmap
 urlpatterns += [
-    url(r'^portmap/$', login_required(portmap_access(PortsView.as_view())), name='residence_halls_wired_ports'),
-    url(r'^portmap/populate/$', login_required(portmap_access(PopulatePorts.as_view())), name='populate_residence_halls_wired_ports'),
-    url(r'^portmap/update/$', login_required(portmap_access(UpdatePort.as_view())), name='update_residence_halls_wired_port'),
-    url(r'^portmap/change_status/$', login_required(portmap_modify_access(change_port_status)), name='change_residence_halls_wired_port_status'),
-    url(r'^portmap/ap/$', login_required(portmap_access(AccessPointsView.as_view())), name='residence_halls_access_points'),
-    url(r'^portmap/ap/populate/$', login_required(portmap_access(PopulateAccessPoints.as_view())), name='populate_residence_halls_access_points'),
-    url(r'^portmap/ap/update/$', login_required(portmap_access(UpdateAccessPoint.as_view())), name='update_residence_halls_access_point'),
+    url(r'^portmap/$', login_required(portmap_access(PortsView.as_view())), name='ports'),
+    url(r'^portmap/populate/$', login_required(portmap_access(PopulatePorts.as_view())), name='populate_ports'),
+    url(r'^portmap/update/$', login_required(portmap_access(UpdatePort.as_view())), name='update_port'),
+    url(r'^portmap/change_status/$', login_required(portmap_modify_access(change_port_status)), name='change_port_status'),
+    url(r'^portmap/ap/$', login_required(portmap_access(AccessPointsView.as_view())), name='access_points'),
+    url(r'^portmap/ap/populate/$', login_required(portmap_access(PopulateAccessPoints.as_view())), name='populate_access_points'),
+    url(r'^portmap/ap/update/$', login_required(portmap_access(UpdateAccessPoint.as_view())), name='update_access_point'),
     url(r'^portmap/ap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(AccessPointFrameView.as_view())), name='ap_info_frame'),
     url(r'^portmap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(PortFrameView.as_view())), name='port_info_frame'),
     url(r'^portmap/ajax/chained_port/$', login_required(PortChainedAjaxView.as_view()), name='portmap_chained_port'),

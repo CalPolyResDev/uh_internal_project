@@ -58,7 +58,7 @@ class RoomsView(ChainedSelectFormViewMixin, DatatablesView):
     form_class = RoomCreateForm
     populate_class = PopulateRooms
     model = Room
-    success_url = reverse_lazy('residence_halls_rooms')
+    success_url = reverse_lazy('rooms')
 
 
 def handler500(request):

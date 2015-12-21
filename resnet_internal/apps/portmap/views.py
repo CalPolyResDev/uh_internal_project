@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.portmap.views
-   :synopsis: ResNet Internal Residence Halls Port Map Views.
+   :synopsis: ResNet Internal Port Map Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
@@ -25,7 +25,7 @@ class PortsView(ChainedSelectFormViewMixin, DatatablesView):
     form_class = PortCreateForm
     populate_class = PopulatePorts
     model = Port
-    success_url = reverse_lazy('residence_halls_wired_ports')
+    success_url = reverse_lazy('ports')
 
 
 class AccessPointsView(ChainedSelectFormViewMixin, DatatablesView):
@@ -33,7 +33,7 @@ class AccessPointsView(ChainedSelectFormViewMixin, DatatablesView):
     form_class = AccessPointCreateForm
     populate_class = PopulateAccessPoints
     model = AccessPoint
-    success_url = reverse_lazy('residence_halls_access_points')
+    success_url = reverse_lazy('access_points')
 
 
 class AccessPointFrameView(DetailView):

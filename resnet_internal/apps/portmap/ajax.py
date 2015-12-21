@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.portmap.ajax
-   :synopsis: ResNet Internal Residence Halls Port Map AJAX Methods.
+   :synopsis: ResNet Internal Port Map AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
@@ -38,8 +38,8 @@ class PopulatePorts(RNINDatatablesPopulateView):
     """Renders the port map."""
 
     table_name = "portmap"
-    data_source = reverse_lazy('populate_residence_halls_wired_ports')
-    update_source = reverse_lazy('update_residence_halls_wired_port')
+    data_source = reverse_lazy('populate_ports')
+    update_source = reverse_lazy('update_port')
     form_class = PortCreateForm
     model = Port
 
@@ -87,7 +87,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
                 return self.base_column_template.format(column=column, value="", link_block=ap_block, inline_images="", editable_block="")
         elif column == 'active':
             onclick = "confirm_status_change({id});return false;".format(id=row.id)
-            link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="remove", link_style="", link_text="Deactivate" if getattr(row, column) else "Activate")
+            link_block = self.link_block_template.format(link_url="#", onclick_action=onclick, link_target="", link_class_name="remove", link_style="", link_text="Deactivate" if getattr(row, column) else "Activate")
 
             return self.base_column_template.format(column=column, value="", link_block=link_block, inline_images="", editable_block="")
         else:
@@ -201,9 +201,9 @@ def change_port_status(request):
 class PopulateAccessPoints(RNINDatatablesPopulateView):
     """Renders the access point map."""
 
-    table_name = "residence_halls_access_point_map"
-    data_source = reverse_lazy('populate_residence_halls_access_points')
-    update_source = reverse_lazy('update_residence_halls_access_point')
+    table_name = "access_point_map"
+    data_source = reverse_lazy('populate_access_points')
+    update_source = reverse_lazy('update_access_point')
     model = AccessPoint
     max_display_length = 1000
 

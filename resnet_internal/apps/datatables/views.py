@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.datatables.views
-   :synopsis: ResNet Internal Residence Halls Datatable Views.
+   :synopsis: ResNet Internal Datatable Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
