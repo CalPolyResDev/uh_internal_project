@@ -210,9 +210,6 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = 'University Housing Internal User'
 
-    def get_absolute_url(self):
-        return "/users/%s/" % urlquote(self.username)
-
     def get_full_name(self):
         """Returns the first_name combined with the last_name separated via space with the possible '- ADMIN' removed."""
 
@@ -278,7 +275,7 @@ class NavbarLink(Model):
             try:
                 url = reverse(self.url_name)
             except NoReverseMatch:
-                logger.warning('Could not resolve ' + self.url_name + 'of link ' + self.display_name)
+                logger.warning('Could not resolve ``' + self.url_name + '`` for navbar link ' + self.display_name)
                 pass
         else:
             url = self.external_url
