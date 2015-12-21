@@ -83,6 +83,17 @@
             <p id="email_body">{{ message.body_plain_text|linebreaksbr|urlize }}</p>
         {% endif %}
     </div>
+    <div style="display: none;" id="send_and_archive_popover_content">
+        <table class='table table-hover table-condensed'>
+            <tbody>
+                {% for folder, display_name in archive_folders %}
+                    <tr id='{{ folder }}' style='cursor: pointer;' onclick='$("#archive_button").popover("hide");send_email("{{ folder }}");'>
+                        <td style='padding: 2px; border-top: 0px;'>{{ display_name }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
     <div class="col-xs-12">
         <p>Could not retrieve email.</p>
@@ -94,161 +105,17 @@
     <script type="text/javascript" src="{% static 'js/jquery.blockUI.js' %}"></script>
     <script src="//cdn.ckeditor.com/4.5.3/standard-all/ckeditor.js"></script>
     <script language="javascript" type="text/javascript">
-        var editor = '';
-        var attachments = [];
-        var attachment_details = [];
-        var resnet_email_regex = /[,a-zA-Z0-9 <]*resnet@calpoly\.edu[>]*/i;
-        
-        $.ajaxSetup({ cache: true });
-        
-        function array_to_ajax(array, prefix) {
-            var ajax_dict = {};
-            for (index = 0; index < array.length; ++index) {
-                ajax_dict[prefix + index.toString()] = array[index];
-            };
-    
-            return ajax_dict;
-        };
-        
-        String.prototype.rsplit = function(sep, maxsplit) { // Missing Python
-            var split = this.split(sep);
-            return maxsplit ? [ split.slice(0, -maxsplit).join(sep) ].concat(split.slice(-maxsplit)) : split;
-        };
-        
-        function add_button(button_text, onclick_text, id) {
-            $('#email_buttons').append('<button id="' + id + '" class="btn btn-default" type="button" onclick="' + onclick_text +'">' + button_text + '</button>');
-        };
-
-        function change_to_editor() {
-            {% if message.is_html %}
-                editor = CKEDITOR.replace('email_body', {
-                    fullPage: true,
-                    allowedContent: true,
-                    removePlugins: 'magicline',
-                    extraPlugins: 'autogrow',
-                    autoGrow_onStartup: true
-                });
-                editor.setData('{{ message.reply_html|escapejs }}');
-            {% else %}
-                $('#email_body').replaceWith('<textarea name="email_editor" id="email_editor" style="min-height: 300px; min-width: 100%;">{{ message.reply_plain_text|escapejs }}</textarea>');
-            {% endif %}
-
-            $('#to_hr').css('display', 'block');
-            $('#email_jfu').css('display', 'initial');
-            $('#to').replaceWith('<input type="text" id="to"><hr>');
-            $('#cc').replaceWith('<input type="text" id="cc"><hr>');
-            $('#subject').replaceWith('<input type="text" placeholder="Subject" style="outline: none; border: none;" class="h1" id="subject">');
-            $('#reply_to').remove();
-            $('#date').remove();
-            $('#attachments').remove();
-            $('#from_header').remove();
-            $('#email_buttons').html('');
-            add_button('Send', 'send_email();', 'send_button');
-            
-            
-            $('#email_buttons').append('<button class="btn btn-default" type="button" id="attach_button">Attach</button>');
-            $('#attach_button').popover({
-                html: true,
-                container: 'body',
-                content: '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' %}</span>',
-            });
-        };
-
-        function reply() {
-            change_to_editor();
-            var subject = '{{ message.subject|escapejs }}';
-            if (subject.search(/^RE:/i) == -1) {
-                subject = 'Re: ' + subject;
-            }
-            $('#subject').val(subject);
-            if ('{{ message.reply_to|escapejs }}'.search(resnet_email_regex) != -1) {
-                $('#to').val('{{ message.to|escapejs }}');
-            }
-            else {
-                $('#to').val('{{ message.reply_to|escapejs }}' + ', {{ message.to|escapejs }}');
-                $('#to').val($('#to').val().replace(resnet_email_regex, ''));
-            }
-        };
-
-        function reply_all() {
-            reply();
-            $('#cc').val('{{ message.cc|escapejs }}');
-            $('#cc').val($('#cc').val().replace(resnet_email_regex, ''));
-        };
-
-        function forward() {
-            change_to_editor();
-            
-            var subject = '{{ message.subject|escapejs }}';
-            if (subject.search(/^FWD:/i) == -1) {
-                subject = 'Fwd: ' + subject;
-            }
-            $('#subject').val(subject);
-        };
-
-        function archive(destination_folder) {
-            $.blockUI({message: '<h1>Archiving...</h1>'});
-    
-            ajaxPost("{% url 'email_archive' %}", 
-                {'message0': '{{ message.path|escapejs }}', 
-                    'destination_folder': destination_folder}, 
-                function(response_context) {
-                    $.unblockUI();
-                    $(parent.document.getElementById('{{ message.path|escapejs }}')).remove();
-                    parent.$.fancybox.close();
-            });
-        };
-
-        function send_email() {
-            to = $('#to').val();
-            cc = $('#cc').val();
-            reply_to = $('#reply_to').val();
-            subject = $('#subject').val();
-
-            {% if message.is_html %}
-                is_html = true;
-                body = editor.getData();
-            {% else %}
-                is_html = false;
-                body = $('#email_editor').val();
-            {% endif %}
-            
-            var in_reply_to = '';
-            if (subject.search(/^Re:/i) != -1) {
-                in_reply_to = '{{ message.path|escapejs }}';
-            }
-            
-            $.blockUI({ message: '<h1>Sending...</h1>'});
-            
-            var post_dict = array_to_ajax(attachments, 'attachment');
-            
-            post_dict['to'] = to;
-            post_dict['cc'] = cc;
-            post_dict['reply_to'] = reply_to;
-            post_dict['body'] = body;
-            post_dict['subject'] = subject;
-            post_dict['is_html'] = is_html;
-            post_dict['in_reply_to'] = in_reply_to;
-
-            ajaxPost("{% url 'send_email' %}", post_dict, 
-                function(response_context) {
-                    $.unblockUI();
-                    
-                    if (response_context['success']) {
-                        if ('{{ message.path|escapejs }}') {
-                            parent.refresh_messages('{{ message.path|escapejs }}'.rsplit('/', 1)[0]);
-                        }
-                        parent.$.fancybox.close();
-                    }
-                    else {
-                        if (response_context['reason']) {
-                            alert('Failed to send message: ' + response_context['reason']);
-                        }
-                        else {
-                            alert('Failed to send message. Please try again.');
-                        }
-                    }
-            });
-        };
+        var message_is_html = {{ message.is_html|yesno:"true,false" }};
+        var message_reply_html = '{{ message.reply_html|escapejs }}';
+        var message_reply_plain_text = '{{ message.reply_plain_text|escapejs }}';
+        var message_subject = '{{ message.subject|escapejs }}';
+        var message_reply_to = '{{ message.reply_to|escapejs }}';
+        var message_to = '{{ message.to|escapejs }}';
+        var message_path = '{{ message.path|escapejs }}';
+        var attach_button_content = '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' %}</span>';
+        var email_archive_url = "{% url 'email_archive' %}";
+        var send_email_url = "{% url 'send_email' %}";
+        var reply_and_archive_popover_content = $('#send_and_archive_popover_content').html();
     </script>
+    <script src="{% static 'js/email_message.js' %}"></script>
 {% endblock %}
