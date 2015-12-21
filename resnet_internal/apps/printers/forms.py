@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.printers.forms
-   :synopsis: ResNet Internal Printer Index Forms.
+   :synopsis: University Housing Internal Printer Index Forms.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

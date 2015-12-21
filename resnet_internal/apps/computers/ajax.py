@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.computers.ajax
-   :synopsis: ResNet Internal Computer Index AJAX Methods.
+   :synopsis: University Housing Internal Computer Index AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -263,11 +263,11 @@ Remove from Border Firewall? %(border_fw)s
 %(udp_ports)s
 
 Thanks,
-%(submitter)s (via ResNet Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
+%(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
 
     # Create service request
     pinhole_removal_request = PinholeRequest(priority='Low', requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
-    pinhole_removal_request.summary = 'Pinhole Removal Request via ResNet Internal'
+    pinhole_removal_request.summary = 'Pinhole Removal Request via University Housing Internal'
     pinhole_removal_request.save()
 
     sr_number = pinhole_removal_request.ticket_id
@@ -311,11 +311,11 @@ def remove_domain_name(request):
 %(domain_name)s
 
 Thanks,
-%(submitter)s (via ResNet Internal)""" % {'ip_address': ip_address, 'domain_name': domain_name, 'submitter': submitter}
+%(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'domain_name': domain_name, 'submitter': submitter}
 
     # Create service request
     domain_name_removal_request = DomainNameRequest(priority='Low', requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
-    domain_name_removal_request.summary = 'DNS Alias Removal Request via ResNet Internal'
+    domain_name_removal_request.summary = 'DNS Alias Removal Request via University Housing Internal'
     domain_name_removal_request.save()
 
     sr_number = domain_name_removal_request.ticket_id

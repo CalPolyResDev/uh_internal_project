@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.datatables.ajax
-   :synopsis: ResNet Internal Datatable Ajax Views.
+   :synopsis: University Housing Internal Datatable Ajax Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 
 class RNINDatatablesPopulateView(BaseDatatableView):
-    """ The base datatable population view for ResNet Internal datatables."""
+    """ The base datatable population view for University Housing Internal datatables."""
 
     table_name = "datatable"
     data_source = None

@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.portmap.ajax
-   :synopsis: ResNet Internal Port Map AJAX Methods.
+   :synopsis: University Housing Internal Port Map AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>

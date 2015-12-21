@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.computers.models
-   :synopsis: ResNet Internal Computer Index Models.
+   :synopsis: University Housing Internal Computer Index Models.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

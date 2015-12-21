@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.dailyduties.ajax
-   :synopsis: ResNet Internal Daily Duties AJAX Methods.
+   :synopsis: University Housing Internal Daily Duties AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

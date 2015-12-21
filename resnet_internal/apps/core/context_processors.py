@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.core.context_processors
-   :synopsis: ResNet Internal Core Context Processors.
+   :synopsis: University Housing Internal Core Context Processors.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -9,7 +9,7 @@
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.cache import cache
 
-from resnet_internal.apps.core.models import NavbarLink, ResNetInternalUser
+from resnet_internal.apps.core.models import NavbarLink
 
 from .models import TechFlair
 

@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.urls
-   :synopsis: ResNet Internal URLs.
+   :synopsis: University Housing Internal URLs.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>

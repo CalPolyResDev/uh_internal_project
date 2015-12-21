@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.portmap.forms
-   :synopsis: ResNet Internal Port Map Forms.
+   :synopsis: University Housing Internal Port Map Forms.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

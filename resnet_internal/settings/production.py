@@ -2,7 +2,6 @@ from .base import *  # noqa @PydevCodeAnalysisIgnore
 
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 
 # ======================================================================================================== #
 #                                      Session/Security Configuration                                      #

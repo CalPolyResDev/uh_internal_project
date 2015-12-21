@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.printers.models
-   :synopsis: ResNet Internal Printer Index Models.
+   :synopsis: University Housing Internal Printer Index Models.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

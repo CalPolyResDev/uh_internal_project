@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.core.ajax
-   :synopsis: ResNet Internal Core AJAX Methods.
+   :synopsis: University Housing Internal Core AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

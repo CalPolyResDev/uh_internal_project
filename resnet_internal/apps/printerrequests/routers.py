@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.printerrequests.routers
-   :synopsis: ResNet Internal Printer Request Database Routers.
+   :synopsis: University Housing Internal Printer Request Database Routers.
 
 .. moduleauthor:: Kyle Dodson <kdodson@caloply.edu>
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

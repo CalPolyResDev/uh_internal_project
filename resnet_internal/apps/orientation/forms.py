@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.orientation.forms
-   :synopsis: ResNet Internal Orientation Forms.
+   :synopsis: University Housing Internal Orientation Forms.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

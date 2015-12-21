@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.core.templatetags.srs_urls
-   :synopsis: ResNet Internal SRS URLs.
+   :synopsis: University Housing Internal SRS URLs.
 
 .. moduleauthor:: Thomas Willson <thomas.willson@me.com>
 """

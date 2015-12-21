@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.portmap.views
-   :synopsis: ResNet Internal Port Map Views.
+   :synopsis: University Housing Internal Port Map Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
