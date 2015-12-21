@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.core.forms
-   :synopsis: ResNet Internal Core Forms.
+   :synopsis: University Housing Internal Core Forms.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -30,9 +30,6 @@ class RoomCreateForm(ChainedChoicesModelForm):
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10 col-md-8'
 
-        submit_button = Submit('submit', 'Add Room')
-        submit_button.field_classes = 'btn btn-primary'
-
         self.helper.layout = Layout(
             Fieldset(
                 'Add a new room',
@@ -40,7 +37,9 @@ class RoomCreateForm(ChainedChoicesModelForm):
                 Field('building', autocomplete='off'),
                 Field('name', placeholder=self.fields['name'].label),
             ),
-            FormActions(submit_button)
+            FormActions(
+                Submit('submit', 'Add Room'),
+            )
         )
 
     class Meta:

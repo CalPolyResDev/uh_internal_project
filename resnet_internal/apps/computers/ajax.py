@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.computers.ajax
-   :synopsis: ResNet Internal Computer Index AJAX Methods.
+   :synopsis: University Housing Internal Computer Index AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -20,7 +20,7 @@ from django_ajax.decorators import ajax
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ...settings.base import computers_modify_access_test
-from ..core.models import StaffMapping, Department
+from ..core.models import StaffMapping
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
 from .forms import ComputerForm
 from .models import Computer, Pinhole, DomainName
@@ -31,51 +31,6 @@ logger = logging.getLogger(__name__)
 OLD_YEARS = 3
 OLDER_YEARS = 4
 REPLACE_YEARS = 5
-
-
-@ajax
-@require_POST
-def update_sub_department(request):
-    """ Update sub-department drop-down choices based on the department chosen.
-
-    :param department_id: The department for which to display sub-department choices.
-    :type department_id: str
-
-    :param sub_department_selection_id (optional): The sub_department selected before form submission.
-    :type sub_department_selection_id (optional): str
-
-    :param css_target (optional): The target of which to replace inner HTML. Defaults to #id_sub_department.
-    :type css_target (optional): str
-
-    """
-
-    # Pull post parameters
-    department_id = request.POST.get("department_id", None)
-    sub_department_selection_id = request.POST.get("sub_department_selection_id", None)
-    css_target = request.POST.get("css_target", '#id_sub_department')
-
-    choices = []
-
-    # Add options iff a department is selected
-    if department_id:
-        department_instance = Department.objects.get(id=int(department_id))
-
-        for sub_department in department_instance.sub_departments.all():
-            if sub_department_selection_id and sub_department.id == int(sub_department_selection_id):
-                choices.append("<option value='{id}' selected='selected'>{name}</option>".format(id=sub_department.id, name=sub_department.name))
-            else:
-                choices.append("<option value='{id}'>{name}</option>".format(id=sub_department.id, name=sub_department.name))
-    else:
-        logger.warning("A department wasn't passed via POST.")
-        choices.append("<option value='{id}'>{name}</option>".format(id="", name="---------"))
-
-    data = {
-        'inner-fragments': {
-            css_target: ''.join(choices)
-        },
-    }
-
-    return data
 
 
 class PopulateComputers(RNINDatatablesPopulateView):
@@ -100,12 +55,12 @@ class PopulateComputers(RNINDatatablesPopulateView):
     column_definitions["location"] = {"width": "150px", "type": "string", "title": "Location"}
     column_definitions["date_purchased"] = {"width": "100px", "type": "string", "searchable": False, "title": "Date Purchased"}
     column_definitions["dn"] = {"width": "250px", "type": "string", "title": "Distinguished Name"}
-    column_definitions["description"] = {"width": "250px", "type": "string", "className": "edit_trigger", "title": "Description"}
+    column_definitions["description"] = {"width": "250px", "type": "string", "title": "Description"}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
         "language": {
-            "search": "Filter records: (Use ?pinhole, ?domain, ?dhcp, and/or ?replace to narrow results.) ",
+            "search": "Filter records: (?pinhole, ?domain, ?dhcp, ?replace) ",
         },
     }
 
@@ -308,11 +263,11 @@ Remove from Border Firewall? %(border_fw)s
 %(udp_ports)s
 
 Thanks,
-%(submitter)s (via ResNet Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
+%(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
 
     # Create service request
     pinhole_removal_request = PinholeRequest(priority='Low', requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
-    pinhole_removal_request.summary = 'Pinhole Removal Request via ResNet Internal'
+    pinhole_removal_request.summary = 'Pinhole Removal Request via University Housing Internal'
     pinhole_removal_request.save()
 
     sr_number = pinhole_removal_request.ticket_id
@@ -356,11 +311,11 @@ def remove_domain_name(request):
 %(domain_name)s
 
 Thanks,
-%(submitter)s (via ResNet Internal)""" % {'ip_address': ip_address, 'domain_name': domain_name, 'submitter': submitter}
+%(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'domain_name': domain_name, 'submitter': submitter}
 
     # Create service request
     domain_name_removal_request = DomainNameRequest(priority='Low', requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
-    domain_name_removal_request.summary = 'DNS Alias Removal Request via ResNet Internal'
+    domain_name_removal_request.summary = 'DNS Alias Removal Request via University Housing Internal'
     domain_name_removal_request.save()
 
     sr_number = domain_name_removal_request.ticket_id
