@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.core.models
-   :synopsis: ResNet Internal Core Models.
+   :synopsis: University Housing Internal Core Models.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -9,6 +9,7 @@
 import logging
 import re
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
@@ -28,7 +29,6 @@ logger = logging.getLogger(__name__)
 
 
 class Community(Model):
-    """University Housing Community."""
 
     name = CharField(max_length=30, verbose_name="Community Name")
 
@@ -40,12 +40,10 @@ class Community(Model):
         return self.name
 
     class Meta:
-        verbose_name = 'University Housing Community'
-        verbose_name_plural = 'University Housing Communities'
+        verbose_name_plural = 'Communities'
 
 
 class Building(Model):
-    """University Housing Building."""
 
     name = CharField(max_length=30, verbose_name="Building Name")
     community = ForeignKey(Community, verbose_name="Community", related_name="buildings")
@@ -57,12 +55,8 @@ class Building(Model):
     def address(self):
         return self.community.address + ' ' + self.name
 
-    class Meta:
-        verbose_name = 'University Housing Building'
-
 
 class Room(Model):
-    """University Housing Room."""
 
     name = CharField(max_length=10, verbose_name="Room Number")
     building = ForeignKey(Building, verbose_name="Building", related_name="rooms")
@@ -87,24 +81,16 @@ class Room(Model):
 
         super(Room, self).save(*args, **kwargs)
 
-    class Meta:
-        verbose_name = 'University Housing Room'
-
 
 class Department(Model):
-    """University Housing Departments."""
 
     name = CharField(max_length=50, verbose_name='Department Name')
 
     def __str__(self):
         return self.name
 
-    class Meta:
-        verbose_name = 'University Housing Department'
-
 
 class SubDepartment(Model):
-    """University Housing Sub Departments."""
 
     name = CharField(max_length=50, verbose_name='Sub Department Name')
     department = ForeignKey(Department, verbose_name="Department", null=True, related_name="sub_departments")
@@ -113,7 +99,7 @@ class SubDepartment(Model):
         return self.name
 
     class Meta:
-        verbose_name = 'University Housing Sub Department'
+        verbose_name = 'Sub Department'
 
 
 class NetworkDevice(Model):
@@ -150,17 +136,6 @@ class StaffMapping(Model):
         verbose_name = 'Campus Staff Mapping'
 
 
-class TechFlair(Model):
-    """A mapping of users to custom flair."""
-
-    tech = ForeignKey("ResNetInternalUser", verbose_name='Technician')
-    flair = CharField(max_length=30, unique=True, verbose_name='Flair')
-
-    class Meta:
-        verbose_name = 'Tech Flair'
-        verbose_name_plural = 'Tech Flair'
-
-
 class ADGroup(Model):
     distinguished_name = CharField(max_length=250, unique=True, verbose_name='Distinguished Name')
     display_name = CharField(max_length=50, verbose_name='Display Name')
@@ -178,7 +153,7 @@ class ADGroup(Model):
         verbose_name = 'AD Group'
 
 
-class ResNetInternalUserManager(UserManager):
+class InternalUserManager(UserManager):
 
     def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
         now = timezone.now()
@@ -197,7 +172,7 @@ class ResNetInternalUserManager(UserManager):
 
 
 class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
-    """ResNet Internal User Model"""
+    """University Housing Internal User Model"""
 
     username = CharField(max_length=30, unique=True, verbose_name='Username')
     first_name = CharField(max_length=30, blank=True, verbose_name='First Name')
@@ -209,7 +184,7 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     is_staff = BooleanField(default=False)
 
     USERNAME_FIELD = 'username'
-    objects = ResNetInternalUserManager()
+    objects = InternalUserManager()
 
     #
     # A set of flags for each user that decides what the user can and cannot see.
@@ -222,7 +197,7 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     is_tag_readonly = BooleanField(default=False)  # limited access only to apps that uh-tag mambers are allowed to use (read-only permissions)
     is_technician = BooleanField(default=False)  # access to technician tools
     is_rn_staff = BooleanField(default=False)  # access to all tools as well as staff tools
-    is_developer = BooleanField(default=False)  # full access to resnet internal
+    is_developer = BooleanField(default=False)  # full access to University Housing Internal
 
     # RLIN Legacy flags
     is_csd = BooleanField(default=False)
@@ -240,10 +215,7 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     orientation_complete = BooleanField(default=False)  # Promotes user to Technicain status
 
     class Meta:
-        verbose_name = 'ResNet Internal User'
-
-    def get_absolute_url(self):
-        return "/users/%s/" % urlquote(self.username)
+        verbose_name = 'University Housing Internal User'
 
     def get_full_name(self):
         """Returns the first_name combined with the last_name separated via space with the possible '- ADMIN' removed."""
@@ -265,6 +237,17 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
         """Sends an email to this user."""
 
         send_mail(subject, message, from_email, [self.email])
+
+
+class TechFlair(Model):
+    """A mapping of users to custom flair."""
+
+    tech = ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Technician')
+    flair = CharField(max_length=30, unique=True, verbose_name='Flair')
+
+    class Meta:
+        verbose_name = 'Tech Flair'
+        verbose_name_plural = 'Tech Flair'
 
 
 class NavbarLink(Model):
@@ -299,7 +282,7 @@ class NavbarLink(Model):
             try:
                 url = reverse(self.url_name)
             except NoReverseMatch:
-                logger.warning('Could not resolve ' + self.url_name + 'of link ' + self.display_name)
+                logger.warning('Could not resolve ``' + self.url_name + '`` for navbar link ' + self.display_name)
                 pass
         else:
             url = self.external_url

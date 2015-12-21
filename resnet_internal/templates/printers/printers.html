@@ -2,158 +2,79 @@
 {% load core_user_tests %}
 {% load datatables %}
 
-{% block meta %}
-{{ block.super }}
-{% datatables_script %}
-{% endblock %}
+{% load crispy_forms_tags %}
 
-{% block subtitle %} | University Housing Printer Index{% endblock %}
 
-{% block content %}
-<div id="content-2col">
-    <div id="content">
-        <div id="splashOuter">
-            <!--<div id="splash"></div>-->
+{% block subtitle %} | Printers{% endblock %}
+
+{% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>Printers</h2>
         </div>
-        <div id="topContent">
-            <h1>University Housing Printer Index</h1>
-        </div>
-        {% if request.user|printers_modify_access %}
-        <p style="color: red;">
-            {{ form.non_field_errors }}
-            {% for field in form %}
-            {{ field.errors }}
-            {% endfor %}
-        </p>
-        {% endif %}
-        <div class="clear"></div>
-        <table id="printer_index">
-            <tfoot>
-                <tr>
-                    <th></th>
-                </tr>
-            </tfoot>
-        </table>
-        <div class="clear"></div>
-        {% if request.user|printers_modify_access %}
-        <div>
-            <form method="post" id="add_printer_form">
-                <fieldset>
-                <legend>
-                    Add a new printer
-                </legend>
-                    <p>
-                        {{ form.non_field_errors }}
-                        {% for field in form %}
-                        {{ field.errors }}
-                        {% endfor %}
-                    </p>
-                    <div class="horizontal_fields">
-	                    <p>
-	                        <label for="id_department">{{ form.department.label }}</label>
-	                        {{ form.department }}
-	                    </p>
-	                    <p>
-	                        <label for="id_sub_department">{{ form.sub_department.label }}</label>
-	                        <select id="id_sub_department" name="sub_department" size="1">
-	                       	{% if form.sub_department.value %}
-	                            <option value="{{ form.sub_department.value }}" selected="selected">{{ form.sub_department.label }}</option>
-	                        {% else %}
-	                        	<option value="" selected="selected">---------</option>
-	                        {% endif %}
-	                        </select>
-	                    </p>
-	                    <p>
-	                        <label for="id_printer_name">{{ form.printer_name.label }}</label>
-	                        {{ form.printer_name }}
-	                    </p>
-	                    <p>
-	                        <label for="id_mac_address">{{ form.mac_address.label }}</label>
-	                        {{ form.mac_address }}
-	                    </p>
-	                    <p>
-                            <label for="id_ip_address">{{ form.ip_address.label }}</label>&nbsp;
-                            <input type="radio" name="dhcp" value="static" checked>&nbsp;Static&nbsp;
-                            <input type="radio" name="dhcp" value="dynamic">&nbsp;Dynamic&nbsp;
-                            {{ form.ip_address }}
-	                    </p>
-	                    <p>
-	                        <label for="id_model">{{ form.model.label }}</label>
-	                        {{ form.model }}
-	                    </p>
-	                    <p>
-	                        <label for="id_serial_number">{{ form.serial_number.label }}</label>
-	                        {{ form.serial_number }}
-	                    </p>
-	                    <p>
-	                        <label for="id_property_id">{{ form.property_id.label }}</label>
-	                        {{ form.property_id }}
-	                    </p>
-	                    <p>
-                            <label for="id_location">{{ form.location.label }}</label>
-                            {{ form.location }}
-                        </p>
-                        <p>
-                            <label for="id_date_purchased">{{ form.date_purchased.label }}</label>
-                            {{ form.date_purchased }}
-                        </p>
-	                    <p>
-	                        <label for="id_description">{{ form.description.label }}</label>
-	                        {{ form.description }}
-	                    </p>
-                    </div>
-                </fieldset>
-                    <p>
-                        <input type="submit" value="Add" />
-                    </p>
-                {% csrf_token %}
-            </form>
-        </div>
-        {% endif %}
     </div>
-</div>
+
+    {% if form.errors %}
+    <div class="col-xs-12">
+        <div class="bs-callout bs-callout-danger">
+            <h4>Form Error</h4>
+            The printer could not be added. Refer to the form below for details.
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="col-xs-12">
+        <table id="printer_index"></table>
+    </div>
+
+    {% if request.user|printers_modify_access %}
+    <div class="col-xs-12">
+        {% crispy form form.helper %}
+    </div>
+    {% endif %}
 {% endblock %}
+
 {% block extra_script %}
-{{ block.super }}
-{% if request.user|printers_modify_access %}
-<script type="text/javascript">
-	function confirm_remove(printer_id) {
-		var response = confirm('Are you sure you want to delete this printer?');
-		if (response) {
-   			ajaxPost("{% url 'remove_uh_printer' %}", {"printer_id": printer_id}, function(response_context) {
-				if (response_context["success"]) {
-					$("#"+ printer_id).closest("tr").remove();
-					return true;
-				}
-				else {
-					alert(response_context["error_message"]);
-					return false;
-				}
-			});
-		} else {
-    		return false;
-		}
-	}
+    {{ block.super }}
+    {% datatables_script %}
 
-	$("#id_department").change(function () {
-		ajaxPost("{% url 'ajax_update_sub_department' %}", {'department_id': $(this).val()});
-	});
-
-	{% if form.sub_department.value %}
-	$(document).ready(function () {
-		ajaxPost("{% url 'ajax_update_sub_department' %}", {'department_id': '{{ form.department.value }}', 'sub_department_selection_id': '{{ form.sub_department.value }}'});
-	});
-	{% endif %}
-
-    $('input[type=radio][name=dhcp]').change(function() {
-        if (this.value == 'static') {
-            $("#id_ip_address").show();
+    {% if request.user|computers_modify_access %}
+    <script type="text/javascript">
+        function confirm_remove(printer_id) {
+            var response = confirm('Are you sure you want to delete this printer?');
+            if (response) {
+                ajaxPost("{% url 'remove_uh_printer' %}", {"printer_id": printer_id}, function(response_context) {
+                    if (response_context["success"]) {
+                        $("#"+ printer_id).closest("tr").remove();
+                        return true;
+                    }
+                    else {
+                        alert(response_context["error_message"]);
+                        return false;
+                    }
+                });
+            } else {
+                return false;
+            }
         }
-        else {
-            $("#id_ip_address").hide();
-            $("#id_ip_address").val("");
-        }
-    });
-</script>
-{% endif %}
+        
+        $(document).ready(function() {
+            $('.dateinput').datepicker({
+                dateFormat: 'yy-mm-dd',
+            });
+            
+            $(".ip_address_field").before('<input type="radio" name="dhcp" value="static" checked>&nbsp;Static&nbsp;<input type="radio" name="dhcp" value="dynamic">&nbsp;Dynamic');
+
+            $('input[type=radio][name=dhcp]').change(function() {
+                if (this.value == 'static') {
+                    $(this).siblings(".ip_address_field").show();
+                }
+                else {
+                    $(this).siblings(".ip_address_field").hide();
+                    $(this).siblings(".ip_address_field").val("");
+                }
+            });
+        });
+    </script>
+    {% endif %}
 {% endblock %}

@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.dailyduties.tasks
-   :synopsis: ResNet Internal Daily Duty Tasks.
+   :synopsis: University Housing Internal Daily Duty Tasks.
 
 .. moduleauthor:: Thomas Willson <thomas.willson@me.com>
 """
