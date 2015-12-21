@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.core.templatetags
-   :synopsis: ResNet Internal Core User Tests.
+   :synopsis: University Housing Internal Core User Tests.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 """
@@ -17,8 +17,8 @@ register = template.Library()
 def technician_access(user):
     """ Tests if a User has technician permissions.
 
-    :param dictionary: The user to test.
-    :type dictionary: ResNetInternalUser
+    :param user: The user to test.
+    :type user: InternalUser
     :returns: True if the user has the required permissions, else false.
 
     """
@@ -30,8 +30,8 @@ def technician_access(user):
 def staff_access(user):
     """ Tests if a User has staff permissions.
 
-    :param dictionary: The user to test.
-    :type dictionary: ResNetInternalUser
+    :param user: The user to test.
+    :type user: InternalUser
     :returns: True if the user has the required permissions, else false.
 
     """
@@ -43,8 +43,8 @@ def staff_access(user):
 def developer_access(user):
     """ Tests if a User has developer permissions.
 
-    :param dictionary: The user to test.
-    :type dictionary: ResNetInternalUser
+    :param user: The user to test.
+    :type user: InternalUser
     :returns: True if the user has the required permissions, else false.
 
     """
@@ -56,8 +56,8 @@ def developer_access(user):
 def portmap_access(user):
     """ Tests if a User has permission to view the portmap.
 
-    :param dictionary: The user to test.
-    :type dictionary: ResNetInternalUser
+    :param user: The user to test.
+    :type user: InternalUser
     :returns: True if the user has the required permissions, else false.
 
     """
@@ -69,8 +69,8 @@ def portmap_access(user):
 def portmap_modify_access(user):
     """ Tests if a User has permission to modify the portmap.
 
-    :param dictionary: The user to test.
-    :type dictionary: ResNetInternalUser
+    :param user: The user to test.
+    :type user: InternalUser
     :returns: True if the user has the required permissions, else false.
 
     """
@@ -82,8 +82,8 @@ def portmap_modify_access(user):
 def computers_access(user):
     """ Tests if a User has permission to view the computer index and computer records.
 
-    :param dictionary: The user to test.
-    :type dictionary: ResNetInternalUser
+    :param user: The user to test.
+    :type user: InternalUser
     :returns: True if the user has the required permissions, else false.
 
     """
@@ -95,8 +95,8 @@ def computers_access(user):
 def computers_modify_access(user):
     """ Tests if a User has permission to modify the computer index.
 
-    :param dictionary: The user to test.
-    :type dictionary: ResNetInternalUser
+    :param user: The user to test.
+    :type user: InternalUser
     :returns: True if the user has the required permissions, else false.
 
     """
@@ -108,8 +108,8 @@ def computers_modify_access(user):
 def computer_record_modify_access(user):
     """ Tests if a User has permission to modify computer records.
 
-    :param dictionary: The user to test.
-    :type dictionary: ResNetInternalUser
+    :param user: The user to test.
+    :type user: InternalUser
     :returns: True if the user has the required permissions, else false.
 
     """
@@ -121,8 +121,8 @@ def computer_record_modify_access(user):
 def printers_access(user):
     """ Tests if a User has permission to view the printer index and printer requests.
 
-    :param dictionary: The user to test.
-    :type dictionary: ResNetInternalUser
+    :param user: The user to test.
+    :type user: InternalUser
     :returns: True if the user has the required permissions, else false.
 
     """
@@ -134,8 +134,8 @@ def printers_access(user):
 def printers_modify_access(user):
     """ Tests if a User has permission to modify the printer index and printer requests.
 
-    :param dictionary: The user to test.
-    :type dictionary: ResNetInternalUser
+    :param user: The user to test.
+    :type user: InternalUser
     :returns: True if the user has the required permissions, else false.
 
     """

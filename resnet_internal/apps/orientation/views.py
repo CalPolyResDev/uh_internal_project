@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.orientation.views
-   :synopsis: ResNet Internal Orientation Views.
+   :synopsis: University Housing Internal Orientation Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

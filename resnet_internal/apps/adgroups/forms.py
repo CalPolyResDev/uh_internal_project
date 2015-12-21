@@ -27,13 +27,12 @@ class AddADUserForm(Form):
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10 col-md-8'
 
-        submit_button = Submit('submit', 'Add Technician')
-        submit_button.field_classes = 'btn btn-primary'
-
         self.helper.layout = Layout(
             Fieldset(
                 'Add a new technician',
                 Field('principal_name', placeholder=self.fields['principal_name'].label),
             ),
-            FormActions(submit_button)
+            FormActions(
+                Submit('submit', 'Add Technician'),
+            )
         )

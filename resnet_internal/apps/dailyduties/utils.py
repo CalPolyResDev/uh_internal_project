@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.dailyduties.utils
-   :synopsis: ResNet Internal Daily Duty Utilities.
+   :synopsis: University Housing Internal Daily Duty Utilities.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -200,7 +200,6 @@ class EmailManager(EmailConnectionMixin):
         try:
             self.server.copy(int(uid), destination_folder)
         except:
-            print('Copy Failed!')
             return
 
         self.server.delete_messages(int(uid))
