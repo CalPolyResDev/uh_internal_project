@@ -7,13 +7,13 @@
 """
 from datetime import datetime, timedelta
 from email import header
-import email
 from itertools import zip_longest
-import logging
 from operator import itemgetter
+from ssl import SSLError, SSLEOFError
+import email
+import logging
 import os
 import socket
-from ssl import SSLError, SSLEOFError
 
 from django.conf import settings
 from django.core import mail
@@ -21,6 +21,7 @@ from django.core.cache import cache
 from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
+from html2text import html2text
 import imapclient
 from srsconnector.models import ServiceRequest
 
@@ -416,6 +417,38 @@ class EmailManager(EmailConnectionMixin):
 
             email_message.send()
             self.server.append('Sent Items', email_message.message().as_bytes(), flags=[b'\\Seen'])
+
+    def create_ticket_from_email(self, mailbox_name, uid, requestor_username, full_name):
+        message_dict = self.get_email_message(mailbox_name, uid)
+
+        plain_text_body = message_dict['body_plain_text'] if not message_dict['is_html'] else html2text(message_dict['body_html'])
+        service_request = ServiceRequest(
+            status='Work In Progress',
+            priority='Low',
+            assigned_team='SA RESNET',
+            requestor_username=requestor_username,
+            contact_method='Email',
+            general_issue='Network Services',
+            specific_issue='Network Service Problem',
+            residence_hall_related=True,
+            summary=message_dict['subject'],
+            description=plain_text_body,
+            work_log='Created ticket for %s.' % full_name,
+        )
+        service_request.save()
+
+        if service_request.requestor_housing_address:
+            requestor_address = service_request.requestor_housing_address
+            requestor_address = requestor_address.replace('Poly Canyon Village', 'PCV').replace('Cerro Vista', 'CV')
+        elif service_request.requestor_building and service_request.requestor_room:
+            requestor_address = service_request.requestor_building + ' ' + service_request.requestor_room
+        else:
+            requestor_address = None
+
+        if requestor_address:
+            service_request.summary = requestor_address + ': ' + service_request.summary
+
+        return service_request.ticket_id
 
 
 class GetDutyData(EmailConnectionMixin):
