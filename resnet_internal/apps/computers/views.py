@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.computers.views
-   :synopsis: ResNet Internal Computer Index Views.
+   :synopsis: University Housing Internal Computer Index Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
@@ -127,7 +127,7 @@ Border Firewall? %(border_fw)s
 %(udp_ports)s
 
 Thanks,
-%(submitter)s (via ResNet Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
+%(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
 
         # Create service request
         new_pinhole_request = PinholeRequest(priority=priority, requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
@@ -169,7 +169,7 @@ class DomainNameRequestView(FormView):
 %(domain_names_split)s
 
 Thanks,
-%(submitter)s (via ResNet Internal)""" % {'ip_address': ip_address, 'domain_names_split': domain_names_split, 'submitter': submitter}
+%(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'domain_names_split': domain_names_split, 'submitter': submitter}
 
         # Create service request
         new_domain_name_request = DomainNameRequest(priority=priority, requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)

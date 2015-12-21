@@ -58,12 +58,22 @@ hr {
     cursor: pointer;
 }
 
+.mark {
+    color: blue !important;
+    cursor: pointer;
+}
+
 #logo {
     /* Fix from h1 */
     margin-top: -10px;
 
     padding-left: 15px;
     padding-right: 30px;
+}
+
+.login-display {
+    text-align: right;
+    padding-top: 28px;
 }
 
 .site-heading {
@@ -178,7 +188,7 @@ main {
 }
 
 .table-wrapper-cutoff {
-    max-height: 85vh;
+    max-height: 80vh;
     overflow-y: auto;
 }
 
@@ -282,20 +292,37 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
     display: none;
 }
 
+#email_tree {
+    overflow: hidden;
+}
+
+#email_tree, #email_buttons, #email_search_wrapper {
+    padding-bottom: 20px;
+}
+
+#mailbox_name_header {
+    display: none;
+}
+
 /* media queries */
 
-@media (max-width: 615px) {
+@media (max-width: 768px) {
     #logo {
         margin-top: 10px;
         padding-left: 30px;
     }
 
-    .logo-container {
+    .logo-container, .login-display {
         text-align: center;
+    }
+    
+    .login-display {
+        padding-top: inherit;
     }
 
     .site-heading {
         border-left: 0;
+        padding-left: 0;
         padding-bottom: 15px;
         margin-top: 0px;
     }
@@ -340,8 +367,12 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
-    background-color: darken(@polydarkgreen, 5%);
-    border-color: darken(darken(@polydarkgreen, 5%), 10%);
+    background-color: darken(@polydarkgreen, 5%) !important;
+    border-color: darken(darken(@polydarkgreen, 5%), 10%) !important;
+}
+
+.btn-group > .btn:first-child {
+    margin-left: -1px;
 }
 
 .form-horizontal .control-label {
@@ -361,6 +392,11 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 .form-control:focus {
     border-color: @polylightgreen;
     box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(69, 144, 44, 0.6);
+}
+
+.page-header {
+    margin-top: 0;
+    padding-bottom: 0;
 }
 
 /* Source: http://cpratt.co/twitter-bootstrap-callout-css-styles/ */

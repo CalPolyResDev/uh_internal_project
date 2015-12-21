@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.core.templatetags
-   :synopsis: ResNet Internal Core Template Tags and Filters.
+   :synopsis: University Housing Internal Core Template Tags and Filters.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 """

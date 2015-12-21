@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.dailyduties.views
-   :synopsis: ResNet Internal DailyDuties Views.
+   :synopsis: University Housing Internal DailyDuties Views.
 
 .. moduleauthor:: Thomas Willson <thomas.willson@icloud.com>
 

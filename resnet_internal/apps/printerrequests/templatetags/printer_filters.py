@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.printerrequests.templatetags
-   :synopsis: ResNet Internal Printer Request Template Tags and Filters.
+   :synopsis: University Housing Internal Printer Request Template Tags and Filters.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
