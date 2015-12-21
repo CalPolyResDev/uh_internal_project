@@ -1,196 +1,149 @@
 <!DOCTYPE html>
 {% load core_user_tests %}
+{% load compile_static %}
 {% load staticfiles %}
 {% load clever_selects_extras %}
 <html>
     <head>
-    	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    	<meta name="layout" content="Cal Poly Web Template" />
-    	<meta name="author" content="Alex Kavanaugh - ResNet Development Team" />
-    	<meta name="keywords" content="Resnet Internal" />
-    	<meta name="description" content="Residential Networking Services Internal Tools" />
-    	<link href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}" rel="stylesheet" type="text/css" />
-    	<link href="{% static 'common/css/cp_screen_3.4.css' %}" rel="stylesheet" type="text/css" media="screen" />
-    	<link href="{% static 'common/css/cp_print_3.4.css' %}" rel="stylesheet" type="text/css" media="print" />
-    	<link href="{% static 'css/screen.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
-    	<link href="{% static 'css/print.css' %}" rel="stylesheet" type="text/css" media="print" />
-    	<link href="{% static 'css/table.css' %}" rel="stylesheet" type="text/css" media="screen,print" />
-    	<link href="{% static 'fancybox/jquery.fancybox.css' %}?v=2.1.5" rel="stylesheet" type="text/css" media="screen" />
-    	<link href="{% static 'images/icons/favicon.ico' %}" rel="shortcut icon" />
-    	<link href="{% static 'css/bootstrap_tooltip.css' %}" rel="stylesheet" type="text/css" />
-    	<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.1.1.min.js"></script>
-    	<script type="text/javascript" src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
-        <script type="text/javascript" src="{% static 'fancybox/jquery.fancybox.pack.js' %}?v=2.1.5"></script>
-        <script type="text/javascript" src="{% static 'js/bootstrap.js' %}"></script>
-    	{% block meta %}
-    	{% endblock %}
-    	<script type="text/javascript">
+        <meta charset="UTF-8">
+
+        <meta property="og:image" content="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/header/cp_logo.jpg" itemprop="thumbnailUrl">
+        <meta property="og:title" content="University Housing Internal">
+        <meta property="og:url" content="https://internal.housing.calpoly.edu">
+        <meta property="og:site_name" content="University Housing Internal">
+
+        <meta name="author" content="ResNet Development Team">
+        <meta name="keywords" content="University Housing Internal">
+        <meta name="description" content="University Housing Internal Tools and Services">
+
+        <link rel="shortcut icon" href="http://calpoly.edu/favicon.ico">
+
+        <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+
+        <link rel='stylesheet prefetch' href='https://cdn.datatables.net/1.10.10/css/dataTables.bootstrap.min.css'>
+        <link rel='stylesheet prefetch' href='https://cdn.datatables.net/scroller/1.4.0/css/scroller.bootstrap.min.css'>
+
+        <link rel="stylesheet prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.css">
+        <link rel="stylesheet prefetch" href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}">
+
+        <link rel="stylesheet prefetch" href="{% compile 'less/base.less' %}?version=1.0">
+
+        {% block extra_head %}{% endblock %}
+
+        <title>University Housing Internal{% block subtitle %}{% endblock %}</title>
+    </head>
+    <body>
+        <!-- These are here only because django-clever-selects throws js inline that requires jQuery... -->
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
+
+        {% block container %}
+        <div class="container-fluid">
+            <header class="row">
+                <div class="col-xs-12 col-md-8 logo-container">
+                    <a href="http://www.calpoly.edu">
+                        <img id="logo" src="https://webresource.its.calpoly.edu/cpwebtemplate/5.0.1/common/images_html/header/cp_logo.jpg" height="65px" alt="Cal Poly, San Luis Obispo" />
+                    </a>
+                    <h1 class="site-heading">
+                        <a href="/">University Housing Internal</a>
+                    </h1>
+                </div>
+                <div class="col-xs-12 col-md-4 login-display">
+                    {% if request.user.is_authenticated %}
+                    <p>You are logged in as <b>{{ user_display_name }}</b>. (<a href="{% url 'logout' %}">Logout</a>)</p>
+                    {% else %}
+                    <p>You are not currently logged in. (<a href="{% url 'login' %}">Login</a>)</p>
+                    {% endif %}
+                </div>
+            </header>
+            <div class="row">
+                <noscript><div id="noscript-padding"></div></noscript>
+            </div>
+            <div class="row" id="content">
+                {% block nav %}
+                {% if request.user.is_authenticated %}
+                <div id="nav-wrapper">
+                    <nav>
+                        <div class="text-center nav-heading" id="drawer-trigger">
+                            <h4>Navigation&nbsp;<span class="glyphicon" aria-hidden="true"></span></h4>
+                        </div>
+                        <div id="drawer">
+                            {{ navbar|safe }}
+                        </div>
+                    </nav>
+                </div>
+                {% endif %}
+                {% endblock %}
+                <main>
+                    {% block main %}
+                    {% endblock %}
+                    <!-- Modal Frame -->
+                    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modal">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                    <h2 class="modal-title"></h2>
+                                </div>
+                                <div class="modal-body">
+                                    <div id="modal-body">
+                                        <div id="modal-progress-bar" class="progress">
+                                            <div  class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                                                <span class="sr-only">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal-dialog -->
+                    </div>
+                    <!-- /Modal Frame -->
+                </main>
+            </div>
+        </div>
+        {% endblock %}
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+        <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js'></script>
+
+        <script type="text/javascript" src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js"></script>
+
+        <script src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
+        <script src="{% static 'js/modal-frames.js' %}?version=1.0"></script>
+        <script src="{% static 'js/navbar.js' %}?version=1.0"></script>
+        
+        <script type="text/javascript">            
+            // Popover Initilization
             $(document).ready(function() {
-                $(".popup_frame").fancybox({
-                    type: 'iframe',
-                    maxWidth    : 800,
-                    maxHeight   : 600,
-                    fitToView   : false,
-                    width       : '70%',
-                    height      : '70%',
-                    autoSize    : false,
-                    closeClick  : false,
-                    openEffect  : 'none',
-                    closeEffect : 'none',
-                });
                 $('[data-toggle="popover"]').popover({
                     html: true,
                 });
             });
-        </script>
-    	<title>ResNet Internal - Online Tools{% block subtitle %}{% endblock %}</title>
-    </head>
-    {% block body %}
-    <body>
-        <noscript><div id="noscript-padding"></div></noscript>
-        <div id="container">
-            <div id="header">
-                <div id="cplogo">
-                    <a href="http://www.calpoly.edu/"><img src="{% static 'common/images/header/cp_logo.gif' %}" alt="Cal Poly" title="Go to Cal Poly Home" width="166" height="60" /></a>
-                </div>
-                <div id="headercontent">
-                    <a href="https://resnet.calpoly.edu"><img src="{% static 'images/resnetlogo.png' %}" alt="ResNet Logo" title="Go to the ResNet home page" id="headerimage" height="50" width="136.5" /></a>
-                    <div id="deptname">
-                        <p id="department_name">
-                            Residential Networking Services
-                        </p>
-                        <p id="optional_deptinfo">
-                            <a href="{% url 'home' %}">ResNet Online Tools</a><font color="red">&nbsp;&nbsp;Beta</font>
-                        </p>
-                    </div>
-                </div>
-                <!-- Begin Login Display Module -->
-                {% if request.user.is_authenticated %} {# User is logged in - display user information. #}
-                    <div class="loginDisplay">
-                        You are logged in as <span style="color: #A1B39C">{{ user_display_name }}</span>
-                        <br />
-                        {# Display User Specializations #}
-                        {% for title in user_specializations %}
-                            {{ title }}{% if not forloop.last %},&nbsp;{% endif %}
-                        {% endfor %}
-                        <br />
-                        (<a href="{% url 'logout' %}">Logout</a>)
-                    </div>
-                {% else %} {# User is not logged in - display log in link. #}
-                    <div class="loginDisplay">
-                            You are not currently logged in.
-                            <br />
-                            (<a href="{% url 'login' %}">Login</a>)
-                    </div>
-                {% endif %}
-                <!-- End Login Display Module -->
-                <div id="cp">
-                    <p>
-                        California Polytechnic State University
-                    </p>
-                </div>
-            </div>
-            {% block sidenav %}
-            {% if request.user.is_authenticated and not request.user.is_new_tech %} {# User is logged in - display navigation bar. #}
-            <!-- Begin Navigation Bar -->
-            <div id="leftnav">
-                <h1>Navigation</h1>
-    			{{ navbar|safe }}
-    			<br />
-    		</div>
-    		<!-- End Navigation Bar -->
-    		{% endif %}
-    		{% endblock %}
-    		{% block content %}{% endblock %}
-    		<div id="footer">
-    			<div id="footer_links">
-    				<p><a href="http://get.adobe.com/reader/" title="Download Adobe Reader for viewing PDFs">Get Adobe Reader</a></p>
-    			</div>
-    			<div id="footer_deptlinks">
-    				<ul>
-    					<li class="removeBullet">
-    						<a href="https://housing.calpoly.edu">University Housing</a>
-    					</li>
-    					<li>
-    						<a href="https://residentiallife.calpoly.edu">Residential Life &amp; Education</a>
-    					</li>
-    					<li>
-    						<a href="https://resnet.calpoly.edu">Residential Networking Services</a>
-    					</li>
-    				</ul>
-    				<img src="{% static 'images/django_logo_negative.png' %}" width="136px" height="60px" class="djangoLogo" />
-    			</div>
-    			<div id="footer_deptinfo">
-    				<p>
-    					ResNet Development Team
-    					<br />
-    					California Polytechnic State University
-    					<br />
-    					San Luis Obispo, CA 93401
-    					<br />
-    					<a href="mailto:resdev@calpoly.edu">resdev@calpoly.edu</a>
-    				</p>
-    			</div>
-    		</div>
-    	</div>
-        <script type="text/javascript">
-            {% if request.user.is_authenticated %}
-                function add_duties() {
-                    var duties_links = ['email_link', 'ticket_manager_link', 'voicemail_link', 'printer_requests_link'];
-                    var duties_titles = ['Email', 'Tickets', 'Voicemail', 'Printer Requests'];
-                    
-                    for (var i=0; i < duties_links.length; ++i) {
-                        var link = $('#' + duties_links[i]);
-                        link.attr('title', duties_titles[i]);
-                        link.attr('data-content', 'Loading...');
-                        link.attr('data-toggle', 'popover');
-                        link.attr('data-trigger', 'hover');
-                    }
-                    
-                    $('[data-toggle="popover"]').popover({
-                        html: true,
-                    });
-                };
-                function refreshDuties() {
-                    ajaxGet("{% url 'daily_duties_refresh_duties' %}", function(response_context) {
-                        $("#email_link").attr('data-content', response_context.email_content);
-                        $("#ticket_manager_link").attr('data-content', response_context.tickets_content);
-                        $("#voicemail_link").attr('data-content', response_context.voicemail_content);
-                        $("#printer_requests_link").attr('data-content', response_context.printer_requests_content);
-                    });
-                };
-                function updateEmail() {
-                    updateDuty('email', '{% url 'email_list' %}', '_self');
-                };
-                function updateVoicemail() {
-                    updateDuty('voicemail', '{% url 'voicemail_list' %}', '_self');
-                };
-                function updatePrinterRequests() {
-                    updateDuty('printerrequests', '{% url 'printer_request_list' %}', '_self');
-                };
-                function updateTickets() {
-                    updateDuty('tickets', 'https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Main', '_blank');
-                };
-                function updateDuty(duty, redirect_url, target) {
-                    if (target === '_blank') {  // Popup-Blocking Workaround
-                        window.open(redirect_url, target);
-                    }
-                    ajaxPost("{% url 'daily_duties_update_duty' %}", {"duty": duty}, function(response_context) {
-                        if (redirect_url && target !== '_blank') {
-                            window.open(redirect_url, target);
-                        }
-                        else {
-                            refreshDuties();
-                        }
-                    });
-                };
+            
+            $(document).ready(function() {
+                $(".collapsable-trigger .glyphicon").addClass("glyphicon-menu-down");
                 
-                $(document).ready(function() {
-                    add_duties();
-                    refreshDuties();
+                $('[data-toggle="popover"]').popover({
+                    html: true,
                 });
+            });
+
+            // Daily Duties URLs
+            {% if request.user.is_authenticated %}
+                var daily_duties_refresh_url = "{% url 'daily_duties_refresh_duties' %}";
+                var daily_duties_update_url = "{% url 'daily_duties_update_duty' %}";
+                var daily_duties_email_redir_url = "{% url 'email_list' %}";
+                var daily_duties_voicemail_redir_url = "{% url 'voicemail_list' %}";
+                var daily_duties_printer_requests_redir_url = "{% url 'printer_request_list' %}";
             {% endif %}
         </script>
+        {% if request.user.is_authenticated %}
+            <script src="{% static 'js/dailyduties.js' %}?version=1.0"></script>
+        {% endif %}
+        
         <script type="text/javascript" src="https://taskmaster.its.calpoly.edu/s/218fb7ab581f4ac8ba1588798ae8d47d-T/en_USrqvfjr/64026/42/1.4.27/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=cdd699b5"></script>
         <script type="text/javascript">
             window.ATL_JQ_PAGE_PROPS =  {
@@ -209,5 +162,4 @@
         {% block extra_script %}
         {% endblock %}
     </body>
-    {% endblock %}
 </html>

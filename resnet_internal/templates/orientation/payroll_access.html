@@ -1,35 +1,43 @@
-{% extends "orientation/base_checklist_item.html" %}
+{% extends "base.html" %}
 
-{% block content %}
-<div id="content">
-	<div id="mainLeftFull">
-		<h1>Orientation - Payroll Access</h1>
-		<p>
-			A few forms must be filled out and processed before you can bill the hours you will work.
-		</p>
-		<p>
-			Download the following forms, fill them out, and bring them to the Payroll office (Administration Building, Room 107):
-			<br />
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="https://afd.calpoly.edu/payroll/studentasstforms/serf%20pdf.pdf" target="_blank">Student Employment Request Form (SERF)</a>
-			<br />
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{MEDIA_URL}}forms/CSU_Form_SSA-1945.pdf" target="_blank">Statement Concerning Your Employment in a Job Not Covered By Social Security (CSU SSA-1945)</a>
-			<br />
-			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://www.uscis.gov/files/form/i-9.pdf" target="_blank">DHS Employment Eligibility Verification (Form I-9)</a>
-			<br />
-		</p>
+{% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>Orientation - Payroll Access</h2>
+        </div>
+        <p>A few forms must be filled out and processed before you can bill the hours you will work.</p><br />
 
-		<p>
-			More information on the subject can be found on the <a href="https://afd.calpoly.edu/payroll/student_employment.asp" target="_blank">Payroll Services website</a>.
-		</p>
-	</div>
+        <div class="panel panel-default">
+            <div class="panel-heading">Payroll Forms</div>
 
-	<div>
-		<p>
-			Once you've submitted your paperwork, click the following button to take this item off the checklist:
-		</p>
-		<p>
-			<input type="button" onclick="complete_task('payroll')" value="I Have Submitted the Required Payroll Paperwork" />
-		</p>
-	</div>
-</div>
+            <div class="panel-body">
+                <p>Download the following forms, fill them out, and bring them to the Payroll office (Administration Building, Room 107). More information on the subject can be found on the <a href="https://afd.calpoly.edu/payroll/student_employment.asp" target="_blank">Payroll Services website</a>.</p>
+            </div>
+
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a href="https://afd.calpoly.edu/payroll/studentasstforms/serf%20pdf.pdf" target="_blank">Student Employment Request Form (SERF)</a>
+                </li>
+                <li class="list-group-item">
+                    <a href="{{MEDIA_URL}}forms/CSU_Form_SSA-1945.pdf" target="_blank">Statement Concerning Your Employment in a Job Not Covered By Social Security (CSU SSA-1945)</a>
+                </li>
+                <li class="list-group-item">
+                    <a href="http://www.uscis.gov/files/form/i-9.pdf" target="_blank">DHS Employment Eligibility Verification (Form I-9)</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-xs-12">
+        <br /><p>Once you've submitted your paperwork, click the following button to take this item off the checklist:</p>
+        <br /><button class="btn btn-primary" onclick="complete_task('payroll')">I Have Submitted the Required Payroll Paperwork</button>
+    </div>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript">
+        function complete_task(task) {
+            ajaxPost("{% url 'orientation_complete_task' %}", {"task": task});
+        };
+    </script>
 {% endblock %}

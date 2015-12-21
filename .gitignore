@@ -10,6 +10,7 @@ __pycache__
 
 # Packaging files:
 *.egg*
+static/*
 
 # Editor temp files:
 *.swp
@@ -20,6 +21,7 @@ build
 
 # SQLite3 database files:
 *.db
+*.json
 
 # Logs:
 *.log

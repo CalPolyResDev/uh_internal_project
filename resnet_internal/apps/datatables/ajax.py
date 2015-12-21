@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.datatables.ajax
-   :synopsis: ResNet Internal Datatable Ajax Views.
+   :synopsis: University Housing Internal Datatable Ajax Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -28,66 +28,54 @@ logger = logging.getLogger(__name__)
 
 
 class RNINDatatablesPopulateView(BaseDatatableView):
-    """ The base datatable population view for ResNet Internal datatables."""
+    """ The base datatable population view for University Housing Internal datatables."""
 
     table_name = "datatable"
     data_source = None
     update_source = None
+    form_class = None
     max_display_length = 200
+
+    cached_forms = None
 
     column_definitions = OrderedDict()
     options = {
-        "order": [[1, "asc"], [2, "asc"], [3, "asc"]],
+        "order": [[0, "asc"], [1, "asc"], [2, "asc"]],
         "language": {
-            "lengthMenu":
-                'Display <select>' +
-                '<option value="25">25</option>' +
-                '<option value="50">50</option>' +
-                '<option value="100">100</option>' +
-                '<option value="150">150</option>' +
-                '<option value="200">200</option>' +
-                '<option value="-1">All</option>' +
-                '</select> records:',
             "search": "Filter records: ",
             "zeroRecords": "No records to display."
         },
+        "dom": "<'row'<'col-sm-12'f>>" +
+               "<'row'<'col-sm-12'tr>>" +
+               "<'row'<'col-sm-12'i>>",
         "processing": True,
         "serverSide": True,
-        "pageLength": 50,
-        "pagingType": "full_numbers",
-        "lengthChange": True,
-        "autoWidth": False,
-        "dom": '<lrf><"clear">t<ip><"clear">',
+        "lengthChange": False,
+
+        "scrollX": True,
+        "scrollY": "75vh",
+        "deferRender": True,
+        "scroller": True,
     }
 
     extra_options = {}
 
     base_column_template = """
-        <div id='{id}' class='{class_name}' column='{column}'>
-        <div class='display_data' title='{value}'>
-            {value}
-            {link_block}
-            {inline_images}
-        </div>
-        {editable_block}
+        <div class='wrapper' column='{column}'>
+            <div class='value-display' title='{value}'>
+                {value}
+                {link_block}
+                {inline_images}
+            </div>
+            {editable_block}
         </div>
     """
 
-    editable_block_template = """<input type='text' class='editbox' value='{value}' />"""
+    editable_block_template = """<input type='text' class='form-control editbox' value='{value}' />"""
+    readonly_block_template = """<input type='text' class='form-control editbox' value='{value}' readonly="readonly" disabled="disabled" />"""
     link_block_template = """<a href='{link_url}' onclick='{onclick_action}' target='{link_target}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
     icon_template = """<img src='{icon_url}' style='padding-left:5px;' align='top' width='16' height='16' border='0' />"""
     popover_link_block_template = """<a href='{link_url}' title='{popover_title}' popover-data-url='{content_url}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
-
-    def format_select_block(self, queryset, value_field, text_field, value_match):
-        choices = []
-
-        for entry in queryset:
-            if getattr(entry, value_field) == value_match:
-                choices.append("<option value='{value}' selected='selected'>{text}</option>".format(value=getattr(entry, value_field), text=getattr(entry, text_field)))
-            else:
-                choices.append("<option value='{value}'>{text}</option>".format(value=getattr(entry, value_field), text=getattr(entry, text_field)))
-
-        return """<select class='editbox'>{choices}</select>""".format(choices="".join(choices))
 
     def initialize(self, *args, **kwargs):
         super(RNINDatatablesPopulateView, self).initialize(*args, **kwargs)
@@ -189,10 +177,16 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     def get_editable_columns(self):
         return self._get_columns_by_attribute("editable")
 
-    def get_ip_address_columns(self):
-        return self._get_columns_by_attribute("type", "", "ip-address")
+    def get_row_id(self, row):
+        return str(row.id)
 
-    def render_column(self, row, column, class_names=None):
+    def get_row_class(self, row):
+        return None
+
+    def get_row_data_attributes(self, row):
+        return None
+
+    def render_column(self, row, column):
         """Renders columns with customized HTML.
 
         :param row: A dictionary containing row data.
@@ -203,19 +197,52 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         """
 
-        if not class_names:
-            class_names = []
+        raw_value = getattr(row, column)
+        value = smart_str(raw_value) if raw_value else ""
 
-        value = getattr(row, column)
-        value = smart_str(value) if value else ""
+        if not self.cached_forms:
+            self.cached_forms = {}
 
-        if column in self.get_editable_columns() and self.get_write_permissions():
-            editable_block = self.editable_block_template.format(value=value)
-            class_names.append("editable")
-
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+        if row.id not in self.cached_forms:
+            form = self.form_class(instance=row, auto_id="id_{id}-%s".format(id=row.id))
+            self.cached_forms[row.id] = form
         else:
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block="")
+            form = self.cached_forms[row.id]
+
+        if 'class' in form.fields[column].widget.attrs:
+            form.fields[column].widget.attrs['class'] += " form-control editbox"
+        else:
+            form.fields[column].widget.attrs['class'] = " form-control editbox"
+
+        if not(column in self.get_editable_columns() and self.get_write_permissions()):
+            form.fields[column].widget.attrs['readonly'] = "readonly"
+            form.fields[column].widget.attrs['disabled'] = "disabled"
+
+        return self.base_column_template.format(column=column, value=value, link_block="", inline_images="", editable_block=str(form[column]))
+
+    def prepare_results(self, qs):
+        data = []
+
+        for item in qs:
+            row = {}
+            row_id = self.get_row_id(item)
+            row_class = self.get_row_class(item)
+            row_data_attributes = self.get_row_data_attributes(item)
+
+            if row_id:
+                row.update({"DT_RowId": row_id})
+
+            if row_class:
+                row.update({"DT_RowClass": row_class})
+
+            if row_data_attributes:
+                row.update({"DT_RowAttr": row_data_attributes})
+
+            for column in self.get_columns():
+                row.update({str(self.get_columns().index(column)): self.render_column(item, column)})
+
+            data.append(row)
+        return data
 
     def filter_queryset(self, qs):
         """ Filters the QuerySet by submitted search parameters.
@@ -238,18 +265,18 @@ class RNINDatatablesPopulateView(BaseDatatableView):
                 params = shlex.split(search_parameters)
             except ValueError:
                 params = search_parameters.split(" ")
-            columnQ = Q()
-            paramQ = Q()
+            column_q = Q()
+            param_q = Q()
 
             for param in params:
                 if param != "":
                     for searchable_column in searchable_columns:
-                        columnQ |= Q(**{searchable_column + "__icontains": param})
+                        column_q |= Q(**{searchable_column + "__icontains": param})
 
-                    paramQ.add(columnQ, Q.AND)
-                    columnQ = Q()
-            if paramQ:
-                qs = qs.filter(paramQ)
+                    param_q.add(column_q, Q.AND)
+                    column_q = Q()
+            if param_q:
+                qs = qs.filter(param_q)
 
         return qs
 
@@ -290,14 +317,12 @@ class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
     def form_valid(self, form):
         self.object = form.save()
 
-        rendered_columns = {}
-
-        for field in self.fields:
-            rendered_columns[field] = self.populate_class_instance.render_column(self.object, field)
+        # Only one row is passed
+        rendered_row = self.populate_class_instance.prepare_results([self.object])[0]
 
         context = {}
         context["form_valid"] = True
-        context["rendered_columns"] = rendered_columns
+        context["rendered_row"] = rendered_row
 
         return context
 
@@ -307,6 +332,8 @@ class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
 
         context = {}
         context["form_valid"] = False
+
+        context["fields_with_errors"] = [field.name for field in form if field.errors]
         context["form_errors"] = form_errors
         context["field_errors"] = field_errors
 

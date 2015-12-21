@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.orientation.ajax
-   :synopsis: ResNet Internal Orientation AJAX URLs.
+   :synopsis: University Housing Internal Orientation AJAX URLs.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

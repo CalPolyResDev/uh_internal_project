@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.dailyduties.ajax
-   :synopsis: ResNet Internal Daily Duties AJAX Methods.
+   :synopsis: University Housing Internal Daily Duties AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -157,21 +157,26 @@ def get_email_folders(request):
 @require_POST
 def get_mailbox_summary(request):
     mailbox_name = request.POST["mailbox"]
+    search_string = request.POST["search_string"]
 
-    if mailbox_name == 'root':
+    if mailbox_name and mailbox_name == 'root':
         mailbox_summary = None
     else:
         with EmailManager() as email_manager:
-            mailbox_summary = email_manager.get_mailbox_summary(mailbox_name)
+            mailbox_summary = email_manager.get_messages(mailbox_name, search_string)
+
+    for email in mailbox_summary:
+        email['full_id'] = email['mailbox'] + '/' + str(email['uid'])
+        email['modal_title'] = 'Email'
 
     raw_response = """
         {% load staticfiles %}
         {% if emails %}
             {% for email in emails %}
-            <tr id="{{ mailbox_name }}/{{ email.uid }}" {% if email.unread %}class="bg-info"{% endif %}>
+            <tr id="{{ email.full_id }}" {% if email.unread %}class="bg-info"{% endif %}>
                 <td>
-                    <input type="checkbox" name="email_selection" value="{{ email.uid }}" id="checkbox_{{ mailbox_name }}/{{ email.uid }}">
-                    <div id="spinner_{{ mailbox_name }}/{{ email.uid }}" class="spinner" style="display:none;">
+                    <input type="checkbox" name="email_selection" value="{{ email.uid }}" id="checkbox_{{ email.full_id }}">
+                    <div id="spinner_{{ email.full_id }}" class="spinner" style="display:none;">
                         <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
                     </div>
                 </td>
@@ -180,35 +185,36 @@ def get_mailbox_summary(request):
                         <img src="{% static 'images/mail_reply.png' %}"></img>
                     {% endif %}
                 </td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ mailbox_name }}/{{ email.uid }}')).removeClass('bg-info');$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">
-                    {{ email.date }}
-                </td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ mailbox_name }}/{{ email.uid }}')).removeClass('bg-info');$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">
-                    {{ email.sender_name }} &lt;{{email.sender_address }}&gt;
-                </td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ mailbox_name }}/{{ email.uid }}')).removeClass('bg-info');$.fancybox({href : '{% url 'email_view_message' mailbox_name=mailbox_name uid=email.uid %}', title : '{{ email.subject|escapejs }}', type: 'iframe', maxWidth: '85%', width: 1000}); $.fancybox.showLoading()">
-                    {{ email.subject }}
-                </td>
+                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.date }}</td>
+                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.sender_name }} &lt;{{email.sender_address }}&gt;</td>
+                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.subject }}</td>
+                {% if mailbox_name|length == 0 %}
+                    <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.mailbox }}</td>
+                {% endif %}
             </tr>
             {% endfor %}
         {% else %}
         <tr>
-            <td colspan="5" style="text-align: center;">There are currently no emails in this mailbox.</td>
+            <td colspan="100" style="text-align: center;">
+                {% if is_search %}
+                    There are no messages matching '{{ search_string|escape }}'.
+                {% else %}
+                    There are currently no emails in this mailbox.
+                {% endif %}
+            </td>
         </tr>
         {% endif %}
     """
 
     template = Template(raw_response)
-    context = RequestContext(request, {'emails': mailbox_summary, 'mailbox_name': mailbox_name})
+    context = RequestContext(request, {'emails': mailbox_summary,
+                                       'mailbox_name': mailbox_name,
+                                       'is_search': bool(search_string),
+                                       'search_string': search_string,
+                                       })
     response_html = template.render(context)
 
-    data = {
-        'fragments': {
-            '#loading_email_record': response_html
-        }
-    }
-
-    return data
+    return {'response': response_html}
 
 
 @ajax

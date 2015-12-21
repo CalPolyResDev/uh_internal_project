@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.portmap.views
-   :synopsis: ResNet Internal Residence Halls Port Map Views.
+   :synopsis: University Housing Internal Port Map Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
@@ -8,31 +8,32 @@
 
 """
 
+from clever_selects.views import ChainedSelectFormViewMixin
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.detail import DetailView
 
 from resnet_internal.apps.portmap.forms import AccessPointCreateForm
 
 from ..datatables.views import DatatablesView
-from .ajax import PopulateResidenceHallWiredPorts, PopulateResidenceHallAccessPoints
-from .forms import ResHallWiredPortCreateForm
-from .models import ResHallWired, AccessPoint
+from .ajax import PopulatePorts, PopulateAccessPoints
+from .forms import PortCreateForm
+from .models import Port, AccessPoint
 
 
-class ResidenceHallWiredPortsView(DatatablesView):
+class PortsView(ChainedSelectFormViewMixin, DatatablesView):
     template_name = "portmap/portmap.html"
-    form_class = ResHallWiredPortCreateForm
-    populate_class = PopulateResidenceHallWiredPorts
-    model = ResHallWired
-    success_url = reverse_lazy('residence_halls_wired_ports')
+    form_class = PortCreateForm
+    populate_class = PopulatePorts
+    model = Port
+    success_url = reverse_lazy('ports')
 
 
-class ResidenceHallAccessPointsView(DatatablesView):
+class AccessPointsView(ChainedSelectFormViewMixin, DatatablesView):
     template_name = "portmap/apmap.html"
     form_class = AccessPointCreateForm
-    populate_class = PopulateResidenceHallAccessPoints
+    populate_class = PopulateAccessPoints
     model = AccessPoint
-    success_url = reverse_lazy('residence_halls_access_points')
+    success_url = reverse_lazy('access_points')
 
 
 class AccessPointFrameView(DetailView):
@@ -43,5 +44,5 @@ class AccessPointFrameView(DetailView):
 
 class PortFrameView(DetailView):
     template_name = "portmap/port_popover.html"
-    model = ResHallWired
+    model = Port
     context_object_name = 'port'

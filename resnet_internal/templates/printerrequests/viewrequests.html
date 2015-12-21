@@ -2,52 +2,40 @@
 {% load printer_filters %}
 {% block subtitle %} | View Printer Requests{% endblock %}
 
-{% block content %}
-<div id="content-2col">
-    <div id="content">
-        <div id="topContent">
-            <h1>Printer Requests</h1>
-        </div>
-        <div class="clear"></div>
-        <table border="1" class="table_directory">
-            <tbody>
+{% block main %}
+<div id="col-xs-12">
+    <table class="table table-hover">
+        <tbody>
+            <tr>
+                <th scope="col" width="10%">Ticket ID</th>
+                <th scope="col" width="17%">Date Requested</th>
+                <th scope="col" width="5%">Priority</th>
+                <th scope="col" width="10%">Requestor</th>
+                <th scope="col" width="28%">Items</th>
+                <th scope="col" width="20%">Address</th>
+                <th scope="col" width="10%">Status</th>
+            </tr>
+            {% if object_list %}
+                {% for request in object_list %}
                 <tr>
-                    <th scope="col" width="10%">Ticket ID</th>
-                    <th scope="col" width="17%">Date Requested</th>
-                    <th scope="col" width="5%">Priority</th>
-                    <th scope="col" width="10%">Requestor</th>
-                    <th scope="col" width="28%">Items</th>
-                    <th scope="col" width="20%">Address</th>
-                    <th scope="col" width="10%">Status</th>
+                    <td>{{ request.ticket_id }}</td>
+                    <td>{{ request.date_requested }}</td>
+                    <td>{{ request.priority }}</td>
+                    <td>{{ request.requestor }}</td>
+                    <td>
+                    	{% for toner in request.toner.all %}{{ toner }} Toner{% if not forloop.last %}, {% endif %}{% endfor %}{% for part in request.parts.all %}{{ part }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    </td>
+                    <td>{{ request.address }}</td>
+                	<td><input id="id_{{ request.id }}" name="{{ request.id }}" status="{{ request.status }}" type="button" value="{{ request.status|statusname|commandstring }}" onclick="change_request_status($(this).attr('name'), $(this).attr('status'))" /></td>
                 </tr>
-                {% if object_list %}
-                    {% for request in object_list %}
-                    <tr>
-                        <td>{{ request.ticket_id }}</td>
-                        <td>{{ request.date_requested }}</td>
-                        <td>{{ request.priority }}</td>
-                        <td>{{ request.requestor }}</td>
-                        <td>
-                        	{% for toner in request.toner.all %}{{ toner }} Toner{% if not forloop.last %}, {% endif %}{% endfor %}{% for part in request.parts.all %}{{ part }}{% if not forloop.last %}, {% endif %}{% endfor %}
-                        </td>
-                        <td>{{ request.address }}</td>
-                    	<td><input id="id_{{ request.id }}" name="{{ request.id }}" status="{{ request.status }}" type="button" value="{{ request.status|statusname|commandstring }}" onclick="change_request_status($(this).attr('name'), $(this).attr('status'))" /></td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                {% endif %}
-            </tbody>
-        </table>
-    </div>
+                {% endfor %}
+            {% else %}
+            <tr>
+                <td colspan="7" style="text-align: center;">There not currently any printer requests.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
 

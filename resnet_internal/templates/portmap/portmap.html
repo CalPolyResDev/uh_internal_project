@@ -2,83 +2,57 @@
 {% load core_user_tests %}
 {% load datatables %}
 
-{% block meta %}
-{{ block.super }}
-{% datatables_script %}
-{% endblock %}
+{% load crispy_forms_tags %}
 
-{% block subtitle %} | Residence Halls Wired Port Map{% endblock %}
+{% block subtitle %} | Port Map{% endblock %}
 
-{% block content %}
-<div id="content-2col">
-    <div id="content">
-        <div id="splashOuter">
-            <!--<div id="splash"></div>-->
+{% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>Port Map</h2>
         </div>
-        <div id="topContent">
-            <h1>Residence Halls Wired Port Map</h1>
-        </div>
-        {% if request.user|portmap_modify_access %}
-        <p style="color: red;">
-            {{ form.non_field_errors }}
-            {% for field in form %}
-            {{ field.errors }}
-            {% endfor %}
-        </p>
-        {% endif %}
-        <div class="clear"></div>
-        <table id="residence_halls_wired_port_map">
-            <tfoot>
-                <tr>
-                    <th></th>
-                </tr>
-            </tfoot>
-        </table>
-        <div class="clear"></div>
-        {% if request.user|portmap_modify_access %}
-        <div>
-            <form method="post" id="add_port_form">
-                <fieldset>
-                    <legend>
-                        Add a new port
-                    </legend>
-                    <p>
-                        {{ form.non_field_errors }}
-                        {% for field in form %}
-                        {{ field.errors }}
-                        {% endfor %}
-                    </p>
-                    <div class="horizontal_fields">
-                        {{ form.as_p }}
-                    </div>
-                </fieldset>
-                    <p>
-                        <input type="submit" value="Add" />
-                    </p>
-                {% csrf_token %}
-            </form>
-        </div>
-        {% endif %}
     </div>
-</div>
+
+    {% if form.errors %}
+    <div class="col-xs-12">
+        <div class="bs-callout bs-callout-danger">
+            <h4>Form Error</h4>
+            The port could not be added. Refer to the form below for details.
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="col-xs-12">
+        <table id="portmap"></table>
+    </div>
+
+    {% if request.user|portmap_modify_access %}
+    <div class="col-xs-12">
+        {% crispy form form.helper %}
+    </div>
+    {% endif %}
 {% endblock %}
 
 {% block extra_script %}
-{{ block.super }}
-<script type="text/javascript">
-function confirm_status_change(port_id) {
-    var response = confirm('Are you sure you want to change the status of this port?');
-    if (response) {
-        ajaxPost("{% url 'change_residence_halls_wired_port_status' %}", {"port_id": port_id}, function(response_context) {
-            // Replace the edited columns with updated html
-            columns = response_context["rendered_columns"]
-            for (var column in columns) {
-                $("[id='" + port_id + "'][column='" + column + "']").parent().html(columns[column]);
+    {{ block.super }}
+    {% datatables_script %}
+
+    {% if request.user|portmap_modify_access %}
+    <script type="text/javascript">
+        function confirm_status_change(port_id) {
+            var response = confirm('Are you sure you want to change the status of this port?');
+            if (response) {
+                ajaxPost("{% url 'change_port_status' %}", {"port_id": port_id}, function(response_context) {
+                    // Replace the edited columns with updated html
+                    columns = response_context["rendered_columns"]
+                    for (var column in columns) {
+                        $("[id='" + port_id + "'][column='" + column + "']").parent().html(columns[column]);
+                    }
+                });
+            } else {
+                return false;
             }
-        });
-    } else {
-        return false;
-    }
-};
-</script>
+        }
+    </script>
+    {% endif %}
 {% endblock %}

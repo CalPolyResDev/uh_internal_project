@@ -1,0 +1,459 @@
+@polylightgreen: rgb(69, 144, 44);
+@polydarkgreen: rgb(41, 85, 26);
+
+@polywhite: rgb(255, 254, 250);
+
+@polyreallylightgrey: rgb(253, 253, 252);
+@polylightgrey: rgb(248, 248, 247);
+@polymediumgrey: rgb(243,243,237);
+@polydarkgrey: rgb(238,238,231);
+
+@lightgreyborder: rgb(198, 198, 198);
+@hovergrey: rgb(243, 243, 241);
+
+/* Resposive table hack. See http://getbootstrap.com/css/#tables-responsive */
+@-moz-document url-prefix() {
+    fieldset { display: table-cell; }
+}
+
+a, a:hover, a:active {
+    color: @polydarkgreen;
+}
+
+h1 {
+    margin: 0;
+    margin-top: 10px;
+    line-height: 55px;
+    display: inline-block;
+    color: rgb(24, 59, 13);
+}
+
+.site-heading {
+    padding-left: 30px;
+}
+
+h3 {
+    color: @polydarkgreen;
+}
+
+h3 small {
+    white-space: nowrap;
+}
+
+body {
+    background-color: rgb(255, 254, 250);
+}
+
+header {
+    min-height: 80px;
+    border-bottom: 5px solid @polydarkgreen;
+}
+
+hr {
+    margin-top: 10px;
+}
+
+.remove {
+    color: red !important;
+    cursor: pointer;
+}
+
+.mark {
+    color: blue !important;
+    cursor: pointer;
+}
+
+#logo {
+    /* Fix from h1 */
+    margin-top: -10px;
+
+    padding-left: 15px;
+    padding-right: 30px;
+}
+
+.login-display {
+    text-align: right;
+    padding-top: 28px;
+}
+
+.site-heading {
+    border-left: 2px solid rgb(204, 204, 204);
+}
+
+#nav-wrapper {
+    padding: 30px;
+    width: 260px;
+    float: left;
+}
+
+nav {
+    border: 1px solid rgb(204, 204, 204);
+    border-radius: 2px;
+
+    height: 100%;
+
+    a {
+        color: rbg(142, 142, 142) !important;
+        display: block;
+    }
+}
+
+#checklist {
+    list-style-image: url('/static/images/checkbox_unchecked.png')
+}
+
+#checklist .checked {
+    list-style-image: url('/static/images/checkbox_checked.png')
+}
+
+.nav-heading {
+    background-color: @polydarkgrey;
+
+    h4 {
+        margin: 0;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+}
+
+#drawer-trigger .glyphicon {
+    vertical-align: top;
+}
+
+.link-group-heading {
+    background-color: @polymediumgrey;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+
+    border-top: 1px solid @lightgreyborder;
+    border-bottom: 1px solid @lightgreyborder;
+
+    font-size: 16px;
+    color: rbg(102, 102, 102);
+}
+
+.link-group {
+    padding-left: 0;
+    padding-right: 0;
+
+    img {
+        margin-top: -2px;
+        margin-right: 3px;
+    }
+
+    ul {
+        padding: 0;
+        margin: 0;
+    }
+    ul li {
+        list-style: none;
+        padding-top: 5px;
+        padding-bottom: 5px;
+        padding-left: 15px;
+
+        background-color: @polylightgrey;
+    }
+
+    ul li:hover {
+        background-color: @hovergrey;
+        cursor: pointer;
+    }
+
+    ul li:hover a {
+        text-decoration: underline;
+    }
+
+    ul > ul > li {
+        padding-left: 37px;
+
+        border-top: 1px dashed @lightgreyborder;
+
+        background-color: @polyreallylightgrey;
+    }
+
+    ul > ul > li > a:before {
+        content: "\00BB";
+        margin-right: 2px;
+    }
+}
+
+main {
+    margin-top: 25px;
+    margin-right: 30px !important;
+    margin-left: 260px !important;
+    margin-bottom: 15px;
+
+    padding-top: 10px;
+}
+
+.table-wrapper-cutoff {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+/* Datatable styles */
+table.dataTable {
+    .editbox {
+        display: none;
+        width: 100%;
+        height: auto;
+        padding: 0 4px;
+    }
+    
+    .value-display {
+        padding-left: 4px;
+    }
+
+    tbody tr {
+        line-height: 22px;
+    }
+    
+    tbody tr:hover {
+        background-color: @polydarkgrey !important;
+        cursor: cell;
+    }
+    
+    .old {
+        background-color: rgb(255,226,77) !important;
+    }
+    
+    .older {
+        background-color: rgb(255,151,77) !important;
+    }
+    
+    .replace {
+        background-color: rgb(255,107,77) !important;
+    }
+    
+    .old:hover {
+        background-color: rgb(255,222,52) !important;
+    }
+
+    .older:hover {
+        background-color: rgb(255,136,52) !important;
+    }
+
+    .replace:hover {
+        background-color: rgb(255,86,52) !important;
+    }
+    
+    .disabled {
+        background-color: rgb(180,180,180) !important;
+        color: rgb(100,100,100);
+    }
+    
+    .disabled a {
+        color: rgb(100,100,100);
+    }
+}
+
+.dataTables_scrollBody {
+    background: rgb(248, 248, 247) !important;
+}
+
+.dataTables_processing {
+    z-index: 1000;
+}
+
+.dataTables_scrollBody:after {
+    content:'\A';
+    position: absolute;
+    width:100%; height:100%;
+    top:0; left:0;
+    background-color: rgba(0,0,0,0.6) !important;
+    opacity: 0;
+    transition: all 0.5s;
+    -webkit-transition: all 0.5s;
+}
+
+.dataTables_scrollBody.processing:after {
+    opacity: 1;
+}
+
+table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::after, table.dataTable thead .sorting::after {
+    margin-bottom: -8px;
+}
+
+.table-add-form {
+    padding-top: 20px;
+}
+
+.jstree-clicked {
+    background: @polydarkgreen !important;
+    box-shadow: inset 0 0 1px @polydarkgreen !important;
+}
+
+.jstree-hovered {
+    background: darken(@polydarkgreen, 10%) !important;
+}
+
+.asteriskField {
+    display: none;
+}
+
+#email_tree {
+    overflow: hidden;
+}
+
+#email_tree, #email_buttons, #email_search_wrapper {
+    padding-bottom: 20px;
+}
+
+#mailbox_name_header {
+    display: none;
+}
+
+/* media queries */
+
+@media (max-width: 768px) {
+    #logo {
+        margin-top: 10px;
+        padding-left: 30px;
+    }
+
+    .logo-container, .login-display {
+        text-align: center;
+    }
+    
+    .login-display {
+        padding-top: inherit;
+    }
+
+    .site-heading {
+        border-left: 0;
+        padding-left: 0;
+        padding-bottom: 15px;
+        margin-top: 0px;
+    }
+
+    h1 {
+        padding-left: 0;
+    }
+
+    #drawer-trigger:hover {
+        background-color: @hovergrey;
+        cursor: pointer;
+    }
+
+    #nav-wrapper {
+        float: none;
+        width: auto;
+        padding: 0;
+        border-bottom: 2px solid @lightgreyborder;
+    }
+
+    nav {
+        border-radius: 0;
+    }
+
+    main {
+        margin: 0px !important;
+    }
+    
+    .table-wrapper-cutoff {
+        max-height: 400px;
+    }
+}
+
+/* bootstrap overrides */
+.btn {
+    border-radius: 0;
+}
+
+.btn-primary {
+    background-color: @polydarkgreen;
+    border-color: darken(@polydarkgreen, 10%);
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+    background-color: darken(@polydarkgreen, 5%) !important;
+    border-color: darken(darken(@polydarkgreen, 5%), 10%) !important;
+}
+
+.btn-group > .btn:first-child {
+    margin-left: -1px;
+}
+
+.form-horizontal .control-label {
+    padding-top: 0;
+}
+
+.form-control {
+    border-radius: 0;
+    height: 26px;
+    padding: 3px 8px;
+}
+
+.input-group .form-control {
+    height: 34px;
+}
+
+.form-control:focus {
+    border-color: @polylightgreen;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(69, 144, 44, 0.6);
+}
+
+.page-header {
+    margin-top: 0;
+    padding-bottom: 0;
+}
+
+/* Source: http://cpratt.co/twitter-bootstrap-callout-css-styles/ */
+
+.bs-callout {
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #eee;
+    border-left-width: 5px;
+    border-radius: 0;
+}
+.bs-callout h4 {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+.bs-callout p:last-child {
+    margin-bottom: 0;
+}
+.bs-callout code {
+    border-radius: 3px;
+}
+.bs-callout+.bs-callout {
+    margin-top: -5px;
+}
+.bs-callout-default {
+    border-left-color: #777;
+}
+.bs-callout-default h4 {
+    color: #777;
+}
+.bs-callout-primary {
+    border-left-color: #428bca;
+}
+.bs-callout-primary h4 {
+    color: #428bca;
+}
+.bs-callout-success {
+    border-left-color: #5cb85c;
+}
+.bs-callout-success h4 {
+    color: #5cb85c;
+}
+.bs-callout-danger {
+    border-left-color: #d9534f;
+}
+.bs-callout-danger h4 {
+    color: #d9534f;
+}
+.bs-callout-warning {
+    border-left-color: #f0ad4e;
+}
+.bs-callout-warning h4 {
+    color: #f0ad4e;
+}
+.bs-callout-info {
+    border-left-color: #5bc0de;
+}
+.bs-callout-info h4 {
+    color: #5bc0de;
+}

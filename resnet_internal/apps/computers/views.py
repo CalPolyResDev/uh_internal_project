@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.computers.views
-   :synopsis: ResNet Internal Computer Index Views.
+   :synopsis: University Housing Internal Computer Index Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
@@ -9,28 +9,29 @@
 
 import logging
 import socket
-from srsconnector.models import PinholeRequest, DomainNameRequest
 import subprocess
 
+from clever_selects.views import ChainedSelectFormViewMixin
 from django.core.urlresolvers import reverse, reverse_lazy
 from django.http.response import HttpResponseRedirect, HttpResponse
 from django.utils.encoding import smart_str
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
+from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ..datatables.views import DatatablesView
 from .ajax import PopulateComputers
-from .forms import ComputerCreateForm, RequestPinholeForm, RequestDomainNameForm
+from .forms import ComputerForm, RequestPinholeForm, RequestDomainNameForm
 from .models import Computer, Pinhole, DomainName
 
 
 logger = logging.getLogger(__name__)
 
 
-class ComputersView(DatatablesView):
+class ComputersView(ChainedSelectFormViewMixin, DatatablesView):
 
     template_name = "computers/computers.html"
-    form_class = ComputerCreateForm
+    form_class = ComputerForm
     populate_class = PopulateComputers
     model = Computer
     success_url = reverse_lazy('uh_computers')
@@ -126,7 +127,7 @@ Border Firewall? %(border_fw)s
 %(udp_ports)s
 
 Thanks,
-%(submitter)s (via ResNet Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
+%(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
 
         # Create service request
         new_pinhole_request = PinholeRequest(priority=priority, requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
@@ -168,7 +169,7 @@ class DomainNameRequestView(FormView):
 %(domain_names_split)s
 
 Thanks,
-%(submitter)s (via ResNet Internal)""" % {'ip_address': ip_address, 'domain_names_split': domain_names_split, 'submitter': submitter}
+%(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'domain_names_split': domain_names_split, 'submitter': submitter}
 
         # Create service request
         new_domain_name_request = DomainNameRequest(priority=priority, requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)

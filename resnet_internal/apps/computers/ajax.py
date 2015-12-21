@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.computers.ajax
-   :synopsis: ResNet Internal Computer Index AJAX Methods.
+   :synopsis: University Housing Internal Computer Index AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -10,7 +10,6 @@ from collections import OrderedDict
 from datetime import datetime
 import logging
 import shlex
-from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from dateutil.relativedelta import relativedelta
 from django.contrib.staticfiles.templatetags.staticfiles import static
@@ -18,11 +17,12 @@ from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
 from django.db.models import Q
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
+from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ...settings.base import computers_modify_access_test
-from ..core.models import StaffMapping, Department
+from ..core.models import StaffMapping
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
-from .forms import ComputerUpdateForm
+from .forms import ComputerForm
 from .models import Computer, Pinhole, DomainName
 
 
@@ -33,98 +33,47 @@ OLDER_YEARS = 4
 REPLACE_YEARS = 5
 
 
-@ajax
-@require_POST
-def update_sub_department(request):
-    """ Update sub-department drop-down choices based on the department chosen.
-
-    :param department_id: The department for which to display sub-department choices.
-    :type department_id: str
-
-    :param sub_department_selection_id (optional): The sub_department selected before form submission.
-    :type sub_department_selection_id (optional): str
-
-    :param css_target (optional): The target of which to replace inner HTML. Defaults to #id_sub_department.
-    :type css_target (optional): str
-
-    """
-
-    # Pull post parameters
-    department_id = request.POST.get("department_id", None)
-    sub_department_selection_id = request.POST.get("sub_department_selection_id", None)
-    css_target = request.POST.get("css_target", '#id_sub_department')
-
-    choices = []
-
-    # Add options iff a department is selected
-    if department_id:
-        department_instance = Department.objects.get(id=int(department_id))
-
-        for sub_department in department_instance.sub_departments.all():
-            if sub_department_selection_id and sub_department.id == int(sub_department_selection_id):
-                choices.append("<option value='{id}' selected='selected'>{name}</option>".format(id=sub_department.id, name=sub_department.name))
-            else:
-                choices.append("<option value='{id}'>{name}</option>".format(id=sub_department.id, name=sub_department.name))
-    else:
-        logger.warning("A department wasn't passed via POST.")
-        choices.append("<option value='{id}'>{name}</option>".format(id="", name="---------"))
-
-    data = {
-        'inner-fragments': {
-            css_target: ''.join(choices)
-        },
-    }
-
-    return data
-
-
 class PopulateComputers(RNINDatatablesPopulateView):
     """Renders the computer index."""
 
     table_name = "computer_index"
     data_source = reverse_lazy('populate_uh_computers')
     update_source = reverse_lazy('update_uh_computer')
+    form_class = ComputerForm
     model = Computer
 
-    # NOTE Installed Types: ip-address, mac-address
-
     column_definitions = OrderedDict()
-    column_definitions["id"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "ID"}
-    column_definitions["department"] = {"width": "225px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
-    column_definitions["sub_department"] = {"width": "225px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
-    column_definitions["computer_name"] = {"width": "150px", "type": "string", "title": "Computer Name"}
-    column_definitions["mac_address"] = {"width": "150px", "type": "mac-address", "title": "MAC Address"}
-    column_definitions["ip_address"] = {"width": "150px", "type": "ip-address", "title": "IP Address"}
+    column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
+    column_definitions["sub_department"] = {"width": "200px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
+    column_definitions["computer_name"] = {"width": "200px", "type": "string", "title": "Computer Name"}
+    column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
+    column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
     column_definitions["RDP"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "RDP"}
-    column_definitions["model"] = {"width": "100px", "type": "string", "title": "Model"}
+    column_definitions["model"] = {"width": "200px", "type": "string", "title": "Model"}
     column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
-    column_definitions["location"] = {"width": "225px", "type": "string", "title": "Location"}
+    column_definitions["location"] = {"width": "150px", "type": "string", "title": "Location"}
     column_definitions["date_purchased"] = {"width": "100px", "type": "string", "searchable": False, "title": "Date Purchased"}
-    column_definitions["dn"] = {"width": "225px", "type": "string", "title": "Distinguished Name"}
-    column_definitions["description"] = {"width": "225px", "type": "string", "className": "edit_trigger", "title": "Description"}
+    column_definitions["dn"] = {"width": "250px", "type": "string", "title": "Distinguished Name"}
+    column_definitions["description"] = {"width": "250px", "type": "string", "title": "Description"}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
         "language": {
-            "search": "Filter records: (Use ?pinhole, ?domain, ?dhcp, and/or ?replace to narrow results.) ",
+            "search": "Filter records: (?pinhole, ?domain, ?dhcp, ?replace) ",
         },
     }
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"] = {"width": "50px", "type": "string", "searchable": False, "orderable": False, "editable": False, "title": "&nbsp;"}
+            self.column_definitions["remove"] = {"width": "80px", "type": "string", "searchable": False, "orderable": False, "editable": False, "title": "&nbsp;"}
 
         return super(PopulateComputers, self).get_options()
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = computers_modify_access_test(user)
 
-    def render_column(self, row, column, class_names=None):
-        if not class_names:
-            class_names = []
-
-        # Add colors
+    def get_row_class(self, row):
         if row.date_purchased:
             old_delta = datetime.now() - relativedelta(years=OLD_YEARS)
             older_delta = datetime.now() - relativedelta(years=OLDER_YEARS)
@@ -133,57 +82,30 @@ class PopulateComputers(RNINDatatablesPopulateView):
             puchase_datetime = datetime.fromordinal(row.date_purchased.toordinal())
 
             if puchase_datetime <= replace_delta:
-                class_names.append("replace")
+                return "replace"
             elif puchase_datetime <= older_delta and puchase_datetime > replace_delta:
-                class_names.append("older")
+                return "older"
             elif puchase_datetime <= old_delta and puchase_datetime > older_delta:
-                class_names.append("old")
+                return "old"
 
-        if column == 'department':
-            department_instance = getattr(row, column)
-            department_id = department_instance.id
-            value = department_instance.name
-
-            editable_block = self.format_select_block(queryset=Department.objects.all(), value_field="id", text_field="name", value_match=department_id)
-            class_names.append("editable")
-
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
-        elif column == 'sub_department':
-            department_instance = getattr(row, "department")
-            sub_department_instance = getattr(row, column)
-            valid_sub_departments = department_instance.sub_departments.all()
-
-            # Check to make sure the current value is acceptable for the selected department.
-            # If it isn't, set it to the first valid one
-            if sub_department_instance not in valid_sub_departments:
-                sub_department_instance.id = valid_sub_departments[0].id
-                sub_department_instance.name = valid_sub_departments[0].name
-                sub_department_instance.save()
-
-            department_id = department_instance.id
-            sub_department_id = sub_department_instance.id
-            value = sub_department_instance.name
-
-            editable_block = self.format_select_block(queryset=valid_sub_departments, value_field="id", text_field="name", value_match=sub_department_id)
-            class_names.append("editable")
-
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
-        elif column == 'ip_address':
+    def render_column(self, row, column):
+        if column == 'ip_address':
             value = getattr(row, column)
             value = value if value else "DHCP"
+
+            # A bit of a hack to help people with DHCP
+            self.editable_block_template = self.editable_block_template.replace(" />", 'title="Submit an empty value for DHCP." />')
 
             try:
                 record_url = reverse('view_uh_computer_record', kwargs={'ip_address': row.ip_address})
             except NoReverseMatch:
                 editable_block = self.editable_block_template.format(value=value if value != "DHCP" else "")
-                class_names.append("editable")
 
-                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+                return self.base_column_template.format(column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
             else:
                 editable_block = self.editable_block_template.format(value=value)
-                class_names.append("editable")
-
-                link_block = self.link_block_template.format(link_url=record_url, onclick_action="", link_target="", link_class_name="popup_frame", link_style="", link_text=value)
+                onclick = """openModalFrame("Association Record for {ip_address}", "{url}");""".format(ip_address=value, url=record_url)
+                link_block = self.link_block_template.format(link_url="#", onclick_action=onclick, link_target="", link_class_name="", link_style="", link_text=value)
 
                 pinholes = self.icon_template.format(icon_url=static('images/icons/pinholes.png'))
                 domain_names = self.icon_template.format(icon_url=static('images/icons/domain_names.png'))
@@ -198,23 +120,23 @@ class PopulateComputers(RNINDatatablesPopulateView):
                     if has_domain_names:
                         inline_images = inline_images + domain_names
 
-                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=link_block, inline_images=inline_images, editable_block=editable_block)
+                return self.base_column_template.format(column=column, value="", link_block=link_block, inline_images=inline_images, editable_block=editable_block)
         elif column == 'RDP':
             try:
                 rdp_file_url = reverse('rdp_request', kwargs={'ip_address': row.ip_address})
             except NoReverseMatch:
-                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block="", inline_images="", editable_block="")
+                return self.base_column_template.format(column=column, value="", link_block="", inline_images="", editable_block="")
             else:
                 rdp_icon = self.icon_template.format(icon_url=static('images/icons/rdp.png'))
                 link_block = self.link_block_template.format(link_url=rdp_file_url, onclick_action="", link_target="", link_class_name="", link_style="", link_text=rdp_icon)
-                return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=link_block, inline_images="", editable_block="")
+                return self.base_column_template.format(column=column, value="", link_block=link_block, inline_images="", editable_block="")
         elif column == 'remove':
             onclick = "confirm_remove({id});return false;".format(id=row.id)
-            link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="", link_style="color:red; cursor:pointer;", link_text="Remove")
+            link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="remove", link_style="", link_text="Remove")
 
-            return self.base_column_template.format(id=row.id, class_name=" ".join(class_names), column=column, value="", link_block=link_block, inline_images="", editable_block="")
+            return self.base_column_template.format(column=column, value="", link_block=link_block, inline_images="", editable_block="")
         else:
-            return super(PopulateComputers, self).render_column(row, column, class_names)
+            return super(PopulateComputers, self).render_column(row, column)
 
     def filter_queryset(self, qs):
         search_parameters = self.request.GET.get('search[value]', None)
@@ -263,7 +185,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
 
 
 class UpdateComputer(BaseDatatablesUpdateView):
-    form_class = ComputerUpdateForm
+    form_class = ComputerForm
     model = Computer
     populate_class = PopulateComputers
 
@@ -341,11 +263,11 @@ Remove from Border Firewall? %(border_fw)s
 %(udp_ports)s
 
 Thanks,
-%(submitter)s (via ResNet Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
+%(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
 
     # Create service request
     pinhole_removal_request = PinholeRequest(priority='Low', requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
-    pinhole_removal_request.summary = 'Pinhole Removal Request via ResNet Internal'
+    pinhole_removal_request.summary = 'Pinhole Removal Request via University Housing Internal'
     pinhole_removal_request.save()
 
     sr_number = pinhole_removal_request.ticket_id
@@ -389,11 +311,11 @@ def remove_domain_name(request):
 %(domain_name)s
 
 Thanks,
-%(submitter)s (via ResNet Internal)""" % {'ip_address': ip_address, 'domain_name': domain_name, 'submitter': submitter}
+%(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'domain_name': domain_name, 'submitter': submitter}
 
     # Create service request
     domain_name_removal_request = DomainNameRequest(priority='Low', requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
-    domain_name_removal_request.summary = 'DNS Alias Removal Request via ResNet Internal'
+    domain_name_removal_request.summary = 'DNS Alias Removal Request via University Housing Internal'
     domain_name_removal_request.save()
 
     sr_number = domain_name_removal_request.ticket_id

@@ -1,16 +1,16 @@
 """
 .. module:: resnet_internal.apps.core.utils
-   :synopsis: ResNet Internal Core Utilities.
+   :synopsis: University Housing Internal Core Utilities.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
 
 from copy import deepcopy
-from operator import itemgetter
-from sys import platform
 import logging
+from operator import itemgetter
 import os
+from sys import platform
 
 from django.core.cache import cache
 from srsconnector.models import ServiceRequest
@@ -22,7 +22,7 @@ from .models import NetworkDevice
 logger = logging.getLogger(__name__)
 
 
-class NetworkReachabilityTester:
+class NetworkReachabilityTester(object):
 
     @staticmethod
     def _is_device_reachable(ip_address):

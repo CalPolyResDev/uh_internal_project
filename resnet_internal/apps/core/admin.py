@@ -1,9 +1,9 @@
+from clever_selects.admin import ChainedSelectAdminMixin
 from django.contrib import admin
-from django.db import connection, transaction
 
-from resnet_internal.apps.core.models import NavbarLink
-
-from .models import Community, Building, Room, Department, SubDepartment, SiteAnnouncements, StaffMapping, TechFlair, ResNetInternalUser, NetworkDevice, ADGroup
+from .forms import RoomCreateForm
+from .models import (Community, Building, Room, Department, SubDepartment, SiteAnnouncements,
+                     StaffMapping, TechFlair, ResNetInternalUser as InternalUser, NetworkDevice, ADGroup, NavbarLink)
 
 
 class SiteAnnouncementsAdmin(admin.ModelAdmin):
@@ -22,7 +22,7 @@ class NetworkDeviceAdmin(admin.ModelAdmin):
     list_display = ['display_name', 'dns_name', 'ip_address']
 
 
-class ResNetInternalUserAdmin(admin.ModelAdmin):
+class InternalUserAdmin(admin.ModelAdmin):
     list_display = ['username', 'first_name', 'last_name', 'is_active',
                     'is_net_admin', 'is_telecom', 'is_tag', 'is_rn_staff', 'is_technician',
                     'is_new_tech', 'orientation_complete', 'is_developer']
@@ -34,9 +34,10 @@ class BuildingAdmin(admin.ModelAdmin):
     list_display = ['__str__', 'community']
 
 
-class RoomAdmin(admin.ModelAdmin):
+class RoomAdmin(ChainedSelectAdminMixin, admin.ModelAdmin):
     list_display = ['name', 'building']
     list_filter = ['building']
+    form = RoomCreateForm
 
 
 class ADGroupAdmin(admin.ModelAdmin):
@@ -54,22 +55,8 @@ admin.site.register(SubDepartment)
 admin.site.register(SiteAnnouncements, SiteAnnouncementsAdmin)
 admin.site.register(StaffMapping, StaffMappingAdmin)
 admin.site.register(TechFlair, TechFlairAdmin)
-admin.site.register(ResNetInternalUser, ResNetInternalUserAdmin)
+admin.site.register(InternalUser, InternalUserAdmin)
 admin.site.register(NetworkDevice, NetworkDeviceAdmin)
 admin.site.register(ADGroup, ADGroupAdmin)
 admin.site.register(NavbarLink, NavBarLinkAdmin)
 
-
-def sync_rms_data():
-    cursor = connection.cursor()
-
-    # Purge Building and Community Data
-    Building.objects.all().delete()
-    Community.objects.all().delete()
-
-    # Copy data from master to slave
-    cursor.execute("INSERT INTO resnet_internal.core_building SELECT * FROM common.core_building")
-    cursor.execute("INSERT INTO resnet_internal.core_community SELECT * FROM common.core_community")
-    cursor.execute("INSERT INTO resnet_internal.core_community_buildings SELECT * FROM common.core_community_buildings")
-
-    transaction.commit()
