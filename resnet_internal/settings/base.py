@@ -267,7 +267,7 @@ STATICFILES_FINDERS = (
 )
 
 # The directory that will hold database backups on the application server.
-DBBACKUP_BACKUP_DIRECTORY = (PROJECT_DIR / 'backups').resolve().as_posix()
+DBBACKUP_BACKUP_DIRECTORY = str((PROJECT_DIR / 'backups').resolve())
 
 TEMPLATES = [
     {
