@@ -157,12 +157,13 @@ class EmailConnectionMixin(object):
     @classmethod
     def send_noop_to_all_connections(cls):
         with cls.lock:
-            for index in range(0, len(cls.connection_list)):
-                if cls.connection_list[index][1] is False:
-                    try:
-                        cls.connection_list[index][0].noop()
-                    except:
-                        cls.connection_list[index] = (cls._new_connection(), False)
+            if cls.connection_list:
+                for index in range(0, len(cls.connection_list)):
+                    if cls.connection_list[index][1] is False:
+                        try:
+                            cls.connection_list[index][0].noop()
+                        except:
+                            cls.connection_list[index] = (cls._new_connection(), False)
 
     def _init_mail_connection(self):
         self.server = EmailConnectionMixin._get_tested_connection()
