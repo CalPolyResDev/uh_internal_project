@@ -90,4 +90,4 @@ def keep_imap_alive_signal_handler(num):
 
 keep_alive_signal = get_free_signal()
 register_signal(keep_alive_signal, 'workers', keep_imap_alive_signal_handler)
-add_timer(keep_alive_signal, 60 * 30)
+add_timer(keep_alive_signal, 60)
