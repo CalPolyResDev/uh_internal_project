@@ -14,7 +14,8 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from html2text import html2text
 import requests
-from uwsgidecorators import timer
+from uwsgidecorators import timer, get_free_signal
+from uwsgi import register_signal, add_timer
 
 from .utils import EmailManager, EmailConnectionMixin
 
@@ -84,6 +85,9 @@ def update_slack_email(num):
     cache.set('previous_email_messages', current_emails, 10 * 60)
 
 
-@timer(60 * 10)
-def keep_imap_alive():
+def keep_imap_alive_signal_handler(num):
     EmailConnectionMixin.send_noop_to_all_connections()
+
+keep_alive_signal = get_free_signal()
+register_signal(keep_alive_signal, 'workers', keep_imap_alive_signal_handler)
+add_timer(keep_alive_signal, 60 * 30)
