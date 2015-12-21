@@ -49,7 +49,7 @@ def update_slack_email(num):
     previous_email_messages = cache.get('previous_email_messages')
 
     with EmailManager() as email_manager:
-        current_emails = email_manager.get_mailbox_summary('INBOX')
+        current_emails = email_manager.email_manager.get_messages('INBOX', '')
 
         if previous_email_messages is not None:
             new_emails = [email for email in current_emails if email not in previous_email_messages]
