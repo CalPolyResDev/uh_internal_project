@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.core.utils
-   :synopsis: ResNet Internal Core Utilities.
+   :synopsis: University Housing Internal Core Utilities.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

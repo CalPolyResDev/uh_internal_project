@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.core.views
-   :synopsis: ResNet Internal Core Views.
+   :synopsis: University Housing Internal Core Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -8,15 +8,15 @@
 
 from datetime import datetime
 
+from clever_selects.views import ChainedSelectFormViewMixin
 from django.core.urlresolvers import reverse_lazy
 from django.template.context import RequestContext
-from django.views.generic import TemplateView
 from srsconnector.models import ServiceRequest
 
-from clever_selects.views import ChainedSelectFormViewMixin
+from django.views.generic.base import TemplateView
 
 from ..datatables.views import DatatablesView
-from .ajax import PopulateResidenceHallRooms
+from .ajax import PopulateRooms
 from .forms import RoomCreateForm
 from .models import SiteAnnouncements, Room
 
@@ -54,15 +54,15 @@ class TicketSummaryView(TemplateView):
         return context
 
 
-class ResidenceHallRoomsView(ChainedSelectFormViewMixin, DatatablesView):
+class RoomsView(ChainedSelectFormViewMixin, DatatablesView):
     template_name = "core/rooms.html"
     form_class = RoomCreateForm
-    populate_class = PopulateResidenceHallRooms
+    populate_class = PopulateRooms
     model = Room
-    success_url = reverse_lazy('residence_halls_rooms')
+    success_url = reverse_lazy('rooms')
 
 
-def handler500(request):
+def handler500(request, exception):
     """500 error handler which includes ``request`` in the context."""
 
     from django.template import loader

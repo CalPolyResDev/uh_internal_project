@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.dailyduties.models
-   :synopsis: ResNet Internal Daily Duty Models.
+   :synopsis: University Housing Internal Daily Duty Models.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
