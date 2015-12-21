@@ -5,11 +5,15 @@
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
+from concurrent.futures import ThreadPoolExecutor
+from collections import defaultdict
 from datetime import datetime, timedelta
 from email import header
+from imaplib import IMAP4
 from itertools import zip_longest
 from operator import itemgetter
 from ssl import SSLError, SSLEOFError
+from threading import Lock
 import email
 import logging
 import os
@@ -22,11 +26,12 @@ from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
 from html2text import html2text
-import imapclient
 from srsconnector.models import ServiceRequest
+import imapclient
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
+import itertools
 
 
 imapclient.imapclient.imaplib._MAXLINE = 1000000
@@ -72,6 +77,7 @@ def get_plaintext_signature(technician_name):
 
 class EmailConnectionMixin(object):
     connection_list = None
+    lock = Lock()
 
     def __init__(self, *args, **kwargs):
         super(EmailConnectionMixin, self).__init__(*args, **kwargs)
@@ -93,49 +99,66 @@ class EmailConnectionMixin(object):
         username = settings.INCOMING_EMAIL['IMAP4']['USER']
         password = settings.INCOMING_EMAIL['IMAP4']['PASSWORD']
         ssl = settings.INCOMING_EMAIL['IMAP4']['USE_SSL']
-        connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
-        connection.login(username, password)
+
+        connection = None
+        while not connection:
+            try:
+                connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
+                connection.login(username, password)
+                connection.select_folder('INBOX')
+                connection.close_folder()
+            except (OSError, IMAP4.error):  # Office 365 seems to randomly reject connections and trying again usually results in a connection.
+                connection = None
 
         return connection
 
     @classmethod
-    def _get_connection(obj):
-        if not obj.connection_list:
-            obj.connection_list = [(obj._new_connection(), True)]
-            return obj.connection_list[0][0]
+    def _get_connection(cls):
+        with cls.lock:
+            if not cls.connection_list:
+                cls.connection_list = [(cls._new_connection(), True)]
+                return cls.connection_list[0][0]
 
-        for index in range(0, len(obj.connection_list)):
-            if obj.connection_list[index][1] is False:
-                obj.connection_list[index] = (obj.connection_list[index][0], True)
-                return obj.connection_list[index][0]
+            for index in range(0, len(cls.connection_list)):
+                if cls.connection_list[index][1] is False:
+                    cls.connection_list[index] = (cls.connection_list[index][0], True)
+                    return cls.connection_list[index][0]
 
-        return_connection = obj._new_connection()
-        obj.connection_list.append((return_connection, True))
-        return return_connection
+            return_connection = cls._new_connection()
+            cls.connection_list.append((return_connection, True))
+            return return_connection
 
     @classmethod
-    def _release_connection(obj, connection):
-        for index in range(0, len(obj.connection_list)):
-            if obj.connection_list[index][0] is connection:
-                obj.connection_list[index] = (connection, False)
-                return
-        Exception('Could not find connection.')
+    def _release_connection(cls, connection):
+        with cls.lock:
+            for index in range(0, len(cls.connection_list)):
+                if cls.connection_list[index][0] is connection:
+                    cls.connection_list[index] = (connection, False)
+                    return
+            Exception('Could not find connection.')
 
     @classmethod
     def _reinitialize_connection(cls, connection):
-        for index in range(0, len(cls.connection_list)):
-            if cls.connection_list[index][0] is connection:
-                cls.connection_list[index] = (cls._new_connection(), True)
-                return cls.connection_list[index][0]
-        Exception('Could not find connection to reinitialize it.')
+        with cls.lock:
+            for index in range(0, len(cls.connection_list)):
+                if cls.connection_list[index][0] is connection:
+                    cls.connection_list[index] = (cls._new_connection(), True)
+                    return cls.connection_list[index][0]
+            Exception('Could not find connection to reinitialize it.')
 
-    def _init_mail_connection(self):
-        self.server = EmailConnectionMixin._get_connection()
+    @classmethod
+    def _get_tested_connection(cls):
+        connection = cls._get_connection()
 
         try:
-            self.server.noop()
+            connection.noop()
         except:
-            self.server = EmailConnectionMixin._reinitialize_connection(self.server)
+            connection = cls._reinitialize_connection(connection)
+
+        return connection
+
+    def _init_mail_connection(self):
+        self.server = EmailConnectionMixin._get_tested_connection()
 
 
 class EmailManager(EmailConnectionMixin):
@@ -248,16 +271,41 @@ class EmailManager(EmailConnectionMixin):
 
         return voicemails
 
-    def get_mailbox_summary(self, mailbox_name, search_string, **kwargs):
-        self.server.select_folder(mailbox_name)
-        message_uids = self.server.search('TEXT ' + search_string if search_string else 'ALL')
-        message_uid_fetch_groups = zip_longest(*(iter(message_uids),) * 500)
+    def _create_uid_fetch_groups(self, uids):
+        return zip_longest(*(iter(uids),) * 500)
+
+    def _get_uids_and_dates_for_mailbox(self, mailbox_name, search_string, **kwargs):
+        server = kwargs.get('connection', self.server)
+
+        server.select_folder(mailbox_name)
+        imap_search_string = 'TEXT ' + search_string if search_string else 'ALL'
+
+        unsorted_message_uids = server.search(imap_search_string)
+        message_uid_fetch_groups = self._create_uid_fetch_groups(unsorted_message_uids)
+        unsorted_messages = []
+
+        for message_uid_group in message_uid_fetch_groups:
+            message_uid_group = list(filter(None.__ne__, message_uid_group))
+            response = server.fetch(message_uid_group, ['INTERNALDATE'])
+
+            for uid, data in response.items():
+                unsorted_messages.append((uid, data[b'INTERNALDATE']))
+
+        server.close_folder()
+        return sorted(unsorted_messages, key=itemgetter(1), reverse=True)
+
+    def _get_message_summaries(self, mailbox_name, message_uids, **kwargs):
+        server = kwargs.get('connection', self.server)
+
+        server.select_folder(mailbox_name)
+
+        message_uid_fetch_groups = self._create_uid_fetch_groups(message_uids)
 
         messages = []
 
         for message_uid_group in message_uid_fetch_groups:
             message_uid_group = list(filter(None.__ne__, message_uid_group))
-            response = self.server.fetch(message_uid_group, ['ALL'])
+            response = server.fetch(message_uid_group, ['ALL'])
 
             for uid, data in response.items():
                 unread = b'\\Seen' not in data[b'FLAGS']
@@ -281,24 +329,77 @@ class EmailManager(EmailConnectionMixin):
                     'sender_address': smart_text(sender_address.mailbox) + '@' + smart_text(sender_address.host) if sender_address else None,
                 })
 
-        self.server.close_folder()
-
-        if kwargs.get('sorted', True):
-            messages.sort(key=itemgetter('date'), reverse=True)
-
+        server.close_folder()
         return messages
 
-    def get_messages(self, mailbox_name, search_string):
-        if mailbox_name:
-            return self.get_mailbox_summary(mailbox_name, search_string)
-        else:
-            messages = []
-            for mailbox in self.SEARCH_MAILBOXES:
-                mailbox_messages = self.get_mailbox_summary(mailbox, search_string, sorted=False)
-                messages += mailbox_messages
+    def get_messages(self, mailbox_name, search_string, **kwargs):
+        message_range = kwargs.get('range')
 
+        if mailbox_name:
+            message_uids = [message[0] for message in sorted(self._get_uids_and_dates_for_mailbox(mailbox_name, search_string), key=itemgetter(1), reverse=True)]
+
+            num_available_messages = len(message_uids)
+
+            if message_range:
+                if message_range[0] > len(message_uids) - 1:
+                    message_range[0] = 0
+                if message_range[1] > len(message_uids) - 1:
+                    message_range[1] = len(message_uids) - 1
+
+                message_uids = message_uids[message_range[0]:message_range[1] + 1]
+
+            return (self._get_message_summaries(mailbox_name, message_uids), num_available_messages)
+        else:
+            def retrieve_results_for_mailbox(mailbox_name):
+                message_results = []
+                connection = EmailConnectionMixin._get_tested_connection()
+
+                uids_and_dates = self._get_uids_and_dates_for_mailbox(mailbox_name, search_string, connection=connection)
+                for uid, date in uids_and_dates:
+                    message_results.append({
+                        'uid': uid,
+                        'date': date,
+                        'mailbox_name': mailbox_name,
+                    })
+
+                EmailConnectionMixin._release_connection(connection)
+                return message_results
+
+            with ThreadPoolExecutor(max_workers=10) as pool:
+                message_results = pool.map(retrieve_results_for_mailbox, self.SEARCH_MAILBOXES)
+            message_results = list(itertools.chain(*message_results))  # Flatten list of lists
+
+            # Sort and select range
+            message_results.sort(key=itemgetter('date'), reverse=True)
+            total_available_messages = len(message_results)
+
+            if message_range:
+                if message_range[0] > len(message_results) - 1:
+                    message_range[0] = 0
+                if message_range[1] > len(message_results) - 1:
+                    message_range[1] = len(message_results) - 1
+
+                message_results = message_results[message_range[0]:message_range[1] + 1]
+
+            message_results_by_mailbox = defaultdict(list)
+
+            # Retrieve messages from mailboxes
+            messages = []
+
+            def retrieve_messages_for_mailbox(mailbox_name, partial_messages):
+                connection = EmailConnectionMixin._get_tested_connection()
+                messages.extend(self._get_message_summaries(mailbox_name, [message['uid'] for message in partial_messages], connection=connection))
+                EmailConnectionMixin._release_connection(connection)
+
+            for message in message_results:
+                message_results_by_mailbox[message['mailbox_name']].append(message)
+
+            with ThreadPoolExecutor(max_workers=10) as pool:
+                pool.map(lambda mailbox_results: retrieve_messages_for_mailbox(mailbox_results[0], mailbox_results[1]), message_results_by_mailbox.items())
+
+            # Sort and return
             messages.sort(key=itemgetter('date'), reverse=True)
-            return messages
+            return (messages, total_available_messages)
 
     def mark_message_read(self, mailbox_name, uid):
         self.server.select_folder(mailbox_name)
