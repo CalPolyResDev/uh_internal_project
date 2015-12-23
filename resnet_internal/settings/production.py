@@ -16,7 +16,7 @@ ALLOWED_HOSTS = [
     'dev.resdev.calpoly.edu',
     'prod.resdev.calpoly.edu',
     '.internal.resnet.calpoly.edu',
-    'clever_selects_client',  # Needed for django-clever-selects for form repopulation.
+    'clever-selects_client',  # Needed for django-clever-selects for form repopulation.
 ]
 
 DEFAULT_BASE_URL = 'https://internal.resnet.calpoly.edu'
