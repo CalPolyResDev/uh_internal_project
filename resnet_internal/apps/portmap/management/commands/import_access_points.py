@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.portmap.management.import_access_points
-   :synopsis: ResNet Internal Residence Halls Port Map Management Access Point Import
+   :synopsis: ResNet Internal Port Map Management Access Point Import
 
 .. moduleauthor:: Thomas Willson <thomas.willson@me.com>
 

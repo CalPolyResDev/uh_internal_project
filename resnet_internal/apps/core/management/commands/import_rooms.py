@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.portmap.management.import_rooms
-   :synopsis: ResNet Internal Residence Halls Port Map Management Room Import
+   :synopsis: ResNet Internal Core Management Room Import
 
 .. moduleauthor:: Thomas Willson <thomas.willson@me.com>
 """
