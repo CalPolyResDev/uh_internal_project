@@ -51,9 +51,11 @@
                     {% if request.user.is_authenticated %}
                         <p>You are logged in as <b>{{ user_display_name }}</b>. (<a href="{% url 'logout' %}">Logout</a>)<br />
                         {# Display User Specializations #}
+                        <span class="tech-flair">
                         {% for title in user_specializations %}
                             {{ title }}{% if not forloop.last %},&nbsp;{% endif %}
                         {% endfor %}
+                        </span>
                         </p>
                     {% else %}
                         <p>You are not currently logged in. (<a href="{% url 'login' %}">Login</a>)</p>
