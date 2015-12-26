@@ -15,12 +15,11 @@ from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db.models.base import Model
-from django.db.models.fields import (CharField, IntegerField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField,
-    URLField, SmallIntegerField)
+from django.db.models.fields import (CharField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField,
+    URLField, SmallIntegerField, PositiveSmallIntegerField)
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.http import urlquote
 from ldap_groups.exceptions import InvalidGroupDN
 from ldap_groups.groups import ADGroup as LDAPADGroup
 
@@ -125,14 +124,12 @@ class SiteAnnouncements(Model):
 class StaffMapping(Model):
     """A mapping of various department staff to their respective positions."""
 
-    staff_title = CharField(max_length=35, unique=True, verbose_name='Staff Title')
-    staff_name = CharField(max_length=50, verbose_name='Staff Full Name')
-    staff_alias = CharField(max_length=8, verbose_name='Staff Alias')
-    staff_ext = IntegerField(verbose_name='Staff Telephone Extension')
+    title = CharField(max_length=35, unique=True, verbose_name='Title')
+    name = CharField(max_length=50, verbose_name='Full Name')
+    email = CharField(max_length=8, verbose_name='Email Address')
+    extension = PositiveSmallIntegerField(verbose_name='Telephone Extension')
 
     class Meta:
-        db_table = 'staffmapping'
-        managed = False
         verbose_name = 'Campus Staff Mapping'
 
 

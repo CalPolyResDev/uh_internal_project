@@ -11,7 +11,7 @@ class SiteAnnouncementsAdmin(admin.ModelAdmin):
 
 
 class StaffMappingAdmin(admin.ModelAdmin):
-    list_display = ['staff_title', 'staff_alias', 'staff_name']
+    list_display = ['title', 'name', 'email', 'extension']
 
 
 class TechFlairAdmin(admin.ModelAdmin):

@@ -74,14 +74,6 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MiB
 
 DATABASES = {
     'default': dj_database_url.config(default=get_env_variable('RESNET_INTERNAL_DB_DEFAULT_DATABASE_URL')),
-    'common': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'common',
-        'USER': 'common',
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_COMMON_PASSWORD'),
-        'HOST': 'data.resdev.calpoly.edu',
-        'PORT': '3306',
-    },
     'printers': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'printers',
@@ -108,7 +100,6 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = (
-    'resnet_internal.apps.core.routers.CommonRouter',
     'resnet_internal.apps.printerrequests.routers.PrinterRequestsRouter',
     'rmsconnector.routers.RMSRouter',
     'srsconnector.routers.SRSRouter',
