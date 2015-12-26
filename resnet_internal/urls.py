@@ -28,7 +28,7 @@ from .apps.computers.ajax import PopulateComputers, UpdateComputer, remove_compu
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
 from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, PopulateRooms, UpdateRoom
 from .apps.core.views import IndexView, handler500, TicketSummaryView, RoomsView
-from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive, send_email, attachment_upload, attachment_delete
+from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive, send_email, attachment_upload, attachment_delete, ticket_from_email
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView, EmailComposeView
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
@@ -118,7 +118,8 @@ urlpatterns += [
     url(r'^daily_duties/email/get_attachment/(?P<mailbox_name>.+)/(?P<uid>[0-9]+)/(?P<attachment_index>[0-9]+)/$', login_required(technician_access(EmailAttachmentRequestView.as_view())), name='email_get_attachment'),
     url(r'^daily_duties/email/get_attachment/(?P<mailbox_name>.+)/(?P<uid>[0-9]+)/(?P<content_id>[^<>]+)/$', login_required(technician_access(EmailAttachmentRequestView.as_view())), name='email_get_attachment'),
     url(r'^daily_duties/email/get_folders/$', login_required(technician_access(get_email_folders)), name='email_get_folders'),
-    url(r'^daily_duties/email/get_mailbox_summary/$', login_required(technician_access(get_mailbox_summary)), name='email_get_mailbox_summary'),
+    url(r'^daily_duties/email/get_mailbox_summary/(?P<mailbox_name>.*)/(?P<search_string>.*)/(?P<message_group>[0-9]+)/$', login_required(technician_access(get_mailbox_summary)), name='email_get_mailbox_summary_range'),
+    url(r'^daily_duties/email/get_mailbox_summary/(?P<mailbox_name>.*)/(?P<search_string>.*)/$', login_required(technician_access(get_mailbox_summary)), name='email_get_mailbox_summary'),
     url(r'^daily_duties/email/send_email/$', login_required(technician_access(send_email)), name='send_email'),
     url(r'^daily_duties/email/upload_attachment/$', technician_access(attachment_upload), name='jfu_upload'),
     url(r'^daily_duties/email/delete_attachment/(?P<pk>.+)$', technician_access(attachment_delete), name='jfu_delete'),
@@ -127,6 +128,7 @@ urlpatterns += [
     url(r'^daily_duties/update_duty/$', login_required(technician_access(update_duty)), name='daily_duties_update_duty'),
     url(r"^daily_duties/voicemail/(?P<message_uid>\b[0-9]+\b)/$", login_required(technician_access(VoicemailAttachmentRequestView.as_view())), name='voicemail_attachment_request'),
     url(r"^daily_duties/remove_voicemail/$", login_required(technician_access(remove_voicemail)), name='remove_voicemail'),
+    url(r"^daily_duties/create_ticket_from_email/$", login_required(technician_access(ticket_from_email)), name='email_create_ticket'),
 ]
 
 # ResNet Technician Orientation
@@ -188,7 +190,7 @@ urlpatterns += [
     url(r'^portmap/ap/update/$', login_required(portmap_access(UpdateAccessPoint.as_view())), name='update_access_point'),
     url(r'^portmap/ap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(AccessPointFrameView.as_view())), name='ap_info_frame'),
     url(r'^portmap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(PortFrameView.as_view())), name='port_info_frame'),
-    url(r'^portmap/ajax/chained_port/$', login_required(PortChainedAjaxView.as_view()), name='portmap_chained_port'),
+    url(r'^portmap/ajax/chained_port/$', PortChainedAjaxView.as_view(), name='portmap_chained_port'),
 ]
 
 # Roster Generator

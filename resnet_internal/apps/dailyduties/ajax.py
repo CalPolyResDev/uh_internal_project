@@ -8,6 +8,7 @@
 
 from datetime import datetime
 import logging
+from urllib.parse import unquote
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
@@ -22,6 +23,7 @@ from jfu.http import upload_receive, UploadResponse, JFUResponse
 
 from .models import DailyDuties
 from .utils import GetDutyData, EmailManager
+from ..core.templatetags.srs_urls import srs_edit_url
 
 
 logger = logging.getLogger(__name__)
@@ -154,20 +156,32 @@ def get_email_folders(request):
 
 
 @ajax
-@require_POST
-def get_mailbox_summary(request):
-    mailbox_name = request.POST["mailbox"]
-    search_string = request.POST["search_string"]
+def get_mailbox_summary(request, **kwargs):
+    mailbox_name = unquote(kwargs["mailbox_name"])
+    search_string = unquote(kwargs["search_string"])
+
+    MESSAGES_PER_GROUP = 100
+    message_group = kwargs.get('message_group')
+    message_range = [int(message_group) * MESSAGES_PER_GROUP, (int(message_group) + 1) * MESSAGES_PER_GROUP - 1] if message_group and int(message_group) is not None else None
 
     if mailbox_name and mailbox_name == 'root':
-        mailbox_summary = None
+        messages = None
+        num_available_messages = 0
     else:
         with EmailManager() as email_manager:
-            mailbox_summary = email_manager.get_messages(mailbox_name, search_string)
+            (messages, num_available_messages) = email_manager.get_messages(mailbox_name, search_string, range=message_range)
 
-    for email in mailbox_summary:
+    for email in messages:
         email['full_id'] = email['mailbox'] + '/' + str(email['uid'])
         email['modal_title'] = 'Email'
+
+    if message_range and num_available_messages > 0:
+        if message_range[1] + 2 > num_available_messages:
+            next_group_url = None
+        else:
+            next_group_url = reverse('email_get_mailbox_summary_range', kwargs={'mailbox_name': mailbox_name, 'search_string': search_string, 'message_group': str(int(message_group) + 1)})
+    else:
+        next_group_url = None
 
     raw_response = """
         {% load staticfiles %}
@@ -207,14 +221,15 @@ def get_mailbox_summary(request):
     """
 
     template = Template(raw_response)
-    context = RequestContext(request, {'emails': mailbox_summary,
+    context = RequestContext(request, {'emails': messages,
                                        'mailbox_name': mailbox_name,
                                        'is_search': bool(search_string),
                                        'search_string': search_string,
+                                       'next_group_url': next_group_url,
                                        })
     response_html = template.render(context)
 
-    return {'response': response_html}
+    return {'html': response_html, 'next_group_url': (next_group_url if next_group_url else '')}
 
 
 @ajax
@@ -316,3 +331,17 @@ def attachment_delete(request, pk):
         success = False
 
     return JFUResponse(request, success)
+
+
+@ajax
+@require_POST
+def ticket_from_email(request):
+    post_items = request.POST
+
+    [mailbox_name, uid] = post_items['message_path'].rsplit('/', 1)
+    user_full_name = request.user.get_full_name()
+
+    with EmailManager() as email_manager:
+        ticket_number = email_manager.create_ticket_from_email(mailbox_name, uid, post_items['requestor_username'], user_full_name)
+
+    return {'redirect_url': srs_edit_url(ticket_number)}

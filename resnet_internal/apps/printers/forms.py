@@ -10,7 +10,7 @@ from clever_selects.form_fields import ChainedModelChoiceField
 from clever_selects.forms import ChainedChoicesModelForm
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Field, Fieldset, Submit, HTML
+from crispy_forms.layout import Layout, Field, Fieldset, Submit
 from django.core.urlresolvers import reverse_lazy
 
 from ..core.models import SubDepartment
@@ -38,7 +38,7 @@ class PrinterForm(ChainedChoicesModelForm):
                 Field('sub_department', autocomplete='off'),
                 Field('printer_name', placeholder=self.fields['printer_name'].label),
                 Field('mac_address', placeholder=self.fields['mac_address'].label),
-                Field('ip_address', css_class="ip_address_field", placeholder=self.fields['ip_address'].label),
+                Field('ip_address', css_class="ip_address_field", placeholder=self.fields['ip_address'].label, title="Leave blank for DHCP."),
                 Field('model', placeholder=self.fields['model'].label),
                 Field('serial_number', placeholder=self.fields['serial_number'].label),
                 Field('property_id', placeholder=self.fields['property_id'].label),

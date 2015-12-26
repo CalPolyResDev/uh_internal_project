@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 @ajax
 def update_network_status(request):
-    network_reachability = NetworkReachabilityTester.get_network_device_reachability()
+    network_reachability = NetworkReachabilityTester.get_network_device_reachability(2)
     network_reachability.sort(key=itemgetter('status', 'display_name'))
 
     raw_response = """

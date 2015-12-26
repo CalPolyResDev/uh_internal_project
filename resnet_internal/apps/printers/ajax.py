@@ -80,22 +80,16 @@ class PopulatePrinters(RNINDatatablesPopulateView):
             elif puchase_datetime <= old_delta and puchase_datetime > older_delta:
                 return "old"
 
-    def render_column(self, row, column):
+    def get_display_block(self, row, column):
         if column == 'ip_address':
-            value = getattr(row, column)
-            value = value if value else "DHCP"
+            display_value = self.get_raw_value(row, column)
+            return display_value if display_value else "DHCP"
+        else:
+            return super(PopulatePrinters, self).get_display_block(row, column)
 
-            # A bit of a hack to help people with DHCP
-            self.editable_block_template = self.editable_block_template.replace(" />", 'title="Submit an empty value for DHCP." />')
-
-            editable_block = self.editable_block_template.format(value=value if value != "DHCP" else "")
-
-            return self.base_column_template.format(column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
-        elif column == 'remove':
-            onclick = "confirm_remove({id});return false;".format(id=row.id)
-            link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="remove", link_style="", link_text="Remove")
-
-            return self.base_column_template.format(column=column, value="", link_block=link_block, inline_images="", editable_block="")
+    def render_column(self, row, column):
+        if column == 'remove':
+            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="remove", link_display="Remove")
         else:
             return super(PopulatePrinters, self).render_column(row, column)
 

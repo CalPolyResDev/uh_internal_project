@@ -148,6 +148,7 @@ DEFAULT_FROM_EMAIL = SERVER_EMAIL
 SLACK_WEBHOOK_URL = get_env_variable('RESNET_INTERNAL_SLACK_WEBHOOK_URL')
 SLACK_VM_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_VM_CHANNEL')
 SLACK_EMAIL_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_EMAIL_CHANNEL')
+SLACK_NETWORK_STATUS_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_NETWORK_STATUS_CHANNEL')
 
 # ======================================================================================================== #
 #                                              Access Permissions                                          #
