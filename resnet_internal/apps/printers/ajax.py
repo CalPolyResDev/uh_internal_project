@@ -82,7 +82,7 @@ class PopulatePrinters(RNINDatatablesPopulateView):
 
     def get_display_block(self, row, column):
         if column == 'ip_address':
-            display_value = super(PopulatePrinters, self).get_display_block(row, column)
+            display_value = self.get_raw_value(row, column)
             return display_value if display_value else "DHCP"
         else:
             return super(PopulatePrinters, self).get_display_block(row, column)

@@ -90,7 +90,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
 
     def get_display_block(self, row, column):
         if column == 'ip_address':
-            raw_display_value = super(PopulateComputers, self).get_display_block(row, column)
+            raw_display_value = self.get_raw_value(row, column)
             display_value = raw_display_value if raw_display_value else "DHCP"
 
             # Add the record link block
@@ -102,15 +102,18 @@ class PopulateComputers(RNINDatatablesPopulateView):
             except NoReverseMatch:
                 pass
             else:
-                onclick = """openModalFrame("Association Record for {ip_address}", "{url}");""".format(ip_address=display_value, url=record_url)
-                link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name="", link_display=display_value)
+                # Don't duplicate display value
+                display_value = ""
+
+                onclick = """openModalFrame("Association Record for {ip_address}", "{url}");""".format(ip_address=raw_display_value, url=record_url)
+                link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name="", link_display=raw_display_value)
 
                 # Add pinhole/domain name icons
                 pinholes = self.icon_template.format(icon_url=static('images/icons/pinholes.png'))
                 domain_names = self.icon_template.format(icon_url=static('images/icons/domain_names.png'))
 
-                has_pinholes = Pinhole.objects.filter(ip_address=display_value).exists()
-                has_domain_names = DomainName.objects.filter(ip_address=display_value).exists()
+                has_pinholes = Pinhole.objects.filter(ip_address=raw_display_value).exists()
+                has_domain_names = DomainName.objects.filter(ip_address=raw_display_value).exists()
 
                 if has_pinholes:
                     inline_images = pinholes

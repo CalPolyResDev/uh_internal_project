@@ -189,10 +189,11 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     def get_row_data_attributes(self, row):
         return None
 
-    def get_display_block(self, row, column):
-        display_value = super(RNINDatatablesPopulateView, self).render_column(row, column)
+    def get_raw_value(self, row, column):
+        return super(RNINDatatablesPopulateView, self).render_column(row, column)
 
-        return self.display_block_template.format(value=display_value, link_block="", inline_images="")
+    def get_display_block(self, row, column):
+        return self.display_block_template.format(value=self.get_raw_value(row, column), link_block="", inline_images="")
 
     def render_action_column(self, row, column, function_name, link_class_name, link_display):
         onclick = "{function_name}({id});return false;".format(function_name=function_name, id=row.id)
