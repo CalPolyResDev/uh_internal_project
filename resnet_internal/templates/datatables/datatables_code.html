@@ -33,6 +33,10 @@
 
 
     var {{ datatable_name }};
+    
+    function redraw_datatables_row(row_object, rendered_row) {
+        {{ datatable_name }}.row(row_object).data(rendered_row).draw('page');
+    }
 
     // initialize the dataTable
     $(document).ready(function() {
@@ -155,7 +159,7 @@
                                 // Replace the edited row with updated html
                                 var rendered_row = response_context["rendered_row"];
 
-                                {{ datatable_name }}.row(row_object).data(rendered_row).draw('page');
+                                redraw_datatables_row(row_object, rendered_row);
 
                                 switch_to_read_mode();
 

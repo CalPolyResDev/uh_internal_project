@@ -185,7 +185,7 @@ urlpatterns += [
     url(r'^portmap/ap/update/$', login_required(portmap_access(UpdateAccessPoint.as_view())), name='update_access_point'),
     url(r'^portmap/ap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(AccessPointFrameView.as_view())), name='ap_info_frame'),
     url(r'^portmap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(PortFrameView.as_view())), name='port_info_frame'),
-    url(r'^portmap/ajax/chained_port/$', login_required(PortChainedAjaxView.as_view()), name='portmap_chained_port'),
+    url(r'^portmap/ajax/chained_port/$', PortChainedAjaxView.as_view(), name='portmap_chained_port'),
 ]
 
 # Raise errors on purpose
