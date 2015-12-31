@@ -36,6 +36,7 @@ from .apps.printerrequests.ajax import change_request_status, update_part_invent
 from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
 from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
 from .apps.printers.views import PrintersView
+from .apps.residents.views import SearchView
 from .apps.rosters.views import RosterGenerateView
 from .settings.base import (technician_access_test, staff_access_test, printers_access_test, printers_modify_access_test,
                             portmap_access_test, portmap_modify_access_test, computers_access_test, computers_modify_access_test,
@@ -195,6 +196,11 @@ urlpatterns += [
 # Roster Generator
 urlpatterns += [
     url(r'^rosters/$', login_required(RosterGenerateView.as_view()), name='rosters')
+]
+
+# Resident Lookup
+urlpatterns += [
+    url(r'^residents/$', login_required(SearchView.as_view()), name='resident_lookup'),
 ]
 
 # Raise errors on purpose
