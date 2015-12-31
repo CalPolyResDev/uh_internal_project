@@ -8,7 +8,7 @@
 import logging
 
 from django.core.exceptions import ImproperlyConfigured
-from django.template import Library, Node, TemplateSyntaxError
+from django.template import Library, TemplateSyntaxError
 
 
 from ..ajax import RNINDatatablesPopulateView
