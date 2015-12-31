@@ -264,6 +264,9 @@ STATICFILES_FINDERS = (
     'static_precompiler.finders.StaticPrecompilerFinder',
 )
 
+# The directory that will hold database backups on the application server.
+DBBACKUP_BACKUP_DIRECTORY = str(PROJECT_DIR.joinpath("backups").resolve())
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -287,9 +290,6 @@ TEMPLATES = [
         },
     },
 ]
-
-# The directory that will hold database backups on the application server.
-DBBACKUP_BACKUP_DIRECTORY = str(PROJECT_DIR.joinpath("backups").resolve())
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
