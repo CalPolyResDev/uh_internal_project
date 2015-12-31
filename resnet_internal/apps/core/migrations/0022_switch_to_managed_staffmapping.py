@@ -16,13 +16,13 @@ def populate_staff_mapping(apps, schema_editor):
         extension=2516
     )
     StaffMapping.objects.create(
-        title="Housing: Information Technology Consultant",
+        title="Housing: IT Consultant",
         name="Julie Gibson",
         email="jagibson@calpoly.edu",
         extension=7159
     )
     StaffMapping.objects.create(
-        title="ResNet: Assistant Resident Coordinator",
+        title="ResNet: Asst. Resident Coordinator",
         name="Jeffrey F. Porter",
         email="jfporter@calpoly.edu",
         extension=5619
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('title', models.CharField(max_length=35, verbose_name='Title', unique=True)),
                 ('name', models.CharField(max_length=50, verbose_name='Full Name')),
-                ('email', models.CharField(max_length=8, verbose_name='Email Address')),
+                ('email', models.CharField(max_length=20, verbose_name='Email Address')),
                 ('extension', models.PositiveSmallIntegerField(verbose_name='Telephone Extension')),
             ],
             options={

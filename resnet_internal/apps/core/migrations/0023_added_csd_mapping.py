@@ -187,7 +187,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'CSD Domain Mapping',
             },
         ),
-        RunPython(populate_csd_mapping),
+        #  RunPython(populate_csd_mapping),
         migrations.AlterField(
             model_name='resnetinternaluser',
             name='ad_groups',
