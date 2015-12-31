@@ -105,7 +105,7 @@ DATABASE_ROUTERS = (
     'srsconnector.routers.SRSRouter',
 )
 
-DBBACKUP_DATABASES = ['default', 'common', 'printers']
+DBBACKUP_DATABASES = ['default', 'printers']
 
 # ======================================================================================================== #
 #                                            E-Mail Configuration                                          #
@@ -262,7 +262,7 @@ STATICFILES_FINDERS = (
 )
 
 # The directory that will hold database backups on the application server.
-DBBACKUP_BACKUP_DIRECTORY = str((PROJECT_DIR / 'backups').resolve())
+DBBACKUP_BACKUP_DIRECTORY = str(PROJECT_DIR.joinpath("backups").resolve())
 
 TEMPLATES = [
     {
