@@ -82,5 +82,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        RunPython(update_navbar),
+        #  RunPython(update_navbar),
     ]
