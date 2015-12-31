@@ -36,9 +36,11 @@ from .apps.printerrequests.ajax import change_request_status, update_part_invent
 from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
 from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
 from .apps.printers.views import PrintersView
+from .apps.residents.views import SearchView
+from .apps.rosters.views import RosterGenerateView
 from .settings.base import (technician_access_test, staff_access_test, printers_access_test, printers_modify_access_test,
                             portmap_access_test, portmap_modify_access_test, computers_access_test, computers_modify_access_test,
-                            computer_record_modify_access_test)
+                            computer_record_modify_access_test, csd_access_test, ral_manager_access_test)
 
 
 def permissions_check(test_func, raise_exception=True):
@@ -79,6 +81,9 @@ computer_record_modify_access = permissions_check(computer_record_modify_access_
 printers_access = permissions_check(printers_access_test)
 printers_modify_access = permissions_check(printers_modify_access_test)
 
+csd_access = permissions_check(csd_access_test)
+ral_manager_access = permissions_check(ral_manager_access_test)
+
 
 handler500 = handler500
 
@@ -87,7 +92,7 @@ logger = logging.getLogger(__name__)
 # Core
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='home'),
-    url(r'^favicon\.ico$', RedirectView.as_view(url=staticfiles('images/icons/favicon.ico')), name='favicon'),
+    url(r'^favicon\.ico$', RedirectView.as_view(url=staticfiles('images/icons/favicon.ico'), permanent=True), name='favicon'),
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
     url(r'^login/$', auth_login, name='login'),
     url(r'^logout/$', auth_logout, name='logout', kwargs={'next_page': settings.CAS_LOGOUT_URL}),
@@ -185,7 +190,17 @@ urlpatterns += [
     url(r'^portmap/ap/update/$', login_required(portmap_access(UpdateAccessPoint.as_view())), name='update_access_point'),
     url(r'^portmap/ap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(AccessPointFrameView.as_view())), name='ap_info_frame'),
     url(r'^portmap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(PortFrameView.as_view())), name='port_info_frame'),
-    url(r'^portmap/ajax/chained_port/$', login_required(PortChainedAjaxView.as_view()), name='portmap_chained_port'),
+    url(r'^portmap/ajax/chained_port/$', PortChainedAjaxView.as_view(), name='portmap_chained_port'),
+]
+
+# Roster Generator
+urlpatterns += [
+    url(r'^rosters/$', login_required(RosterGenerateView.as_view()), name='rosters')
+]
+
+# Resident Lookup
+urlpatterns += [
+    url(r'^residents/$', login_required(SearchView.as_view()), name='resident_lookup'),
 ]
 
 # Raise errors on purpose

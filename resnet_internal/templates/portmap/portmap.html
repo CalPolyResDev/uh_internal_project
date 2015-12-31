@@ -28,7 +28,7 @@
 
     {% if request.user|portmap_modify_access %}
     <div class="col-xs-12">
-        {% crispy form form.helper %}
+        {% crispy form %}
     </div>
     {% endif %}
 {% endblock %}
@@ -43,11 +43,8 @@
             var response = confirm('Are you sure you want to change the status of this port?');
             if (response) {
                 ajaxPost("{% url 'change_port_status' %}", {"port_id": port_id}, function(response_context) {
-                    // Replace the edited columns with updated html
-                    columns = response_context["rendered_columns"]
-                    for (var column in columns) {
-                        $("[id='" + port_id + "'][column='" + column + "']").parent().html(columns[column]);
-                    }
+                    var rendered_row = response_context["rendered_row"];
+                    redraw_datatables_row($("#" + port_id), rendered_row);
                 });
             } else {
                 return false;

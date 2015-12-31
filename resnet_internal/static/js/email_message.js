@@ -60,7 +60,7 @@ function change_to_editor() {
         html: true
     })
     
-    $('#buttons').append('<button class="btn btn-default" type="button" id="attach_button">Attach</button>');
+    $('#email_buttons').append('<button class="btn btn-default" type="button" id="attach_button">Attach</button>');
     $('#attach_button').popover({
         html: true,
         container: 'body',

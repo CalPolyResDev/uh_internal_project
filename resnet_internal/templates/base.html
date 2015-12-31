@@ -16,7 +16,7 @@
         <meta name="keywords" content="University Housing Internal">
         <meta name="description" content="University Housing Internal Tools and Services">
 
-        <link rel="shortcut icon" href="http://calpoly.edu/favicon.ico">
+        <link rel="shortcut icon" href="{% static 'images/icons/favicon.ico' %}">
 
         <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
 
@@ -33,7 +33,7 @@
         <title>University Housing Internal{% block subtitle %}{% endblock %}</title>
     </head>
     <body>
-        <!-- These are here only because django-clever-selects throws js inline that requires jQuery... -->
+        <!-- This is here only because django-clever-selects throws js inline that requires jQuery... -->
         <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js'></script>
 
         {% block container %}
@@ -49,9 +49,16 @@
                 </div>
                 <div class="col-xs-12 col-md-4 login-display">
                     {% if request.user.is_authenticated %}
-                    <p>You are logged in as <b>{{ user_display_name }}</b>. (<a href="{% url 'logout' %}">Logout</a>)</p>
+                        <p>You are logged in as <b>{{ user_display_name }}</b>. (<a href="{% url 'logout' %}">Logout</a>)<br />
+                        {# Display User Specializations #}
+                        <span class="tech-flair">
+                        {% for title in user_specializations %}
+                            {{ title }}{% if not forloop.last %},&nbsp;{% endif %}
+                        {% endfor %}
+                        </span>
+                        </p>
                     {% else %}
-                    <p>You are not currently logged in. (<a href="{% url 'login' %}">Login</a>)</p>
+                        <p>You are not currently logged in. (<a href="{% url 'login' %}">Login</a>)</p>
                     {% endif %}
                 </div>
             </header>
@@ -112,6 +119,7 @@
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js"></script>
 
         <script src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
+        <script src="{% static 'js/jquery.blockUI.js' %}"></script>
         <script src="{% static 'js/modal-frames.js' %}?version=1.0"></script>
         <script src="{% static 'js/navbar.js' %}?version=1.0"></script>
         
