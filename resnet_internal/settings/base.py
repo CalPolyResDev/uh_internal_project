@@ -74,14 +74,6 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MiB
 
 DATABASES = {
     'default': dj_database_url.config(default=get_env_variable('RESNET_INTERNAL_DB_DEFAULT_DATABASE_URL')),
-    'common': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'common',
-        'USER': 'common',
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_COMMON_PASSWORD'),
-        'HOST': 'data.resdev.calpoly.edu',
-        'PORT': '3306',
-    },
     'printers': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'printers',
@@ -108,7 +100,6 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = (
-    'resnet_internal.apps.core.routers.CommonRouter',
     'resnet_internal.apps.printerrequests.routers.PrinterRequestsRouter',
     'rmsconnector.routers.RMSRouter',
     'srsconnector.routers.SRSRouter',
@@ -166,6 +157,9 @@ portmap_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff
 computers_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag or user.is_tag_readonly)
 computers_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag)
 computer_record_modify_access_test = (lambda user: user.is_developer or user.is_net_admin or user.is_tag)
+
+csd_access_test = (lambda user: user.is_developer or user.is_ral_manager or user.is_csd)
+ral_manager_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_ral_manager)
 
 printers_access_test = computers_access_test
 printers_modify_access_test = computers_modify_access_test
@@ -303,7 +297,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
 )
 
 INSTALLED_APPS = (
@@ -337,6 +330,8 @@ INSTALLED_APPS = (
     'resnet_internal.apps.printers',
     'resnet_internal.apps.printerrequests',
     'resnet_internal.apps.printerrequests.templatetags.__init__.default_app_config',
+    'resnet_internal.apps.residents',
+    'resnet_internal.apps.rosters',
 )
 
 # ======================================================================================================== #

@@ -1,5 +1,6 @@
 var current_mailbox = 'INBOX';
 var num_search_queries_running = 0;
+var next_group_url = '';
 
 $(document).ready(function() {
         $('#jstree_folder_structure')
@@ -22,6 +23,7 @@ $(document).ready(function() {
         });
         
         $('#email_search').keyup(_.debounce(search_messages, 1000));
+        $('#search_scope_select input:radio').change(search_messages);
         $('#email_search_clear').click(function() {
             $('#email_search').val('');
             search_messages();
@@ -50,26 +52,29 @@ function set_spinner_status(emails, status) {
 
 function refresh_messages(mailbox) {
     $('#email_search').val('');
+    current_mailbox = mailbox;
     retrieve_messages(mailbox, '');
 }
 
 function search_messages() {
     var search_string = $('#email_search').val();
     var search_this_mailbox = $('#search_this_mailbox').is(":checked");
-    if (!search_string.length) search_this_mailbox = true;
     retrieve_messages(search_this_mailbox ? current_mailbox : '', search_string);
 }
 
 function retrieve_messages(mailbox, search_string) {
     ++num_search_queries_running;
-    current_mailbox = mailbox;
+    $(document).unbind('scroll');
     $("#email_table tr:gt(0)").remove();
     $("#email_table").append('<tr id="loading_email_record"><td colspan="100" style="text-align: center;"><br /><strong>Loading...</strong></td></tr>');
-    ajaxPost(email_mailbox_summary_url, {"mailbox": mailbox, "search_string": search_string}, function(response_context) {
+    // TODO: Change hardcoded URL to use django-reverse-js. 
+    $.get(encodeURI('/daily_duties/email/get_mailbox_summary/'+ encodeURIComponent(mailbox) + '/' + encodeURIComponent(search_string) + '/0/'), function(response) {
         if (!(--num_search_queries_running)) {
             $('#mailbox_name_header').css('display', (mailbox.length > 0 ? 'none' : 'table-cell'));
-            $('#loading_email_record').replaceWith(response_context.response);
+            $('#loading_email_record').replaceWith(response.content.html);
             $("#refresh_button").attr("onclick","refresh_messages('" + mailbox + "');");
+            next_group_url = response.content.next_group_url;
+            $(document).scroll(infiniteScrollHandler);
         }
     });
 }
@@ -132,3 +137,38 @@ function remove_voicemail(message_uid)  {
         row.parentNode.removeChild(row);
     });
 }
+
+// Infinite Scroll
+// Source: http://dumpk.com/2013/06/02/how-to-create-infinite-scroll-with-ajax-on-jquery/
+
+function element_in_scroll(elem)
+{
+    var docViewTop = $(window).scrollTop();
+    var docViewBottom = docViewTop + $(window).height();
+
+    var elemTop = $(elem).offset().top;
+    var elemBottom = elemTop + $(elem).height();
+
+    return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+}
+
+var infiniteScrollHandler = function(e){
+    if (element_in_scroll("#email_table tbody tr:last")) {
+        $(document).unbind('scroll');
+        if (next_group_url) {
+            $('#email_table tbody').append('<tr id="loading_additional_emails"><td style="text-align: center;" colspan="5">Loading...<img style="width: 16px; height: 16px;" src="' + spinner_url + '"></td></tr>');
+            $.ajax({
+                type: "GET",
+                url: next_group_url
+            }).done(function( response ) {
+                $('#loading_additional_emails').remove();
+                $("#email_table tbody").append(response.content.html);
+                
+                next_group_url = response.content.next_group_url;
+                if (next_group_url) {
+                    $(document).scroll(infiniteScrollHandler);
+                }
+            });
+        }
+    }
+};

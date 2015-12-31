@@ -83,7 +83,9 @@ def navbar(request):
             navbar = ''
 
             def a_inner_html(link):
-                return '<img class="link-icon" aria-hidden="true" src="{icon_url}" height="16" width="16">{link_name}'.format(icon_url=static(link.icon), link_name=link.display_name)
+                return '<img class="link-icon" aria-hidden="true" src="{icon_url}" height="16" width="16"><span id="{link_id}_text">{link_name}</span>'.format(icon_url=static(link.icon),
+                                                                                                                                                               link_name=link.display_name,
+                                                                                                                                                               link_id=link.html_id)
 
             for parent_link in links_for_user.filter(parent_group__isnull=True).order_by('sequence_index'):
                 navbar += '<div class="link-group-heading">{link_name}</div>\n'.format(link_name=parent_link.display_name)

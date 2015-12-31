@@ -29,7 +29,7 @@
 
     {% if request.user|printers_modify_access %}
     <div class="col-xs-12">
-        {% crispy form form.helper %}
+        {% crispy form %}
     </div>
     {% endif %}
 {% endblock %}
