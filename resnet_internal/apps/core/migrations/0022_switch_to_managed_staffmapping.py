@@ -16,7 +16,7 @@ def populate_staff_mapping(apps, schema_editor):
         extension=2516
     )
     StaffMapping.objects.create(
-        title="Housing: Information Technology Consultant",
+        title="Housing: IT Consultant",
         name="Julie Gibson",
         email="jagibson@calpoly.edu",
         extension=7159
