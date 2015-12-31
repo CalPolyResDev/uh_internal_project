@@ -22,7 +22,7 @@ def populate_staff_mapping(apps, schema_editor):
         extension=7159
     )
     StaffMapping.objects.create(
-        title="ResNet: Assistant Resident Coordinator",
+        title="ResNet: Asst. Resident Coordinator",
         name="Jeffrey F. Porter",
         email="jfporter@calpoly.edu",
         extension=5619
