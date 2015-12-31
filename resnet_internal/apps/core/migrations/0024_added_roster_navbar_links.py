@@ -35,23 +35,27 @@ def update_navbar(apps, schema_editor):
         distinguished_name="CN=UH-FD-Staff,OU=Front Desk,OU=Residential Life,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu"
     )
 
-    databases = NavbarLink.objects.get(display_name="Databases")
+    databases = NavbarLink.objects.filter(display_name="Databases")
     if databases.exists():
+        databases = databases.first()
         databases.sequence_index = 3
         databases.save()
 
-    network_administration = NavbarLink.objects.get(display_name="Network Administration")
+    network_administration = NavbarLink.objects.filter(display_name="Network Administration")
     if network_administration.exists():
+        network_administration = network_administration.first()
         network_administration.sequence_index = 4
         network_administration.save()
 
-    staff_resources = NavbarLink.objects.get(display_name="Staff Resources")
+    staff_resources = NavbarLink.objects.filter(display_name="Staff Resources")
     if staff_resources.exists():
+        staff_resources = staff_resources.first()
         staff_resources.sequence_index = 5
         staff_resources.save()
 
-    developer_resources = NavbarLink.objects.get(display_name="Developer Resources")
+    developer_resources = NavbarLink.objects.filter(display_name="Developer Resources")
     if developer_resources.exists():
+        developer_resources = developer_resources.first()
         developer_resources.sequence_index = 6
         developer_resources.save()
 
