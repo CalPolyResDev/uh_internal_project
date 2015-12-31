@@ -92,7 +92,7 @@ logger = logging.getLogger(__name__)
 # Core
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='home'),
-    url(r'^favicon\.ico$', RedirectView.as_view(url=staticfiles('images/icons/favicon.ico', permanent=True)), name='favicon'),
+    url(r'^favicon\.ico$', RedirectView.as_view(url=staticfiles('images/icons/favicon.ico'), permanent=True), name='favicon'),
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
     url(r'^login/$', auth_login, name='login'),
     url(r'^logout/$', auth_logout, name='logout', kwargs={'next_page': settings.CAS_LOGOUT_URL}),
