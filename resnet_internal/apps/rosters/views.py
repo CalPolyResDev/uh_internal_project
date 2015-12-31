@@ -27,8 +27,8 @@ class RosterGenerateView(FormView):
     report_template_name = 'rosters/rosters_report.html'
 
     attribute_list = ["full_name", "sex", "address", "cell_phone", "dorm_phone", "college", "major", "course_year", "email", "is_buckley"]
-    empty_error_message_csv = "The addresses provided do not match University Housing records or are currently vacant."
-    empty_error_message_html = "The addresses provided do not match University Housing records or are currently vacant."
+    empty_error_message_csv = "The buildings provided are currently vacant."
+    empty_error_message_html = "The buildings provided are currently vacant."
 
     @cache_control(no_cache=True, must_revalidate=True, no_store=True)
     def dispatch(self, request, *args, **kwargs):
