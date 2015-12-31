@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, primary_key=True, auto_created=True)),
                 ('title', models.CharField(max_length=35, verbose_name='Title', unique=True)),
                 ('name', models.CharField(max_length=50, verbose_name='Full Name')),
-                ('email', models.CharField(max_length=8, verbose_name='Email Address')),
+                ('email', models.CharField(max_length=20, verbose_name='Email Address')),
                 ('extension', models.PositiveSmallIntegerField(verbose_name='Telephone Extension')),
             ],
             options={
