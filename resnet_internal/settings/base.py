@@ -105,6 +105,8 @@ DATABASE_ROUTERS = (
     'srsconnector.routers.SRSRouter',
 )
 
+DBBACKUP_DATABASES = ['default', 'printers']
+
 # ======================================================================================================== #
 #                                            E-Mail Configuration                                          #
 # ======================================================================================================== #
@@ -259,6 +261,9 @@ STATICFILES_FINDERS = (
     'static_precompiler.finders.StaticPrecompilerFinder',
 )
 
+# The directory that will hold database backups on the application server.
+DBBACKUP_BACKUP_DIRECTORY = str(PROJECT_DIR.joinpath("backups").resolve())
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -310,6 +315,7 @@ INSTALLED_APPS = (
     'django_ewiz',
     'paramiko',
     'jfu',
+    'dbbackup',
     'clever_selects',
     'crispy_forms',
     'resnet_internal.apps.core',
@@ -391,6 +397,16 @@ LOGGING = {
             'propagate': True,
         },
         'resnet_internal': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
+            'propagate': True,
+        },
+        'dbbackup.command': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
+            'propagate': True,
+        },
+        'dbbackup.dbbcommands': {
             'level': 'WARNING',
             'handlers': ['sentry'],
             'propagate': True,
