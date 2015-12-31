@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
         migrations.AlterModelManagers(
             name='resnetinternaluser',
             managers=[
-                ('objects', resnet_internal.apps.core.models.ResNetInternalUserManager()),
+                ('objects', resnet_internal.apps.core.models.InternalUserManager()),
             ],
         ),
         migrations.RemoveField(

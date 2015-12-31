@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.core.models
-   :synopsis: ResNet Internal Core Models.
+   :synopsis: University Housing Internal Core Models.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -9,17 +9,17 @@
 import logging
 import re
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db.models.base import Model
-from django.db.models.fields import (CharField, IntegerField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField,
-    URLField, SmallIntegerField)
+from django.db.models.fields import (CharField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField,
+    URLField, SmallIntegerField, PositiveSmallIntegerField)
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.http import urlquote
 from ldap_groups.exceptions import InvalidGroupDN
 from ldap_groups.groups import ADGroup as LDAPADGroup
 
@@ -28,7 +28,6 @@ logger = logging.getLogger(__name__)
 
 
 class Community(Model):
-    """University Housing Community."""
 
     name = CharField(max_length=30, verbose_name="Community Name")
 
@@ -40,12 +39,10 @@ class Community(Model):
         return self.name
 
     class Meta:
-        verbose_name = 'University Housing Community'
-        verbose_name_plural = 'University Housing Communities'
+        verbose_name_plural = 'Communities'
 
 
 class Building(Model):
-    """University Housing Building."""
 
     name = CharField(max_length=30, verbose_name="Building Name")
     community = ForeignKey(Community, verbose_name="Community", related_name="buildings")
@@ -57,12 +54,8 @@ class Building(Model):
     def address(self):
         return self.community.address + ' ' + self.name
 
-    class Meta:
-        verbose_name = 'University Housing Building'
-
 
 class Room(Model):
-    """University Housing Room."""
 
     name = CharField(max_length=10, verbose_name="Room Number")
     building = ForeignKey(Building, verbose_name="Building", related_name="rooms")
@@ -78,33 +71,34 @@ class Room(Model):
     def address(self):
         return self.building.address + ' ' + self.name
 
-    class Meta:
-        verbose_name = 'University Housing Room'
+    def save(self, *args, **kwargs):
+        # Upper name letters
+        for field_name in ['name']:
+            value = getattr(self, field_name, None)
+            if value:
+                setattr(self, field_name, value.upper())
 
-
-class SubDepartment(Model):
-    """University Housing Sub Departments."""
-
-    name = CharField(max_length=50, verbose_name='Sub Department Name')
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        verbose_name = 'University Housing Sub Department'
+        super(Room, self).save(*args, **kwargs)
 
 
 class Department(Model):
-    """University Housing Departments."""
 
     name = CharField(max_length=50, verbose_name='Department Name')
-    sub_departments = ManyToManyField(SubDepartment)
+
+    def __str__(self):
+        return self.name
+
+
+class SubDepartment(Model):
+
+    name = CharField(max_length=50, verbose_name='Sub Department Name')
+    department = ForeignKey(Department, verbose_name="Department", null=True, related_name="sub_departments")
 
     def __str__(self):
         return self.name
 
     class Meta:
-        verbose_name = 'University Housing Department'
+        verbose_name = 'Sub Department'
 
 
 class NetworkDevice(Model):
@@ -127,31 +121,6 @@ class SiteAnnouncements(Model):
         verbose_name = 'Site Announcement'
 
 
-class StaffMapping(Model):
-    """A mapping of various department staff to their respective positions."""
-
-    staff_title = CharField(max_length=35, unique=True, verbose_name='Staff Title')
-    staff_name = CharField(max_length=50, verbose_name='Staff Full Name')
-    staff_alias = CharField(max_length=8, verbose_name='Staff Alias')
-    staff_ext = IntegerField(verbose_name='Staff Telephone Extension')
-
-    class Meta:
-        db_table = 'staffmapping'
-        managed = False
-        verbose_name = 'Campus Staff Mapping'
-
-
-class TechFlair(Model):
-    """A mapping of users to custom flair."""
-
-    tech = ForeignKey("ResNetInternalUser", verbose_name='Technician')
-    flair = CharField(max_length=30, unique=True, verbose_name='Flair')
-
-    class Meta:
-        verbose_name = 'Tech Flair'
-        verbose_name_plural = 'Tech Flair'
-
-
 class ADGroup(Model):
     distinguished_name = CharField(max_length=250, unique=True, verbose_name='Distinguished Name')
     display_name = CharField(max_length=50, verbose_name='Display Name')
@@ -169,7 +138,35 @@ class ADGroup(Model):
         verbose_name = 'AD Group'
 
 
-class ResNetInternalUserManager(UserManager):
+class StaffMapping(Model):
+    """A mapping of various department staff to their respective positions."""
+
+    title = CharField(max_length=35, unique=True, verbose_name='Title')
+    name = CharField(max_length=50, verbose_name='Full Name')
+    email = CharField(max_length=20, verbose_name='Email Address')
+    extension = PositiveSmallIntegerField(verbose_name='Telephone Extension')
+
+    class Meta:
+        verbose_name = 'Campus Staff Mapping'
+
+
+class CSDMapping(Model):
+    """A mapping of a csd to their controlled buildings."""
+
+    name = CharField(max_length=50, verbose_name='Full Name')
+    email = CharField(max_length=20, verbose_name='Email')
+    domain = CharField(max_length=35, unique=True, verbose_name='Domain')
+    buildings = ManyToManyField(Building, related_name="csdmappings", verbose_name="Domain Buildings")
+    ad_group = ForeignKey(ADGroup, verbose_name='Domain AD Group')
+
+    def __str__(self):
+        return self.domain
+
+    class Meta:
+        verbose_name = 'CSD Domain Mapping'
+
+
+class InternalUserManager(UserManager):
 
     def _create_user(self, username, email, password, is_staff, is_superuser, **extra_fields):
         now = timezone.now()
@@ -188,19 +185,19 @@ class ResNetInternalUserManager(UserManager):
 
 
 class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
-    """ResNet Internal User Model"""
+    """University Housing Internal User Model"""
 
     username = CharField(max_length=30, unique=True, verbose_name='Username')
     first_name = CharField(max_length=30, blank=True, verbose_name='First Name')
     last_name = CharField(max_length=30, blank=True, verbose_name='Last Name')
     email = EmailField(blank=True, verbose_name='Email Address')
-    ad_groups = ManyToManyField(ADGroup)
+    ad_groups = ManyToManyField(ADGroup, verbose_name='AD Groups')
 
     is_active = BooleanField(default=True)
     is_staff = BooleanField(default=False)
 
     USERNAME_FIELD = 'username'
-    objects = ResNetInternalUserManager()
+    objects = InternalUserManager()
 
     #
     # A set of flags for each user that decides what the user can and cannot see.
@@ -213,7 +210,14 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     is_tag_readonly = BooleanField(default=False)  # limited access only to apps that uh-tag mambers are allowed to use (read-only permissions)
     is_technician = BooleanField(default=False)  # access to technician tools
     is_rn_staff = BooleanField(default=False)  # access to all tools as well as staff tools
-    is_developer = BooleanField(default=False)  # full access to resnet internal
+    is_developer = BooleanField(default=False)  # full access to University Housing Internal
+
+    # RLIN Legacy flags
+    is_csd = BooleanField(default=False)
+    is_ral = BooleanField(default=False)
+    is_ral_manager = BooleanField(default=False)
+    is_ra = BooleanField(default=False)
+    is_fd_staff = BooleanField(default=False)
 
     #
     # A set of flags that keeps a record of each user's orientation progress.
@@ -224,10 +228,7 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     orientation_complete = BooleanField(default=False)  # Promotes user to Technicain status
 
     class Meta:
-        verbose_name = 'ResNet Internal User'
-
-    def get_absolute_url(self):
-        return "/users/%s/" % urlquote(self.username)
+        verbose_name = 'University Housing Internal User'
 
     def get_full_name(self):
         """Returns the first_name combined with the last_name separated via space with the possible '- ADMIN' removed."""
@@ -249,6 +250,17 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
         """Sends an email to this user."""
 
         send_mail(subject, message, from_email, [self.email])
+
+
+class TechFlair(Model):
+    """A mapping of users to custom flair."""
+
+    tech = ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Technician')
+    flair = CharField(max_length=30, unique=True, verbose_name='Flair')
+
+    class Meta:
+        verbose_name = 'Tech Flair'
+        verbose_name_plural = 'Tech Flair'
 
 
 class NavbarLink(Model):
@@ -283,7 +295,7 @@ class NavbarLink(Model):
             try:
                 url = reverse(self.url_name)
             except NoReverseMatch:
-                logger.warning('Could not resolve ' + self.url_name + 'of link ' + self.display_name)
+                logger.warning('Could not resolve ``' + self.url_name + '`` for navbar link ' + self.display_name)
                 pass
         else:
             url = self.external_url

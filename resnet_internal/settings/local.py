@@ -2,7 +2,6 @@ from .base import *  # noqa @PydevCodeAnalysisIgnore
 
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 SESSION_COOKIE_NAME = 'RNINDevSessionID'
 
@@ -11,6 +10,13 @@ ALLOWED_HOSTS = [
 ]
 
 DEFAULT_BASE_URL = 'http://localhost:1500'
+
+# ======================================================================================================== #
+#                                           Database Configuration                                         #
+# ======================================================================================================== #
+
+# Uncomment this and create a test.db file in the repo directory to work with a local sqlite db
+DATABASES['default'] = dj_database_url.config(default="sqlite:///" + str(PROJECT_DIR.joinpath("test.db").resolve()))
 
 # ======================================================================================================== #
 #                                        Authentication Configuration                                      #
@@ -48,6 +54,8 @@ DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
     'SHOW_TEMPLATE_CONTEXT': True,
 }
+
+DBBACKUP_SEND_EMAIL = False
 
 # ======================================================================================================== #
 #                                  File/Application Handling Configuration                                 #

@@ -2,7 +2,6 @@ from .base import *  # noqa @PydevCodeAnalysisIgnore
 
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 
 # ======================================================================================================== #
 #                                      Session/Security Configuration                                      #
@@ -17,7 +16,6 @@ ALLOWED_HOSTS = [
     'dev.resdev.calpoly.edu',
     'prod.resdev.calpoly.edu',
     '.internal.resnet.calpoly.edu',
-    'testserver',  # Needed for django-clever-selects for some reason.
 ]
 
 DEFAULT_BASE_URL = 'https://internal.resnet.calpoly.edu'

@@ -10,23 +10,29 @@ __pycache__
 
 # Packaging files:
 *.egg*
+static/*
 
 # Editor temp files:
 *.swp
 *~
+\#*#
 
 # Sphinx docs:
 build
 
 # SQLite3 database files:
 *.db
+*.json
 
 # Logs:
 *.log
 
-# Secret Files
+# Secret Files:
 *.secret
 .env
 
 # OS X Files:
 .DS_Store
+
+# Backup Files:
+backups/

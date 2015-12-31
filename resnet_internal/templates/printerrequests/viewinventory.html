@@ -1,67 +1,60 @@
 {% extends "base.html" %}
 {% block subtitle %} | View Printer Inventory{% endblock %}
 
-{% block content %}
-<div id="content-2col">
-    <div id="content">
-        <div id="topContent">
-            <h1>Printer Inventory</h1>
-        </div>
-        <div class="half_table" >
-        <h2>Toner</h2>
-        <table border="1" class="table_directory">
-            <tbody>
+{% block main %}
+<div class="col-xs-12 col-md-6">
+    <h2>Toner</h2>
+    <table class="table table-hover">
+        <tbody>
+            <tr>
+                <th scope="col" width="40%">Printer</th>
+                <th scope="col" width="40%">Color</th>
+                <th scope="col" width="20%">Quantity</th>
+            </tr>
+            {% if toner_list %}
+                {% for item in toner_list %}
                 <tr>
-                    <th scope="col" width="40%">Printer</th>
-                    <th scope="col" width="40%">Color</th>
-                    <th scope="col" width="20%">Quantity</th>
+                    <td>{{ item.cartridge.printer }}</td>
+                    <td>{{ item.cartridge.color }}</td>
+                    <td><input id="id_toner_{{ item.cartridge.id }}" min="0" name="{{ item.cartridge.id }}" value="{{ item.count_form.quantity.value }}" type="number" onchange="update_toner_inventory($(this).attr('name'), $(this).val())"></td>
                 </tr>
-                {% if toner_list %}
-                    {% for item in toner_list %}
-                    <tr>
-                        <td>{{ item.cartridge.printer }}</td>
-                        <td>{{ item.cartridge.color }}</td>
-                        <td><input id="id_toner_{{ item.cartridge.id }}" min="0" name="{{ item.cartridge.id }}" value="{{ item.count_form.quantity.value }}" type="number" onchange="update_toner_inventory($(this).attr('name'), $(this).val())"></td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
+                {% endfor %}
+            {% else %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+<div class="col-xs-12 col-md-6">
+    <h2>Parts</h2>
+    <table class="table table-hover">
+        <tbody>
+            <tr>
+                <th scope="col" width="40%">Printer</th>
+                <th scope="col" width="40%">Type</th>
+                <th scope="col" width="20%">Quantity</th>
+            </tr>
+            {% if part_list %}
+                {% for item in part_list %}
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>{{ item.part.printer }}</td>
+                    <td>{{ item.part.type }}</td>
+                    <td><input id="id_part_{{ item.part.id }}" min="0" name="{{ item.part.id }}" value="{{ item.count_form.quantity.value }}" type="number" onchange="update_part_inventory($(this).attr('name'), $(this).val())"></td>
                 </tr>
-                {% endif %}
-            </tbody>
-        </table>
-        </div>
-        <div class="half_table" style="padding-left: 10%;">
-        <h2>Parts</h2>
-        <table border="1" class="table_directory">
-            <tbody>
-                <tr>
-                    <th scope="col" width="40%">Printer</th>
-                    <th scope="col" width="40%">Type</th>
-                    <th scope="col" width="20%">Quantity</th>
-                </tr>
-                {% if part_list %}
-                    {% for item in part_list %}
-                    <tr>
-                        <td>{{ item.part.printer }}</td>
-                        <td>{{ item.part.type }}</td>
-                        <td><input id="id_part_{{ item.part.id }}" min="0" name="{{ item.part.id }}" value="{{ item.count_form.quantity.value }}" type="number" onchange="update_part_inventory($(this).attr('name'), $(this).val())"></td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
-                {% endif %}
-            </tbody>
-        </table>
-        </div>
-    </div>
+                {% endfor %}
+            {% else %}
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}
 

@@ -3,36 +3,28 @@
 {% load jfutags %}
 {% block subtitle %} | Email{% endblock %}
 
-{% block meta %}
+{% block extra_head %}
 {{ block.super }}
 <style>
     hr {
         line-height: 50% !important; 
         margin-bottom: 0px !important;
     }
-    input {
-        min-width: 90% !important;
-    }
-    .button.default {
-        padding: 6px 12px !important;
-    }
-    textarea {
-        outline: none;
-        border: none;
-    }
 </style>
 {% endblock %}
 
 
-{% block content %}
-    <span id="buttons">
-    </span>
-    <br />
-    <h1 id="subject"></h1>
+{% block main %}
+    <div class="col-xs-12">
+        <div class="btn-group" role="group" id="email_buttons"></div><br />
+    </div>
+    <div class="col-xs-12">
+        <h1 id="subject"></h1>
         <h3 id="from_header"></h3>
-
-        <p><hr id="to_hr" style="display: none;"><strong>To:</strong> <span id="to"></span>
-            <strong>CC:</strong> <span id="cc"></span>
+        <p>
+            <hr id="to_hr" style="display: none;">
+            <strong>To:</strong>&nbsp;<span id="to"></span>
+            <strong>CC:</strong>&nbsp;<span id="cc"></span>
             <span id="date"></span>
             <span id="reply_to"></span>
             <span id="attachments"></span>
@@ -43,14 +35,16 @@
               }
         </script>
         <iframe id="email_body" frameborder="0" srcdoc="{{ message.body_html }}" width="100%" onload="resize_iframe(this)"></iframe>
+    </div>
 {% endblock %}
 
 {% block extra_script %}
 {{ block.super }}
-<script language="javascript" type="text/javascript">
-    $('document').ready(function(){
-        change_to_editor();
-        $('#email_editor').text('{{ email_template|escapejs|force_escape }}');
-    });
-</script>
+    <script language="javascript" type="text/javascript">
+        $('document').ready(function(){
+            change_to_editor();
+            $('#send_and_archive_button').remove();
+            $('#email_editor').text('{{ email_template|escapejs|force_escape }}');
+        });
+    </script>
 {% endblock %}

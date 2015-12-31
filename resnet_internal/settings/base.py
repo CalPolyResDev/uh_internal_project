@@ -54,11 +54,11 @@ DEFAULT_CHARSET = 'utf-8'
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = True
+USE_I18N = False
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale
-USE_L10N = True
+USE_L10N = False
 
 ROOT_URLCONF = 'resnet_internal.urls'
 
@@ -74,14 +74,6 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MiB
 
 DATABASES = {
     'default': dj_database_url.config(default=get_env_variable('RESNET_INTERNAL_DB_DEFAULT_DATABASE_URL')),
-    'common': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'common',
-        'USER': 'common',
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_COMMON_PASSWORD'),
-        'HOST': 'data.resdev.calpoly.edu',
-        'PORT': '3306',
-    },
     'printers': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'printers',
@@ -108,11 +100,12 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = (
-    'resnet_internal.apps.core.routers.CommonRouter',
     'resnet_internal.apps.printerrequests.routers.PrinterRequestsRouter',
     'rmsconnector.routers.RMSRouter',
     'srsconnector.routers.SRSRouter',
 )
+
+DBBACKUP_DATABASES = ['default', 'printers']
 
 # ======================================================================================================== #
 #                                            E-Mail Configuration                                          #
@@ -148,6 +141,7 @@ DEFAULT_FROM_EMAIL = SERVER_EMAIL
 SLACK_WEBHOOK_URL = get_env_variable('RESNET_INTERNAL_SLACK_WEBHOOK_URL')
 SLACK_VM_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_VM_CHANNEL')
 SLACK_EMAIL_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_EMAIL_CHANNEL')
+SLACK_NETWORK_STATUS_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_NETWORK_STATUS_CHANNEL')
 
 # ======================================================================================================== #
 #                                              Access Permissions                                          #
@@ -163,6 +157,9 @@ portmap_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff
 computers_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag or user.is_tag_readonly)
 computers_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag)
 computer_record_modify_access_test = (lambda user: user.is_developer or user.is_net_admin or user.is_tag)
+
+csd_access_test = (lambda user: user.is_developer or user.is_ral_manager or user.is_csd)
+ral_manager_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_ral_manager)
 
 printers_access_test = computers_access_test
 printers_modify_access_test = computers_modify_access_test
@@ -253,6 +250,9 @@ STATIC_ROOT = str((PROJECT_DIR / "static").resolve())
 # URL prefix for static files. Make sure to use a trailing slash.
 STATIC_URL = '/static/'
 
+STATIC_PRECOMPILER_OUTPUT_DIR = ""
+STATIC_PRECOMPILER_PREPEND_STATIC_URL = True
+
 # Additional locations of static files
 STATICFILES_DIRS = (
     str((PROJECT_DIR / "resnet_internal" / "static").resolve()),
@@ -262,34 +262,37 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'static_precompiler.finders.StaticPrecompilerFinder',
 )
 
-TEMPLATE_DIRS = (
-    PROJECT_DIR.joinpath("resnet_internal", "templates").resolve().as_posix(),
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            str(PROJECT_DIR.joinpath("resnet_internal", "templates").resolve()),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.template.context_processors.request',
+                'resnet_internal.apps.core.context_processors.specializations',
+                'resnet_internal.apps.core.context_processors.navbar',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-    'django.template.loaders.eggs.Loader',
-)
+# The directory that will hold database backups on the application server.
+DBBACKUP_BACKUP_DIRECTORY = str(PROJECT_DIR.joinpath("backups").resolve())
 
-# List of processors used by RequestContext to populate the context.
-# Each one should be a callable that takes the request object as its
-# only parameter and returns a dictionary to add to the context.
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.core.context_processors.tz',
-    'django.core.context_processors.request',
-    'resnet_internal.apps.core.context_processors.specializations',
-    'resnet_internal.apps.core.context_processors.navbar',
-    'django.contrib.messages.context_processors.messages',
-)
+CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
@@ -298,24 +301,27 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-    'raven.contrib.django.raven_compat.middleware.Sentry404CatchMiddleware',
 )
 
 INSTALLED_APPS = (
-    'clever_selects',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.admin',
     'django.contrib.staticfiles',
+    'django_cas_ng',
     'raven.contrib.django.raven_compat',
     'django_ajax',
+    'static_precompiler',
     'rmsconnector',
     'srsconnector',
     'django_ewiz',
     'paramiko',
     'jfu',
+    'dbbackup',
+    'clever_selects',
+    'crispy_forms',
     'resnet_internal.apps.core',
     'resnet_internal.apps.core.templatetags.__init__.default_app_config',
     'resnet_internal.apps.dailyduties',
@@ -328,6 +334,8 @@ INSTALLED_APPS = (
     'resnet_internal.apps.printers',
     'resnet_internal.apps.printerrequests',
     'resnet_internal.apps.printerrequests.templatetags.__init__.default_app_config',
+    'resnet_internal.apps.residents',
+    'resnet_internal.apps.rosters',
 )
 
 # ======================================================================================================== #
@@ -340,7 +348,7 @@ RAVEN_CONFIG = {
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': True,
+    'disable_existing_loggers': False,
     'root': {
         'level': 'INFO',
         'handlers': ['sentry'],
@@ -393,6 +401,16 @@ LOGGING = {
             'propagate': True,
         },
         'resnet_internal': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
+            'propagate': True,
+        },
+        'dbbackup.command': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
+            'propagate': True,
+        },
+        'dbbackup.dbbcommands': {
             'level': 'WARNING',
             'handlers': ['sentry'],
             'propagate': True,
