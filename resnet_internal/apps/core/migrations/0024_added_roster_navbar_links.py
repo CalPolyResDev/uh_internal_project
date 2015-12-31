@@ -36,20 +36,24 @@ def update_navbar(apps, schema_editor):
     )
 
     databases = NavbarLink.objects.get(display_name="Databases")
-    databases.sequence_index = 3
-    databases.save()
+    if databases.exists():
+        databases.sequence_index = 3
+        databases.save()
 
     network_administration = NavbarLink.objects.get(display_name="Network Administration")
-    network_administration.sequence_index = 4
-    network_administration.save()
+    if network_administration.exists():
+        network_administration.sequence_index = 4
+        network_administration.save()
 
     staff_resources = NavbarLink.objects.get(display_name="Staff Resources")
-    staff_resources.sequence_index = 5
-    staff_resources.save()
+    if staff_resources.exists():
+        staff_resources.sequence_index = 5
+        staff_resources.save()
 
     developer_resources = NavbarLink.objects.get(display_name="Developer Resources")
-    developer_resources.sequence_index = 6
-    developer_resources.save()
+    if developer_resources.exists():
+        developer_resources.sequence_index = 6
+        developer_resources.save()
 
     reslife_resources = NavbarLink.objects.create(
         display_name="Reslife Resources",
