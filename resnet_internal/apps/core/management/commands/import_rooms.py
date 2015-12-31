@@ -11,10 +11,6 @@ from django.core.management import BaseCommand
 from django.db import transaction
 from django.db.utils import IntegrityError
 
-from resnet_internal.apps.core.models import Building
-
-from ...models import Room
-
 
 class Command(BaseCommand):
     help = "Imports Rooms from rooms.csv in media"
@@ -22,6 +18,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from django.conf import settings
+        from ...models import Room, Building
 
         room_import = DictReader(settings.DATA_IMPORT_PATH.joinpath('rooms.csv').open('r'))
         failed_rooms = DictWriter(settings.DATA_IMPORT_PATH.joinpath('rooms_failed.csv').open('w'), ['community', 'building', 'name'])
