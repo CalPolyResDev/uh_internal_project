@@ -324,6 +324,7 @@ INSTALLED_APPS = (
     'resnet_internal.apps.printers',
     'resnet_internal.apps.printerrequests',
     'resnet_internal.apps.printerrequests.templatetags.__init__.default_app_config',
+    'resnet_internal.apps.residents',
     'resnet_internal.apps.rosters',
 )
 

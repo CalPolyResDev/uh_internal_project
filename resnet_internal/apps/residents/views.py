@@ -1,12 +1,11 @@
 """
-.. module:: reslife_internal.apps.residents.views
-   :synopsis: ResLife Internal Resident Lookup Views.
+.. module:: resnet_internal.apps.residents.views
+   :synopsis: University Housing Internal Resident Lookup Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
 
-from clever_selects.views import ChainedSelectFormViewMixin
 import logging
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -21,14 +20,14 @@ logger = logging.getLogger(__name__)
 
 
 class SearchView(FormView):
-    """Performs resident lookups given either a full name, cpID, or dorm address and displays the results, if any."""
+    """Performs resident lookups given either a full name, email, or dorm address and displays the results, if any."""
 
     template_name = "residents/search.html"
     full_name_form_class = FullNameSearchForm
     principal_name_form_class = PrincipalNameSearchForm
     address_form_class = AddressSearchForm
 
-    attribute_list = ["full_name", "email", "cell_phone", "dorm_phone", "address"]
+    attribute_list = ["full_name", "email", "cell_phone", "dorm_phone", "address", "is_buckley"]
 
     def get(self, request, *args, **kwargs):
         full_name_form = self.get_form(self.full_name_form_class)
@@ -79,8 +78,16 @@ class SearchView(FormView):
                 search_results.sort(key=lambda x: (x["email"]))
 
             context["search_results"] = search_results
+            context["results_available"] = True
 
         return context
+
+    def get_form(self, form_class=None):
+        """Return the form for the provided class. If no class is provided, return None."""
+
+        if form_class is None:
+            return None
+        return form_class(**self.get_form_kwargs())
 
     def full_name_form_valid(self, form):
         first_name = self.request.POST['first_name']
