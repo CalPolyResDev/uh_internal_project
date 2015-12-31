@@ -232,6 +232,9 @@ SECRET_KEY = get_env_variable('RESNET_INTERNAL_SECRET_KEY')
 
 PROJECT_DIR = Path(__file__).parents[2]
 
+# The directory that will hold any files for data imports from management commands.
+IMPORT_DATA_PATH = PROJECT_DIR.joinpath("import_data")
+
 # The directory that will hold user-uploaded files.
 MEDIA_ROOT = str(PROJECT_DIR.joinpath("media").resolve())
 
