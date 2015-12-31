@@ -15,12 +15,11 @@ from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db.models.base import Model
-from django.db.models.fields import (CharField, IntegerField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField,
-    URLField, SmallIntegerField)
+from django.db.models.fields import (CharField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField,
+    URLField, SmallIntegerField, PositiveSmallIntegerField)
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.http import urlquote
 from ldap_groups.exceptions import InvalidGroupDN
 from ldap_groups.groups import ADGroup as LDAPADGroup
 
@@ -122,20 +121,6 @@ class SiteAnnouncements(Model):
         verbose_name = 'Site Announcement'
 
 
-class StaffMapping(Model):
-    """A mapping of various department staff to their respective positions."""
-
-    staff_title = CharField(max_length=35, unique=True, verbose_name='Staff Title')
-    staff_name = CharField(max_length=50, verbose_name='Staff Full Name')
-    staff_alias = CharField(max_length=8, verbose_name='Staff Alias')
-    staff_ext = IntegerField(verbose_name='Staff Telephone Extension')
-
-    class Meta:
-        db_table = 'staffmapping'
-        managed = False
-        verbose_name = 'Campus Staff Mapping'
-
-
 class ADGroup(Model):
     distinguished_name = CharField(max_length=250, unique=True, verbose_name='Distinguished Name')
     display_name = CharField(max_length=50, verbose_name='Display Name')
@@ -151,6 +136,34 @@ class ADGroup(Model):
 
     class Meta:
         verbose_name = 'AD Group'
+
+
+class StaffMapping(Model):
+    """A mapping of various department staff to their respective positions."""
+
+    title = CharField(max_length=35, unique=True, verbose_name='Title')
+    name = CharField(max_length=50, verbose_name='Full Name')
+    email = CharField(max_length=20, verbose_name='Email Address')
+    extension = PositiveSmallIntegerField(verbose_name='Telephone Extension')
+
+    class Meta:
+        verbose_name = 'Campus Staff Mapping'
+
+
+class CSDMapping(Model):
+    """A mapping of a csd to their controlled buildings."""
+
+    name = CharField(max_length=50, verbose_name='Full Name')
+    email = CharField(max_length=20, verbose_name='Email')
+    domain = CharField(max_length=35, unique=True, verbose_name='Domain')
+    buildings = ManyToManyField(Building, related_name="csdmappings", verbose_name="Domain Buildings")
+    ad_group = ForeignKey(ADGroup, verbose_name='Domain AD Group')
+
+    def __str__(self):
+        return self.domain
+
+    class Meta:
+        verbose_name = 'CSD Domain Mapping'
 
 
 class InternalUserManager(UserManager):
@@ -178,7 +191,7 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     first_name = CharField(max_length=30, blank=True, verbose_name='First Name')
     last_name = CharField(max_length=30, blank=True, verbose_name='Last Name')
     email = EmailField(blank=True, verbose_name='Email Address')
-    ad_groups = ManyToManyField(ADGroup)
+    ad_groups = ManyToManyField(ADGroup, verbose_name='AD Groups')
 
     is_active = BooleanField(default=True)
     is_staff = BooleanField(default=False)

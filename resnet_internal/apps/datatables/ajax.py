@@ -16,7 +16,7 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Q
 from django.forms import models as model_forms
 from django.http.response import HttpResponseNotAllowed
-from django.utils.encoding import smart_str
+
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
 from django_ajax.mixin import AJAXMixin
 from django_datatables_view.base_datatable_view import BaseDatatableView
@@ -62,20 +62,23 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
     base_column_template = """
         <div class='wrapper' column='{column}'>
+            {display_block}
+            {form_field_block}
+        </div>
+    """
+
+    display_block_template = """
             <div class='value-display' title='{value}'>
                 {value}
                 {link_block}
                 {inline_images}
             </div>
-            {editable_block}
-        </div>
     """
 
-    editable_block_template = """<input type='text' class='form-control editbox' value='{value}' />"""
-    readonly_block_template = """<input type='text' class='form-control editbox' value='{value}' readonly="readonly" disabled="disabled" />"""
-    link_block_template = """<a href='{link_url}' onclick='{onclick_action}' target='{link_target}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
+    href_link_block_template = """<a href='{link_url}' target='_blank' class='{link_class_name}'>{link_display}</a>"""
+    onclick_link_block_template = """<a onclick='{onclick_action}' class='{link_class_name}'>{link_display}</a>"""
     icon_template = """<img src='{icon_url}' style='padding-left:5px;' align='top' width='16' height='16' border='0' />"""
-    popover_link_block_template = """<a href='{link_url}' title='{popover_title}' popover-data-url='{content_url}' class='{link_class_name}' style='{link_style}'>{link_text}</a>"""
+    popover_link_block_template = """<a title='{popover_title}' popover-data-url='{content_url}' class='{link_class_name}'>{link_display}</a>"""
 
     def initialize(self, *args, **kwargs):
         super(RNINDatatablesPopulateView, self).initialize(*args, **kwargs)
@@ -186,6 +189,19 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     def get_row_data_attributes(self, row):
         return None
 
+    def get_raw_value(self, row, column):
+        return super(RNINDatatablesPopulateView, self).render_column(row, column)
+
+    def get_display_block(self, row, column):
+        return self.display_block_template.format(value=self.get_raw_value(row, column), link_block="", inline_images="")
+
+    def render_action_column(self, row, column, function_name, link_class_name, link_display):
+        onclick = "{function_name}({id});return false;".format(function_name=function_name, id=row.id)
+        link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name=link_class_name, link_display=link_display)
+        display_block = self.display_block_template.format(value="", link_block=link_block, inline_images="")
+
+        return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
+
     def render_column(self, row, column):
         """Renders columns with customized HTML.
 
@@ -196,9 +212,6 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         :returns: The HTML to be displayed for this column.
 
         """
-
-        raw_value = getattr(row, column)
-        value = smart_str(raw_value) if raw_value else ""
 
         if not self.cached_forms:
             self.cached_forms = {}
@@ -218,7 +231,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
             form.fields[column].widget.attrs['readonly'] = "readonly"
             form.fields[column].widget.attrs['disabled'] = "disabled"
 
-        return self.base_column_template.format(column=column, value=value, link_block="", inline_images="", editable_block=str(form[column]))
+        return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column), form_field_block=str(form[column]))
 
     def prepare_results(self, qs):
         data = []
@@ -347,12 +360,7 @@ def redraw_row(request, populate_class, row_id):
     populate_class_instance = populate_class()
     populate_class_instance._initialize_write_permissions(request.user)
 
-    fields = populate_class_instance.get_columns()
-    queryset = populate_class_instance.model.objects.get(id=row_id)
+    row_object = populate_class_instance.model.objects.get(id=row_id)
+    rendered_row = populate_class_instance.prepare_results([row_object])[0]
 
-    rendered_columns = {}
-
-    for field in fields:
-        rendered_columns[field] = populate_class_instance.render_column(queryset, field)
-
-    return {"rendered_columns": rendered_columns}
+    return {"rendered_row": rendered_row}

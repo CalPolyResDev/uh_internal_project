@@ -27,7 +27,7 @@ from rmsconnector.utils import Resident
 
 from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
-from .forms import PortCreateForm, PortUpdateForm, AccessPointUpdateForm
+from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm
 from .models import Port, AccessPoint
 
 
@@ -79,17 +79,16 @@ class PopulatePorts(RNINDatatablesPopulateView):
             try:
                 access_point = row.access_point
             except ObjectDoesNotExist:
-                return self.base_column_template.format(column=column, value="", link_block="", inline_images="", editable_block="")
+                link_block = ""
             else:
                 ap_url = reverse('ap_info_frame', kwargs={'pk': access_point.id})
                 ap_icon = self.icon_template.format(icon_url=static('images/icons/wifi-xxl.png'))
-                ap_block = self.popover_link_block_template.format(popover_title='AP Info', content_url=ap_url, link_style="", link_class_name="", link_text=ap_icon, link_url="#")
-                return self.base_column_template.format(column=column, value="", link_block=ap_block, inline_images="", editable_block="")
-        elif column == 'active':
-            onclick = "confirm_status_change({id});return false;".format(id=row.id)
-            link_block = self.link_block_template.format(link_url="#", onclick_action=onclick, link_target="", link_class_name="remove", link_style="", link_text="Deactivate" if getattr(row, column) else "Activate")
+                link_block = self.popover_link_block_template.format(popover_title='AP Info', content_url=ap_url, link_class_name="", link_display=ap_icon)
 
-            return self.base_column_template.format(column=column, value="", link_block=link_block, inline_images="", editable_block="")
+            display_block = self.display_block_template.format(value="", link_block=link_block, inline_images="")
+            return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
+        elif column == 'active':
+            return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="remove", link_display="Deactivate" if getattr(row, column) else "Activate")
         else:
             return super(PopulatePorts, self).render_column(row, column)
 
@@ -204,34 +203,33 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     table_name = "access_point_map"
     data_source = reverse_lazy('populate_access_points')
     update_source = reverse_lazy('update_access_point')
+    form_class = AccessPointCreateForm
     model = AccessPoint
-    max_display_length = 1000
 
     column_definitions = OrderedDict()
-    column_definitions["id"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "ID"}
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "port__room__building__community__name"}
     column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "port__room__building__name"}
     column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "custom_lookup": True, "lookup_field": "port__room__name"}
     column_definitions["port"] = {"width": "80px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "jack"}
-    column_definitions["name"] = {"width": "80px", "type": "string", "className": "edit_trigger", "title": "Name"}
+    column_definitions["name"] = {"width": "80px", "type": "string", "title": "Name"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
-    column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "SN"}
-    column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC"}
+    column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
+    column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
-    column_definitions["type"] = {"width": "80px", "type": "string", "title": "Type"}
+    column_definitions["ap_type"] = {"width": "80px", "type": "string", "title": "Type"}
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = portmap_modify_access_test(user)
 
-    def render_column(self, row, column):
+    def get_display_block(self, row, column):
         if column == 'port':
             port = row.port
             port_url = reverse('port_info_frame', kwargs={'pk': port.id})
             port_icon = self.icon_template.format(icon_url=static('images/icons/icon_ethernet.png'))
-            port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_style="", link_class_name="", link_text=port_icon, link_url="#")
-            return self.base_column_template.format(column=column, value=port.jack, link_block=port_block, inline_images="", editable_block="")
+            port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_class_name="", link_display=port_icon)
+            return self.display_block_template.format(value=port.jack, link_block=port_block, inline_images="")
         else:
-            return super(PopulateAccessPoints, self).render_column(row, column)
+            return super(PopulateAccessPoints, self).get_display_block(row, column)
 
 
 class UpdateAccessPoint(BaseDatatablesUpdateView):

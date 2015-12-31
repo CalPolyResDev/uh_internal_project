@@ -46,7 +46,7 @@ class ComputerForm(ChainedChoicesModelForm):
                 Field('sub_department', autocomplete='off'),
                 Field('computer_name', placeholder=self.fields['computer_name'].label),
                 Field('mac_address', placeholder=self.fields['mac_address'].label),
-                Field('ip_address', css_class="ip_address_field", placeholder=self.fields['ip_address'].label),
+                Field('ip_address', css_class="ip_address_field", placeholder=self.fields['ip_address'].label, title="Leave blank for DHCP."),
                 Field('model', placeholder=self.fields['model'].label),
                 Field('serial_number', placeholder=self.fields['serial_number'].label),
                 Field('property_id', placeholder=self.fields['property_id'].label),

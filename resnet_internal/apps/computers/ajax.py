@@ -88,53 +88,56 @@ class PopulateComputers(RNINDatatablesPopulateView):
             elif puchase_datetime <= old_delta and puchase_datetime > older_delta:
                 return "old"
 
-    def render_column(self, row, column):
+    def get_display_block(self, row, column):
         if column == 'ip_address':
-            value = getattr(row, column)
-            value = value if value else "DHCP"
+            raw_display_value = self.get_raw_value(row, column)
+            display_value = raw_display_value if raw_display_value else "DHCP"
 
-            # A bit of a hack to help people with DHCP
-            self.editable_block_template = self.editable_block_template.replace(" />", 'title="Submit an empty value for DHCP." />')
+            # Add the record link block
+            link_block = ""
+            inline_images = ""
 
             try:
-                record_url = reverse('view_uh_computer_record', kwargs={'ip_address': row.ip_address})
+                record_url = reverse('view_uh_computer_record', kwargs={'ip_address': getattr(row, column)})
             except NoReverseMatch:
-                editable_block = self.editable_block_template.format(value=value if value != "DHCP" else "")
-
-                return self.base_column_template.format(column=column, value=value, link_block="", inline_images="", editable_block=editable_block)
+                pass
             else:
-                editable_block = self.editable_block_template.format(value=value)
-                onclick = """openModalFrame("Association Record for {ip_address}", "{url}");""".format(ip_address=value, url=record_url)
-                link_block = self.link_block_template.format(link_url="#", onclick_action=onclick, link_target="", link_class_name="", link_style="", link_text=value)
+                # Don't duplicate display value
+                display_value = ""
 
+                onclick = """openModalFrame("Association Record for {ip_address}", "{url}");""".format(ip_address=raw_display_value, url=record_url)
+                link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name="", link_display=raw_display_value)
+
+                # Add pinhole/domain name icons
                 pinholes = self.icon_template.format(icon_url=static('images/icons/pinholes.png'))
                 domain_names = self.icon_template.format(icon_url=static('images/icons/domain_names.png'))
-                inline_images = ""
 
-                if value:
-                    has_pinholes = Pinhole.objects.filter(ip_address=value).count() != 0
-                    has_domain_names = DomainName.objects.filter(ip_address=value).count() != 0
+                has_pinholes = Pinhole.objects.filter(ip_address=raw_display_value).exists()
+                has_domain_names = DomainName.objects.filter(ip_address=raw_display_value).exists()
 
-                    if has_pinholes:
-                        inline_images = pinholes
-                    if has_domain_names:
-                        inline_images = inline_images + domain_names
+                if has_pinholes:
+                    inline_images = pinholes
+                if has_domain_names:
+                    inline_images += domain_names
 
-                return self.base_column_template.format(column=column, value="", link_block=link_block, inline_images=inline_images, editable_block=editable_block)
-        elif column == 'RDP':
+            return self.display_block_template.format(value=display_value, link_block=link_block, inline_images=inline_images)
+        else:
+            return super(PopulateComputers, self).get_display_block(row, column)
+
+    def render_column(self, row, column):
+        if column == 'RDP':
             try:
                 rdp_file_url = reverse('rdp_request', kwargs={'ip_address': row.ip_address})
             except NoReverseMatch:
-                return self.base_column_template.format(column=column, value="", link_block="", inline_images="", editable_block="")
+                link_block = ""
             else:
                 rdp_icon = self.icon_template.format(icon_url=static('images/icons/rdp.png'))
-                link_block = self.link_block_template.format(link_url=rdp_file_url, onclick_action="", link_target="", link_class_name="", link_style="", link_text=rdp_icon)
-                return self.base_column_template.format(column=column, value="", link_block=link_block, inline_images="", editable_block="")
-        elif column == 'remove':
-            onclick = "confirm_remove({id});return false;".format(id=row.id)
-            link_block = self.link_block_template.format(link_url="", onclick_action=onclick, link_target="", link_class_name="remove", link_style="", link_text="Remove")
+                link_block = self.href_link_block_template.format(link_url=rdp_file_url, link_class_name="", link_display=rdp_icon)
 
-            return self.base_column_template.format(column=column, value="", link_block=link_block, inline_images="", editable_block="")
+            display_block = self.display_block_template.format(value="", link_block=link_block, inline_images="")
+            return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
+        elif column == 'remove':
+            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="remove", link_display="Remove")
         else:
             return super(PopulateComputers, self).render_column(row, column)
 
@@ -240,7 +243,7 @@ def remove_pinhole(request):
     pinhole = Pinhole.objects.get(id=int(pinhole_id))
 
     if request.user.is_developer:
-        requestor_username = StaffMapping.objects.get(staff_title="ResNet: Assistant Resident Coordinator").staff_alias
+        requestor_username = StaffMapping.objects.get(title="ResNet: Assistant Resident Coordinator").email
     else:
         requestor_username = request.user.username
 
@@ -298,7 +301,7 @@ def remove_domain_name(request):
     domain_name_record = DomainName.objects.get(id=int(domain_name_id))
 
     if request.user.is_developer:
-        requestor_username = StaffMapping.objects.get(staff_title="ResNet: Assistant Resident Coordinator").staff_alias
+        requestor_username = StaffMapping.objects.get(title="ResNet: Assistant Resident Coordinator").email
     else:
         requestor_username = request.user.username
 

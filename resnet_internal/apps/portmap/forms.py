@@ -13,6 +13,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset, Submit
 from django.core.urlresolvers import reverse_lazy
 from django.forms import ModelChoiceField
+from django.forms.models import ModelForm
 
 from ..core.models import Community, Building, Room
 from .models import Port, AccessPoint
@@ -60,7 +61,7 @@ class PortCreateForm(ChainedChoicesModelForm):
         fields = ['community', 'building', 'room', 'switch_ip', 'switch_name', 'jack', 'blade', 'port']
 
 
-class PortUpdateForm(PortCreateForm):
+class PortUpdateForm(ModelForm):
 
     class Meta:
         model = Port
@@ -71,7 +72,7 @@ class AccessPointCreateForm(ChainedChoicesModelForm):
     community = ModelChoiceField(queryset=Community.objects.all())
     building = ChainedModelChoiceField('community', reverse_lazy('core_chained_building'), Building)
     room = ChainedModelChoiceField('building', reverse_lazy('core_chained_room'), Room)
-    port = ChainedModelChoiceField('room', reverse_lazy('portmap_chained_port'), Port)
+    port = ChainedModelChoiceField('room', reverse_lazy('portmap_chained_port'), Port, label="Jack")
 
     def __init__(self, *args, **kwargs):
         super(AccessPointCreateForm, self).__init__(*args, **kwargs)
@@ -87,16 +88,16 @@ class AccessPointCreateForm(ChainedChoicesModelForm):
         self.helper.layout = Layout(
             Fieldset(
                 'Add a new access point',
+                Field('community', autocomplete='off'),
+                Field('building', autocomplete='off'),
+                Field('room', autocomplete='off'),
+                Field('port', autocomplete='off'),
                 Field('name', placeholder=self.fields['name'].label),
                 Field('property_id', placeholder=self.fields['property_id'].label),
                 Field('serial_number', placeholder=self.fields['serial_number'].label),
                 Field('mac_address', placeholder=self.fields['mac_address'].label),
                 Field('ip_address', placeholder=self.fields['ip_address'].label),
                 Field('ap_type', placeholder=self.fields['ap_type'].label),
-                Field('community', autocomplete='off'),
-                Field('building', autocomplete='off'),
-                Field('room', autocomplete='off'),
-                Field('port', autocomplete='off'),
             ),
             FormActions(
                 Submit('submit', 'Add Port'),
@@ -109,10 +110,10 @@ class AccessPointCreateForm(ChainedChoicesModelForm):
 
     class Meta:
         model = AccessPoint
-        fields = ['name', 'property_id', 'serial_number', 'mac_address', 'ip_address', 'ap_type', 'community', 'building', 'room', 'port']
+        fields = ['community', 'building', 'room', 'port', 'name', 'property_id', 'serial_number', 'mac_address', 'ip_address', 'ap_type']
 
 
-class AccessPointUpdateForm(AccessPointCreateForm):
+class AccessPointUpdateForm(ModelForm):
 
     class Meta:
         model = AccessPoint

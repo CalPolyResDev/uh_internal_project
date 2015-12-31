@@ -10,7 +10,7 @@ import os
 
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import (Layout, Field, Fieldset, HTML, Submit, Reset, Hidden)
+from crispy_forms.layout import (Layout, Field, Fieldset, Submit, Reset, Hidden)
 from django.forms import Form, CharField, FileField, Textarea, ValidationError
 
 
