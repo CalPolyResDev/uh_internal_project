@@ -2,61 +2,41 @@
 .. module:: resnet_internal.apps.printerrequests.routers
    :synopsis: University Housing Internal Printer Request Database Routers.
 
-.. moduleauthor:: Kyle Dodson <kdodson@caloply.edu>
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
 
 
 class PrinterRequestsRouter(object):
-    """Routes all printer models to the correct database."""
+    """Routes all printer request models to the correct database."""
 
-    ALIAS = "printers"
+    DATABASE_ALIAS = "printers"
     APP_NAME = "printerrequests"
-    MODELS = ('printertype', 'toner', 'part', 'request', 'request_toner', 'request_parts')
-
-    def _app(self, model):
-        """ A shortcut to retrieve the provided model's application label.
-
-        :param model: A model instance from which to retrieve information.
-        :type model: model
-        :returns: The provided model's app label.
-
-        """
-
-        return model._meta.app_label
-
-    def _mod(self, model):
-        """ A shortcut to retrieve the provided model's name, a lower-cased version of its object name.
-
-        :param model: A model instance from which to retrieve information.
-        :type model: model
-        :returns: The provided model's name.
-
-        """
-
-        return model._meta.model_name
 
     def db_for_read(self, model, **hints):
-        """Routes database read requests to the database only if the requested model belongs to a model in this application's MODELS list."""
+        """Routes database read requests to the printer request database."""
 
-        if self._app(model) == self.APP_NAME and self._mod(model) in self.MODELS:
-            return self.ALIAS
+        if model._meta.app_label == self.APP_NAME:
+            return self.DATABASE_ALIAS
         return None
 
     def db_for_write(self, model, **hints):
-        """Routes database write requests to the database only if the requested model belongs to a model in this application's MODELS list."""
+        """Routes database write requests to the printer request database."""
 
-        if self._app(model) == self.APP_NAME and self._mod(model) in self.MODELS:
-            return self.ALIAS
+        if model._meta.app_label == self.APP_NAME:
+            return self.DATABASE_ALIAS
         return None
 
     def allow_relation(self, obj1, obj2, **hints):
-        """Provides no constraints on relationships."""
+        """Allow relations if a printer request model is involved."""
 
+        if obj1._meta.app_label == self.APP_NAME or obj2._meta.app_label == self.APP_NAME:
+            return True
         return None
 
-    def allow_syncdb(self, db, model):
-        """Provides no constraints on table synchronization."""
+    def allow_migrate(self, db, app_label, model=None, **hints):
+        """Disallow RMS migrations."""
 
+        if app_label == self.APP_NAME:
+            return False
         return None

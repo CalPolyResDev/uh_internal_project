@@ -39,11 +39,11 @@ class OnityDoorAccessView(FormView):
     def get_context_data(self, **kwargs):
         context = super(OnityDoorAccessView, self).get_context_data(**kwargs)
 
-        onity_staff = StaffMapping.objects.get(staff_title="Housing: Information Technology Consultant")
+        onity_staff = StaffMapping.objects.get(title="Housing: Information Technology Consultant")
 
-        context['onity_staff_name'] = onity_staff.staff_name
-        context['onity_staff_email'] = onity_staff.staff_alias + '@calpoly.edu'
-        context['onity_staff_extension'] = onity_staff.staff_ext
+        context['onity_staff_name'] = onity_staff.name
+        context['onity_staff_email'] = onity_staff.email
+        context['onity_staff_extension'] = onity_staff.extension
 
         return context
 
