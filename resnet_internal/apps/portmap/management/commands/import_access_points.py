@@ -11,6 +11,8 @@ from django.core.management import BaseCommand
 from django.db import transaction
 from django.db.utils import IntegrityError
 
+from ...models import Port, AccessPoint
+
 
 class Command(BaseCommand):
     help = "Imports APs from aps.csv in media"
@@ -18,7 +20,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from django.conf import settings
-        from ...models import Port, AccessPoint
 
         ap_import = DictReader(settings.IMPORT_DATA_PATH.joinpath('aps.csv').open('r'))
         failed_aps = DictWriter(settings.IMPORT_DATA_PATH.joinpath('aps_failed.csv').open('w'),

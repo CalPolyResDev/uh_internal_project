@@ -11,6 +11,9 @@ from django.core.management import BaseCommand
 from django.db import transaction
 from django.db.utils import IntegrityError
 
+from ....core.models import Room
+from ...models import Port
+
 
 class Command(BaseCommand):
     help = "Imports Ports from ports.csv in media"
@@ -18,8 +21,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from django.conf import settings
-        from ....core.models import Room
-        from ...models import Port
 
         port_import = DictReader(settings.IMPORT_DATA_PATH.joinpath('ports.csv').open('r'))
 
