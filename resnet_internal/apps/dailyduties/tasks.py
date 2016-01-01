@@ -14,8 +14,17 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from html2text import html2text
 import requests
-from uwsgidecorators import timer, get_free_signal
-from uwsgi import register_signal, add_timer
+
+
+try:
+    from uwsgidecorators import timer
+except ImportError:
+    def timer(time):
+        def wrap(f):
+            def wrap_2(num):
+                return f(num)
+            return wrap_2
+        return wrap
 
 from .utils import EmailManager, EmailConnectionMixin
 
@@ -50,7 +59,7 @@ def update_slack_email(num):
     previous_email_messages = cache.get('previous_email_messages')
 
     with EmailManager() as email_manager:
-        current_emails = email_manager.get_messages('INBOX', '')
+        current_emails, num_available_messages = email_manager.get_messages('INBOX', '')
 
         if previous_email_messages is not None:
             new_emails = [email for email in current_emails if email not in previous_email_messages]
@@ -88,6 +97,11 @@ def update_slack_email(num):
 def keep_imap_alive_signal_handler(num):
     EmailConnectionMixin.send_noop_to_all_connections()
 
-keep_alive_signal = get_free_signal()
-register_signal(keep_alive_signal, 'workers', keep_imap_alive_signal_handler)
-add_timer(keep_alive_signal, 60)
+try:
+    from uwsgidecorators import get_free_signal
+    from uwsgi import register_signal, add_timer
+    keep_alive_signal = get_free_signal()
+    register_signal(keep_alive_signal, 'workers', keep_imap_alive_signal_handler)
+    add_timer(keep_alive_signal, 60)
+except ImportError:
+    pass
