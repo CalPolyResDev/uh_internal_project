@@ -35,15 +35,28 @@ def update_slack_network_status(num):
     if new_down_devices:
         slack_attachments = []
 
-        for device in new_down_devices:
+        if len(new_down_devices) < len(device_statuses) / 4:  # Less than 25% of network
+            for device in new_down_devices:
+                attachment = {
+                    'fallback': 'Network Device Down: ' + device['display_name'],
+                    'color': 'danger',
+                    'title': device['display_name'],
+                    'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('home')),
+                    'fields': [
+                        {'title': 'IP Address', 'value': device['ip_address']},
+                        {'title': 'DNS Name', 'value': device['dns_name']},
+                    ]
+                }
+                slack_attachments.append(attachment)
+        else:  # Major issues
             attachment = {
-                'fallback': 'Network Device Down: ' + device['display_name'],
+                'fallback': '%d Network Devices Down!' % len(new_down_devices),
                 'color': 'danger',
-                'title': device['display_name'],
+                'title': 'Many Network Devices Down!',
                 'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('home')),
                 'fields': [
-                    {'title': 'IP Address', 'value': device['ip_address']},
-                    {'title': 'DNS Name', 'value': device['dns_name']},
+                    {'title': 'Device Count', 'value': len(new_down_devices)},
+                    {'title': 'Note', 'value': 'Because so many devices went down in the last minute, this is either a server error or a major network outage.'},
                 ]
             }
             slack_attachments.append(attachment)
