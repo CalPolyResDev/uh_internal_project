@@ -14,7 +14,16 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from html2text import html2text
 import requests
-from uwsgidecorators import timer
+
+try:
+    from uwsgidecorators import timer
+except ImportError:
+    def timer(time):
+        def wrap(f):
+            def wrap_2(num):
+                return f(num)
+            return wrap_2
+        return wrap
 
 from .utils import EmailManager
 
