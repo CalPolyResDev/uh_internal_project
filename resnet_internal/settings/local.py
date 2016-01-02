@@ -2,13 +2,15 @@ from .base import *  # noqa @PydevCodeAnalysisIgnore
 
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 SESSION_COOKIE_NAME = 'RNINDevSessionID'
 
 ALLOWED_HOSTS = [
     "localhost",
 ]
+
+DEFAULT_BASE_URL = 'http://localhost:1500'
+
 
 # ======================================================================================================== #
 #                                        Authentication Configuration                                      #
@@ -46,6 +48,8 @@ DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
     'SHOW_TEMPLATE_CONTEXT': True,
 }
+
+DBBACKUP_SEND_EMAIL = False
 
 # ======================================================================================================== #
 #                                  File/Application Handling Configuration                                 #

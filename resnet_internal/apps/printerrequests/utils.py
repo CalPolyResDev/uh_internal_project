@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.printerrequests.utils
-   :synopsis: ResNet Internal Printer Request Utilities.
+   :synopsis: University Housing Internal Printer Request Utilities.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -57,7 +57,7 @@ def can_fulfill_request(request_id):
 def send_replenishment_email():
     """Sends an email to the assistant resident coordinator if inventory is low."""
 
-    assistant_coord_email = StaffMapping.objects.get(staff_title="ResNet: Assistant Resident Coordinator").staff_alias + "@calpoly.edu"
+    assistant_coord_email = StaffMapping.objects.get(title="ResNet: Assistant Resident Coordinator").email
 
     low_toner_cartridges = Toner.objects.extra(where=["quantity + ordered < %d" % INVENTORY_LOW_CUTOFF])
     low_parts = Part.objects.extra(where=["quantity + ordered < %d" % INVENTORY_LOW_CUTOFF])
@@ -90,7 +90,7 @@ def send_replenishment_email():
         email = InventoryEmail(email=message)
         email.save()
 
-        send_mail(subject='[ResNet Internal] Low Inventory Notification', message=message, from_email=None, recipient_list=[assistant_coord_email])
+        send_mail(subject='[University Housing Internal] Low Inventory Notification', message=message, from_email=None, recipient_list=[assistant_coord_email])
 
 
 def send_delivery_confirmation(request):

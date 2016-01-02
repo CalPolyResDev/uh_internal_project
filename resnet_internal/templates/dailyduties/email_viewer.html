@@ -1,12 +1,12 @@
-{% extends "dailyduties/email_base.html" %}
+{% extends "base_frame.html" %}
 {% load staticfiles %}
 {% load jfu_escaped %}
 {% block subtitle %} | Email{% endblock %}
 
-{% block meta %}
+{% block extra_head %}
 {{ block.super }}
 <style>
-    input {
+    input[type='text'] {
         min-width: 90% !important;
         outline: none;
         border: none;
@@ -22,40 +22,53 @@
     .popover {
         max-width: 800px;
     }
-    .btn.btn-default {
-        margin-right: 5px;
+    .modal-dialog {
+        max-height: 80%;
     }
 </style>
 {% endblock %}
 
 
-{% block content %}
+{% block main %}
     {% if message %}
-    <span id="buttons">
-        <button class="btn btn-default" type="button" onclick="reply();">Reply</button>
-        <button class="btn btn-default" type="button" onclick="reply_all();">Reply All</button>
-        <button class="btn btn-default" type="button" onclick="forward();">Forward</button>
-        <button class="btn btn-default" type="button" id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
-                data-content="<table class='table table-hover table-condensed'>
-                        <tbody>
-                            {% for folder, display_name in archive_folders %}
-                                <tr id='{{ folder }}' style='cursor: pointer;' onclick='$(&quot;#archive_button&quot;).popover(&quot;hide&quot;);archive(&quot;{{ folder }}&quot;);'>
-                                    <td style='padding: 2px; border-top: 0px;'>{{ display_name }}</td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>">
-            Archive
-        </button>
-    </span>
-    <br />
-    <h1 id="subject">{{ message.subject }}</h1>
+    <div class="col-xs-12">
+        <div class="btn-group" role="group" id="email_buttons">
+            <button class="btn btn-default" type="button" id="create_ticket_button" title="Requestor Username:"
+                data-container="body" data-toggle="popover" data-placement="bottom"
+                data-content='  <div class="input-group">
+                                    <input type="text" class="form-control" id="ticket_requestor_username">
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-default" type="button" onclick="create_ticket()">Create</button>
+                                    </span>
+                                </div><!-- /input-group -->
+                '>Create Ticket</button>
+            <button class="btn btn-default" type="button" onclick="reply();">Reply</button>
+            <button class="btn btn-default" type="button" onclick="reply_all();">Reply All</button>
+            <button class="btn btn-default" type="button" onclick="forward();">Forward</button>
+            <button class="btn btn-default" type="button" id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
+                    data-content="<table class='table table-hover table-condensed'>
+                            <tbody>
+                                {% for folder, display_name in archive_folders %}
+                                    <tr id='{{ folder }}' style='cursor: pointer;' onclick='$(&quot;#archive_button&quot;).popover(&quot;hide&quot;);archive(&quot;{{ folder }}&quot;);'>
+                                        <td style='padding: 2px; border-top: 0px;'>{{ display_name }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>">
+                Archive
+            </button>
+        </div>
+        <br />
+    </div>
+    <div class="col-xs-12">
+        <h1 id="subject">{{ message.subject }}</h1>
         <h3 id="from_header">{{ message.from }}</h3>
-
-        <p><hr id="to_hr" style="display: none;"><strong>To:</strong> <span id="to">{{ message.to }}<br/></span>
-            <strong>CC:</strong> <span id="cc">{{ message.cc }}</span>
-            <span id="date"><br /><strong>Date:</strong> {{ message.date }}</span>
-            <span id="reply_to"><br /><strong>Reply To:</strong> {{ message.reply_to }}</span>
+        <p>
+            <hr id="to_hr" style="display: none;">
+            <strong>To:</strong>&nbsp;<span id="to">{{ message.to }}<br/></span>
+            <strong>CC:</strong>&nbsp;<span id="cc">{{ message.cc }}</span>
+            <span id="date"><br /><strong>Date:</strong>&nbsp;{{ message.date }}</span>
+            <span id="reply_to"><br /><strong>Reply To:</strong>&nbsp;{{ message.reply_to }}</span>
             <span id="attachments">
                 {% if message.attachments %}<br /><strong>Attachments:</strong>
                     {% for attachment in message.attachments %}
@@ -78,8 +91,24 @@
         {% else %}
             <p id="email_body">{{ message.body_plain_text|linebreaksbr|urlize }}</p>
         {% endif %}
+    </div>
+    <div style="display: none;" id="send_and_archive_popover_content">
+        <div class="table-responsive">
+            <table class='table table-hover table-condensed'>
+                <tbody>
+                    {% for folder, display_name in archive_folders %}
+                        <tr id='{{ folder }}' style='cursor: pointer;' onclick='$("#archive_button").popover("hide");send_email("{{ folder }}");'>
+                            <td style='padding: 2px; border-top: 0px;'>{{ display_name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
     {% else %}
+    <div class="col-xs-12">
         <p>Could not retrieve email.</p>
+    </div>
     {% endif %}
 {% endblock %}
 
@@ -87,158 +116,19 @@
     <script type="text/javascript" src="{% static 'js/jquery.blockUI.js' %}"></script>
     <script src="//cdn.ckeditor.com/4.5.3/standard-all/ckeditor.js"></script>
     <script language="javascript" type="text/javascript">
-        var editor = '';
-        var attachments = [];
-        var attachment_details = [];
+        var message_is_html = {{ message.is_html|yesno:"true,false" }};
+        var message_reply_html = '{{ message.reply_html|escapejs }}';
+        var message_reply_plain_text = '{{ message.reply_plain_text|escapejs }}';
+        var message_subject = '{{ message.subject|escapejs }}';
+        var message_reply_to = '{{ message.reply_to|escapejs }}';
+        var message_to = '{{ message.to|escapejs }}';
+        var message_path = '{{ message.path|escapejs }}';
+        var attach_button_content = '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' %}</span>';
+        var reply_and_archive_popover_content = $('#send_and_archive_popover_content').html();
         
-        $.ajaxSetup({ cache: true });
-        
-        function array_to_ajax(array, prefix) {
-            var ajax_dict = {};
-            for (index = 0; index < array.length; ++index) {
-                ajax_dict[prefix + index.toString()] = array[index];
-            };
-    
-            return ajax_dict;
-        };
-        
-        String.prototype.rsplit = function(sep, maxsplit) { // Missing Python
-            var split = this.split(sep);
-            return maxsplit ? [ split.slice(0, -maxsplit).join(sep) ].concat(split.slice(-maxsplit)) : split;
-        };
-        
-        function add_button(button_text, onclick_text, id) {
-            $('#buttons').append('<button id="' + id + '" class="btn btn-default" type="button" onclick="' + onclick_text +'">' + button_text + '</button>');
-        };
-
-        function change_to_editor() {
-            {% if message.is_html %}
-                editor = CKEDITOR.replace('email_body', {
-                    fullPage: true,
-                    allowedContent: true,
-                    removePlugins: 'magicline',
-                    extraPlugins: 'autogrow',
-                    autoGrow_onStartup: true
-                });
-                editor.setData('{{ message.reply_html|escapejs }}');
-            {% else %}
-                $('#email_body').replaceWith('<textarea name="email_editor" id="email_editor" style="min-height: 300px; min-width: 100%;">{{ message.reply_plain_text|escapejs }}</textarea>');
-            {% endif %}
-
-            $('#to_hr').css('display', 'block');
-            $('#email_jfu').css('display', 'initial');
-            $('#to').replaceWith('<input type="text" id="to"><hr>');
-            $('#cc').replaceWith('<input type="text" id="cc"><hr>');
-            $('#subject').replaceWith('<input type="text" placeholder="Subject" style="outline: none; border: none;" class="h1" id="subject">');
-            $('#reply_to').remove();
-            $('#date').remove();
-            $('#attachments').remove();
-            $('#from_header').remove();
-            $('#buttons').html('');
-            add_button('Send', 'send_email();', 'send_button');
-            
-            
-            $('#buttons').append('<button class="btn btn-default" type="button" id="attach_button">Attach</button>');
-            $('#attach_button').popover({
-                html: true,
-                container: 'body',
-                content: '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' %}</span>',
-            });
-        };
-
-        function reply() {
-            change_to_editor();
-            var subject = '{{ message.subject|escapejs }}';
-            if (subject.search(/^RE:/i) == -1) {
-                subject = 'Re: ' + subject;
-            }
-            $('#subject').val(subject);
-            if ('{{ message.reply_to|escapejs }}'.search(/[a-zA-Z0-9 <]*resnet@calpoly\.edu[>]*/i) != -1) {
-                $('#to').val('{{ message.to|escapejs }}');
-            }
-            else {
-                $('#to').val('{{ message.reply_to|escapejs }}');
-            }
-        };
-
-        function reply_all() {
-            reply();
-            $('#cc').val('{{ message.cc|escapejs }}');
-        };
-
-        function forward() {
-            change_to_editor();
-            
-            var subject = '{{ message.subject|escapejs }}';
-            if (subject.search(/^FWD:/i) == -1) {
-                subject = 'Fwd: ' + subject;
-            }
-            $('#subject').val(subject);
-        };
-
-        function archive(destination_folder) {
-            $.blockUI({message: '<h1>Archiving...</h1>'});
-    
-            ajaxPost("{% url 'email_archive' %}", 
-                {'message0': '{{ message.path|escapejs }}', 
-                    'destination_folder': destination_folder}, 
-                function(response_context) {
-                    $.unblockUI();
-                    $(parent.document.getElementById('{{ message.path|escapejs }}')).remove();
-                    parent.$.fancybox.close();
-            });
-        };
-
-        function send_email() {
-            to = $('#to').val();
-            cc = $('#cc').val();
-            reply_to = $('#reply_to').val();
-            subject = $('#subject').val();
-
-            {% if message.is_html %}
-                is_html = true;
-                body = editor.getData();
-            {% else %}
-                is_html = false;
-                body = $('#email_editor').val();
-            {% endif %}
-            
-            var in_reply_to = '';
-            if (subject.search(/^Re:/i) != -1) {
-                in_reply_to = '{{ message.path|escapejs }}';
-            }
-            
-            $.blockUI({ message: '<h1>Sending...</h1>'});
-            
-            var post_dict = array_to_ajax(attachments, 'attachment');
-            
-            post_dict['to'] = to;
-            post_dict['cc'] = cc;
-            post_dict['reply_to'] = reply_to;
-            post_dict['body'] = body;
-            post_dict['subject'] = subject;
-            post_dict['is_html'] = is_html;
-            post_dict['in_reply_to'] = in_reply_to;
-
-            ajaxPost("{% url 'send_email' %}", post_dict, 
-                function(response_context) {
-                    $.unblockUI();
-                    
-                    if (response_context['success']) {
-                        if ('{{ message.path|escapejs }}') {
-                            parent.refresh_messages('{{ message.path|escapejs }}'.rsplit('/', 1)[0]);
-                        }
-                        parent.$.fancybox.close();
-                    }
-                    else {
-                        if (response_context['reason']) {
-                            alert('Failed to send message: ' + response_context['reason']);
-                        }
-                        else {
-                            alert('Failed to send message. Please try again.');
-                        }
-                    }
-            });
-        };
+        var email_archive_url = "{% url 'email_archive' %}";
+        var send_email_url = "{% url 'send_email' %}";
+        var create_ticket_url = "{% url 'email_create_ticket' %}";
     </script>
+    <script src="{% static 'js/email_message.js' %}"></script>
 {% endblock %}

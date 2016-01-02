@@ -6,8 +6,8 @@
 
 """
 
-from operator import itemgetter
 import logging
+from operator import itemgetter
 
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 from django.views.generic.edit import FormView
@@ -63,13 +63,13 @@ class SingleGroupEditView(FormView):
             for member in raw_member_data:
                 member_info.append({
                     'full_name': member['displayName'],
-                    'user_principal_name': member['userPrincipalName'],
+                    'principal_name': member['userPrincipalName'],
                     'dn': member['distinguishedName'].replace(",", ", "),  # Add spaces for better html wrapping
                     'buckley': 'FERPA' in member['distinguishedName']
                 })
 
         if member_info:
-            return sorted(member_info, key=itemgetter('user_principal_name'))
+            return sorted(member_info, key=itemgetter('principal_name'))
         else:
             return None
 
@@ -92,21 +92,21 @@ class SingleGroupEditView(FormView):
         if not self.valid_user:
             raise ValidationError("You do not have permission to view or modify this group.")
 
-        user_principal_name = form.cleaned_data['user_principal_name']
+        principal_name = form.cleaned_data['principal_name']
 
         member_already_exists = False
 
         # Check if the user already exists in the group (when it isn't empty)
         if self._get_member_info():
             for member in self._get_member_info():
-                if member['user_principal_name'] == user_principal_name:
+                if member['principal_name'] == principal_name:
                     member_already_exists = True
 
         # Don't add the user if (s)he is already in the group.
         if not member_already_exists:
-            self.ad_group_instance.add_member(user_principal_name)
+            self.ad_group_instance.add_member(principal_name)
         else:
-            form.add_error('user_principal_name', ValidationError('Cannot add ' + user_principal_name + ': user already exists in group.', code='user_in_group'))
+            form.add_error('principal_name', ValidationError('Cannot add ' + principal_name + ': user already exists in group.', code='user_in_group'))
             return self.form_invalid(form)
 
         return super(SingleGroupEditView, self).form_valid(form)
@@ -116,7 +116,7 @@ class SingleGroupEditView(FormView):
 
 
 class ResTechListEditView(SingleGroupEditView):
-    "Lists the members of the ResTech group. Modifications to this group will respectively modify the ResTech Admin group."""
+    """Lists the members of the ResTech group. Modifications to this group will respectively modify the ResTech Admin group."""
 
     template_name = "adgroups/restech_list_edit.html"
     subtitle = "ResNet Technicians"

@@ -1,6 +1,6 @@
 """
 .. module:: resnet_internal.apps.computers.models
-   :synopsis: ResNet Internal Computer Index Models.
+   :synopsis: University Housing Internal Computer Index Models.
 
 .. moduleauthor:: Thomas Willson <tewillso@calpoly.edu>
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
@@ -10,7 +10,7 @@
 import ast
 import re
 
-from django.db.models import Field, SubfieldBase, TextField
+from django.db.models import Field, TextField
 from django.forms.fields import RegexField
 
 
@@ -70,18 +70,24 @@ class PortListFormField(RegexField):
         super(PortListFormField, self).__init__(csi_re, *args, **kwargs)
 
 
-class ListField(TextField, metaclass=SubfieldBase):
+class ListField(TextField):
     description = "Stores a python list"
 
-    def __init__(self, *args, **kwargs):
-        super(ListField, self).__init__(*args, **kwargs)
+    def from_db_value(self, value, expression, connection, context):
+        if not value:
+            return []
+
+        try:
+            return ast.literal_eval(value)
+        except:
+            return []
 
     def to_python(self, value):
-        if not value:
-            value = []
-
         if isinstance(value, list):
             return value
+
+        if not value:
+            return []
 
         try:
             return ast.literal_eval(value)
@@ -96,7 +102,7 @@ class ListField(TextField, metaclass=SubfieldBase):
 
     def value_to_string(self, obj):
         value = self._get_val_from_obj(obj)
-        return self.get_db_prep_value(value)
+        return self.get_prep_value(value)
 
     def formfield(self, **kwargs):
         defaults = {'form_class': PortListFormField}

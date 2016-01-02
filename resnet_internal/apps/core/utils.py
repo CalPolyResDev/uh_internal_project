@@ -1,16 +1,16 @@
 """
 .. module:: resnet_internal.apps.core.utils
-   :synopsis: ResNet Internal Core Utilities.
+   :synopsis: University Housing Internal Core Utilities.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
 
 from copy import deepcopy
-from operator import itemgetter
-from sys import platform
 import logging
+from operator import itemgetter
 import os
+from sys import platform
 
 from django.core.cache import cache
 from srsconnector.models import ServiceRequest
@@ -22,15 +22,19 @@ from .models import NetworkDevice
 logger = logging.getLogger(__name__)
 
 
-class NetworkReachabilityTester:
+class NetworkReachabilityTester(object):
 
     @staticmethod
-    def _is_device_reachable(ip_address):
-        response = os.system("ping -c 1 -t 2 " + ip_address + ' > /dev/null 2>&1') if platform == 'darwin' else os.system("ping -c 1 -w 2 " + ip_address + ' > /dev/null 2>&1')
+    def _is_device_reachable(ip_address, timeout):
+        if platform == 'darwin':
+            response = os.system("ping -c 1 -t " + str(timeout) + " " + ip_address + ' > /dev/null 2>&1')
+        else:
+            response = os.system("ping -c 1 -w " + str(timeout) + " " + ip_address + ' > /dev/null 2>&1')
+
         return True if response == 0 else False
 
     @staticmethod
-    def get_network_device_reachability():
+    def get_network_device_reachability(timeout):
         reachability_responses = []
 
         network_devices = NetworkDevice.objects.all()
@@ -39,7 +43,7 @@ class NetworkReachabilityTester:
             reachability_responses.append({'display_name': network_device.display_name,
                                            'dns_name': network_device.dns_name,
                                            'ip_address': network_device.ip_address,
-                                           'status': NetworkReachabilityTester._is_device_reachable(network_device.ip_address),
+                                           'status': NetworkReachabilityTester._is_device_reachable(network_device.ip_address, timeout),
                                            })
         return reachability_responses
 

@@ -1,68 +1,40 @@
 {% extends "base.html" %}
 {% load core_user_tests %}
-{% block meta %}
-{{ block.super }}
-    <style>
-    #columns #column1, .columns .column1 {
-        width: 20%;
-    }
-    #columns #column2, .columns .column2 {
-        width: 40%;
-    }
-    #columns #column3, .columns .column3 {
-        width: 40%;
-    }
-</style>
+
+{% block main %}
+    <div class="col-xs-12 col-md-12 col-lg-3">
+        <h2>General Site Announcements</h2>
+        {% for announcement in announcements %}
+            <h3>{{ announcement.title }}&nbsp&nbsp<wbr /><small>{{ announcement.created|date }}</small></h3>
+            <p>{% autoescape off %}{{ announcement.description }}{% endautoescape %}</p>
+        {% endfor %}
+    </div>
+    <div class="col-xs-12 col-md-6 col-lg-4">
+        <h2>Network Status</h2>
+        <div id="network-status-response" class="table-responsive table-wrapper-cutoff">
+            <p>Loading...</p>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-6 col-lg-5">
+        <h2>Ticket Summary</h2>
+        <div id="tickets-response" class="table-responsive table-wrapper-cutoff">
+        {% if request.user.is_authenticated and request.user|technician_access %}
+            <p>Loading...</p>
+        {% elif request.user.is_authenticated %}
+            <p>The Ticket Summary is only currently available to ResNet Technicians.</p>
+        {% else %}
+            <p>Please log in to view tickets.</p>
+        {% endif %}
+        </div>
+    </div>
 {% endblock %}
 
-{% block content %}
-  <div id="content-2col">
-    <div id="content">
-      <div id="splashOuter">
-        <div id="splash"></div>
-      </div>
-      <div id="topContent">
-        <h1>Welcome to the ResNet Internal Tech Tools Site</h1>
-        <h2>Network Usage</h2>
-        <div id="network_usage_box" class="contentBox">
-          <h3>Pretty graphs & stuff.</h3>
-          <p id="network_usage_content">Coming Soon...</p>
-        </div>
-        </div>
-      <div id="columns" style="max-width: 100%">
-        <div id="column1">
-          <h2>General Site Announcements</h2>
-          {% for announcement in announcements %}
-          <h3>{{ announcement.title }}&nbsp;&nbsp; <font size="1" color="grey" style="white-space: nowrap;">{{ announcement.created|date }}</font></h3>
-          <p>{% autoescape off %}{{ announcement.description }}{% endautoescape %}</p>
-          {% endfor %}
-        </div>
-        <div id="column2" style="max-width: 33%; max-height: 450px; overflow: auto;">
-          <h2>Network Status</h2>
-          <p id="network_status_response">Loading...</p>
-        </div>
-        <div id="column3" style="max-width: 50%; max-height: 450px; overflow: auto;">
-          <h2>Ticket Summary</h2>
-          {% if request.user.is_authenticated and request.user|technician_access %}
-            <p id="tickets_response">Loading...</p>
-          {% elif request.user.is_authenticated %}
-            <p>The Ticket Summary is only currently available to ResNet Technicians.</p>
-          {% else %}
-            <p>Please log in to view tickets.</p>
-          {% endif %}
-        </div>
-        <div class="clear"></div>
-      </div>
-    </div>
-  </div>
- {% endblock %}
- 
 {% block extra_script %}
 <script type="text/javascript">
     $(document).ready(function() {
         ajaxGet("{% url 'core_update_network_status' %}");
         {% if request.user.is_authenticated and request.user|technician_access %}
-        ajaxGet("{% url 'core_get_tickets' %}");
+            ajaxGet("{% url 'core_get_tickets' %}");
         {% endif %}
     });
 </script>
