@@ -101,7 +101,8 @@ class EmailConnectionMixin(object):
         ssl = settings.INCOMING_EMAIL['IMAP4']['USE_SSL']
 
         connection = None
-        while not connection:
+        attempt_number = 0
+        while not connection and attempt_number < 10:
             try:
                 connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
                 connection.login(username, password)
@@ -111,6 +112,7 @@ class EmailConnectionMixin(object):
                 # Below line temporarily commented due to excessive traffic to Sentry.
                 # logger.warning("Can't connect to IMAP server: %s, trying again." % str(exc), exc_info=True)
                 connection = None
+            attempt_number += 1
 
         return connection
 
