@@ -14,7 +14,16 @@ from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from html2text import html2text
 import requests
-from uwsgidecorators import timer
+
+try:
+    from uwsgidecorators import timer
+except ImportError:
+    def timer(time):
+        def wrap(f):
+            def wrap_2(num):
+                return f(num)
+            return wrap_2
+        return wrap
 
 from .utils import EmailManager
 
@@ -49,7 +58,7 @@ def update_slack_email(num):
     previous_email_messages = cache.get('previous_email_messages')
 
     with EmailManager() as email_manager:
-        current_emails = email_manager.get_messages('INBOX', '')
+        current_emails, num_available_messages = email_manager.get_messages('INBOX', '')
 
         if previous_email_messages is not None:
             new_emails = [email for email in current_emails if email not in previous_email_messages]
