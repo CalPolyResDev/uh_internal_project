@@ -57,7 +57,7 @@ def can_fulfill_request(request_id):
 def send_replenishment_email():
     """Sends an email to the assistant resident coordinator if inventory is low."""
 
-    assistant_coord_email = StaffMapping.objects.get(title="ResNet: Asst. Resident Coordinator").email
+    assistant_coord_email = StaffMapping.objects.get(title="ResNet: Assistant Resident Coordinator").email
 
     low_toner_cartridges = Toner.objects.extra(where=["quantity + ordered < %d" % INVENTORY_LOW_CUTOFF])
     low_parts = Part.objects.extra(where=["quantity + ordered < %d" % INVENTORY_LOW_CUTOFF])
