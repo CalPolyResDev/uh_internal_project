@@ -18,7 +18,6 @@ class PrinterRequestsRouter(object):
         """Routes database read requests to the printer request database."""
 
         if model._meta.app_label == self.APP_NAME and model._meta.model_name != self.EXCLUDED_MODEL:
-            print(model._meta.name)
             return self.DATABASE_ALIAS
         return None
 
