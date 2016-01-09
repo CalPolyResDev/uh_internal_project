@@ -181,6 +181,8 @@ AUTH_USER_MODEL = 'core.ResNetInternalUser'
 
 CAS_ADMIN_PREFIX = "flugzeug/"
 CAS_LOGOUT_COMPLETELY = False
+CAS_LOGIN_MSG = None
+CAS_LOGGED_MSG = None
 
 CAS_SERVER_URL = "https://my.calpoly.edu/cas/"
 CAS_LOGOUT_URL = "https://my.calpoly.edu/cas/casClientLogout.jsp?logoutApp=University%20Housing%20Internal"
