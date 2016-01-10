@@ -11,11 +11,13 @@ def change_navbar_urls(apps, schema_editor):
 
     computers = NavbarLink.objects.filter(display_name="Computers")
     if computers.exists():
+        computers = computers.first()
         computers.url_name = "computers"
         computers.save()
 
     printers = NavbarLink.objects.filter(display_name="Printers")
     if printers.exists():
+        printers = printers.first()
         printers.url_name = "printers"
         printers.save()
 
