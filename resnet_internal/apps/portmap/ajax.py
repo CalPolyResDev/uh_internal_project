@@ -205,7 +205,7 @@ def change_port_status(request):
 def remove_port(request):
     """ Removes a port.
 
-    :param port_id: The printer's id.
+    :param port_id: The port's id.
     :type port_id: str
 
     """
@@ -216,7 +216,7 @@ def remove_port(request):
     context = {}
     context["success"] = True
     context["error_message"] = None
-    context["printer_id"] = port_id
+    context["port_id"] = port_id
 
     port = Port.objects.get(id=port_id)
     port.delete()
