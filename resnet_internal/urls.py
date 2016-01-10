@@ -145,8 +145,8 @@ urlpatterns += [
 
 # AD Group management
 urlpatterns += [
-    url(r'^manage/technicians/$', login_required(staff_access(ResTechListEditView.as_view())), name='restech_list_edit'),
-    url(r'^manage/technicians/remove/$', login_required(staff_access(remove_resnet_tech)), name='remove_resnet_tech'),
+    url(r'^technicians/$', login_required(staff_access(ResTechListEditView.as_view())), name='restech_list_edit'),
+    url(r'^technicians/remove/$', login_required(staff_access(remove_resnet_tech)), name='remove_resnet_tech'),
 ]
 
 # Computers
