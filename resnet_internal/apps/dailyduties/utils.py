@@ -108,7 +108,7 @@ class EmailConnectionMixin(object):
                 connection.login(username, password)
                 connection.select_folder('INBOX')
                 connection.close_folder()
-            except (OSError, IMAP4.error) as exc:  # Office 365 seems to randomly reject connections and trying again usually results in a connection.
+            except (OSError, IMAP4.error):  # Office 365 seems to randomly reject connections and trying again usually results in a connection.
                 # Below line temporarily commented due to excessive traffic to Sentry.
                 # logger.warning("Can't connect to IMAP server: %s, trying again." % str(exc), exc_info=True)
                 connection = None
