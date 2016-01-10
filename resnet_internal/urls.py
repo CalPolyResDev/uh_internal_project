@@ -185,6 +185,7 @@ urlpatterns += [
     url(r'^ports/populate/$', login_required(ports_access(PopulatePorts.as_view())), name='populate_ports'),
     url(r'^ports/update/$', login_required(ports_access(UpdatePort.as_view())), name='update_port'),
     url(r'^ports/change_status/$', login_required(ports_modify_access(change_port_status)), name='change_port_status'),
+    url(r'^ports/remove/$', login_required(ports_modify_access(remove_port)), name='remove_port'),
     url(r'^ports/ap/$', login_required(ports_access(AccessPointsView.as_view())), name='access_points'),
     url(r'^ports/ap/populate/$', login_required(ports_access(PopulateAccessPoints.as_view())), name='populate_access_points'),
     url(r'^ports/ap/update/$', login_required(ports_access(UpdateAccessPoint.as_view())), name='update_access_point'),

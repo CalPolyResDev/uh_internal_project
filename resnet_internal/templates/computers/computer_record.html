@@ -38,7 +38,7 @@
                             {% endfor %}
                         </td>
                         <td>{% if pinhole.sr_number %}{{ pinhole.pinhole_request.status }} <a href="{% srs_edit_url pinhole.sr_number %}"><img src="{% static 'images/srs_edit_button.gif' %}"></a>{% else %}None{% endif %}</td> 
-                        <td>{% if request.user|computer_record_modify_access %}<a class="remove" onclick="remove_pinhole('{{ pinhole.id }}')">Remove</a>{% endif %}</td>
+                        <td>{% if request.user|computer_record_modify_access %}<a class="action_red" onclick="remove_pinhole('{{ pinhole.id }}')">Remove</a>{% endif %}</td>
                     </tr>
                     {% endfor %}
                 {% else %}
@@ -82,7 +82,7 @@
                     <tr id="domain_name_{{ domain_name.id }}">
                         <td>{{ domain_name.domain_name }}</td>
                         <td>{% if domain_name.sr_number %}{{ domain_name.domain_name_request.status }} <a href="{% srs_edit_url domain_name.sr_number %}"><img src="{% static 'images/srs_edit_button.gif' %}"></a>{% else %}None{% endif %}</td>
-                        <td>{% if request.user|computer_record_modify_access %}<a class="remove" onclick="remove_domain_name('{{ domain_name.id }}')">Remove</a>{% endif %}</td>
+                        <td>{% if request.user|computer_record_modify_access %}<a class="action_red" onclick="remove_domain_name('{{ domain_name.id }}')">Remove</a>{% endif %}</td>
                     </tr>
                     {% endfor %}
                 {% else %}

@@ -64,7 +64,8 @@ class PopulatePorts(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["active"] = {"width": "80px", "type": "string", "editable": False, "title": "&nbsp;"}
+            self.column_definitions["active"] = {"width": "90px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+            self.column_definitions["remove"] = {"width": "70px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
 
         return super(PopulatePorts, self).get_options()
 
@@ -89,9 +90,9 @@ class PopulatePorts(RNINDatatablesPopulateView):
             display_block = self.display_block_template.format(value="", link_block=link_block, inline_images="")
             return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
         elif column == 'active':
-            return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="remove", link_display="Deactivate" if getattr(row, column) else "Activate")
+            return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="action_blue", link_display="Deactivate" if getattr(row, column) else "Activate")
         elif column == 'remove':
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="remove", link_display="Remove")
+            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
         else:
             return super(PopulatePorts, self).render_column(row, column)
 

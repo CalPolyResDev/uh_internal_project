@@ -89,7 +89,7 @@ class PopulatePrinters(RNINDatatablesPopulateView):
 
     def render_column(self, row, column):
         if column == 'remove':
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="remove", link_display="Remove")
+            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
         else:
             return super(PopulatePrinters, self).render_column(row, column)
 
