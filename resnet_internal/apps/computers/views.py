@@ -34,7 +34,7 @@ class ComputersView(ChainedSelectFormViewMixin, DatatablesView):
     form_class = ComputerForm
     populate_class = PopulateComputers
     model = Computer
-    success_url = reverse_lazy('uh_computers')
+    success_url = reverse_lazy('computers')
 
 
 class ComputerRecordsView(TemplateView):
@@ -146,7 +146,7 @@ Thanks,
         new_pinhole.sr_number = sr_number
         new_pinhole.save()
 
-        return HttpResponseRedirect(reverse('view_uh_computer_record', kwargs={'ip_address': ip_address}))
+        return HttpResponseRedirect(reverse('view_computer_record', kwargs={'ip_address': ip_address}))
 
 
 class DomainNameRequestView(FormView):
@@ -185,4 +185,4 @@ Thanks,
             new_domain_name.sr_number = sr_number
             new_domain_name.save()
 
-        return HttpResponseRedirect(reverse('view_uh_computer_record', kwargs={'ip_address': ip_address}))
+        return HttpResponseRedirect(reverse('view_computer_record', kwargs={'ip_address': ip_address}))

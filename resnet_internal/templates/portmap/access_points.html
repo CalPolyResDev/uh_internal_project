@@ -26,7 +26,7 @@
         <table id="access_point_map"></table>
     </div>
 
-    {% if request.user|portmap_modify_access %}
+    {% if request.user|ports_modify_access %}
     <div class="col-xs-12">
         {% crispy form %}
     </div>

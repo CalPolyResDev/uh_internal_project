@@ -30,7 +30,7 @@ from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView, EmailComposeView
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
-from .apps.portmap.ajax import PopulatePorts, UpdatePort, change_port_status, PortChainedAjaxView, UpdateAccessPoint, PopulateAccessPoints
+from .apps.portmap.ajax import PopulatePorts, UpdatePort, change_port_status, remove_port, PortChainedAjaxView, UpdateAccessPoint, PopulateAccessPoints
 from .apps.portmap.views import PortsView, AccessPointsView, PortFrameView, AccessPointFrameView
 from .apps.printerrequests.ajax import change_request_status, update_part_inventory, update_toner_inventory
 from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
@@ -39,7 +39,7 @@ from .apps.printers.views import PrintersView
 from .apps.residents.views import SearchView
 from .apps.rosters.views import RosterGenerateView
 from .settings.base import (technician_access_test, staff_access_test, printers_access_test, printers_modify_access_test,
-                            portmap_access_test, portmap_modify_access_test, computers_access_test, computers_modify_access_test,
+                            ports_access_test, ports_modify_access_test, computers_access_test, computers_modify_access_test,
                             computer_record_modify_access_test, csd_access_test, ral_manager_access_test)
 
 
@@ -71,8 +71,8 @@ def permissions_check(test_func, raise_exception=True):
 technician_access = permissions_check(technician_access_test)
 staff_access = permissions_check(staff_access_test)
 
-portmap_access = permissions_check(portmap_access_test)
-portmap_modify_access = permissions_check(portmap_modify_access_test)
+ports_access = permissions_check(ports_access_test)
+ports_modify_access = permissions_check(ports_modify_access_test)
 
 computers_access = permissions_check(computers_access_test)
 computers_modify_access = permissions_check(computers_modify_access_test)
@@ -147,15 +147,15 @@ urlpatterns += [
     url(r'^manage/technicians/remove/$', login_required(staff_access(remove_resnet_tech)), name='remove_resnet_tech'),
 ]
 
-# Computer Index
+# Computers
 urlpatterns += [
-    url(r'^computers/$', login_required(computers_access(ComputersView.as_view())), name='uh_computers'),
-    url(r'^computers/populate/$', login_required(computers_access(PopulateComputers.as_view())), name='populate_uh_computers'),
-    url(r'^computers/update/$', login_required(computers_modify_access(UpdateComputer.as_view())), name='update_uh_computer'),
-    url(r'^computers/remove/$', login_required(computers_modify_access(remove_computer)), name='remove_uh_computer'),
-    url(r'^computers/remove_pinhole/$', login_required(computer_record_modify_access(remove_pinhole)), name='remove_uh_computer_pinhole'),
-    url(r'^computers/remove_domain_name/$', login_required(computer_record_modify_access(remove_domain_name)), name='remove_uh_computer_domain_name'),
-    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(computers_access(ComputerRecordsView.as_view())), name='view_uh_computer_record'),
+    url(r'^computers/$', login_required(computers_access(ComputersView.as_view())), name='computers'),
+    url(r'^computers/populate/$', login_required(computers_access(PopulateComputers.as_view())), name='populate_computers'),
+    url(r'^computers/update/$', login_required(computers_modify_access(UpdateComputer.as_view())), name='update_computer'),
+    url(r'^computers/remove/$', login_required(computers_modify_access(remove_computer)), name='remove_computer'),
+    url(r'^computers/remove_pinhole/$', login_required(computer_record_modify_access(remove_pinhole)), name='remove_computer_pinhole'),
+    url(r'^computers/remove_domain_name/$', login_required(computer_record_modify_access(remove_domain_name)), name='remove_computer_domain_name'),
+    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(computers_access(ComputerRecordsView.as_view())), name='view_computer_record'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/rdp/$', login_required(computers_access(RDPRequestView.as_view())), name='rdp_request'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/pinhole_request/$', login_required(computer_record_modify_access(PinholeRequestView.as_view())), name='pinhole_request'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/domain_name_request/$', login_required(computer_record_modify_access(DomainNameRequestView.as_view())), name='domain_name_request'),
@@ -171,26 +171,26 @@ urlpatterns += [
     url(r'^printers/requests/parts/update_inventory/', login_required(technician_access(update_part_inventory)), name='update_printer_part_inventory'),
 ]
 
-# Printer Index
+# Printers
 urlpatterns += [
-    url(r'^printers/$', login_required(printers_access(PrintersView.as_view())), name='uh_printers'),
-    url(r'^printers/populate/$', login_required(printers_access(PopulatePrinters.as_view())), name='populate_uh_printers'),
-    url(r'^printers/update/$', login_required(printers_access(UpdatePrinter.as_view())), name='update_uh_printer'),
-    url(r'^printers/remove/$', login_required(printers_modify_access(remove_printer)), name='remove_uh_printer'),
+    url(r'^printers/$', login_required(printers_access(PrintersView.as_view())), name='printers'),
+    url(r'^printers/populate/$', login_required(printers_access(PopulatePrinters.as_view())), name='populate_printers'),
+    url(r'^printers/update/$', login_required(printers_access(UpdatePrinter.as_view())), name='update_printer'),
+    url(r'^printers/remove/$', login_required(printers_modify_access(remove_printer)), name='remove_printer'),
 ]
 
-# Portmap
+# Ports
 urlpatterns += [
-    url(r'^portmap/$', login_required(portmap_access(PortsView.as_view())), name='ports'),
-    url(r'^portmap/populate/$', login_required(portmap_access(PopulatePorts.as_view())), name='populate_ports'),
-    url(r'^portmap/update/$', login_required(portmap_access(UpdatePort.as_view())), name='update_port'),
-    url(r'^portmap/change_status/$', login_required(portmap_modify_access(change_port_status)), name='change_port_status'),
-    url(r'^portmap/ap/$', login_required(portmap_access(AccessPointsView.as_view())), name='access_points'),
-    url(r'^portmap/ap/populate/$', login_required(portmap_access(PopulateAccessPoints.as_view())), name='populate_access_points'),
-    url(r'^portmap/ap/update/$', login_required(portmap_access(UpdateAccessPoint.as_view())), name='update_access_point'),
-    url(r'^portmap/ap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(AccessPointFrameView.as_view())), name='ap_info_frame'),
-    url(r'^portmap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(PortFrameView.as_view())), name='port_info_frame'),
-    url(r'^portmap/ajax/chained_port/$', PortChainedAjaxView.as_view(), name='portmap_chained_port'),
+    url(r'^ports/$', login_required(ports_access(PortsView.as_view())), name='ports'),
+    url(r'^ports/populate/$', login_required(ports_access(PopulatePorts.as_view())), name='populate_ports'),
+    url(r'^ports/update/$', login_required(ports_access(UpdatePort.as_view())), name='update_port'),
+    url(r'^ports/change_status/$', login_required(ports_modify_access(change_port_status)), name='change_port_status'),
+    url(r'^ports/ap/$', login_required(ports_access(AccessPointsView.as_view())), name='access_points'),
+    url(r'^ports/ap/populate/$', login_required(ports_access(PopulateAccessPoints.as_view())), name='populate_access_points'),
+    url(r'^ports/ap/update/$', login_required(ports_access(UpdateAccessPoint.as_view())), name='update_access_point'),
+    url(r'^ports/ap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(ports_access(AccessPointFrameView.as_view())), name='ap_info_frame'),
+    url(r'^ports/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(ports_access(PortFrameView.as_view())), name='port_info_frame'),
+    url(r'^ports/ajax/chained_port/$', PortChainedAjaxView.as_view(), name='ports_chained_port'),
 ]
 
 # Roster Generator

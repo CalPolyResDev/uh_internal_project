@@ -31,8 +31,8 @@ class PopulatePrinters(RNINDatatablesPopulateView):
     """Renders the printer index."""
 
     table_name = "printer_index"
-    data_source = reverse_lazy('populate_uh_printers')
-    update_source = reverse_lazy('update_uh_printer')
+    data_source = reverse_lazy('populate_printers')
+    update_source = reverse_lazy('update_printer')
     form_class = PrinterForm
     model = Printer
 

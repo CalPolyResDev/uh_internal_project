@@ -1,6 +1,6 @@
 """
-.. module:: resnet_internal.apps.portmap.ajax
-   :synopsis: University Housing Internal Port Map AJAX Methods.
+.. module:: resnet_internal.apps.network.ajax
+   :synopsis: University Housing Internal Network AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
@@ -25,7 +25,7 @@ from paramiko import SSHClient, AutoAddPolicy
 
 from rmsconnector.utils import Resident
 
-from ...settings.base import portmap_modify_access_test
+from ...settings.base import ports_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm
 from .models import Port, AccessPoint
@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 class PopulatePorts(RNINDatatablesPopulateView):
     """Renders the port map."""
 
-    table_name = "portmap"
+    table_name = "ports"
     data_source = reverse_lazy('populate_ports')
     update_source = reverse_lazy('update_port')
     form_class = PortCreateForm
@@ -54,6 +54,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
     column_definitions["port"] = {"width": "50px", "type": "numeric", "title": "Port"}
     column_definitions["access_point"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP"}
     column_definitions["active"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
         "language": {
@@ -68,7 +69,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
         return super(PopulatePorts, self).get_options()
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = portmap_modify_access_test(user)
+        self.write_permissions = ports_modify_access_test(user)
 
     def get_row_class(self, row):
         if not row.active:
@@ -89,6 +90,8 @@ class PopulatePorts(RNINDatatablesPopulateView):
             return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
         elif column == 'active':
             return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="remove", link_display="Deactivate" if getattr(row, column) else "Activate")
+        elif column == 'remove':
+            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="remove", link_display="Remove")
         else:
             return super(PopulatePorts, self).render_column(row, column)
 
@@ -139,7 +142,7 @@ class UpdatePort(BaseDatatablesUpdateView):
 @ajax
 @require_POST
 def change_port_status(request):
-    """ Activates or Deactivates a port in the portmap.
+    """ Activates or Deactivates a port.
 
     :param port_id: The port's id.
     :type port_id: int
@@ -197,6 +200,30 @@ def change_port_status(request):
     return redraw_row(request, PopulatePorts, port_id)
 
 
+@ajax
+@require_POST
+def remove_port(request):
+    """ Removes a port.
+
+    :param port_id: The printer's id.
+    :type port_id: str
+
+    """
+
+    # Pull post parameters
+    port_id = request.POST["port_id"]
+
+    context = {}
+    context["success"] = True
+    context["error_message"] = None
+    context["printer_id"] = port_id
+
+    port = Port.objects.get(id=port_id)
+    port.delete()
+
+    return context
+
+
 class PopulateAccessPoints(RNINDatatablesPopulateView):
     """Renders the access point map."""
 
@@ -219,7 +246,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     column_definitions["ap_type"] = {"width": "80px", "type": "string", "title": "Type"}
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = portmap_modify_access_test(user)
+        self.write_permissions = ports_modify_access_test(user)
 
     def get_display_block(self, row, column):
         if column == 'port':
