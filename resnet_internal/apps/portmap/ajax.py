@@ -67,7 +67,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
             self.column_definitions["active"] = {"width": "90px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
             self.column_definitions["remove"] = {"width": "70px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
 
-        return super(PopulatePorts, self).get_options()
+        return super().get_options()
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = ports_modify_access_test(user)
@@ -83,7 +83,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
             except ObjectDoesNotExist:
                 link_block = ""
             else:
-                ap_url = reverse('ap_info_frame', kwargs={'pk': access_point.id})
+                ap_url = reverse('access_point_info_frame', kwargs={'pk': access_point.id})
                 ap_icon = self.icon_template.format(icon_url=static('images/icons/wifi-xxl.png'))
                 link_block = self.popover_link_block_template.format(popover_title='AP Info', content_url=ap_url, link_class_name="", link_display=ap_icon)
 
@@ -94,7 +94,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
         elif column == 'remove':
             return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
         else:
-            return super(PopulatePorts, self).render_column(row, column)
+            return super().render_column(row, column)
 
     def filter_queryset(self, qs):
         search_parameters = self.request.GET.get('search[value]', None)
@@ -245,6 +245,13 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
     column_definitions["ap_type"] = {"width": "80px", "type": "string", "title": "Type"}
+    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+
+    def get_options(self):
+        if self.get_write_permissions():
+            self.column_definitions["remove"] = {"width": "70px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+
+        return super().get_options()
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = ports_modify_access_test(user)
@@ -257,13 +264,43 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
             port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_class_name="", link_display=port_icon)
             return self.display_block_template.format(value=port.jack, link_block=port_block, inline_images="")
         else:
-            return super(PopulateAccessPoints, self).get_display_block(row, column)
+            return super().get_display_block(row, column)
+
+    def render_column(self, row, column):
+        if column == 'remove':
+            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
+        else:
+            return super().render_column(row, column)
 
 
 class UpdateAccessPoint(BaseDatatablesUpdateView):
     form_class = AccessPointUpdateForm
     model = AccessPoint
     populate_class = PopulateAccessPoints
+
+
+@ajax
+@require_POST
+def remove_access_point(request):
+    """ Removes access points.
+
+    :param access_point_id: The access point's id.
+    :type access_point_id: str
+
+    """
+
+    # Pull post parameters
+    access_point_id = request.POST["access_point_id"]
+
+    context = {}
+    context["success"] = True
+    context["error_message"] = None
+    context["access_point_id"] = access_point_id
+
+    access_point = AccessPoint.objects.get(id=access_point_id)
+    access_point.delete()
+
+    return context
 
 
 class PortChainedAjaxView(ChainedSelectChoicesView):

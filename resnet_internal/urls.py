@@ -30,7 +30,7 @@ from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView, EmailComposeView
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
-from .apps.portmap.ajax import PopulatePorts, UpdatePort, change_port_status, remove_port, PortChainedAjaxView, UpdateAccessPoint, PopulateAccessPoints
+from .apps.portmap.ajax import PopulatePorts, UpdatePort, change_port_status, remove_port, PortChainedAjaxView, PopulateAccessPoints, UpdateAccessPoint, remove_access_point
 from .apps.portmap.views import PortsView, AccessPointsView, PortFrameView, AccessPointFrameView
 from .apps.printerrequests.ajax import change_request_status, update_part_inventory, update_toner_inventory
 from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
@@ -175,23 +175,26 @@ urlpatterns += [
 urlpatterns += [
     url(r'^printers/$', login_required(printers_access(PrintersView.as_view())), name='printers'),
     url(r'^printers/populate/$', login_required(printers_access(PopulatePrinters.as_view())), name='populate_printers'),
-    url(r'^printers/update/$', login_required(printers_access(UpdatePrinter.as_view())), name='update_printer'),
+    url(r'^printers/update/$', login_required(printers_modify_access(UpdatePrinter.as_view())), name='update_printer'),
     url(r'^printers/remove/$', login_required(printers_modify_access(remove_printer)), name='remove_printer'),
 ]
 
-# Ports
+# Network
 urlpatterns += [
     url(r'^ports/$', login_required(ports_access(PortsView.as_view())), name='ports'),
     url(r'^ports/populate/$', login_required(ports_access(PopulatePorts.as_view())), name='populate_ports'),
-    url(r'^ports/update/$', login_required(ports_access(UpdatePort.as_view())), name='update_port'),
+    url(r'^ports/update/$', login_required(ports_modify_access(UpdatePort.as_view())), name='update_port'),
     url(r'^ports/change_status/$', login_required(ports_modify_access(change_port_status)), name='change_port_status'),
     url(r'^ports/remove/$', login_required(ports_modify_access(remove_port)), name='remove_port'),
-    url(r'^ports/ap/$', login_required(ports_access(AccessPointsView.as_view())), name='access_points'),
-    url(r'^ports/ap/populate/$', login_required(ports_access(PopulateAccessPoints.as_view())), name='populate_access_points'),
-    url(r'^ports/ap/update/$', login_required(ports_access(UpdateAccessPoint.as_view())), name='update_access_point'),
-    url(r'^ports/ap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(ports_access(AccessPointFrameView.as_view())), name='ap_info_frame'),
+
     url(r'^ports/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(ports_access(PortFrameView.as_view())), name='port_info_frame'),
     url(r'^ports/ajax/chained_port/$', PortChainedAjaxView.as_view(), name='ports_chained_port'),
+
+    url(r'^access-points/$', login_required(ports_access(AccessPointsView.as_view())), name='access_points'),
+    url(r'^access-points/populate/$', login_required(ports_access(PopulateAccessPoints.as_view())), name='populate_access_points'),
+    url(r'^access-points/update/$', login_required(ports_modify_access(UpdateAccessPoint.as_view())), name='update_access_point'),
+    url(r'^access-points/remove/$', login_required(ports_modify_access(remove_access_point)), name='remove_access_point'),
+    url(r'^access-points/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(ports_access(AccessPointFrameView.as_view())), name='access_point_info_frame'),
 ]
 
 # Roster Generator
