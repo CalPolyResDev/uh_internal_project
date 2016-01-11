@@ -15,7 +15,7 @@ def add_navbar_item(apps, schema_editor):
         reslife_resources = reslife_resources.first()
 
         csd_domain_assignments = NavbarLink.objects.create(
-            display_name="CSD Domain Assignments",
+            display_name="CSD Domains",
             sequence_index=2,
             url_name="csd_assign_domain",
             icon="images/icons/person.png",
