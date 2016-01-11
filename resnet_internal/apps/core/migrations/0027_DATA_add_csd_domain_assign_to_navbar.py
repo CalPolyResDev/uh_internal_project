@@ -10,7 +10,7 @@ def add_navbar_item(apps, schema_editor):
     ADGroup = apps.get_model('core', 'ADGroup')
     NavbarLink = apps.get_model('core', 'NavbarLink')
 
-    reslife_resources = NavbarLink.objects.filter(display_name="ResLife Resources")
+    reslife_resources = NavbarLink.objects.filter(display_name="Reslife Resources")
     if reslife_resources.exists():
         reslife_resources = reslife_resources.first()
 
