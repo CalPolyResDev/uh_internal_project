@@ -4,12 +4,12 @@
 
 {% load crispy_forms_tags %}
 
-{% block subtitle %} | Rooms{% endblock %}
+{% block subtitle %} | Access Points{% endblock %}
 
 {% block main %}
     <div class="col-xs-12">
         <div class="page-header">
-            <h2>Rooms</h2>
+            <h2>Access Points</h2>
         </div>
     </div>
 
@@ -17,31 +17,34 @@
     <div class="col-xs-12">
         <div class="bs-callout bs-callout-danger">
             <h4>Form Error</h4>
-            The room could not be added. Refer to the form below for details.
+            The access point could not be added. Refer to the form below for details.
         </div>
     </div>
     {% endif %}
 
     <div class="col-xs-12">
-        <table id="rooms"></table>
+        <table id="access_point_map"></table>
     </div>
 
+    {% if request.user|ports_modify_access %}
     <div class="col-xs-12">
         {% crispy form %}
     </div>
+    {% endif %}
 {% endblock %}
 
 {% block extra_script %}
     {{ block.super }}
     {% datatables_script %}
 
+    {% if request.user|ports_modify_access %}
     <script type="text/javascript">
-        function confirm_remove(room_id) {
-            var response = confirm('Are you sure you want to delete this room?');
+        function confirm_remove(access_point_id) {
+            var response = confirm('Are you sure you want to delete this access point?');
             if (response) {
-                ajaxPost("{% url 'remove_room' %}", {"room_id": room_id}, function(response_context) {
+                ajaxPost("{% url 'remove_access_point' %}", {"access_point_id": access_point_id}, function(response_context) {
                     if (response_context["success"]) {
-                        $("#"+ room_id).closest("tr").remove();
+                        $("#"+ access_point_id).closest("tr").remove();
                         return true;
                     }
                     else {
@@ -54,4 +57,5 @@
             }
         }
     </script>
+    {% endif %}
 {% endblock %}

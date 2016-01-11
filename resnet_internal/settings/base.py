@@ -151,8 +151,8 @@ technician_access_test = (lambda user: user.is_developer or user.is_rn_staff or 
 staff_access_test = (lambda user: user.is_developer or user.is_rn_staff)
 developer_access_test = (lambda user: user.is_developer)
 
-portmap_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom or user.is_tag or user.is_tag_readonly)
-portmap_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom or user.is_tag)
+ports_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom or user.is_tag or user.is_tag_readonly)
+ports_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom or user.is_tag)
 
 computers_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag or user.is_tag_readonly)
 computers_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag)

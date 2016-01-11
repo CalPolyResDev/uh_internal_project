@@ -24,4 +24,4 @@ class PrintersView(DatatablesView):
     model = Printer
     form_class = PrinterForm
     populate_class = PopulatePrinters
-    success_url = reverse_lazy('uh_printers')
+    success_url = reverse_lazy('printers')

@@ -1,6 +1,6 @@
 """
-.. module:: resnet_internal.apps.portmap.models
-   :synopsis: University Housing Internal Port Map Models.
+.. module:: resnet_internal.apps.network.models
+   :synopsis: University Housing Internal Network Models.
 
    Major credit to Kyle Fast for saving a couple months' worth of work entering database info.
 

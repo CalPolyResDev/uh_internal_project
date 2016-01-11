@@ -216,16 +216,53 @@ class PopulateRooms(RNINDatatablesPopulateView):
     column_definitions["community"] = {"type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "building__community__name"}
     column_definitions["building"] = {"type": "string", "editable": False, "title": "Building", "related": True, "lookup_field": "name"}
     column_definitions["name"] = {"type": "string", "title": "Name"}
+    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
         "scrollX": False,
     }
 
+    def get_options(self):
+        if self.get_write_permissions():
+            self.column_definitions["remove"] = {"width": "80px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+
+        return super().get_options()
+
     def _initialize_write_permissions(self, user):
         self.write_permissions = technician_access_test(user)
+
+    def render_column(self, row, column):
+        if column == 'remove':
+            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
+        else:
+            return super().render_column(row, column)
 
 
 class UpdateRoom(BaseDatatablesUpdateView):
     form_class = RoomUpdateForm
     model = Room
     populate_class = PopulateRooms
+
+
+@ajax
+@require_POST
+def remove_room(request):
+    """ Removes access points.
+
+    :param room_id: The roomt's id.
+    :type room_id: str
+
+    """
+
+    # Pull post parameters
+    room_id = request.POST["room_id"]
+
+    context = {}
+    context["success"] = True
+    context["error_message"] = None
+    context["room_id"] = room_id
+
+    access_point = Room.objects.get(id=room_id)
+    access_point.delete()
+
+    return context

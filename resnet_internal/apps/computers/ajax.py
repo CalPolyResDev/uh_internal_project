@@ -37,8 +37,8 @@ class PopulateComputers(RNINDatatablesPopulateView):
     """Renders the computer index."""
 
     table_name = "computer_index"
-    data_source = reverse_lazy('populate_uh_computers')
-    update_source = reverse_lazy('update_uh_computer')
+    data_source = reverse_lazy('populate_computers')
+    update_source = reverse_lazy('update_computer')
     form_class = ComputerForm
     model = Computer
 
@@ -98,7 +98,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
             inline_images = ""
 
             try:
-                record_url = reverse('view_uh_computer_record', kwargs={'ip_address': getattr(row, column)})
+                record_url = reverse('view_computer_record', kwargs={'ip_address': getattr(row, column)})
             except NoReverseMatch:
                 pass
             else:
@@ -137,7 +137,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
             display_block = self.display_block_template.format(value="", link_block=link_block, inline_images="")
             return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
         elif column == 'remove':
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="remove", link_display="Remove")
+            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
         else:
             return super(PopulateComputers, self).render_column(row, column)
 

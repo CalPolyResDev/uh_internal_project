@@ -31,8 +31,8 @@ class PopulatePrinters(RNINDatatablesPopulateView):
     """Renders the printer index."""
 
     table_name = "printer_index"
-    data_source = reverse_lazy('populate_uh_printers')
-    update_source = reverse_lazy('update_uh_printer')
+    data_source = reverse_lazy('populate_printers')
+    update_source = reverse_lazy('update_printer')
     form_class = PrinterForm
     model = Printer
 
@@ -89,7 +89,7 @@ class PopulatePrinters(RNINDatatablesPopulateView):
 
     def render_column(self, row, column):
         if column == 'remove':
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="remove", link_display="Remove")
+            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
         else:
             return super(PopulatePrinters, self).render_column(row, column)
 

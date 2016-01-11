@@ -43,7 +43,7 @@
         function confirm_remove(printer_id) {
             var response = confirm('Are you sure you want to delete this printer?');
             if (response) {
-                ajaxPost("{% url 'remove_uh_printer' %}", {"printer_id": printer_id}, function(response_context) {
+                ajaxPost("{% url 'remove_printer' %}", {"printer_id": printer_id}, function(response_context) {
                     if (response_context["success"]) {
                         $("#"+ printer_id).closest("tr").remove();
                         return true;

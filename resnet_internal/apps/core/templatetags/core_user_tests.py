@@ -7,7 +7,7 @@
 
 from django import template
 
-from ....settings.base import technician_access_test, staff_access_test, portmap_access_test, portmap_modify_access_test, computers_access_test, computers_modify_access_test, computer_record_modify_access_test, printers_access_test, printers_modify_access_test, developer_access_test
+from ....settings.base import technician_access_test, staff_access_test, ports_access_test, ports_modify_access_test, computers_access_test, computers_modify_access_test, computer_record_modify_access_test, printers_access_test, printers_modify_access_test, developer_access_test
 
 
 register = template.Library()
@@ -53,8 +53,8 @@ def developer_access(user):
 
 
 @register.filter
-def portmap_access(user):
-    """ Tests if a User has permission to view the portmap.
+def ports_access(user):
+    """ Tests if a User has permission to view ports.
 
     :param user: The user to test.
     :type user: InternalUser
@@ -62,12 +62,12 @@ def portmap_access(user):
 
     """
 
-    return portmap_access_test(user)
+    return ports_access_test(user)
 
 
 @register.filter
-def portmap_modify_access(user):
-    """ Tests if a User has permission to modify the portmap.
+def ports_modify_access(user):
+    """ Tests if a User has permission to modify ports.
 
     :param user: The user to test.
     :type user: InternalUser
@@ -75,12 +75,12 @@ def portmap_modify_access(user):
 
     """
 
-    return portmap_modify_access_test(user)
+    return ports_modify_access_test(user)
 
 
 @register.filter
 def computers_access(user):
-    """ Tests if a User has permission to view the computer index and computer records.
+    """ Tests if a User has permission to view computers and computer records.
 
     :param user: The user to test.
     :type user: InternalUser
@@ -93,7 +93,7 @@ def computers_access(user):
 
 @register.filter
 def computers_modify_access(user):
-    """ Tests if a User has permission to modify the computer index.
+    """ Tests if a User has permission to modify computers.
 
     :param user: The user to test.
     :type user: InternalUser
@@ -106,7 +106,7 @@ def computers_modify_access(user):
 
 @register.filter
 def computer_record_modify_access(user):
-    """ Tests if a User has permission to modify computer records.
+    """ Tests if a User has permission to modify computers.
 
     :param user: The user to test.
     :type user: InternalUser
@@ -119,7 +119,7 @@ def computer_record_modify_access(user):
 
 @register.filter
 def printers_access(user):
-    """ Tests if a User has permission to view the printer index and printer requests.
+    """ Tests if a User has permission to view printers and printer requests.
 
     :param user: The user to test.
     :type user: InternalUser
@@ -132,7 +132,7 @@ def printers_access(user):
 
 @register.filter
 def printers_modify_access(user):
-    """ Tests if a User has permission to modify the printer index and printer requests.
+    """ Tests if a User has permission to modify printers and printer requests.
 
     :param user: The user to test.
     :type user: InternalUser
