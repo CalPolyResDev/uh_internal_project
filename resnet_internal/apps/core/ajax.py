@@ -6,6 +6,7 @@
 
 """
 
+import ast
 from collections import OrderedDict
 from datetime import datetime, timedelta
 import logging
@@ -14,12 +15,13 @@ from operator import itemgetter
 from clever_selects.views import ChainedSelectChoicesView
 from django.core.urlresolvers import reverse_lazy
 from django.template import Template, RequestContext
+from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
 from ...settings.base import technician_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
 from .forms import RoomCreateForm, RoomUpdateForm
-from .models import Building, Room, SubDepartment
+from .models import Building, Room, SubDepartment, CSDMapping
 from .utils import NetworkReachabilityTester, get_ticket_list
 
 
@@ -145,6 +147,39 @@ def get_tickets(request):
         'inner-fragments': {
             '#tickets-response': response_html
         }
+    }
+
+    return data
+
+
+@ajax
+@require_POST
+def update_csd_domain(request):
+    """Updates a csd domain mapping.
+
+    :param mapping_id: The mapping id.
+    :type mapping_id: int
+    :param csd_info: The updated info for the mapping.
+    :type csd_info: dict
+
+    """
+
+    # Pull post parameters
+    mapping_id = request.POST["mapping_id"]
+    csd_info_dict = ast.literal_eval(request.POST["csd_info"])
+    csd_name = csd_info_dict['name']
+    csd_email = csd_info_dict['email']
+
+    csd_mapping = CSDMapping.objects.get(id=mapping_id)
+    csd_mapping.name = csd_name
+    csd_mapping.email = csd_email
+    csd_mapping.save()
+
+    data = {
+        'inner-fragments': {
+            "#row_{id}_name".format(id=mapping_id): csd_name,
+            "#row_{id}_email".format(id=mapping_id): csd_email,
+        },
     }
 
     return data

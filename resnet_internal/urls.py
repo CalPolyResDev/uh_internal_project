@@ -24,8 +24,8 @@ from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.adgroups.views import ResTechListEditView
 from .apps.computers.ajax import PopulateComputers, UpdateComputer, remove_computer, remove_pinhole, remove_domain_name
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
-from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, PopulateRooms, UpdateRoom
-from .apps.core.views import IndexView, handler500, TicketSummaryView, RoomsView
+from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, PopulateRooms, UpdateRoom, update_csd_domain
+from .apps.core.views import IndexView, handler500, TicketSummaryView, RoomsView, CSDDomainAssignmentEditView
 from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive, send_email, attachment_upload, attachment_delete, ticket_from_email
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView, EmailComposeView
 from .apps.orientation.ajax import complete_task, complete_orientation
@@ -105,6 +105,9 @@ urlpatterns = [
     url(r'^core/rooms/$', login_required(technician_access(RoomsView.as_view())), name='rooms'),
     url(r'^core/rooms/populate/$', login_required(technician_access(PopulateRooms.as_view())), name='populate_rooms'),
     url(r'^core/rooms/update/$', login_required(technician_access(UpdateRoom.as_view())), name='update_room'),
+
+    url(r'^csd/assign_domain/$', login_required(ral_manager_access(CSDDomainAssignmentEditView.as_view())), name='csd_assign_domain'),
+    url(r'^csd/assign_domain/update/$', login_required(ral_manager_access(update_csd_domain)), name='update_csd_domain'),
 ]
 
 # Daily Duties
