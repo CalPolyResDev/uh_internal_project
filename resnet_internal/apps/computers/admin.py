@@ -10,7 +10,7 @@ class ComputerAdmin(admin.ModelAdmin):
 
 class PinholeAdmin(admin.ModelAdmin):
     list_display = ['ip_address', 'service_name', 'inner_fw', 'border_fw', 'tcp_ports', 'udp_ports']
-    list_filder = ['service_name']
+    list_filter = ['service_name']
 
 admin.site.register(Computer, ComputerAdmin)
 admin.site.register(Pinhole, PinholeAdmin)
