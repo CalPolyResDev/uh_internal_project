@@ -13,6 +13,7 @@ if (( $UPDATED == 1 && $SUCCESS == 0 )); then
     echo $GITOUTPUT
     wipeenv
     pip3 install -r requirements.txt 
+    python3 resnet_internal/manage.py migrate --noinput
     python3 resnet_internal/manage.py collectstatic --noinput
     touch conf/uwsgi.ini
 fi
