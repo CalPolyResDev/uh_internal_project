@@ -59,6 +59,7 @@ def update_slack_email(num):
 
     with EmailManager() as email_manager:
         current_emails, num_available_messages = email_manager.get_messages('INBOX', '')
+        cache.set('previous_email_messages', current_emails, 10 * 60)
 
         if previous_email_messages is not None:
             new_emails = []
@@ -100,5 +101,3 @@ def update_slack_email(num):
                 headers = {'content-type': 'application/json'}
 
                 requests.post(url, data=json.dumps(payload), headers=headers)
-
-    cache.set('previous_email_messages', current_emails, 10 * 60)
