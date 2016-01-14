@@ -74,9 +74,9 @@ def update_slack_email(num):
                 if not found:
                     new_emails.append(current_email)
 
-            slack_attachments = []
-
             if new_emails:
+                slack_attachments = []
+
                 for email in new_emails:
                     email_message = email_manager.get_email_message('INBOX', email['uid'])
 
