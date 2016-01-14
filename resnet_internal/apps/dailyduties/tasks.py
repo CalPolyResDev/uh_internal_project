@@ -61,7 +61,18 @@ def update_slack_email(num):
         current_emails, num_available_messages = email_manager.get_messages('INBOX', '')
 
         if previous_email_messages is not None:
-            new_emails = [email for email in current_emails if email not in previous_email_messages]
+            new_emails = []
+
+            for current_email in current_emails:
+                found = False
+
+                for prev_email in previous_email_messages:
+                    if current_email['uid'] == prev_email['uid']:
+                        found = True
+                        break
+
+                if not found:
+                    new_emails.append(current_email)
 
             slack_attachments = []
 
