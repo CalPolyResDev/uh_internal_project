@@ -76,21 +76,21 @@ def update_slack_email(num):
 
             slack_attachments = []
 
-            for email in new_emails:
-                email_message = email_manager.get_email_message('INBOX', email['uid'])
-
-                attachment = {
-                    'fallback': 'New email message from %s' % email['sender_name'],
-                    'color': 'good',
-                    'author_name': email['sender_name'] + ' (' + email['sender_address'] + ')',
-                    'title': 'Subject: ' + email['subject'],
-                    'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('email_view_message', kwargs={'mailbox_name': 'INBOX', 'uid': email['uid']})),
-                    'text': email_message['body_plain_text'] if email_message['body_plain_text'] else html2text(email_message['body_html']),
-
-                }
-                slack_attachments.append(attachment)
-
             if new_emails:
+                for email in new_emails:
+                    email_message = email_manager.get_email_message('INBOX', email['uid'])
+
+                    attachment = {
+                        'fallback': 'New email message from %s' % email['sender_name'],
+                        'color': 'good',
+                        'author_name': email['sender_name'] + ' (' + email['sender_address'] + ')',
+                        'title': 'Subject: ' + email['subject'],
+                        'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('email_view_message', kwargs={'mailbox_name': 'INBOX', 'uid': email['uid']})),
+                        'text': email_message['body_plain_text'] if email_message['body_plain_text'] else html2text(email_message['body_html']),
+
+                    }
+                    slack_attachments.append(attachment)
+
                 payload = {'text': 'New Email Messages!' if len(new_emails) > 1 else 'New Email Message!',
                            'icon_url': urljoin(settings.DEFAULT_BASE_URL, static('images/icons/email.png')),
                            'channel': settings.SLACK_EMAIL_CHANNEL,
