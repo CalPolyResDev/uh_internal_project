@@ -317,7 +317,7 @@ class EmailManager(EmailConnectionMixin):
 
         for message_uid_group in message_uid_fetch_groups:
             message_uid_group = list(filter(None.__ne__, message_uid_group))
-            response = server.fetch(message_uid_group, ['ALL'])
+            response = server.fetch(message_uid_group, ['FLAGS', 'INTERNALDATE', 'RFC822.SIZE', 'ENVELOPE'])
 
             for uid, data in response.items():
                 unread = b'\\Seen' not in data[b'FLAGS']
