@@ -114,13 +114,14 @@ DBBACKUP_DATABASES = ['default', 'printers']
 # Incoming email settings
 INCOMING_EMAIL = {
     'IMAP4': {  # IMAP4 is currently the only supported protocol. It must be included.
-        'HOST': 'outlook.com',  # The host to use for receiving email. Set to empty string for localhost.
-        'PORT': 993,  # The port to use. Set to empty string for default values: 143, 993(SSL).
-        'USE_SSL': True,  # Whether or not to use SSL (Boolean)
+        'HOST': '10.211.55.6',  # The host to use for receiving email. Set to empty string for localhost.
+        'PORT': 143,  # The port to use. Set to empty string for default values: 143, 993(SSL).
+        'USE_SSL': False,  # Whether or not to use SSL (Boolean)
         'USER': get_env_variable('RESNET_INTERNAL_EMAIL_IN_USERNAME'),  # The username to use. The full email address is what most servers require.
         'PASSWORD': get_env_variable('RESNET_INTERNAL_EMAIL_IN_PASSWORD'),  # The password to use. Note that only clearText authentication is supported.
     },
 }
+
 
 # Outgoing email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # This configuration uses the SMTP protocol as a backend
