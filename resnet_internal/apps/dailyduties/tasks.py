@@ -15,6 +15,7 @@ from django.core.urlresolvers import reverse
 from html2text import html2text
 import requests
 
+
 try:
     from uwsgidecorators import timer
 except ImportError:
@@ -25,7 +26,7 @@ except ImportError:
             return wrap_2
         return wrap
 
-from .utils import EmailManager
+from .utils import EmailManager, EmailConnectionMixin
 
 
 @timer(60)
@@ -101,3 +102,17 @@ def update_slack_email(num):
                 headers = {'content-type': 'application/json'}
 
                 requests.post(url, data=json.dumps(payload), headers=headers)
+
+
+def keep_imap_alive_signal_handler(num):
+    EmailConnectionMixin.send_noop_to_all_connections()
+
+try:
+    from uwsgidecorators import get_free_signal
+    from uwsgi import register_signal, add_timer
+
+    keep_alive_signal = get_free_signal()
+    register_signal(keep_alive_signal, 'workers', keep_imap_alive_signal_handler)
+    add_timer(keep_alive_signal, 60)
+except ImportError:
+    pass
