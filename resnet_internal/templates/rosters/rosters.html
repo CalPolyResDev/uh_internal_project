@@ -27,6 +27,7 @@
     <script type="text/javascript" src="https://cdn.rawgit.com/davidstutz/bootstrap-multiselect/master/dist/js/bootstrap-multiselect.js"></script>
     <script type="text/javascript">
         function block_ui() {
+            console.log('Here');
             $.blockUI({
                 message: '<h2 style="margin-bottom: 20px;">Generating the roster. Please wait...</h2>',
                 css: {
@@ -44,6 +45,7 @@
                 buttonWidth: '100%',
                 numberDisplayed: 0
             });
+            $('#roster-buildings-form').submit(block_ui);
         });
     </script>
 {% endblock %}
