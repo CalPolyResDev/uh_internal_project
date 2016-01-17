@@ -10,6 +10,7 @@ from concurrent.futures.thread import ThreadPoolExecutor
 import logging
 
 from django.conf import settings
+from django.core.cache import cache
 from django_cas_ng.backends import CASBackend
 from ldap3 import Server, Connection, ObjectDef, AttrDef, Reader
 from ldap_groups.exceptions import InvalidGroupDN
@@ -53,12 +54,20 @@ class CASLDAPBackend(CASBackend):
                 principal_name = str(user_info["userPrincipalName"])
 
                 def get_group_members(group):
-                    try:
-                        group_members = LDAPADGroup(group).get_tree_members()
-                    except InvalidGroupDN:
-                        logger.exception('Could not retrieve group members for DN: ' + group)
-                        return []
-                    return [member["userPrincipalName"] for member in group_members]
+                    cache_key = 'group_members::' + group
+                    group_members = cache.get(cache_key)
+
+                    if group_members is None:
+                        try:
+                            group_members = LDAPADGroup(group).get_tree_members()
+                        except InvalidGroupDN:
+                            logger.exception('Could not retrieve group members for DN: ' + group)
+                            return []
+
+                        group_members = [member["userPrincipalName"] for member in group_members]
+                        cache.set(cache_key, group_members, 60)
+
+                    return group_members
 
                 def check_group_for_user(group):
                     group_members = get_group_members(group.distinguished_name)
