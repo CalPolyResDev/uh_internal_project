@@ -35,6 +35,7 @@ class GenerationForm(Form):
         self.helper.html5_required = True
 
         self.helper.form_class = 'form-horizontal'
+        self.helper.form_id = 'roster-buildings-form'
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10 col-md-8'
 
@@ -45,7 +46,7 @@ class GenerationForm(Form):
             ),
             FormActions(
                 Hidden(name="mode", value="", css_id="id_mode"),
-                Submit('submit', 'Generate', onclick="$('#id_mode').val('normal'); block_ui(); this.form.submit(); return true;"),
-                Submit('submit', 'Generate CSV', onclick="$('#id_mode').val('csv'); block_ui(); this.form.submit(); return true;"),
+                Submit('submit', 'Generate', onclick="$('#id_mode').val('normal'); return true;"),
+                Submit('submit', 'Generate CSV', onclick="$('#id_mode').val('csv'); return true;"),
             ),
         )
