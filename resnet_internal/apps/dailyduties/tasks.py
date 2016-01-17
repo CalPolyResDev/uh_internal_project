@@ -103,8 +103,6 @@ def update_slack_email(num):
 
                 requests.post(url, data=json.dumps(payload), headers=headers)
 
-    cache.set('previous_email_messages', current_emails, 10 * 60)
-
 
 def keep_imap_alive_signal_handler(num):
     EmailConnectionMixin.send_noop_to_all_connections()
