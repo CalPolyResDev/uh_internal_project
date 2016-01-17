@@ -122,7 +122,6 @@ INCOMING_EMAIL = {
     },
 }
 
-
 # Outgoing email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # This configuration uses the SMTP protocol as a backend
 EMAIL_HOST = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_HOST')  # The host to use for sending email. Set to empty string for localhost.
