@@ -111,8 +111,6 @@ class EmailConnectionMixin(object):
 
                 connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl, ssl_context=ssl_context)
                 connection.login(username, password)
-                connection.select_folder('INBOX')
-                connection.close_folder()
             except (OSError, IMAP4.error) as exc:
                 logger.error("Can't connect to IMAP server: %s, trying again." % str(exc), exc_info=True)
                 connection = None
