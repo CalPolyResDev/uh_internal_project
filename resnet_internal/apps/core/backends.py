@@ -6,6 +6,7 @@
 
 """
 
+from concurrent.futures.thread import ThreadPoolExecutor
 import logging
 
 from django.conf import settings
@@ -57,15 +58,17 @@ class CASLDAPBackend(CASBackend):
                     except InvalidGroupDN:
                         logger.exception('Could not retrieve group members for DN: ' + group)
                         return []
-
                     return [member["userPrincipalName"] for member in group_members]
 
-                # New Code should use the ad_groups property of the user to enforce permissions
-                user.ad_groups.clear()
-                for group in ADGroup.objects.all():
+                def check_group_for_user(group):
                     group_members = get_group_members(group.distinguished_name)
                     if principal_name in group_members:
                         user.ad_groups.add(group)
+
+                # New Code should use the ad_groups property of the user to enforce permissions
+                user.ad_groups.clear()
+                with ThreadPoolExecutor(ADGroup.objects.count()) as pool:
+                    pool.map(check_group_for_user, ADGroup.objects.all())
 
                 # Legacy Permissions Flags
                 net_admin_list = get_group_members('CN=StateHRDept - IS-ITS-Networks (132900 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu')
