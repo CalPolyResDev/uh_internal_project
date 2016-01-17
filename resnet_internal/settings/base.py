@@ -114,9 +114,9 @@ DBBACKUP_DATABASES = ['default', 'printers']
 # Incoming email settings
 INCOMING_EMAIL = {
     'IMAP4': {  # IMAP4 is currently the only supported protocol. It must be included.
-        'HOST': '10.211.55.6',  # The host to use for receiving email. Set to empty string for localhost.
-        'PORT': 143,  # The port to use. Set to empty string for default values: 143, 993(SSL).
-        'USE_SSL': False,  # Whether or not to use SSL (Boolean)
+        'HOST': get_env_variable('RESNET_INTERNAL_EMAIL_IN_HOST'),  # The host to use for receiving email. Set to empty string for localhost.
+        'PORT': int(get_env_variable('RESNET_INTERNAL_EMAIL_IN_PORT')),  # The port to use. Set to empty string for default values: 143, 993(SSL).
+        'USE_SSL': True if get_env_variable('RESNET_INTERNAL_EMAIL_IN_SSL') == "True" else False,  # Whether or not to use SSL (Boolean)
         'USER': get_env_variable('RESNET_INTERNAL_EMAIL_IN_USERNAME'),  # The username to use. The full email address is what most servers require.
         'PASSWORD': get_env_variable('RESNET_INTERNAL_EMAIL_IN_PASSWORD'),  # The password to use. Note that only clearText authentication is supported.
     },
@@ -125,11 +125,11 @@ INCOMING_EMAIL = {
 
 # Outgoing email settings
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # This configuration uses the SMTP protocol as a backend
-EMAIL_HOST = 'mail.calpoly.edu'  # The host to use for sending email. Set to empty string for localhost.
-EMAIL_PORT = 25  # The port to use. Defaul values: 25, 587
-EMAIL_USE_TLS = True  # Whether or not to use SSL (Boolean)
-EMAIL_HOST_USER = INCOMING_EMAIL['IMAP4']['USER']  # The username to use. The full email address is what most servers require.
-EMAIL_HOST_PASSWORD = INCOMING_EMAIL['IMAP4']['PASSWORD']  # The password to use. Note that only clearText authentication is supported.
+EMAIL_HOST = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_HOST')  # The host to use for sending email. Set to empty string for localhost.
+EMAIL_PORT = int(get_env_variable('RESNET_INTERNAL_EMAIL_OUT_PORT'))  # The port to use. Defaul values: 25, 587
+EMAIL_USE_TLS = True if get_env_variable('RESNET_INTERNAL_EMAIL_OUT_TLS') == "True" else False  # Whether or not to use SSL (Boolean)
+EMAIL_HOST_USER = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_USERNAME')  # The username to use. The full email address is what most servers require.
+EMAIL_HOST_PASSWORD = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_PASSWORD')  # The password to use. Note that only clearText authentication is supported.
 
 # Set the server's email address (for sending emails only)
 SERVER_EMAIL = 'ResDev Mail Relay Server <resdev@calpoly.edu>'
@@ -182,6 +182,8 @@ AUTH_USER_MODEL = 'core.ResNetInternalUser'
 
 CAS_ADMIN_PREFIX = "flugzeug/"
 CAS_LOGOUT_COMPLETELY = False
+CAS_LOGIN_MSG = None
+CAS_LOGGED_MSG = None
 
 CAS_SERVER_URL = "https://my.calpoly.edu/cas/"
 CAS_LOGOUT_URL = "https://my.calpoly.edu/cas/casClientLogout.jsp?logoutApp=University%20Housing%20Internal"

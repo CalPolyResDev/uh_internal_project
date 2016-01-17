@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-from django.db.migrations.operations.special import RunPython
+# from django.db.migrations.operations.special import RunPython
 
 
 def update_navbar(apps, schema_editor):
@@ -11,27 +11,27 @@ def update_navbar(apps, schema_editor):
     ADGroup = apps.get_model('core', 'ADGroup')
 
     csd_group = ADGroup.objects.create(
-        display_name="UH-CSD",
+        display_name="CSD",
         distinguished_name="CN=UH-CSD,OU=Residential Life,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu"
     )
 
     ral_group = ADGroup.objects.create(
-        display_name="UH-RAL",
+        display_name="Residential Life Staff",
         distinguished_name="CN=UH-RAL,OU=Residential Life,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu"
     )
 
     ral_managers_group = ADGroup.objects.create(
-        display_name="UH-RAL-Managers",
+        display_name="Residential Life Managers",
         distinguished_name="CN=UH-RAL-Managers,OU=User Groups,OU=Websites,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu"
     )
 
     ra_group = ADGroup.objects.create(
-        display_name="UH-RA",
+        display_name="RA",
         distinguished_name="CN=UH-RA,OU=Residential Life,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu"
     )
 
     fd_staff_group = ADGroup.objects.create(
-        display_name="UH-FD-Staff",
+        display_name="Front Desk Staff",
         distinguished_name="CN=UH-FD-Staff,OU=Front Desk,OU=Residential Life,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu"
     )
 

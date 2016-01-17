@@ -11,9 +11,7 @@ from django.core.management import BaseCommand
 from django.db import transaction
 from django.db.utils import IntegrityError
 
-from resnet_internal.apps.core.models import Building
-
-from ...models import Room
+from ...models import Room, Building
 
 
 class Command(BaseCommand):

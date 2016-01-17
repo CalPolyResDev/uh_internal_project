@@ -141,7 +141,7 @@ class ADGroup(Model):
 class StaffMapping(Model):
     """A mapping of various department staff to their respective positions."""
 
-    title = CharField(max_length=35, unique=True, verbose_name='Title')
+    title = CharField(max_length=50, unique=True, verbose_name='Title')
     name = CharField(max_length=50, verbose_name='Full Name')
     email = CharField(max_length=20, verbose_name='Email Address')
     extension = PositiveSmallIntegerField(verbose_name='Telephone Extension')

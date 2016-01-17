@@ -12,7 +12,7 @@ from email import header
 from imaplib import IMAP4
 from itertools import zip_longest
 from operator import itemgetter
-from ssl import SSLError, SSLEOFError
+from ssl import SSLError, SSLEOFError, CERT_NONE
 from threading import Lock
 import email
 import logging
@@ -101,15 +101,20 @@ class EmailConnectionMixin(object):
         ssl = settings.INCOMING_EMAIL['IMAP4']['USE_SSL']
 
         connection = None
-        while not connection:
+        attempt_number = 0
+        while not connection and attempt_number < 10:
             try:
-                connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
+                # TODO: Remove ssl_context when certificate comes in.
+                ssl_context = imapclient.create_default_context()
+                ssl_context.check_hostname = False
+                ssl_context.verify_mode = CERT_NONE
+
+                connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl, ssl_context=ssl_context)
                 connection.login(username, password)
-                connection.select_folder('INBOX')
-                connection.close_folder()
-            except (OSError, IMAP4.error) as exc:  # Office 365 seems to randomly reject connections and trying again usually results in a connection.
-                logger.warning("Can't connect to IMAP server: %s, trying again." % str(exc), exc_info=True)
+            except (OSError, IMAP4.error) as exc:
+                logger.error("Can't connect to IMAP server: %s, trying again." % str(exc), exc_info=True)
                 connection = None
+            attempt_number += 1
 
         return connection
 

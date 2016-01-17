@@ -6,9 +6,11 @@
 
 """
 
+from concurrent.futures.thread import ThreadPoolExecutor
 import logging
 
 from django.conf import settings
+from django.core.cache import cache
 from django_cas_ng.backends import CASBackend
 from ldap3 import Server, Connection, ObjectDef, AttrDef, Reader
 from ldap_groups.exceptions import InvalidGroupDN
@@ -52,20 +54,30 @@ class CASLDAPBackend(CASBackend):
                 principal_name = str(user_info["userPrincipalName"])
 
                 def get_group_members(group):
-                    try:
-                        group_members = LDAPADGroup(group).get_tree_members()
-                    except InvalidGroupDN:
-                        logger.exception('Could not retrieve group members for DN: ' + group)
-                        return []
+                    cache_key = 'group_members::' + group
+                    group_members = cache.get(cache_key)
 
-                    return [member["userPrincipalName"] for member in group_members]
+                    if group_members is None:
+                        try:
+                            group_members = LDAPADGroup(group).get_tree_members()
+                        except InvalidGroupDN:
+                            logger.exception('Could not retrieve group members for DN: ' + group)
+                            return []
 
-                # New Code should use the ad_groups property of the user to enforce permissions
-                user.ad_groups.clear()
-                for group in ADGroup.objects.all():
+                        group_members = [member["userPrincipalName"] for member in group_members]
+                        cache.set(cache_key, group_members, 60)
+
+                    return group_members
+
+                def check_group_for_user(group):
                     group_members = get_group_members(group.distinguished_name)
                     if principal_name in group_members:
                         user.ad_groups.add(group)
+
+                # New Code should use the ad_groups property of the user to enforce permissions
+                user.ad_groups.clear()
+                with ThreadPoolExecutor(ADGroup.objects.count()) as pool:
+                    pool.map(check_group_for_user, ADGroup.objects.all())
 
                 # Legacy Permissions Flags
                 net_admin_list = get_group_members('CN=StateHRDept - IS-ITS-Networks (132900 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu')
