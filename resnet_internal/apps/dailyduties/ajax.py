@@ -7,8 +7,9 @@
 """
 
 from datetime import datetime
-import logging
+from operator import itemgetter
 from urllib.parse import unquote
+import logging
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
@@ -21,9 +22,9 @@ from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from jfu.http import upload_receive, UploadResponse, JFUResponse
 
+from ..core.templatetags.srs_urls import srs_edit_url
 from .models import DailyDuties
 from .utils import GetDutyData, EmailManager
-from ..core.templatetags.srs_urls import srs_edit_url
 
 
 logger = logging.getLogger(__name__)
@@ -125,12 +126,15 @@ def get_email_folders(request):
     with EmailManager() as email_manager:
         folder_response = email_manager.server.list_folders()
 
+    folder_response.sort(key=itemgetter(2))
+
     html_response = "<ul><li class='jstree-open' id='root'>ResNet Email<ul>"
     current_parents = []
     hide_list = ('Journal', 'Notes', 'Tasks', 'Voicemails', 'Archives/Voicemails',
                  'Archive', 'Clutter', 'Drafts', 'Outbox')
 
     for flags, delimiter, folder_name in folder_response:
+
         hierarchical_list = folder_name.split(smart_text(delimiter))
 
         if current_parents and (len(hierarchical_list) < 2 or not current_parents[-1] == hierarchical_list[-2]):

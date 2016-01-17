@@ -1,10 +1,11 @@
 #!/usr/bin/env python3.4
-from pathlib import Path
 import os
+from pathlib import Path
 import re
 import sys
 
 from colorama import init as color_init
+import django
 from termcolor import colored
 
 
@@ -94,6 +95,7 @@ if __name__ == "__main__":
 
     color_init()
     activate_env()
+    django.setup()
 
     try:
         from django.core.management import execute_from_command_line
