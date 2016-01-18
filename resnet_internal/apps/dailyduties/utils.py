@@ -5,8 +5,8 @@
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
-from concurrent.futures import ThreadPoolExecutor
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from email import header
 from imaplib import IMAP4
@@ -15,6 +15,7 @@ from operator import itemgetter
 from ssl import SSLError, SSLEOFError, CERT_NONE
 from threading import Lock
 import email
+import itertools
 import logging
 import os
 import socket
@@ -31,7 +32,6 @@ import imapclient
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
-import itertools
 
 
 imapclient.imapclient.imaplib._MAXLINE = 1000000
@@ -447,14 +447,15 @@ class EmailManager(EmailConnectionMixin):
 
             return output_list
 
-        response = cache.get('email:raw:' + mailbox_name + ':' + str(uid))
+        cache_key = 'email:raw:' + mailbox_name + ':' + str(uid)
+        response = cache.get(cache_key)
 
         if not response:
             self.server.select_folder(mailbox_name, readonly=True)
             response = self.server.fetch(int(uid), ['ENVELOPE', 'BODY[]'])
             self.server.close_folder()
 
-            cache.set('email:raw:' + mailbox_name + ':' + str(uid), response, 172800)
+            cache.set(cache_key, response, 172800)
 
         message = email.message_from_bytes(response[int(uid)][b'BODY[]'])
         envelope = response[int(uid)][b'ENVELOPE']
