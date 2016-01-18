@@ -236,6 +236,19 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     def prepare_results(self, qs):
         data = []
 
+        select_fields = []
+        related_columns = self._get_columns_by_attribute("related", default=False)
+        custom_lookup_columns = self._get_columns_by_attribute("custom_lookup", default=False)
+
+        for column_name in related_columns:
+            select_fields.append(column_name)
+        for column_name in custom_lookup_columns:
+            column = self.column_definitions[column_name]
+            select_fields.append(column['lookup_field'][0:column['lookup_field'].rfind('__')])
+
+        if select_fields:
+            qs = qs.select_related(*select_fields)
+
         for item in qs:
             row = {}
             row_id = self.get_row_id(item)
