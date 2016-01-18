@@ -5,7 +5,7 @@ git+https://github.com/kavdev/djangotoolbox
 colorama==0.3.6
 termcolor==1.1.0
 
-django-cas-ng==3.5.3
+git+https://github.com/CalPolyResDev/django-cas-ng.git
 python-dateutil==2.4.2
 djangoajax==2.3.3
 django-datatables-view==1.13.0
