@@ -457,8 +457,11 @@ class EmailManager(EmailConnectionMixin):
 
             cache.set(cache_key, response, 172800)
 
-        message = email.message_from_bytes(response[int(uid)][b'BODY[]'])
-        envelope = response[int(uid)][b'ENVELOPE']
+        try:
+            message = email.message_from_bytes(response[int(uid)][b'BODY[]'])
+            envelope = response[int(uid)][b'ENVELOPE']
+        except KeyError:
+            return None
 
         body_html = ""
         body_plain_text = ""
