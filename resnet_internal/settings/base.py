@@ -416,5 +416,10 @@ LOGGING = {
             'handlers': ['sentry'],
             'propagate': True,
         },
+        'requests.packages.urllib3.connectionpool': {
+            'level': 'WARNING',
+            'handlers': ['sentry'],
+            'propagate': True,
+        }
     }
 }
