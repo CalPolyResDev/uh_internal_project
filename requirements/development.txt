@@ -2,6 +2,3 @@
 -r base.txt
 
 django-debug-toolbar==1.4
-
-git+https://code.its.calpoly.edu/scm/srsc/srsconnector.git
-git+https://code.its.calpoly.edu/scm/rmsc/rmsconnector.git
