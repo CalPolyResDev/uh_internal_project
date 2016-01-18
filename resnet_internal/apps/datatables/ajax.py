@@ -63,7 +63,6 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     base_column_template = """
         <div class='wrapper' column='{column}'>
             {display_block}
-            {form_field_block}
         </div>
     """
 
@@ -200,7 +199,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name=link_class_name, link_display=link_display)
         display_block = self.display_block_template.format(value="", link_block=link_block, inline_images="")
 
-        return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
+        return self.base_column_template.format(column=column, display_block=display_block)
 
     def render_column(self, row, column):
         """Renders columns with customized HTML.
@@ -213,25 +212,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         """
 
-        if not self.cached_forms:
-            self.cached_forms = {}
-
-        if row.id not in self.cached_forms:
-            form = self.form_class(instance=row, auto_id="id_{id}-%s".format(id=row.id))
-            self.cached_forms[row.id] = form
-        else:
-            form = self.cached_forms[row.id]
-
-        if 'class' in form.fields[column].widget.attrs:
-            form.fields[column].widget.attrs['class'] += " form-control editbox"
-        else:
-            form.fields[column].widget.attrs['class'] = " form-control editbox"
-
-        if not(column in self.get_editable_columns() and self.get_write_permissions()):
-            form.fields[column].widget.attrs['readonly'] = "readonly"
-            form.fields[column].widget.attrs['disabled'] = "disabled"
-
-        return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column), form_field_block=str(form[column]))
+        return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column))
 
     def prepare_results(self, qs):
         data = []
