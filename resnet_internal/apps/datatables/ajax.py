@@ -253,7 +253,6 @@ class RNINDatatablesPopulateView(BaseDatatableView):
                 select_fields.append(column['lookup_field'][0:column['lookup_field'].rfind('__')])
 
             if select_fields:
-                print('Select Fields: ' + str(select_fields))
                 qs = qs.select_related(*select_fields)
 
         for item in qs:
