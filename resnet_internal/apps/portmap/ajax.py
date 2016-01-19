@@ -29,6 +29,7 @@ from ...settings.base import portmap_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm
 from .models import Port, AccessPoint
+from resnet_internal.apps.datatables.ajax import RNINDatatablesFormView
 
 
 logger = logging.getLogger(__name__)
@@ -38,8 +39,11 @@ class PopulatePorts(RNINDatatablesPopulateView):
     """Renders the port map."""
 
     table_name = "portmap"
+
     data_source = reverse_lazy('populate_ports')
     update_source = reverse_lazy('update_port')
+    form_source = reverse_lazy('form_port')
+
     form_class = PortCreateForm
     model = Port
 
@@ -52,7 +56,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
     column_definitions["jack"] = {"width": "50px", "type": "string", "editable": False, "title": "Jack"}
     column_definitions["blade"] = {"width": "50px", "type": "numeric", "title": "Blade"}
     column_definitions["port"] = {"width": "50px", "type": "numeric", "title": "Port"}
-    column_definitions["access_point"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP"}
+    column_definitions["access_point"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP", "related": True, "lookup_field": "id"}
     column_definitions["active"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
@@ -130,6 +134,10 @@ class PopulatePorts(RNINDatatablesPopulateView):
         return qs
 
 
+class RetrievePortForm(RNINDatatablesFormView):
+    populate_class = PopulatePorts
+
+
 class UpdatePort(BaseDatatablesUpdateView):
     form_class = PortUpdateForm
     model = Port
@@ -201,8 +209,11 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     """Renders the access point map."""
 
     table_name = "access_point_map"
+
     data_source = reverse_lazy('populate_access_points')
     update_source = reverse_lazy('update_access_point')
+    form_source = reverse_lazy('form_access_point')
+
     form_class = AccessPointCreateForm
     model = AccessPoint
 
@@ -230,6 +241,10 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
             return self.display_block_template.format(value=port.jack, link_block=port_block, inline_images="")
         else:
             return super(PopulateAccessPoints, self).get_display_block(row, column)
+
+
+class RetrieveAccessPointForm(RNINDatatablesFormView):
+    populate_class = PopulateAccessPoints
 
 
 class UpdateAccessPoint(BaseDatatablesUpdateView):

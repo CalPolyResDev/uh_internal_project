@@ -22,19 +22,19 @@ from django_cas_ng.views import login as auth_login, logout as auth_logout
 
 from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.adgroups.views import ResTechListEditView
-from .apps.computers.ajax import PopulateComputers, UpdateComputer, remove_computer, remove_pinhole, remove_domain_name
+from .apps.computers.ajax import PopulateComputers, UpdateComputer, RetrieveComputerForm, remove_computer, remove_pinhole, remove_domain_name
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
-from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, PopulateRooms, UpdateRoom
+from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, PopulateRooms, UpdateRoom, RetrieveRoomForm
 from .apps.core.views import IndexView, handler500, TicketSummaryView, RoomsView
 from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive, send_email, attachment_upload, attachment_delete, ticket_from_email
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView, EmailComposeView
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
-from .apps.portmap.ajax import PopulatePorts, UpdatePort, change_port_status, PortChainedAjaxView, UpdateAccessPoint, PopulateAccessPoints
+from .apps.portmap.ajax import PopulatePorts, UpdatePort, change_port_status, PortChainedAjaxView, UpdateAccessPoint, PopulateAccessPoints, RetrievePortForm, RetrieveAccessPointForm
 from .apps.portmap.views import PortsView, AccessPointsView, PortFrameView, AccessPointFrameView
 from .apps.printerrequests.ajax import change_request_status, update_part_inventory, update_toner_inventory
 from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
-from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, remove_printer
+from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, RetrievePrinterForm, remove_printer
 from .apps.printers.views import PrintersView
 from .apps.residents.views import SearchView
 from .apps.rosters.views import RosterGenerateView
@@ -105,6 +105,7 @@ urlpatterns = [
     url(r'^core/rooms/$', login_required(technician_access(RoomsView.as_view())), name='rooms'),
     url(r'^core/rooms/populate/$', login_required(technician_access(PopulateRooms.as_view())), name='populate_rooms'),
     url(r'^core/rooms/update/$', login_required(technician_access(UpdateRoom.as_view())), name='update_room'),
+    url(r'^core/rooms/form/$', login_required(technician_access(RetrieveRoomForm.as_view())), name='form_room'),
 ]
 
 # Daily Duties
@@ -152,6 +153,7 @@ urlpatterns += [
     url(r'^computers/$', login_required(computers_access(ComputersView.as_view())), name='uh_computers'),
     url(r'^computers/populate/$', login_required(computers_access(PopulateComputers.as_view())), name='populate_uh_computers'),
     url(r'^computers/update/$', login_required(computers_modify_access(UpdateComputer.as_view())), name='update_uh_computer'),
+    url(r'^computers/form/$', login_required(computers_modify_access(RetrieveComputerForm.as_view())), name='form_uh_computer'),
     url(r'^computers/remove/$', login_required(computers_modify_access(remove_computer)), name='remove_uh_computer'),
     url(r'^computers/remove_pinhole/$', login_required(computer_record_modify_access(remove_pinhole)), name='remove_uh_computer_pinhole'),
     url(r'^computers/remove_domain_name/$', login_required(computer_record_modify_access(remove_domain_name)), name='remove_uh_computer_domain_name'),
@@ -176,6 +178,7 @@ urlpatterns += [
     url(r'^printers/$', login_required(printers_access(PrintersView.as_view())), name='uh_printers'),
     url(r'^printers/populate/$', login_required(printers_access(PopulatePrinters.as_view())), name='populate_uh_printers'),
     url(r'^printers/update/$', login_required(printers_access(UpdatePrinter.as_view())), name='update_uh_printer'),
+    url(r'^printers/form/$', login_required(printers_access(RetrievePrinterForm.as_view())), name='form_uh_printer'),
     url(r'^printers/remove/$', login_required(printers_modify_access(remove_printer)), name='remove_uh_printer'),
 ]
 
@@ -184,10 +187,12 @@ urlpatterns += [
     url(r'^portmap/$', login_required(portmap_access(PortsView.as_view())), name='ports'),
     url(r'^portmap/populate/$', login_required(portmap_access(PopulatePorts.as_view())), name='populate_ports'),
     url(r'^portmap/update/$', login_required(portmap_access(UpdatePort.as_view())), name='update_port'),
+    url(r'^portmap/form/$', login_required(portmap_access(RetrievePortForm.as_view())), name='form_port'),
     url(r'^portmap/change_status/$', login_required(portmap_modify_access(change_port_status)), name='change_port_status'),
     url(r'^portmap/ap/$', login_required(portmap_access(AccessPointsView.as_view())), name='access_points'),
     url(r'^portmap/ap/populate/$', login_required(portmap_access(PopulateAccessPoints.as_view())), name='populate_access_points'),
     url(r'^portmap/ap/update/$', login_required(portmap_access(UpdateAccessPoint.as_view())), name='update_access_point'),
+    url(r'^portmap/ap/form/$', login_required(portmap_access(RetrieveAccessPointForm.as_view())), name='form_access_point'),
     url(r'^portmap/ap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(AccessPointFrameView.as_view())), name='ap_info_frame'),
     url(r'^portmap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(PortFrameView.as_view())), name='port_info_frame'),
     url(r'^portmap/ajax/chained_port/$', PortChainedAjaxView.as_view(), name='portmap_chained_port'),

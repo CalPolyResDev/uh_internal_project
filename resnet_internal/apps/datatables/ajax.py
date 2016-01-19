@@ -14,12 +14,13 @@ import shlex
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Q
+from django.db.models.query import QuerySet
 from django.forms import models as model_forms
 from django.http.response import HttpResponseNotAllowed
-
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
 from django_ajax.mixin import AJAXMixin
 from django_datatables_view.base_datatable_view import BaseDatatableView
+from django_datatables_view.mixins import JSONResponseView
 
 from ..core.utils import dict_merge
 
@@ -90,6 +91,9 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
     def get_update_source(self):
         return self.update_source
+
+    def get_form_source(self):
+        return self.form_source
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = True
@@ -214,21 +218,43 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column))
 
+    def retrieve_editable_row(self, item):
+        form = self.form_class(instance=item, auto_id="id_{id}-%s".format(id=item.id))
+
+        row_editable = {}
+
+        for column in self.get_columns():
+            if column in form.fields.keys():
+                if 'class' in form.fields[column].widget.attrs:
+                    form.fields[column].widget.attrs['class'] += " form-control editbox"
+                else:
+                    form.fields[column].widget.attrs['class'] = " form-control editbox"
+
+                if not(column in self.get_editable_columns() and self.get_write_permissions()):
+                    form.fields[column].widget.attrs['readonly'] = "readonly"
+                    form.fields[column].widget.attrs['disabled'] = "disabled"
+
+                row_editable.update({column: str(form[column])})
+
+        return row_editable
+
     def prepare_results(self, qs):
         data = []
 
-        select_fields = []
-        related_columns = self._get_columns_by_attribute("related", default=False)
-        custom_lookup_columns = self._get_columns_by_attribute("custom_lookup", default=False)
+        if isinstance(qs, QuerySet):
+            select_fields = []
+            related_columns = self._get_columns_by_attribute("related", default=False)
+            custom_lookup_columns = self._get_columns_by_attribute("custom_lookup", default=False)
 
-        for column_name in related_columns:
-            select_fields.append(column_name)
-        for column_name in custom_lookup_columns:
-            column = self.column_definitions[column_name]
-            select_fields.append(column['lookup_field'][0:column['lookup_field'].rfind('__')])
+            for column_name in related_columns:
+                select_fields.append(column_name)
+            for column_name in custom_lookup_columns:
+                column = self.column_definitions[column_name]
+                select_fields.append(column['lookup_field'][0:column['lookup_field'].rfind('__')])
 
-        if select_fields:
-            qs = qs.select_related(*select_fields)
+            if select_fields:
+                print('Select Fields: ' + str(select_fields))
+                qs = qs.select_related(*select_fields)
 
         for item in qs:
             row = {}
@@ -286,6 +312,21 @@ class RNINDatatablesPopulateView(BaseDatatableView):
                 qs = qs.filter(param_q)
 
         return qs
+
+
+class RNINDatatablesFormView(JSONResponseView):
+    """ The base datatable form retrieval view for University Housing Internal datatables."""
+
+    populate_class = None
+
+    def get_context_data(self, **kwargs):
+        populate_class_instance = self.populate_class()
+        populate_class_instance._initialize_write_permissions(self.request.user)
+
+        item_id = self.request.POST['item_id']
+        item = populate_class_instance.model.objects.get(id=item_id)
+
+        return {'editable_row_columns': populate_class_instance.retrieve_editable_row(item)}
 
 
 class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):

@@ -21,6 +21,7 @@ from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateVi
 from .forms import RoomCreateForm, RoomUpdateForm
 from .models import Building, Room, SubDepartment
 from .utils import NetworkReachabilityTester, get_ticket_list
+from resnet_internal.apps.datatables.ajax import RNINDatatablesFormView
 
 
 logger = logging.getLogger(__name__)
@@ -172,8 +173,11 @@ class PopulateRooms(RNINDatatablesPopulateView):
     """Renders the room listing."""
 
     table_name = "rooms"
+
     data_source = reverse_lazy('populate_rooms')
     update_source = reverse_lazy('update_room')
+    form_source = reverse_lazy('form_room')
+
     form_class = RoomCreateForm
     model = Room
 
@@ -188,6 +192,10 @@ class PopulateRooms(RNINDatatablesPopulateView):
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = technician_access_test(user)
+
+
+class RetrieveRoomForm(RNINDatatablesFormView):
+    populate_class = PopulateRooms
 
 
 class UpdateRoom(BaseDatatablesUpdateView):
