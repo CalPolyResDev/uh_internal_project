@@ -107,8 +107,6 @@
                     // Copy form to DOM
                     for (var column in response.editable_row_columns) {
                         var query = $('#' + row_id + ' > td > [column="' + column + '"]')
-                        console.log(query);
-                        console.log(response.editable_row_columns[column]);
                         query.append(response.editable_row_columns[column]);
                     }
                                  
@@ -132,7 +130,6 @@
                         initial_data[column_name] = value;
                     });
     
-                    console.log(editable_columns);
                     // Set focus to first editable input
                     editable_columns.first().focus()
                     
