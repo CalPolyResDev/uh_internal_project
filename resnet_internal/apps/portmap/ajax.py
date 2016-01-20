@@ -93,8 +93,6 @@ class PopulatePorts(RNINDatatablesPopulateView):
             return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
         elif column == 'active':
             return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="action_blue", link_display="Deactivate" if getattr(row, column) else "Activate")
-        elif column == 'remove':
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
         else:
             return super().render_column(row, column)
 
@@ -246,12 +244,6 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
             return self.display_block_template.format(value=port.jack, link_block=port_block, inline_images="")
         else:
             return super().get_display_block(row, column)
-
-    def render_column(self, row, column):
-        if column == 'remove':
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
-        else:
-            return super().render_column(row, column)
 
 
 class UpdateAccessPoint(BaseDatatablesUpdateView):

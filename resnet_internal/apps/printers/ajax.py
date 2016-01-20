@@ -88,12 +88,6 @@ class PopulatePrinters(RNINDatatablesPopulateView):
         else:
             return super(PopulatePrinters, self).get_display_block(row, column)
 
-    def render_column(self, row, column):
-        if column == 'remove':
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
-        else:
-            return super(PopulatePrinters, self).render_column(row, column)
-
     def filter_queryset(self, qs):
         search_parameters = self.request.GET.get('search[value]', None)
         searchable_columns = self.get_searchable_columns()

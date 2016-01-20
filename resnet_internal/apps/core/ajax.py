@@ -199,12 +199,6 @@ class PopulateRooms(RNINDatatablesPopulateView):
     def _initialize_write_permissions(self, user):
         self.write_permissions = technician_access_test(user)
 
-    def render_column(self, row, column):
-        if column == 'remove':
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
-        else:
-            return super().render_column(row, column)
-
 
 class UpdateRoom(BaseDatatablesUpdateView):
     form_class = RoomUpdateForm

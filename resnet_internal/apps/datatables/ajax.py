@@ -242,7 +242,10 @@ class RNINDatatablesPopulateView(BaseDatatableView):
             form.fields[column].widget.attrs['readonly'] = "readonly"
             form.fields[column].widget.attrs['disabled'] = "disabled"
 
-        return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column), form_field_block=str(form[column]))
+        if column == 'remove':
+            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
+        else:
+            return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column), form_field_block=str(form[column]))
 
     def prepare_results(self, qs):
         data = []
