@@ -15,6 +15,7 @@ if [ ! -f .update_lock ]; then
 	echo $GITOUTPUT
 	pip3 install -U -r requirements.txt 
 	python3 resnet_internal/manage.py migrate --noinput
+	python3 resnet_internal/manage.py collectstatic_js_reverse
 	python3 resnet_internal/manage.py collectstatic --noinput
 	touch conf/uwsgi.ini
     fi
