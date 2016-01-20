@@ -123,7 +123,7 @@
         
         <script type="text/javascript" src="https://cdn.rawgit.com/js-cookie/js-cookie/v2.1.0/src/js.cookie.js"></script>
         
-        <script src="{% static 'django_js_reverse/js/reverse.js' %}?version=1.0"></script>
+        <script src="{% url 'js_reverse' %}" type="text/javascript"></script>
         <script src="{% static 'js/modal-frames.js' %}?version=1.0"></script>
         <script src="{% static 'js/navbar.js' %}?version=1.0"></script>
         
@@ -142,15 +142,6 @@
                     html: true,
                 });
             });
-
-            // Daily Duties URLs
-            {% if request.user.is_authenticated %}
-                var daily_duties_refresh_url = "{% url 'daily_duties_refresh_duties' %}";
-                var daily_duties_update_url = "{% url 'daily_duties_update_duty' %}";
-                var daily_duties_email_redir_url = "{% url 'email_list' %}";
-                var daily_duties_voicemail_redir_url = "{% url 'voicemail_list' %}";
-                var daily_duties_printer_requests_redir_url = "{% url 'printer_request_list' %}";
-            {% endif %}
         </script>
         {% if request.user.is_authenticated %}
             <script src="{% static 'js/dailyduties.js' %}?version=1.0"></script>
