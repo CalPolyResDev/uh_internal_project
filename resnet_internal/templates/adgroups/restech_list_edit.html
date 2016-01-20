@@ -5,6 +5,12 @@
 {% block subtitle %} | {{ subtitle }}{% endblock %}
 
 {% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>{{ subtitle }}</h2>
+        </div>
+    </div>
+
     {% if valid_user %}
         {% if form.errors %}
         <div class="col-xs-12">
@@ -31,13 +37,13 @@
                     <tbody>
                     {% if group_members %}
                         {% for member in group_members %}
-                        <tr {% if member.buckley %}style="color:red"{% endif %} id="member_{{ member.userPrincipalName }}">
+                        <tr {% if member.buckley %}class="buckley"{% endif %} id="member_{{ member.userPrincipalName }}">
                             <td>{{ member.full_name }}</td>
                             <td>{{ member.principal_name }}</td>
                             {% if request.user.is_developer %}
                             <td>{{ member.dn }}</td>
                             {% endif %}
-                            <td><a style="color:red; cursor:pointer;" onclick="remove_tech('{{ member.userPrincipalName }}')">Remove</a></td>
+                            <td><a class="action_red" onclick="remove_tech('{{ member.userPrincipalName }}')">Remove</a></td>
                         </tr>
                         {% endfor %}
                     {% else %}
@@ -59,7 +65,7 @@
         </div>
     {% else %}
         <div class="col-xs-12">
-            You do not have sufficient permission to modifiy this group.
+            You do not have permission to modifiy this group.
         </div>
     {% endif %}
 {% endblock %}

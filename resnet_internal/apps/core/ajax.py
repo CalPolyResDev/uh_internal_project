@@ -180,14 +180,24 @@ class PopulateRooms(RNINDatatablesPopulateView):
     form_class = RoomCreateForm
     model = Room
 
+    item_name = 'room'
+    remove_url_name = 'remove_room'
+
     column_definitions = OrderedDict()
     column_definitions["community"] = {"type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "building__community__name"}
     column_definitions["building"] = {"type": "string", "editable": False, "title": "Building", "related": True, "lookup_field": "name"}
     column_definitions["name"] = {"type": "string", "title": "Name"}
+    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
         "scrollX": False,
     }
+
+    def get_options(self):
+        if self.get_write_permissions():
+            self.column_definitions["remove"] = {"width": "80px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+
+        return super().get_options()
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = technician_access_test(user)

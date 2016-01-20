@@ -22,7 +22,7 @@ from django_cas_ng.views import login as auth_login, logout as auth_logout
 
 from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.adgroups.views import ResTechListEditView
-from .apps.computers.ajax import PopulateComputers, UpdateComputer, RetrieveComputerForm, remove_computer, remove_pinhole, remove_domain_name
+from .apps.computers.ajax import PopulateComputers, UpdateComputer, RetrieveComputerForm, remove_domain_name, remove_pinhole
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
 from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, PopulateRooms, UpdateRoom, RetrieveRoomForm
 from .apps.core.views import IndexView, handler500, TicketSummaryView, RoomsView
@@ -34,12 +34,12 @@ from .apps.portmap.ajax import PopulatePorts, UpdatePort, change_port_status, Po
 from .apps.portmap.views import PortsView, AccessPointsView, PortFrameView, AccessPointFrameView
 from .apps.printerrequests.ajax import change_request_status, update_part_inventory, update_toner_inventory
 from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
-from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, RetrievePrinterForm, remove_printer
+from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, RetrievePrinterForm
 from .apps.printers.views import PrintersView
 from .apps.residents.views import SearchView
 from .apps.rosters.views import RosterGenerateView
 from .settings.base import (technician_access_test, staff_access_test, printers_access_test, printers_modify_access_test,
-                            portmap_access_test, portmap_modify_access_test, computers_access_test, computers_modify_access_test,
+                            ports_access_test, ports_modify_access_test, computers_access_test, computers_modify_access_test,
                             computer_record_modify_access_test, csd_access_test, ral_manager_access_test)
 
 
@@ -71,8 +71,8 @@ def permissions_check(test_func, raise_exception=True):
 technician_access = permissions_check(technician_access_test)
 staff_access = permissions_check(staff_access_test)
 
-portmap_access = permissions_check(portmap_access_test)
-portmap_modify_access = permissions_check(portmap_modify_access_test)
+ports_access = permissions_check(ports_access_test)
+ports_modify_access = permissions_check(ports_modify_access_test)
 
 computers_access = permissions_check(computers_access_test)
 computers_modify_access = permissions_check(computers_modify_access_test)
@@ -102,10 +102,11 @@ urlpatterns = [
     url(r'^core/network_status/update/$', update_network_status, name='core_update_network_status'),
     url(r'^core/tickets/list/$', login_required(technician_access(get_tickets)), name='core_get_tickets'),
     url(r'^core/tickets/list/(?P<ticket_id>\b[0-9]*\b)/$', login_required(technician_access(TicketSummaryView.as_view())), name='core_ticket_summary'),
-    url(r'^core/rooms/$', login_required(technician_access(RoomsView.as_view())), name='rooms'),
-    url(r'^core/rooms/populate/$', login_required(technician_access(PopulateRooms.as_view())), name='populate_rooms'),
-    url(r'^core/rooms/update/$', login_required(technician_access(UpdateRoom.as_view())), name='update_room'),
-    url(r'^core/rooms/form/$', login_required(technician_access(RetrieveRoomForm.as_view())), name='form_room'),
+    url(r'^rooms/$', login_required(technician_access(RoomsView.as_view())), name='rooms'),
+    url(r'^rooms/populate/$', login_required(technician_access(PopulateRooms.as_view())), name='populate_rooms'),
+    url(r'^rooms/update/$', login_required(technician_access(UpdateRoom.as_view())), name='update_room'),
+    url(r'^rooms/remove/$', login_required(technician_access(UpdateRoom.remove_item_as_view())), name='remove_room'),
+    url(r'^rooms/form/$', login_required(technician_access(RetrieveRoomForm.as_view())), name='form_room'),
 ]
 
 # Daily Duties
@@ -144,20 +145,20 @@ urlpatterns += [
 
 # AD Group management
 urlpatterns += [
-    url(r'^manage/technicians/$', login_required(staff_access(ResTechListEditView.as_view())), name='restech_list_edit'),
-    url(r'^manage/technicians/remove/$', login_required(staff_access(remove_resnet_tech)), name='remove_resnet_tech'),
+    url(r'^technicians/$', login_required(staff_access(ResTechListEditView.as_view())), name='restech_list_edit'),
+    url(r'^technicians/remove/$', login_required(staff_access(remove_resnet_tech)), name='remove_resnet_tech'),
 ]
 
-# Computer Index
+# Computers
 urlpatterns += [
-    url(r'^computers/$', login_required(computers_access(ComputersView.as_view())), name='uh_computers'),
-    url(r'^computers/populate/$', login_required(computers_access(PopulateComputers.as_view())), name='populate_uh_computers'),
-    url(r'^computers/update/$', login_required(computers_modify_access(UpdateComputer.as_view())), name='update_uh_computer'),
-    url(r'^computers/form/$', login_required(computers_modify_access(RetrieveComputerForm.as_view())), name='form_uh_computer'),
-    url(r'^computers/remove/$', login_required(computers_modify_access(remove_computer)), name='remove_uh_computer'),
-    url(r'^computers/remove_pinhole/$', login_required(computer_record_modify_access(remove_pinhole)), name='remove_uh_computer_pinhole'),
-    url(r'^computers/remove_domain_name/$', login_required(computer_record_modify_access(remove_domain_name)), name='remove_uh_computer_domain_name'),
-    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(computers_access(ComputerRecordsView.as_view())), name='view_uh_computer_record'),
+    url(r'^computers/$', login_required(computers_access(ComputersView.as_view())), name='computers'),
+    url(r'^computers/populate/$', login_required(computers_access(PopulateComputers.as_view())), name='populate_computers'),
+    url(r'^computers/update/$', login_required(computers_modify_access(UpdateComputer.as_view())), name='update_computer'),
+    url(r'^computers/form/$', login_required(computers_modify_access(RetrieveComputerForm.as_view())), name='form__computer'),
+    url(r'^computers/remove/$', login_required(computers_modify_access(UpdateComputer.remove_item_as_view())), name='remove_computer'),
+    url(r'^computers/remove_pinhole/$', login_required(computer_record_modify_access(remove_pinhole)), name='remove_computer_pinhole'),
+    url(r'^computers/remove_domain_name/$', login_required(computer_record_modify_access(remove_domain_name)), name='remove_computer_domain_name'),
+    url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(computers_access(ComputerRecordsView.as_view())), name='view_computer_record'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/rdp/$', login_required(computers_access(RDPRequestView.as_view())), name='rdp_request'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/pinhole_request/$', login_required(computer_record_modify_access(PinholeRequestView.as_view())), name='pinhole_request'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/domain_name_request/$', login_required(computer_record_modify_access(DomainNameRequestView.as_view())), name='domain_name_request'),
@@ -173,29 +174,33 @@ urlpatterns += [
     url(r'^printers/requests/parts/update_inventory/', login_required(technician_access(update_part_inventory)), name='update_printer_part_inventory'),
 ]
 
-# Printer Index
+# Printers
 urlpatterns += [
-    url(r'^printers/$', login_required(printers_access(PrintersView.as_view())), name='uh_printers'),
-    url(r'^printers/populate/$', login_required(printers_access(PopulatePrinters.as_view())), name='populate_uh_printers'),
-    url(r'^printers/update/$', login_required(printers_access(UpdatePrinter.as_view())), name='update_uh_printer'),
-    url(r'^printers/form/$', login_required(printers_access(RetrievePrinterForm.as_view())), name='form_uh_printer'),
-    url(r'^printers/remove/$', login_required(printers_modify_access(remove_printer)), name='remove_uh_printer'),
+    url(r'^printers/$', login_required(printers_access(PrintersView.as_view())), name='printers'),
+    url(r'^printers/populate/$', login_required(printers_access(PopulatePrinters.as_view())), name='populate_printers'),
+    url(r'^printers/update/$', login_required(printers_modify_access(UpdatePrinter.as_view())), name='update_printer'),
+    url(r'^printers/form/$', login_required(printers_access(RetrievePrinterForm.as_view())), name='form_printer'),
+    url(r'^printers/remove/$', login_required(printers_modify_access(UpdatePrinter.remove_item_as_view())), name='remove_printer'),
 ]
 
-# Portmap
+# Network
 urlpatterns += [
-    url(r'^portmap/$', login_required(portmap_access(PortsView.as_view())), name='ports'),
-    url(r'^portmap/populate/$', login_required(portmap_access(PopulatePorts.as_view())), name='populate_ports'),
-    url(r'^portmap/update/$', login_required(portmap_access(UpdatePort.as_view())), name='update_port'),
-    url(r'^portmap/form/$', login_required(portmap_access(RetrievePortForm.as_view())), name='form_port'),
-    url(r'^portmap/change_status/$', login_required(portmap_modify_access(change_port_status)), name='change_port_status'),
-    url(r'^portmap/ap/$', login_required(portmap_access(AccessPointsView.as_view())), name='access_points'),
-    url(r'^portmap/ap/populate/$', login_required(portmap_access(PopulateAccessPoints.as_view())), name='populate_access_points'),
-    url(r'^portmap/ap/update/$', login_required(portmap_access(UpdateAccessPoint.as_view())), name='update_access_point'),
-    url(r'^portmap/ap/form/$', login_required(portmap_access(RetrieveAccessPointForm.as_view())), name='form_access_point'),
-    url(r'^portmap/ap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(AccessPointFrameView.as_view())), name='ap_info_frame'),
-    url(r'^portmap/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(portmap_access(PortFrameView.as_view())), name='port_info_frame'),
-    url(r'^portmap/ajax/chained_port/$', PortChainedAjaxView.as_view(), name='portmap_chained_port'),
+    url(r'^ports/$', login_required(ports_access(PortsView.as_view())), name='ports'),
+    url(r'^ports/populate/$', login_required(ports_access(PopulatePorts.as_view())), name='populate_ports'),
+    url(r'^ports/update/$', login_required(ports_modify_access(UpdatePort.as_view())), name='update_port'),
+    url(r'^ports/form/$', login_required(ports_access(RetrievePortForm.as_view())), name='form_port'),
+    url(r'^ports/change_status/$', login_required(ports_modify_access(change_port_status)), name='change_port_status'),
+    url(r'^ports/remove/$', login_required(ports_modify_access(UpdatePort.remove_item_as_view())), name='remove_port'),
+
+    url(r'^ports/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(ports_access(PortFrameView.as_view())), name='port_info_frame'),
+    url(r'^ports/ajax/chained_port/$', PortChainedAjaxView.as_view(), name='ports_chained_port'),
+
+    url(r'^access-points/$', login_required(ports_access(AccessPointsView.as_view())), name='access_points'),
+    url(r'^access-points/populate/$', login_required(ports_access(PopulateAccessPoints.as_view())), name='populate_access_points'),
+    url(r'^access-points/update/$', login_required(ports_modify_access(UpdateAccessPoint.as_view())), name='update_access_point'),
+    url(r'^access-points/form/$', login_required(ports_access(RetrieveAccessPointForm.as_view())), name='form_access_point'),
+    url(r'^access-points/remove/$', login_required(ports_modify_access(UpdateAccessPoint.remove_item_as_view())), name='remove_access_point'),
+    url(r'^access-points/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(ports_access(AccessPointFrameView.as_view())), name='access_point_info_frame'),
 ]
 
 # Roster Generator

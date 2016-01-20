@@ -1,6 +1,6 @@
 """
-.. module:: resnet_internal.apps.portmap.ajax
-   :synopsis: University Housing Internal Port Map AJAX Methods.
+.. module:: resnet_internal.apps.network.ajax
+   :synopsis: University Housing Internal Network AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
@@ -24,7 +24,7 @@ from django_ajax.decorators import ajax
 from paramiko import SSHClient, AutoAddPolicy
 from rmsconnector.utils import Resident
 
-from ...settings.base import portmap_modify_access_test
+from ...settings.base import ports_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, RNINDatatablesFormView, redraw_row
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm
 from .models import Port, AccessPoint
@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 class PopulatePorts(RNINDatatablesPopulateView):
     """Renders the port map."""
 
-    table_name = "portmap"
+    table_name = "ports"
 
     data_source = reverse_lazy('populate_ports')
     update_source = reverse_lazy('update_port')
@@ -44,6 +44,9 @@ class PopulatePorts(RNINDatatablesPopulateView):
 
     form_class = PortCreateForm
     model = Port
+
+    item_name = 'port'
+    remove_url_name = 'remove_port'
 
     column_definitions = OrderedDict()
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
@@ -56,6 +59,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
     column_definitions["port"] = {"width": "50px", "type": "numeric", "title": "Port"}
     column_definitions["access_point"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP", "related": True, "lookup_field": "id"}
     column_definitions["active"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
         "language": {
@@ -65,12 +69,13 @@ class PopulatePorts(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["active"] = {"width": "80px", "type": "string", "editable": False, "title": "&nbsp;"}
+            self.column_definitions["active"] = {"width": "90px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+            self.column_definitions["remove"] = {"width": "70px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
 
-        return super(PopulatePorts, self).get_options()
+        return super().get_options()
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = portmap_modify_access_test(user)
+        self.write_permissions = ports_modify_access_test(user)
 
     def get_row_class(self, row):
         if not row.active:
@@ -83,16 +88,16 @@ class PopulatePorts(RNINDatatablesPopulateView):
             except ObjectDoesNotExist:
                 link_block = ""
             else:
-                ap_url = reverse('ap_info_frame', kwargs={'pk': access_point.id})
+                ap_url = reverse('access_point_info_frame', kwargs={'pk': access_point.id})
                 ap_icon = self.icon_template.format(icon_url=static('images/icons/wifi-xxl.png'))
                 link_block = self.popover_link_block_template.format(popover_title='AP Info', content_url=ap_url, link_class_name="", link_display=ap_icon)
 
             display_block = self.display_block_template.format(value="", link_block=link_block, inline_images="")
             return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
         elif column == 'active':
-            return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="remove", link_display="Deactivate" if getattr(row, column) else "Activate")
+            return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="action_blue", link_display="Deactivate" if getattr(row, column) else "Activate")
         else:
-            return super(PopulatePorts, self).render_column(row, column)
+            return super().render_column(row, column)
 
     def filter_queryset(self, qs):
         search_parameters = self.request.GET.get('search[value]', None)
@@ -145,7 +150,7 @@ class UpdatePort(BaseDatatablesUpdateView):
 @ajax
 @require_POST
 def change_port_status(request):
-    """ Activates or Deactivates a port in the portmap.
+    """ Activates or Deactivates a port.
 
     :param port_id: The port's id.
     :type port_id: int
@@ -215,6 +220,9 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     form_class = AccessPointCreateForm
     model = AccessPoint
 
+    item_name = 'access point'
+    remove_url_name = 'remove_access_point'
+
     column_definitions = OrderedDict()
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "port__room__building__community__name"}
     column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "port__room__building__name"}
@@ -226,9 +234,16 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
     column_definitions["ap_type"] = {"width": "80px", "type": "string", "title": "Type"}
+    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+
+    def get_options(self):
+        if self.get_write_permissions():
+            self.column_definitions["remove"] = {"width": "80px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+
+        return super().get_options()
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = portmap_modify_access_test(user)
+        self.write_permissions = ports_modify_access_test(user)
 
     def get_display_block(self, row, column):
         if column == 'port':
@@ -238,7 +253,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
             port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_class_name="", link_display=port_icon)
             return self.display_block_template.format(value=port.jack, link_block=port_block, inline_images="")
         else:
-            return super(PopulateAccessPoints, self).get_display_block(row, column)
+            return super().get_display_block(row, column)
 
 
 class RetrieveAccessPointForm(RNINDatatablesFormView):

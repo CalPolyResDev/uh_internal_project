@@ -3,7 +3,4 @@
 
 -r base.txt
 
-git+ssh://git@code.its.calpoly.edu:7999/rmsc/rmsconnector.git
-git+ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git
-
 git+https://github.com/CalPolyResDev/uwsgicachetop.git

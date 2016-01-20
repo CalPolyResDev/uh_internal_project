@@ -9,6 +9,7 @@ import logging
 
 from django.core.exceptions import ImproperlyConfigured
 from django.template import Library, TemplateSyntaxError
+from django.core.urlresolvers import reverse_lazy
 
 
 from ..ajax import RNINDatatablesPopulateView
@@ -40,6 +41,8 @@ def datatables_script(context):
         context['datatable_update_url'] = datatables_class_instance.get_update_source()
         context['datatable_form_url'] = datatables_class_instance.get_form_source()
         context['write_permission'] = datatables_class_instance.get_write_permissions()
+        context['remove_url'] = datatables_class_instance.get_remove_url()
+        context['item_name'] = datatables_class_instance.get_item_name()
     else:
         raise ImproperlyConfigured("The datatables template tag requires the datatables class passed into context to not be None. (context['datatables_class'])")
 

@@ -13,8 +13,6 @@ import shlex
 from dateutil.relativedelta import relativedelta
 from django.core.urlresolvers import reverse_lazy
 from django.db.models.query_utils import Q
-from django.views.decorators.http import require_POST
-from django_ajax.decorators import ajax
 
 from ...settings.base import printers_modify_access_test
 from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView
@@ -32,12 +30,15 @@ class PopulatePrinters(RNINDatatablesPopulateView):
 
     table_name = "printer_index"
 
-    data_source = reverse_lazy('populate_uh_printers')
-    update_source = reverse_lazy('update_uh_printer')
-    form_source = reverse_lazy('form_uh_printer')
+    data_source = reverse_lazy('populate_printers')
+    update_source = reverse_lazy('update_printer')
+    form_source = reverse_lazy('form_printer')
 
     form_class = PrinterForm
     model = Printer
+
+    item_name = 'printer'
+    remove_url_name = 'remove_printer'
 
     column_definitions = OrderedDict()
     column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
@@ -90,12 +91,6 @@ class PopulatePrinters(RNINDatatablesPopulateView):
         else:
             return super(PopulatePrinters, self).get_display_block(row, column)
 
-    def render_column(self, row, column):
-        if column == 'remove':
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="remove", link_display="Remove")
-        else:
-            return super(PopulatePrinters, self).render_column(row, column)
-
     def filter_queryset(self, qs):
         search_parameters = self.request.GET.get('search[value]', None)
         searchable_columns = self.get_searchable_columns()
@@ -144,27 +139,3 @@ class UpdatePrinter(BaseDatatablesUpdateView):
     form_class = PrinterForm
     model = Printer
     populate_class = PopulatePrinters
-
-
-@ajax
-@require_POST
-def remove_printer(request):
-    """ Removes printers from the printer index.
-
-    :param printer_id: The printer's id.
-    :type printer_id: str
-
-    """
-
-    # Pull post parameters
-    printer_id = request.POST["printer_id"]
-
-    context = {}
-    context["success"] = True
-    context["error_message"] = None
-    context["printer_id"] = printer_id
-
-    printer_instance = Printer.objects.get(id=printer_id)
-    printer_instance.delete()
-
-    return context
