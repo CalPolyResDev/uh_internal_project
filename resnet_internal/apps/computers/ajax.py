@@ -15,6 +15,7 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
 from django.db.models import Q
+from django.utils.decorators import classonlymethod
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from srsconnector.models import PinholeRequest, DomainNameRequest
@@ -41,6 +42,9 @@ class PopulateComputers(RNINDatatablesPopulateView):
     update_source = reverse_lazy('update_computer')
     form_class = ComputerForm
     model = Computer
+
+    item_name = 'computer'
+    remove_url_name = 'remove_computer'
 
     column_definitions = OrderedDict()
     column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
@@ -192,38 +196,42 @@ class UpdateComputer(BaseDatatablesUpdateView):
     model = Computer
     populate_class = PopulateComputers
 
+    @classonlymethod
+    def remove_item_as_view(self, **initkwargs):
 
-@ajax
-@require_POST
-def remove_computer(request):
-    """ Removes computers from the computer index if no pinhole/domain name records are associated with it.
+        @ajax
+        @require_POST
+        def remove_item(request, *args, **kwargs):
+            """ Removes computers from the computer index if no pinhole/domain name records are associated with it.
 
-    :param computer_id: The computer's id.
-    :type computer_id: int
+            :param computer_id: The computer's id.
+            :type computer_id: int
 
-    """
+            """
 
-    # Pull post parameters
-    computer_id = request.POST["computer_id"]
+            # Pull post parameters
+            computer_id = request.POST["computer_id"]
 
-    context = {}
-    context["success"] = True
-    context["error_message"] = None
-    context["computer_id"] = computer_id
+            context = {}
+            context["success"] = True
+            context["error_message"] = None
+            context["computer_id"] = computer_id
 
-    computer_instance = Computer.objects.get(id=computer_id)
-    ip_address = computer_instance.ip_address
+            computer_instance = Computer.objects.get(id=computer_id)
+            ip_address = computer_instance.ip_address
 
-    pinholes_count = Pinhole.objects.filter(ip_address=ip_address).count()
-    domain_names_count = DomainName.objects.filter(ip_address=ip_address).count()
+            pinholes_count = Pinhole.objects.filter(ip_address=ip_address).count()
+            domain_names_count = DomainName.objects.filter(ip_address=ip_address).count()
 
-    if pinholes_count > 0 or domain_names_count > 0:
-        context["success"] = False
-        context["error_message"] = "This computer cannot be deleted because it still has pinholes and/or domain names associated with it."
-    else:
-        computer_instance.delete()
+            if pinholes_count > 0 or domain_names_count > 0:
+                context["success"] = False
+                context["error_message"] = "This computer cannot be deleted because it still has pinholes and/or domain names associated with it."
+            else:
+                computer_instance.delete()
 
-    return context
+            return context
+
+        return remove_item
 
 
 @ajax

@@ -13,11 +13,14 @@ import logging
 import shlex
 
 from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
 from django.forms import models as model_forms
 from django.http.response import HttpResponseNotAllowed
-
+from django.utils.decorators import classonlymethod
+from django.views.decorators.http import require_POST
 from django.views.generic.edit import ModelFormMixin, ProcessFormView
+from django_ajax.decorators import ajax
 from django_ajax.mixin import AJAXMixin
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
@@ -35,6 +38,8 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     update_source = None
     form_class = None
     max_display_length = 200
+    item_name = 'item'
+    remove_url_name = None
 
     cached_forms = None
 
@@ -122,6 +127,12 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
     def get_columns(self):
         return list(self.column_definitions.keys())
+
+    def get_item_name(self):
+        return self.item_name
+
+    def get_remove_url(self):
+        return reverse_lazy(self.remove_url_name)
 
     def _get_columns_by_attribute(self, attribute, default=True, test=True):
         """ Returns a filtered list of columns that have the given attribute.
@@ -351,6 +362,34 @@ class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
         context["field_errors"] = field_errors
 
         return context
+
+    @classonlymethod
+    def remove_item_as_view(self, **initkwargs):
+
+        @ajax
+        @require_POST
+        def remove_item(request, *args, **kwargs):
+            """ Removes item from the datatable
+
+            :param id: The item's id.
+            :type  id: str
+
+            """
+
+            # Pull post parameters
+            item_id = request.POST["item_id"]
+
+            context = {}
+            context["success"] = True
+            context["error_message"] = None
+            context["item_id"] = item_id
+
+            item_instance = self.model.objects.get(id=item_id)
+            item_instance.delete()
+
+            return context
+
+        return remove_item
 
 
 def redraw_row(request, populate_class, row_id):

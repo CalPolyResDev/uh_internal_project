@@ -22,7 +22,6 @@ from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from paramiko import SSHClient, AutoAddPolicy
-
 from rmsconnector.utils import Resident
 
 from ...settings.base import ports_modify_access_test
@@ -42,6 +41,9 @@ class PopulatePorts(RNINDatatablesPopulateView):
     update_source = reverse_lazy('update_port')
     form_class = PortCreateForm
     model = Port
+
+    item_name = 'port'
+    remove_url_name = 'remove_port'
 
     column_definitions = OrderedDict()
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
@@ -234,6 +236,9 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     form_class = AccessPointCreateForm
     model = AccessPoint
 
+    item_name = 'access point'
+    remove_url_name = 'remove_access_point'
+
     column_definitions = OrderedDict()
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "port__room__building__community__name"}
     column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "port__room__building__name"}
@@ -277,30 +282,6 @@ class UpdateAccessPoint(BaseDatatablesUpdateView):
     form_class = AccessPointUpdateForm
     model = AccessPoint
     populate_class = PopulateAccessPoints
-
-
-@ajax
-@require_POST
-def remove_access_point(request):
-    """ Removes access points.
-
-    :param access_point_id: The access point's id.
-    :type access_point_id: str
-
-    """
-
-    # Pull post parameters
-    access_point_id = request.POST["access_point_id"]
-
-    context = {}
-    context["success"] = True
-    context["error_message"] = None
-    context["access_point_id"] = access_point_id
-
-    access_point = AccessPoint.objects.get(id=access_point_id)
-    access_point.delete()
-
-    return context
 
 
 class PortChainedAjaxView(ChainedSelectChoicesView):

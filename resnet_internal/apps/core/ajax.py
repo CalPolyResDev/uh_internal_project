@@ -8,13 +8,12 @@
 
 from collections import OrderedDict
 from datetime import datetime, timedelta
-import logging
 from operator import itemgetter
+import logging
 
 from clever_selects.views import ChainedSelectChoicesView
 from django.core.urlresolvers import reverse_lazy
 from django.template import Template, RequestContext
-from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
 from ...settings.base import technician_access_test
@@ -178,6 +177,9 @@ class PopulateRooms(RNINDatatablesPopulateView):
     form_class = RoomCreateForm
     model = Room
 
+    item_name = 'room'
+    remove_url_name = 'remove_room'
+
     column_definitions = OrderedDict()
     column_definitions["community"] = {"type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "building__community__name"}
     column_definitions["building"] = {"type": "string", "editable": False, "title": "Building", "related": True, "lookup_field": "name"}
@@ -208,27 +210,3 @@ class UpdateRoom(BaseDatatablesUpdateView):
     form_class = RoomUpdateForm
     model = Room
     populate_class = PopulateRooms
-
-
-@ajax
-@require_POST
-def remove_room(request):
-    """ Removes access points.
-
-    :param room_id: The roomt's id.
-    :type room_id: str
-
-    """
-
-    # Pull post parameters
-    room_id = request.POST["room_id"]
-
-    context = {}
-    context["success"] = True
-    context["error_message"] = None
-    context["room_id"] = room_id
-
-    access_point = Room.objects.get(id=room_id)
-    access_point.delete()
-
-    return context

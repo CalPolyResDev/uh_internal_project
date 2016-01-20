@@ -36,26 +36,4 @@
 {% block extra_script %}
     {{ block.super }}
     {% datatables_script %}
-
-    {% if request.user|ports_modify_access %}
-    <script type="text/javascript">
-        function confirm_remove(access_point_id) {
-            var response = confirm('Are you sure you want to delete this access point?');
-            if (response) {
-                ajaxPost("{% url 'remove_access_point' %}", {"access_point_id": access_point_id}, function(response_context) {
-                    if (response_context["success"]) {
-                        $("#"+ access_point_id).closest("tr").remove();
-                        return true;
-                    }
-                    else {
-                        alert(response_context["error_message"]);
-                        return false;
-                    }
-                });
-            } else {
-                return false;
-            }
-        }
-    </script>
-    {% endif %}
 {% endblock %}
