@@ -68,18 +68,18 @@
             );
         });
 
-        // Create the overlay effect when processing
-        {{ datatable_name }}.on('processing.dt', function(event, settings, processing) {
-            if (processing) {
-                $(".dataTables_scrollBody").addClass("processing");
-            }
-            else {
-                $(".dataTables_scrollBody").removeClass("processing");
-            }
-            
-            $("#{{ datatable_name }} tr.even").css('background-color', processing ? 'transparent' : 'rgb(255, 255, 255)');
-            
-        });
+//         // Create the overlay effect when processing
+//         {{ datatable_name }}.on('processing.dt', function(event, settings, processing) {
+//             if (processing) {
+//                 $(".dataTables_scrollBody").addClass("processing");
+//             }
+//             else {
+//                 $(".dataTables_scrollBody").removeClass("processing");
+//             }
+//             
+//             $("#{{ datatable_name }} tr.even").css('background-color', processing ? 'transparent' : 'rgb(255, 255, 255)');
+//             
+//         });
 
         {% if write_permission %}
             $("#{{ datatable_name }} tbody").on("dblclick", "tr", function () {

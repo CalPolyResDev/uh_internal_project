@@ -35,7 +35,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     data_source = None
     update_source = None
     form_class = None
-    max_display_length = 200
+    max_display_length = 2000
 
     cached_forms = None
 
@@ -44,19 +44,25 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         "order": [[0, "asc"], [1, "asc"], [2, "asc"]],
         "language": {
             "search": "Filter records: ",
-            "zeroRecords": "No records to display."
+            "zeroRecords": "No records to display.",
+            "loadingRecords": "Loading...",
         },
         "dom": "<'row'<'col-sm-12'f>>" +
                "<'row'<'col-sm-12'tr>>" +
                "<'row'<'col-sm-12'i>>",
-        "processing": True,
+        "processing": False,
         "serverSide": True,
         "lengthChange": False,
 
         "scrollX": True,
         "scrollY": "75vh",
         "deferRender": True,
-        "scroller": True,
+        "scroller": {
+            "displayBuffer": 20,
+            "boundaryScale": 0.25,
+            "serverWait": 50,
+            "loadingIndicator": True,
+        }
     }
 
     extra_options = {}
