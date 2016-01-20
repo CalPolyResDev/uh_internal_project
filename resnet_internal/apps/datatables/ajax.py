@@ -223,28 +223,26 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         :returns: The HTML to be displayed for this column.
 
         """
-
-        if not self.cached_forms:
-            self.cached_forms = {}
-
-        if row.id not in self.cached_forms:
-            form = self.form_class(instance=row, auto_id="id_{id}-%s".format(id=row.id))
-            self.cached_forms[row.id] = form
-        else:
-            form = self.cached_forms[row.id]
-
-        if 'class' in form.fields[column].widget.attrs:
-            form.fields[column].widget.attrs['class'] += " form-control editbox"
-        else:
-            form.fields[column].widget.attrs['class'] = " form-control editbox"
-
-        if not(column in self.get_editable_columns() and self.get_write_permissions()):
-            form.fields[column].widget.attrs['readonly'] = "readonly"
-            form.fields[column].widget.attrs['disabled'] = "disabled"
-
         if column == 'remove':
             return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
         else:
+            if not self.cached_forms:
+                self.cached_forms = {}
+
+            if row.id not in self.cached_forms:
+                form = self.form_class(instance=row, auto_id="id_{id}-%s".format(id=row.id))
+                self.cached_forms[row.id] = form
+            else:
+                form = self.cached_forms[row.id]
+
+            if 'class' in form.fields[column].widget.attrs:
+                form.fields[column].widget.attrs['class'] += " form-control editbox"
+            else:
+                form.fields[column].widget.attrs['class'] = " form-control editbox"
+
+            if not(column in self.get_editable_columns() and self.get_write_permissions()):
+                form.fields[column].widget.attrs['readonly'] = "readonly"
+                form.fields[column].widget.attrs['disabled'] = "disabled"
             return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column), form_field_block=str(form[column]))
 
     def prepare_results(self, qs):
