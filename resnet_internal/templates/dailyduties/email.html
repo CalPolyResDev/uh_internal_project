@@ -88,11 +88,6 @@
     {{ block.super }}
     <script type="text/javascript">
         // URLs for use in email.js
-        var email_folders_url = "{% url 'email_get_folders' %}";
-        var email_archive_url = "{% url 'email_archive' %}";
-        var email_mark_unread_url = "{% url 'email_mark_unread' %}";
-        var email_mark_read_url = "{% url 'email_mark_read' %}";
-        var email_remove_voicemail_url = "{% url 'remove_voicemail' %}";
         var spinner_url = "{% static 'images/spinner.gif' %}";
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
