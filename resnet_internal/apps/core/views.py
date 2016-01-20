@@ -14,11 +14,12 @@ from django.template.context import RequestContext
 from srsconnector.models import ServiceRequest
 
 from django.views.generic.base import TemplateView
+from ldap_groups import ADGroup as LDAPADGroup
 
 from ..datatables.views import DatatablesView
 from .ajax import PopulateRooms
 from .forms import RoomCreateForm
-from .models import SiteAnnouncements, Room
+from .models import SiteAnnouncements, Room, CSDMapping, ADGroup
 
 
 class IndexView(TemplateView):
@@ -50,6 +51,28 @@ class TicketSummaryView(TemplateView):
             context['date_display_class'] = 'text-warning'
         else:
             context['date_display_class'] = 'text-danger'
+
+        return context
+
+
+class CSDDomainAssignmentEditView(TemplateView):
+    template_name = "core/csd_assign_domain.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        mapping_query = CSDMapping.objects.all()
+
+        try:
+            ldap_ad_group = LDAPADGroup(ADGroup.objects.get(display_name="CSD").distinguished_name)
+            raw_member_data = ldap_ad_group.get_member_info()
+        except (ADGroup.DoesNotExist, AttributeError):
+            csd_choices = None
+        else:
+            csd_choices = [(member['userPrincipalName'], member['displayName']) for member in raw_member_data]
+
+        context['csd_mappings'] = mapping_query
+        context['csd_choices'] = csd_choices
+        context['current_csds'] = [csd_choice[0] for csd_choice in csd_choices]
 
         return context
 

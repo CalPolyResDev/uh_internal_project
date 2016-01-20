@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block subtitle %} | CSD Domain Assignments{% endblock %}
+
+{% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>CSD Domain Assignments</h2>
+        </div>
+        <p>This tool is used to assign CSDs to their respective domains.</p>
+    </div>
+
+    <div class="col-xs-12">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <th width="30%">Domain</th>
+                    <th width="20%">CSD Name</th>
+                    <th width="20%">CSD Email</th>
+                    <th width="30%">Replace With:</th>
+                    
+                </thead>
+                <tbody>
+                    {% if csd_mappings %}
+                        {% for mapping in csd_mappings %}
+                        <tr id="row_{{ mapping.id }}">
+                            <td id="row_{{ mapping.id }}_domain">{{ mapping.domain }}</td>
+                            <td id="row_{{ mapping.id }}_name">{{ mapping.name }}</td>
+                            <td id="row_{{ mapping.id }}_email">{{ mapping.email }}</td>
+                            <td>
+                                <select onchange="update_csd_domain({{ mapping.id }}, this.value)">
+                                {% if mapping.email not in current_csds %}
+                                    <option value="" selected="selected">---------</option>
+                                    {% for value, label in csd_choices %}
+                                        <option value="{'email':'{{ value }}', 'name':'{{ label }}'}">{{ label }}</option>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for value, label in csd_choices %}
+                                        {% if value == mapping.email %}
+                                        <option value="{'email':'{{ value }}', 'name':'{{ label }}'}" selected="selected">{{ label }}</option>
+                                        {% else %}
+                                        <option value="{'email':'{{ value }}', 'name':'{{ label }}'}">{{ label }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                </select>
+                             </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+    <script type="text/javascript">
+        function update_csd_domain(mapping_id, csd_info) {
+            ajaxPost("{% url 'update_csd_domain' %}", {'mapping_id': mapping_id, 'csd_info': csd_info});
+        }
+    </script>
+{% endblock %}
