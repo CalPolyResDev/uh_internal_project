@@ -21,10 +21,9 @@ from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ...settings.base import computers_modify_access_test
 from ..core.models import StaffMapping
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, RNINDatatablesFormView
 from .forms import ComputerForm
 from .models import Computer, Pinhole, DomainName
-from resnet_internal.apps.datatables.ajax import RNINDatatablesFormView
 
 
 logger = logging.getLogger(__name__)

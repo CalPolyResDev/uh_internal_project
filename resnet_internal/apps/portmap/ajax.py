@@ -22,14 +22,12 @@ from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from paramiko import SSHClient, AutoAddPolicy
-
 from rmsconnector.utils import Resident
 
 from ...settings.base import portmap_modify_access_test
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, RNINDatatablesFormView, redraw_row
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm
 from .models import Port, AccessPoint
-from resnet_internal.apps.datatables.ajax import RNINDatatablesFormView
 
 
 logger = logging.getLogger(__name__)

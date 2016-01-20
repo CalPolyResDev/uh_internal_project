@@ -8,8 +8,8 @@
 
 from collections import OrderedDict
 from datetime import datetime, timedelta
-import logging
 from operator import itemgetter
+import logging
 
 from clever_selects.views import ChainedSelectChoicesView
 from django.core.urlresolvers import reverse_lazy
@@ -17,11 +17,10 @@ from django.template import Template, RequestContext
 from django_ajax.decorators import ajax
 
 from ...settings.base import technician_access_test
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
+from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView
 from .forms import RoomCreateForm, RoomUpdateForm
 from .models import Building, Room, SubDepartment
 from .utils import NetworkReachabilityTester, get_ticket_list
-from resnet_internal.apps.datatables.ajax import RNINDatatablesFormView
 
 
 logger = logging.getLogger(__name__)

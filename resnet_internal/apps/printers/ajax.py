@@ -17,10 +17,9 @@ from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
 from ...settings.base import printers_modify_access_test
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
+from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView
 from .forms import PrinterForm
 from .models import Printer
-from resnet_internal.apps.datatables.ajax import RNINDatatablesFormView
 
 
 OLD_YEARS = 3
