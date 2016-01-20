@@ -67,6 +67,9 @@ class CASLDAPBackend(CASBackend):
                     if principal_name in group_members:
                         user.ad_groups.add(group)
 
+                if not user.ad_groups.exists():
+                    raise PermissionError('User %s is not in any of the allowed groups.' % principal_name)
+
                 # Legacy Permissions Flags
                 net_admin_list = get_group_members('CN=StateHRDept - IS-ITS-Networks (132900 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu')
                 telecom_list = get_group_members('CN=StateHRDept - IS-ITS-Telecommunications (133100 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu')
