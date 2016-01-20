@@ -203,30 +203,6 @@ def change_port_status(request):
     return redraw_row(request, PopulatePorts, port_id)
 
 
-@ajax
-@require_POST
-def remove_port(request):
-    """ Removes a port.
-
-    :param port_id: The port's id.
-    :type port_id: str
-
-    """
-
-    # Pull post parameters
-    port_id = request.POST["port_id"]
-
-    context = {}
-    context["success"] = True
-    context["error_message"] = None
-    context["port_id"] = port_id
-
-    port = Port.objects.get(id=port_id)
-    port.delete()
-
-    return context
-
-
 class PopulateAccessPoints(RNINDatatablesPopulateView):
     """Renders the access point map."""
 
