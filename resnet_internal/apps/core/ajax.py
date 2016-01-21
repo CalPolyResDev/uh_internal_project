@@ -34,7 +34,7 @@ def update_network_status(request):
     network_reachability.sort(key=itemgetter('status', 'display_name'))
 
     raw_response = """
-        <table class="table table-hover">
+        <table class="table table-hover table-striped table-condensed">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -79,7 +79,7 @@ def get_tickets(request):
         {% load staticfiles %}
         {% load core_filters %}
         {% load srs_urls %}
-        <table class="table">
+        <table class="table table-condensed">
             <thead>
                 <tr>
                     <th></th>
