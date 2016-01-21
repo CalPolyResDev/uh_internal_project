@@ -230,7 +230,7 @@ class PopulateRooms(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"] = {"width": "80px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+            self.column_definitions["remove"] = {"width": "80px", "type": "string", "searchable": False, "orderable": False, "editable": False, "title": "&nbsp;"}
 
         return super().get_options()
 
