@@ -18,11 +18,9 @@ from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.forms import models as model_forms
 from django.http.response import HttpResponseNotAllowed
-
 from django.utils.decorators import classonlymethod
 from django.views.decorators.http import require_POST
-
-from django.views.generic.edit import ModelFormMixin, ProcessFormView
+from django.views.generic.edit import ModelFormMixin, ProcessFormView, View
 from django_ajax.decorators import ajax
 from django_ajax.mixin import AJAXMixin
 from django_datatables_view.base_datatable_view import BaseDatatableView
@@ -410,8 +408,25 @@ class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
 
         return context
 
+
+def redraw_row(request, populate_class, row_id):
+    if not issubclass(populate_class, RNINDatatablesPopulateView):
+        raise ImproperlyConfigured("The populate_class instance variable is either not set or is not a subclass of RNINDatatablesPopulateView.")
+
+    populate_class_instance = populate_class()
+    populate_class_instance._initialize_write_permissions(request.user)
+
+    row_object = populate_class_instance.model.objects.get(id=row_id)
+    rendered_row = populate_class_instance.prepare_results([row_object])[0]
+
+    return {"rendered_row": rendered_row}
+
+
+class BaseDatatablesRemoveView(View):
+    model = None
+
     @classonlymethod
-    def remove_item_as_view(self, **initkwargs):
+    def as_view(self, **initkwargs):
 
         @ajax
         @require_POST
@@ -437,16 +452,3 @@ class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
             return context
 
         return remove_item
-
-
-def redraw_row(request, populate_class, row_id):
-    if not issubclass(populate_class, RNINDatatablesPopulateView):
-        raise ImproperlyConfigured("The populate_class instance variable is either not set or is not a subclass of RNINDatatablesPopulateView.")
-
-    populate_class_instance = populate_class()
-    populate_class_instance._initialize_write_permissions(request.user)
-
-    row_object = populate_class_instance.model.objects.get(id=row_id)
-    rendered_row = populate_class_instance.prepare_results([row_object])[0]
-
-    return {"rendered_row": rendered_row}

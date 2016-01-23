@@ -22,7 +22,7 @@ from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ...settings.base import computers_modify_access_test
 from ..core.models import StaffMapping
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, RNINDatatablesFormView
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
 from .forms import ComputerForm
 from .models import Computer, Pinhole, DomainName
 
@@ -201,9 +201,12 @@ class UpdateComputer(BaseDatatablesUpdateView):
     model = Computer
     populate_class = PopulateComputers
 
-    @classonlymethod
-    def remove_item_as_view(self, **initkwargs):
 
+class RemoveComputer(BaseDatatablesRemoveView):
+    model = Computer
+
+    @classonlymethod
+    def as_view(self, **initkwargs):
         @ajax
         @require_POST
         def remove_item(request, *args, **kwargs):
