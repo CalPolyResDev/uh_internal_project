@@ -366,6 +366,7 @@ class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
         else:
             self.populate_class_instance = self.populate_class()
             self.populate_class_instance._initialize_write_permissions(request.user)
+            self.populate_class_instance.get_options()
 
         self.fields = self.form_class._meta.fields
 
@@ -417,6 +418,7 @@ def redraw_row(request, populate_class, row_id):
 
     populate_class_instance = populate_class()
     populate_class_instance._initialize_write_permissions(request.user)
+    populate_class_instance.get_options()
 
     row_object = populate_class_instance.model.objects.get(id=row_id)
     rendered_row = populate_class_instance.prepare_results([row_object])[0]
