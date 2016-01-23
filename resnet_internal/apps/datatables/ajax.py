@@ -223,7 +223,8 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         :returns: The HTML to be displayed for this column.
 
         """
-        if column == 'remove':
+
+        if column in self._get_columns_by_attribute("remove_column", default=False, test=True):
             return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
         else:
             if not self.cached_forms:
