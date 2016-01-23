@@ -22,6 +22,18 @@ def get_env_variable(name):
         raise ImproperlyConfigured(error_msg)
 
 
+def string_to_bool(string):
+    """ Used for converting environment variable strings to booleans.
+
+    Aims to be as robust as possible by covering most of the commonly used ones.
+    """
+
+    if string.lower().strip() in ['true', '1', 't', 'y', 'yes']:
+        return True
+
+    return False
+
+
 # ======================================================================================================== #
 #                                         General Management                                               #
 # ======================================================================================================== #
@@ -151,8 +163,8 @@ technician_access_test = (lambda user: user.is_developer or user.is_rn_staff or 
 staff_access_test = (lambda user: user.is_developer or user.is_rn_staff)
 developer_access_test = (lambda user: user.is_developer)
 
-portmap_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom or user.is_tag or user.is_tag_readonly)
-portmap_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom or user.is_tag)
+ports_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom or user.is_tag or user.is_tag_readonly)
+ports_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom or user.is_tag)
 
 computers_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag or user.is_tag_readonly)
 computers_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag)
@@ -186,6 +198,8 @@ CAS_LOGGED_MSG = None
 
 CAS_SERVER_URL = "https://my.calpoly.edu/cas/"
 CAS_LOGOUT_URL = "https://my.calpoly.edu/cas/casClientLogout.jsp?logoutApp=University%20Housing%20Internal"
+
+RESTRICT_LOGIN_TO_DEVELOPERS = string_to_bool(get_env_variable('RESNET_INTERNAL_RESTRICT_LOGIN_TO_DEVELOPERS'))
 
 # ======================================================================================================== #
 #                                        LDAP Groups Configuration                                         #

@@ -4,12 +4,12 @@
 
 {% load crispy_forms_tags %}
 
-{% block subtitle %} | Access Point Map{% endblock %}
+{% block subtitle %} | Access Points{% endblock %}
 
 {% block main %}
     <div class="col-xs-12">
         <div class="page-header">
-            <h2>Access Point Map</h2>
+            <h2>Access Points</h2>
         </div>
     </div>
 
@@ -23,10 +23,10 @@
     {% endif %}
 
     <div class="col-xs-12">
-        <table id="access_point_map"></table>
+        <table id="access_point_map" class="table table-striped table-bordered table-condensed" width="100%"></table>
     </div>
 
-    {% if request.user|portmap_modify_access %}
+    {% if request.user|ports_modify_access %}
     <div class="col-xs-12">
         {% crispy form %}
     </div>

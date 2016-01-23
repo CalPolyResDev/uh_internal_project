@@ -24,7 +24,7 @@
     {% endif %}
 
     <div class="col-xs-12">
-        <table id="printer_index"></table>
+        <table id="printer_index" class="table table-striped table-bordered table-condensed" width="100%"></table>
     </div>
 
     {% if request.user|printers_modify_access %}
@@ -39,25 +39,7 @@
     {% datatables_script %}
 
     {% if request.user|computers_modify_access %}
-    <script type="text/javascript">
-        function confirm_remove(printer_id) {
-            var response = confirm('Are you sure you want to delete this printer?');
-            if (response) {
-                ajaxPost("{% url 'remove_uh_printer' %}", {"printer_id": printer_id}, function(response_context) {
-                    if (response_context["success"]) {
-                        $("#"+ printer_id).closest("tr").remove();
-                        return true;
-                    }
-                    else {
-                        alert(response_context["error_message"]);
-                        return false;
-                    }
-                });
-            } else {
-                return false;
-            }
-        }
-        
+    <script type="text/javascript">        
         $(document).ready(function() {
             $('.dateinput').datepicker({
                 dateFormat: 'yy-mm-dd',

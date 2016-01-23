@@ -1,6 +1,6 @@
 """
-.. module:: resnet_internal.apps.portmap.forms
-   :synopsis: University Housing Internal Port Map Forms.
+.. module:: resnet_internal.apps.network.forms
+   :synopsis: University Housing Internal Network Forms.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -72,7 +72,7 @@ class AccessPointCreateForm(ChainedChoicesModelForm):
     community = ModelChoiceField(queryset=Community.objects.all())
     building = ChainedModelChoiceField('community', reverse_lazy('core_chained_building'), Building)
     room = ChainedModelChoiceField('building', reverse_lazy('core_chained_room'), Room)
-    port = ChainedModelChoiceField('room', reverse_lazy('portmap_chained_port'), Port, label="Jack")
+    port = ChainedModelChoiceField('room', reverse_lazy('ports_chained_port'), Port, label="Jack")
 
     def __init__(self, *args, **kwargs):
         super(AccessPointCreateForm, self).__init__(*args, **kwargs)
