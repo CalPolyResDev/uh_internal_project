@@ -411,7 +411,7 @@ class EmailManager(EmailConnectionMixin):
             for message in message_results:
                 message_results_by_mailbox[message['mailbox_name']].append(message)
 
-            with ThreadPoolExecutor(max_workers=1) as pool:
+            with ThreadPoolExecutor(max_workers=20) as pool:
                 pool.map(lambda mailbox_results: retrieve_messages_for_mailbox(mailbox_results[0], mailbox_results[1]), message_results_by_mailbox.items())
 
             # Sort and return
