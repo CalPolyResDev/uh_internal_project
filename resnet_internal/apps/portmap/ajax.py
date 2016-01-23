@@ -69,13 +69,8 @@ class PopulatePorts(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-<<<<<<< HEAD
-            self.column_definitions["active"] = {"width": "90px", "type": "string", "searchable": False, "editable": False, "orderable": False, "title": "&nbsp;"}
-            self.column_definitions["remove"] = {"width": "70px", "type": "string", "searchable": False, "editable": False, "orderable": False, "title": "&nbsp;"}
-=======
-            self.column_definitions["active"] = {"width": "90px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+            self.column_definitions["active"].update({"width": "90px", "type": "string"})
             self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
->>>>>>> feature/RNIN-177-as-a-user-i-can-remove-ports-aps-rooms-etc
 
         return super().get_options()
 
