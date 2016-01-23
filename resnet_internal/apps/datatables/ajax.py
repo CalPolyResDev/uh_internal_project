@@ -99,6 +99,8 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         if self.request:
             self._initialize_write_permissions(self.request.user)
 
+        self.get_options()
+
     def get_table_name(self):
         return self.table_name
 
