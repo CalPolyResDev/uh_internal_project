@@ -17,7 +17,7 @@ from django.template import Template, RequestContext
 from django_ajax.decorators import ajax
 
 from ...settings.base import technician_access_test
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView
 from .forms import RoomCreateForm, RoomUpdateForm
 from .models import Building, Room, SubDepartment
 from .utils import NetworkReachabilityTester, get_ticket_list
@@ -204,3 +204,7 @@ class UpdateRoom(BaseDatatablesUpdateView):
     form_class = RoomUpdateForm
     model = Room
     populate_class = PopulateRooms
+
+
+class RemoveRoom(BaseDatatablesRemoveView):
+    model = Room

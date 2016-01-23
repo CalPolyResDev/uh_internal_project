@@ -25,7 +25,7 @@ from paramiko import SSHClient, AutoAddPolicy
 from rmsconnector.utils import Resident
 
 from ...settings.base import ports_modify_access_test
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm
 from .models import Port, AccessPoint
 
@@ -140,6 +140,10 @@ class UpdatePort(BaseDatatablesUpdateView):
     populate_class = PopulatePorts
 
 
+class RemovePort(BaseDatatablesRemoveView):
+    model = Port
+
+
 @ajax
 @require_POST
 def change_port_status(request):
@@ -250,6 +254,10 @@ class UpdateAccessPoint(BaseDatatablesUpdateView):
     form_class = AccessPointUpdateForm
     model = AccessPoint
     populate_class = PopulateAccessPoints
+
+
+class RemoveAccessPoint(BaseDatatablesRemoveView):
+    model = AccessPoint
 
 
 class PortChainedAjaxView(ChainedSelectChoicesView):
