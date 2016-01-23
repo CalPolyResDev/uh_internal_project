@@ -235,7 +235,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         """
 
-        if column == 'remove':
+        if column in self._get_columns_by_attribute("remove_column", default=False, test=True):
             return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
         else:
             return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column))
