@@ -94,6 +94,11 @@
                 var row_id = $(this).attr("id");
                 var csrftoken = Cookies.get('csrftoken');
                 
+                // Make sure we're not already in edit mode.
+                if ($("#" + row_id + " .editbox").length) {
+                    return;
+                }
+
                 // Unbind previous actions
                 $(this).unbind("blur");
                 $(this).unbind("focus");
