@@ -382,7 +382,7 @@ class EmailManager(EmailConnectionMixin):
                 EmailConnectionMixin._release_connection(connection)
                 return message_results
 
-            with ThreadPoolExecutor(max_workers=1) as pool:
+            with ThreadPoolExecutor(max_workers=20) as pool:
                 message_results = pool.map(retrieve_results_for_mailbox, self.SEARCH_MAILBOXES)
             message_results = list(itertools.chain(*message_results))  # Flatten list of lists
 
