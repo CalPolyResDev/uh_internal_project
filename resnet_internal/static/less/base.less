@@ -201,6 +201,7 @@ main {
 }
 
 /* Datatable styles */
+
 table.dataTable {
     .editbox {
         display: none;
@@ -208,15 +209,7 @@ table.dataTable {
         height: auto;
         padding: 0 4px;
     }
-    
-    .value-display {
-        padding-left: 4px;
-    }
 
-    tbody tr {
-        line-height: 22px;
-    }
-    
     tbody tr:hover {
         background-color: @polydarkgrey !important;
         cursor: cell;
@@ -256,12 +249,8 @@ table.dataTable {
     }
 }
 
-.dataTables_scrollBody {
-    background: rgb(248, 248, 247) !important;
-}
-
-.dataTables_processing {
-    z-index: 1000;
+.dataTables_scrollBody{
+    background: initial !important;
 }
 
 .dataTables_scrollBody:after {
@@ -270,7 +259,6 @@ table.dataTable {
     width:100%; height:100%;
     top:0; left:0;
     background-color: rgba(0,0,0,0.6) !important;
-    opacity: 0;
     transition: all 0.5s;
     -webkit-transition: all 0.5s;
 }

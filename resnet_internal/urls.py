@@ -22,19 +22,19 @@ from django_cas_ng.views import login as auth_login, logout as auth_logout
 
 from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.adgroups.views import ResTechListEditView
-from .apps.computers.ajax import PopulateComputers, UpdateComputer, remove_pinhole, remove_domain_name, RemoveComputer
+from .apps.computers.ajax import PopulateComputers, UpdateComputer, remove_pinhole, remove_domain_name, RemoveComputer, RetrieveComputerForm
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
-from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, PopulateRooms, UpdateRoom, RemoveRoom
-from .apps.core.views import IndexView, handler500, TicketSummaryView, RoomsView
+from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, PopulateRooms, UpdateRoom, RemoveRoom, RetrieveRoomForm, update_csd_domain
+from .apps.core.views import IndexView, handler500, TicketSummaryView, RoomsView, CSDDomainAssignmentEditView
 from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive, send_email, attachment_upload, attachment_delete, ticket_from_email
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView, EmailComposeView
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
-from .apps.portmap.ajax import PopulatePorts, UpdatePort, change_port_status, PortChainedAjaxView, PopulateAccessPoints, UpdateAccessPoint, RemovePort, RemoveAccessPoint
+from .apps.portmap.ajax import PopulatePorts, UpdatePort, change_port_status, PortChainedAjaxView, PopulateAccessPoints, UpdateAccessPoint, RemovePort, RemoveAccessPoint, RetrievePortForm, RetrieveAccessPointForm
 from .apps.portmap.views import PortsView, AccessPointsView, PortFrameView, AccessPointFrameView
 from .apps.printerrequests.ajax import change_request_status, update_part_inventory, update_toner_inventory
 from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
-from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, RemovePrinter
+from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, RemovePrinter, RetrievePrinterForm
 from .apps.printers.views import PrintersView
 from .apps.residents.views import SearchView
 from .apps.rosters.views import RosterGenerateView
@@ -106,7 +106,13 @@ urlpatterns = [
     url(r'^rooms/$', login_required(technician_access(RoomsView.as_view())), name='rooms'),
     url(r'^rooms/populate/$', login_required(technician_access(PopulateRooms.as_view())), name='populate_rooms'),
     url(r'^rooms/update/$', login_required(technician_access(UpdateRoom.as_view())), name='update_room'),
+
     url(r'^rooms/remove/$', login_required(technician_access(RemoveRoom.as_view())), name='remove_room'),
+    url(r'^rooms/form/$', login_required(technician_access(RetrieveRoomForm.as_view())), name='form_room'),
+
+    url(r'^csd/assign_domain/$', login_required(ral_manager_access(CSDDomainAssignmentEditView.as_view())), name='csd_assign_domain'),
+    url(r'^csd/assign_domain/update/$', login_required(ral_manager_access(update_csd_domain)), name='update_csd_domain'),
+
 ]
 
 # Daily Duties
@@ -154,6 +160,7 @@ urlpatterns += [
     url(r'^computers/$', login_required(computers_access(ComputersView.as_view())), name='computers'),
     url(r'^computers/populate/$', login_required(computers_access(PopulateComputers.as_view())), name='populate_computers'),
     url(r'^computers/update/$', login_required(computers_modify_access(UpdateComputer.as_view())), name='update_computer'),
+    url(r'^computers/form/$', login_required(computers_modify_access(RetrieveComputerForm.as_view())), name='form_computer'),
     url(r'^computers/remove/$', login_required(computers_modify_access(RemoveComputer.as_view())), name='remove_computer'),
     url(r'^computers/remove_pinhole/$', login_required(computer_record_modify_access(remove_pinhole)), name='remove_computer_pinhole'),
     url(r'^computers/remove_domain_name/$', login_required(computer_record_modify_access(remove_domain_name)), name='remove_computer_domain_name'),
@@ -178,6 +185,7 @@ urlpatterns += [
     url(r'^printers/$', login_required(printers_access(PrintersView.as_view())), name='printers'),
     url(r'^printers/populate/$', login_required(printers_access(PopulatePrinters.as_view())), name='populate_printers'),
     url(r'^printers/update/$', login_required(printers_modify_access(UpdatePrinter.as_view())), name='update_printer'),
+    url(r'^printers/form/$', login_required(printers_access(RetrievePrinterForm.as_view())), name='form_printer'),
     url(r'^printers/remove/$', login_required(printers_modify_access(RemovePrinter.as_view())), name='remove_printer'),
 ]
 
@@ -186,6 +194,7 @@ urlpatterns += [
     url(r'^ports/$', login_required(ports_access(PortsView.as_view())), name='ports'),
     url(r'^ports/populate/$', login_required(ports_access(PopulatePorts.as_view())), name='populate_ports'),
     url(r'^ports/update/$', login_required(ports_modify_access(UpdatePort.as_view())), name='update_port'),
+    url(r'^ports/form/$', login_required(ports_access(RetrievePortForm.as_view())), name='form_port'),
     url(r'^ports/change_status/$', login_required(ports_modify_access(change_port_status)), name='change_port_status'),
     url(r'^ports/remove/$', login_required(ports_modify_access(RemovePort.as_view())), name='remove_port'),
 
@@ -195,6 +204,7 @@ urlpatterns += [
     url(r'^access-points/$', login_required(ports_access(AccessPointsView.as_view())), name='access_points'),
     url(r'^access-points/populate/$', login_required(ports_access(PopulateAccessPoints.as_view())), name='populate_access_points'),
     url(r'^access-points/update/$', login_required(ports_modify_access(UpdateAccessPoint.as_view())), name='update_access_point'),
+    url(r'^access-points/form/$', login_required(ports_access(RetrieveAccessPointForm.as_view())), name='form_access_point'),
     url(r'^access-points/remove/$', login_required(ports_modify_access(RemoveAccessPoint.as_view())), name='remove_access_point'),
     url(r'^access-points/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(ports_access(AccessPointFrameView.as_view())), name='access_point_info_frame'),
 ]

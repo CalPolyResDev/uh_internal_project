@@ -22,7 +22,7 @@ from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ...settings.base import computers_modify_access_test
 from ..core.models import StaffMapping
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
 from .forms import ComputerForm
 from .models import Computer, Pinhole, DomainName
 
@@ -38,8 +38,11 @@ class PopulateComputers(RNINDatatablesPopulateView):
     """Renders the computer index."""
 
     table_name = "computer_index"
+
     data_source = reverse_lazy('populate_computers')
     update_source = reverse_lazy('update_computer')
+    form_source = reverse_lazy('form_computer')
+
     form_class = ComputerForm
     model = Computer
 
@@ -187,6 +190,10 @@ class PopulateComputers(RNINDatatablesPopulateView):
                 qs = qs.filter(paramQ)
 
         return qs
+
+
+class RetrieveComputerForm(RNINDatatablesFormView):
+    populate_class = PopulateComputers
 
 
 class UpdateComputer(BaseDatatablesUpdateView):

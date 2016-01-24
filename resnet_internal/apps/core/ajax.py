@@ -9,17 +9,19 @@
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from operator import itemgetter
+import ast
 import logging
 
 from clever_selects.views import ChainedSelectChoicesView
 from django.core.urlresolvers import reverse_lazy
 from django.template import Template, RequestContext
+from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
 from ...settings.base import technician_access_test
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
 from .forms import RoomCreateForm, RoomUpdateForm
-from .models import Building, Room, SubDepartment
+from .models import Building, Room, SubDepartment, CSDMapping
 from .utils import NetworkReachabilityTester, get_ticket_list
 
 
@@ -150,6 +152,39 @@ def get_tickets(request):
     return data
 
 
+@ajax
+@require_POST
+def update_csd_domain(request):
+    """Updates a csd domain mapping.
+
+    :param mapping_id: The mapping id.
+    :type mapping_id: int
+    :param csd_info: The updated info for the mapping.
+    :type csd_info: dict
+
+    """
+
+    # Pull post parameters
+    mapping_id = request.POST["mapping_id"]
+    csd_info_dict = ast.literal_eval(request.POST["csd_info"])
+    csd_name = csd_info_dict['name']
+    csd_email = csd_info_dict['email']
+
+    csd_mapping = CSDMapping.objects.get(id=mapping_id)
+    csd_mapping.name = csd_name
+    csd_mapping.email = csd_email
+    csd_mapping.save()
+
+    data = {
+        'inner-fragments': {
+            "#row_{id}_name".format(id=mapping_id): csd_name,
+            "#row_{id}_email".format(id=mapping_id): csd_email,
+        },
+    }
+
+    return data
+
+
 class BuildingChainedAjaxView(ChainedSelectChoicesView):
 
     def get_child_set(self):
@@ -172,8 +207,11 @@ class PopulateRooms(RNINDatatablesPopulateView):
     """Renders the room listing."""
 
     table_name = "rooms"
+
     data_source = reverse_lazy('populate_rooms')
     update_source = reverse_lazy('update_room')
+    form_source = reverse_lazy('form_room')
+
     form_class = RoomCreateForm
     model = Room
 
@@ -198,6 +236,10 @@ class PopulateRooms(RNINDatatablesPopulateView):
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = technician_access_test(user)
+
+
+class RetrieveRoomForm(RNINDatatablesFormView):
+    populate_class = PopulateRooms
 
 
 class UpdateRoom(BaseDatatablesUpdateView):

@@ -19,7 +19,7 @@ import requests
 try:
     from uwsgidecorators import timer
 except ImportError:
-    def timer(time):
+    def timer(time, **kwargs):
         def wrap(f):
             def wrap_2(num):
                 return f(num)
@@ -104,15 +104,6 @@ def update_slack_email(num):
                 requests.post(url, data=json.dumps(payload), headers=headers)
 
 
-def keep_imap_alive_signal_handler(num):
+@timer(60, target='workers')
+def keep_imap_alive(num):
     EmailConnectionMixin.send_noop_to_all_connections()
-
-try:
-    from uwsgidecorators import get_free_signal
-    from uwsgi import register_signal, add_timer
-
-    keep_alive_signal = get_free_signal()
-    register_signal(keep_alive_signal, 'workers', keep_imap_alive_signal_handler)
-    add_timer(keep_alive_signal, 60)
-except ImportError:
-    pass

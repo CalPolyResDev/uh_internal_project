@@ -12,6 +12,10 @@ SESSION_COOKIE_NAME = 'RNINSessionID'
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
+# ======================================================================================================== #
+#                                      URL Configuration                                                   #
+# ======================================================================================================== #
+
 ALLOWED_HOSTS = [
     'dev.resdev.calpoly.edu',
     'prod.resdev.calpoly.edu',

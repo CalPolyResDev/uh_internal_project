@@ -15,7 +15,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.db.models.query_utils import Q
 
 from ...settings.base import printers_modify_access_test
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
 from .forms import PrinterForm
 from .models import Printer
 
@@ -29,8 +29,11 @@ class PopulatePrinters(RNINDatatablesPopulateView):
     """Renders the printer index."""
 
     table_name = "printer_index"
+
     data_source = reverse_lazy('populate_printers')
     update_source = reverse_lazy('update_printer')
+    form_source = reverse_lazy('form_printer')
+
     form_class = PrinterForm
     model = Printer
 
@@ -126,6 +129,10 @@ class PopulatePrinters(RNINDatatablesPopulateView):
                 qs = qs.filter(paramQ)
 
         return qs
+
+
+class RetrievePrinterForm(RNINDatatablesFormView):
+    populate_class = PopulatePrinters
 
 
 class UpdatePrinter(BaseDatatablesUpdateView):
