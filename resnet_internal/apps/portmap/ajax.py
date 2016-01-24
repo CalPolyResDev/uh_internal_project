@@ -22,11 +22,10 @@ from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from paramiko import SSHClient, AutoAddPolicy
-
 from rmsconnector.utils import Resident
 
 from ...settings.base import ports_modify_access_test
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, redraw_row
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm
 from .models import Port, AccessPoint
 
@@ -42,6 +41,9 @@ class PopulatePorts(RNINDatatablesPopulateView):
     update_source = reverse_lazy('update_port')
     form_class = PortCreateForm
     model = Port
+
+    item_name = 'port'
+    remove_url_name = 'remove_port'
 
     column_definitions = OrderedDict()
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
@@ -65,7 +67,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
     def get_options(self):
         if self.get_write_permissions():
             self.column_definitions["active"] = {"width": "90px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
-            self.column_definitions["remove"] = {"width": "70px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
 
         return super().get_options()
 
@@ -91,8 +93,6 @@ class PopulatePorts(RNINDatatablesPopulateView):
             return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
         elif column == 'active':
             return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="action_blue", link_display="Deactivate" if getattr(row, column) else "Activate")
-        elif column == 'remove':
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
         else:
             return super().render_column(row, column)
 
@@ -138,6 +138,10 @@ class UpdatePort(BaseDatatablesUpdateView):
     form_class = PortUpdateForm
     model = Port
     populate_class = PopulatePorts
+
+
+class RemovePort(BaseDatatablesRemoveView):
+    model = Port
 
 
 @ajax
@@ -201,30 +205,6 @@ def change_port_status(request):
     return redraw_row(request, PopulatePorts, port_id)
 
 
-@ajax
-@require_POST
-def remove_port(request):
-    """ Removes a port.
-
-    :param port_id: The port's id.
-    :type port_id: str
-
-    """
-
-    # Pull post parameters
-    port_id = request.POST["port_id"]
-
-    context = {}
-    context["success"] = True
-    context["error_message"] = None
-    context["port_id"] = port_id
-
-    port = Port.objects.get(id=port_id)
-    port.delete()
-
-    return context
-
-
 class PopulateAccessPoints(RNINDatatablesPopulateView):
     """Renders the access point map."""
 
@@ -233,6 +213,9 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     update_source = reverse_lazy('update_access_point')
     form_class = AccessPointCreateForm
     model = AccessPoint
+
+    item_name = 'access point'
+    remove_url_name = 'remove_access_point'
 
     column_definitions = OrderedDict()
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "port__room__building__community__name"}
@@ -249,7 +232,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"] = {"width": "80px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
 
         return super().get_options()
 
@@ -266,12 +249,6 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
         else:
             return super().get_display_block(row, column)
 
-    def render_column(self, row, column):
-        if column == 'remove':
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
-        else:
-            return super().render_column(row, column)
-
 
 class UpdateAccessPoint(BaseDatatablesUpdateView):
     form_class = AccessPointUpdateForm
@@ -279,28 +256,8 @@ class UpdateAccessPoint(BaseDatatablesUpdateView):
     populate_class = PopulateAccessPoints
 
 
-@ajax
-@require_POST
-def remove_access_point(request):
-    """ Removes access points.
-
-    :param access_point_id: The access point's id.
-    :type access_point_id: str
-
-    """
-
-    # Pull post parameters
-    access_point_id = request.POST["access_point_id"]
-
-    context = {}
-    context["success"] = True
-    context["error_message"] = None
-    context["access_point_id"] = access_point_id
-
-    access_point = AccessPoint.objects.get(id=access_point_id)
-    access_point.delete()
-
-    return context
+class RemoveAccessPoint(BaseDatatablesRemoveView):
+    model = AccessPoint
 
 
 class PortChainedAjaxView(ChainedSelectChoicesView):

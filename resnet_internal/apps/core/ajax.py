@@ -8,17 +8,16 @@
 
 from collections import OrderedDict
 from datetime import datetime, timedelta
-import logging
 from operator import itemgetter
+import logging
 
 from clever_selects.views import ChainedSelectChoicesView
 from django.core.urlresolvers import reverse_lazy
 from django.template import Template, RequestContext
-from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
 from ...settings.base import technician_access_test
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView
 from .forms import RoomCreateForm, RoomUpdateForm
 from .models import Building, Room, SubDepartment
 from .utils import NetworkReachabilityTester, get_ticket_list
@@ -178,6 +177,9 @@ class PopulateRooms(RNINDatatablesPopulateView):
     form_class = RoomCreateForm
     model = Room
 
+    item_name = 'room'
+    remove_url_name = 'remove_room'
+
     column_definitions = OrderedDict()
     column_definitions["community"] = {"type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "building__community__name"}
     column_definitions["building"] = {"type": "string", "editable": False, "title": "Building", "related": True, "lookup_field": "name"}
@@ -190,18 +192,12 @@ class PopulateRooms(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"] = {"width": "80px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
 
         return super().get_options()
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = technician_access_test(user)
-
-    def render_column(self, row, column):
-        if column == 'remove':
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
-        else:
-            return super().render_column(row, column)
 
 
 class UpdateRoom(BaseDatatablesUpdateView):
@@ -210,25 +206,5 @@ class UpdateRoom(BaseDatatablesUpdateView):
     populate_class = PopulateRooms
 
 
-@ajax
-@require_POST
-def remove_room(request):
-    """ Removes access points.
-
-    :param room_id: The roomt's id.
-    :type room_id: str
-
-    """
-
-    # Pull post parameters
-    room_id = request.POST["room_id"]
-
-    context = {}
-    context["success"] = True
-    context["error_message"] = None
-    context["room_id"] = room_id
-
-    access_point = Room.objects.get(id=room_id)
-    access_point.delete()
-
-    return context
+class RemoveRoom(BaseDatatablesRemoveView):
+    model = Room

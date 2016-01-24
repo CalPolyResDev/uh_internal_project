@@ -4,12 +4,12 @@
 
 {% load crispy_forms_tags %}
 
-{% block subtitle %} | Rooms{% endblock %}
+{% block subtitle %} | Access Points{% endblock %}
 
 {% block main %}
     <div class="col-xs-12">
         <div class="page-header">
-            <h2>Rooms</h2>
+            <h2>Access Points</h2>
         </div>
     </div>
 
@@ -17,18 +17,20 @@
     <div class="col-xs-12">
         <div class="bs-callout bs-callout-danger">
             <h4>Form Error</h4>
-            The room could not be added. Refer to the form below for details.
+            The access point could not be added. Refer to the form below for details.
         </div>
     </div>
     {% endif %}
 
     <div class="col-xs-12">
-        <table id="rooms"></table>
+        <table id="access_point_map"></table>
     </div>
 
+    {% if request.user|ports_modify_access %}
     <div class="col-xs-12">
         {% crispy form %}
     </div>
+    {% endif %}
 {% endblock %}
 
 {% block extra_script %}

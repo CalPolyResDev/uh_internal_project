@@ -13,11 +13,14 @@ import logging
 import shlex
 
 from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
 from django.forms import models as model_forms
 from django.http.response import HttpResponseNotAllowed
-
-from django.views.generic.edit import ModelFormMixin, ProcessFormView
+from django.utils.decorators import classonlymethod
+from django.views.decorators.http import require_POST
+from django.views.generic.edit import ModelFormMixin, ProcessFormView, View
+from django_ajax.decorators import ajax
 from django_ajax.mixin import AJAXMixin
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
@@ -35,6 +38,8 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     update_source = None
     form_class = None
     max_display_length = 200
+    item_name = 'item'
+    remove_url_name = None
 
     cached_forms = None
 
@@ -122,6 +127,12 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
     def get_columns(self):
         return list(self.column_definitions.keys())
+
+    def get_item_name(self):
+        return self.item_name
+
+    def get_remove_url(self):
+        return reverse_lazy(self.remove_url_name)
 
     def _get_columns_by_attribute(self, attribute, default=True, test=True):
         """ Returns a filtered list of columns that have the given attribute.
@@ -213,25 +224,27 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         """
 
-        if not self.cached_forms:
-            self.cached_forms = {}
-
-        if row.id not in self.cached_forms:
-            form = self.form_class(instance=row, auto_id="id_{id}-%s".format(id=row.id))
-            self.cached_forms[row.id] = form
+        if column in self._get_columns_by_attribute("remove_column", default=False, test=True):
+            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
         else:
-            form = self.cached_forms[row.id]
+            if not self.cached_forms:
+                self.cached_forms = {}
 
-        if 'class' in form.fields[column].widget.attrs:
-            form.fields[column].widget.attrs['class'] += " form-control editbox"
-        else:
-            form.fields[column].widget.attrs['class'] = " form-control editbox"
+            if row.id not in self.cached_forms:
+                form = self.form_class(instance=row, auto_id="id_{id}-%s".format(id=row.id))
+                self.cached_forms[row.id] = form
+            else:
+                form = self.cached_forms[row.id]
 
-        if not(column in self.get_editable_columns() and self.get_write_permissions()):
-            form.fields[column].widget.attrs['readonly'] = "readonly"
-            form.fields[column].widget.attrs['disabled'] = "disabled"
+            if 'class' in form.fields[column].widget.attrs:
+                form.fields[column].widget.attrs['class'] += " form-control editbox"
+            else:
+                form.fields[column].widget.attrs['class'] = " form-control editbox"
 
-        return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column), form_field_block=str(form[column]))
+            if not(column in self.get_editable_columns() and self.get_write_permissions()):
+                form.fields[column].widget.attrs['readonly'] = "readonly"
+                form.fields[column].widget.attrs['disabled'] = "disabled"
+            return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column), form_field_block=str(form[column]))
 
     def prepare_results(self, qs):
         data = []
@@ -364,3 +377,35 @@ def redraw_row(request, populate_class, row_id):
     rendered_row = populate_class_instance.prepare_results([row_object])[0]
 
     return {"rendered_row": rendered_row}
+
+
+class BaseDatatablesRemoveView(View):
+    model = None
+
+    @classonlymethod
+    def as_view(self, **initkwargs):
+
+        @ajax
+        @require_POST
+        def remove_item(request, *args, **kwargs):
+            """ Removes item from the datatable
+
+            :param id: The item's id.
+            :type  id: str
+
+            """
+
+            # Pull post parameters
+            item_id = request.POST["item_id"]
+
+            context = {}
+            context["success"] = True
+            context["error_message"] = None
+            context["item_id"] = item_id
+
+            item_instance = self.model.objects.get(id=item_id)
+            item_instance.delete()
+
+            return context
+
+        return remove_item
