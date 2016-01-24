@@ -426,33 +426,26 @@ def redraw_row(request, populate_class, row_id):
     return {"rendered_row": rendered_row}
 
 
-class BaseDatatablesRemoveView(View):
+class BaseDatatablesRemoveView(AJAXMixin, View):
     model = None
 
-    @classonlymethod
-    def as_view(self, **initkwargs):
+    def post(self, request, *args, **kwargs):
+        """ Removes item from the datatable
 
-        @ajax
-        @require_POST
-        def remove_item(request, *args, **kwargs):
-            """ Removes item from the datatable
+        :param id: The item's id.
+        :type  id: str
 
-            :param id: The item's id.
-            :type  id: str
+        """
 
-            """
+        # Pull post parameters
+        item_id = request.POST["item_id"]
 
-            # Pull post parameters
-            item_id = request.POST["item_id"]
+        response = {}
+        response["success"] = True
+        response["error_message"] = None
+        response["item_id"] = item_id
 
-            context = {}
-            context["success"] = True
-            context["error_message"] = None
-            context["item_id"] = item_id
+        item_instance = self.model.objects.get(id=item_id)
+        item_instance.delete()
 
-            item_instance = self.model.objects.get(id=item_id)
-            item_instance.delete()
-
-            return context
-
-        return remove_item
+        return response
