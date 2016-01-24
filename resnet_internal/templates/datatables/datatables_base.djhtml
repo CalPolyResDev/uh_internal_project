@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load datatables %}
+{% load crispy_forms_tags %}
+
+{% block subtitle %} | {% block page_title %}{% endblock %}{% endblock %}
+
+{% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>{% block datatable_title %}{% endblock %}</h2>
+        </div>
+    </div>
+
+    {% if form.errors %}
+    <div class="col-xs-12">
+        <div class="bs-callout bs-callout-danger">
+            <h4>Form Error</h4>
+            The {% block object_name %}{% endblock %} could not be added. Refer to the form below for details.
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="col-xs-12">
+        <table id="{% block datatable_table_id %}{% endblock %}"></table>
+    </div>
+
+    {% block datatable_form %}
+    <div class="col-xs-12">
+        {% crispy form %}
+    </div>
+    {% endblock %}
+{% endblock %}
+
+{% block extra_script %}
+    {{ block.super }}
+    {% datatables_script %}
+{% endblock %}
