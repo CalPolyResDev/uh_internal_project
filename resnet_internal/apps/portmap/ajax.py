@@ -108,7 +108,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
             columnQ = Q()
             paramQ = Q()
 
-            # Check for pinhole / domain flags
+            # Check for email lookup flag
             for param in params:
                 if param[:1] == '?':
                     email = param[1:]
