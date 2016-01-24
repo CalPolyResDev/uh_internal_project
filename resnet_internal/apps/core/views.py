@@ -85,7 +85,7 @@ class RoomsView(ChainedSelectFormViewMixin, DatatablesView):
     success_url = reverse_lazy('rooms')
 
 
-def handler500(request, exception):
+def handler500(request):
     """500 error handler which includes ``request`` in the context."""
 
     from django.template import loader
