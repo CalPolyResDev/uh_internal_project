@@ -93,4 +93,4 @@ def handler500(request):
 
     template = loader.get_template('500.html')
 
-    return HttpResponseServerError(template.render(RequestContext(request)))
+    return HttpResponseServerError(template.render(request))

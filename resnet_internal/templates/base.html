@@ -168,7 +168,11 @@
         <noscript>
             <div id="noscript-warning">Many features of this website require that JavaScript be enabled. Please do so.</div>
         </noscript>
-        {% clever_selects_js_import %}
+        <!-- Request not present on error pages -->
+        {% if request %}
+            {% clever_selects_js_import %}
+        {% endif %}
+        
         {% block extra_script %}
         {% endblock %}
     </body>
