@@ -365,7 +365,9 @@ class EmailManager(EmailConnectionMixin):
 
                 message_uids = message_uids[message_range[0]:message_range[1] + 1]
 
-            return (self._get_message_summaries(mailbox_name, message_uids), num_available_messages)
+            messages = self._get_message_summaries(mailbox_name, message_uids)
+            messages.sort(key=itemgetter('date'), reverse=True)
+            return (messages, num_available_messages)
         else:
             def retrieve_results_for_mailbox(mailbox_name):
                 message_results = []
