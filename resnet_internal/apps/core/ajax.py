@@ -19,7 +19,7 @@ from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
 from ...settings.base import technician_access_test
-from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
 from .forms import RoomCreateForm, RoomUpdateForm
 from .models import Building, Room, SubDepartment, CSDMapping
 from .utils import NetworkReachabilityTester, get_ticket_list
@@ -230,7 +230,7 @@ class PopulateRooms(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"] = {"width": "80px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
 
         return super().get_options()
 
@@ -246,3 +246,7 @@ class UpdateRoom(BaseDatatablesUpdateView):
     form_class = RoomUpdateForm
     model = Room
     populate_class = PopulateRooms
+
+
+class RemoveRoom(BaseDatatablesRemoveView):
+    model = Room

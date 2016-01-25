@@ -18,11 +18,9 @@ from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.forms import models as model_forms
 from django.http.response import HttpResponseNotAllowed
-
 from django.utils.decorators import classonlymethod
 from django.views.decorators.http import require_POST
-
-from django.views.generic.edit import ModelFormMixin, ProcessFormView
+from django.views.generic.edit import ModelFormMixin, ProcessFormView, View
 from django_ajax.decorators import ajax
 from django_ajax.mixin import AJAXMixin
 from django_datatables_view.base_datatable_view import BaseDatatableView
@@ -45,8 +43,6 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     max_display_length = 2000
     item_name = 'item'
     remove_url_name = None
-
-    cached_forms = None
 
     column_definitions = OrderedDict()
     options = {
@@ -100,6 +96,8 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         if self.request:
             self._initialize_write_permissions(self.request.user)
+
+        self.get_options()
 
     def get_table_name(self):
         return self.table_name
@@ -237,7 +235,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         """
 
-        if column == 'remove':
+        if column in self._get_columns_by_attribute("remove_column", default=False, test=True):
             return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
         else:
             return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column))
@@ -366,6 +364,7 @@ class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
         else:
             self.populate_class_instance = self.populate_class()
             self.populate_class_instance._initialize_write_permissions(request.user)
+            self.populate_class_instance.get_options()
 
         self.fields = self.form_class._meta.fields
 
@@ -410,34 +409,6 @@ class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
 
         return context
 
-    @classonlymethod
-    def remove_item_as_view(self, **initkwargs):
-
-        @ajax
-        @require_POST
-        def remove_item(request, *args, **kwargs):
-            """ Removes item from the datatable
-
-            :param id: The item's id.
-            :type  id: str
-
-            """
-
-            # Pull post parameters
-            item_id = request.POST["item_id"]
-
-            context = {}
-            context["success"] = True
-            context["error_message"] = None
-            context["item_id"] = item_id
-
-            item_instance = self.model.objects.get(id=item_id)
-            item_instance.delete()
-
-            return context
-
-        return remove_item
-
 
 def redraw_row(request, populate_class, row_id):
     if not issubclass(populate_class, RNINDatatablesPopulateView):
@@ -445,8 +416,34 @@ def redraw_row(request, populate_class, row_id):
 
     populate_class_instance = populate_class()
     populate_class_instance._initialize_write_permissions(request.user)
+    populate_class_instance.get_options()
 
     row_object = populate_class_instance.model.objects.get(id=row_id)
     rendered_row = populate_class_instance.prepare_results([row_object])[0]
 
     return {"rendered_row": rendered_row}
+
+
+class BaseDatatablesRemoveView(AJAXMixin, View):
+    model = None
+
+    def post(self, request, *args, **kwargs):
+        """ Removes item from the datatable
+
+        :param id: The item's id.
+        :type  id: str
+
+        """
+
+        # Pull post parameters
+        item_id = request.POST["item_id"]
+
+        response = {}
+        response["success"] = True
+        response["error_message"] = None
+        response["item_id"] = item_id
+
+        item_instance = self.model.objects.get(id=item_id)
+        item_instance.delete()
+
+        return response

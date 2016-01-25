@@ -25,7 +25,7 @@ from paramiko import SSHClient, AutoAddPolicy
 from rmsconnector.utils import Resident
 
 from ...settings.base import ports_modify_access_test
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, RNINDatatablesFormView, redraw_row
+from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm
 from .models import Port, AccessPoint
 
@@ -69,8 +69,8 @@ class PopulatePorts(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["active"] = {"width": "90px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
-            self.column_definitions["remove"] = {"width": "70px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+            self.column_definitions["active"].update({"width": "90px", "type": "string", "visible": True})
+            self.column_definitions["remove"].update({"width": "70px", "type": "string", "remove_column": True, "visible": True})
 
         return super().get_options()
 
@@ -111,7 +111,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
             columnQ = Q()
             paramQ = Q()
 
-            # Check for pinhole / domain flags
+            # Check for email lookup flag
             for param in params:
                 if param[:1] == '?':
                     email = param[1:]
@@ -145,6 +145,10 @@ class UpdatePort(BaseDatatablesUpdateView):
     form_class = PortUpdateForm
     model = Port
     populate_class = PopulatePorts
+
+
+class RemovePort(BaseDatatablesRemoveView):
+    model = Port
 
 
 @ajax
@@ -238,7 +242,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"] = {"width": "80px", "type": "string", "searchable": False, "editable": False, "title": "&nbsp;"}
+            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
 
         return super().get_options()
 
@@ -264,6 +268,10 @@ class UpdateAccessPoint(BaseDatatablesUpdateView):
     form_class = AccessPointUpdateForm
     model = AccessPoint
     populate_class = PopulateAccessPoints
+
+
+class RemoveAccessPoint(BaseDatatablesRemoveView):
+    model = AccessPoint
 
 
 class PortChainedAjaxView(ChainedSelectChoicesView):

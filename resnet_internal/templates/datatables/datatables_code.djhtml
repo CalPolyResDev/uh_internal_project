@@ -1,5 +1,4 @@
 {% load staticfiles %}
-
 <script src='https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js'></script>
 
@@ -62,6 +61,16 @@
     // initialize the dataTable
     $(document).ready(function() {
         {{ datatable_name }} = $("#{{ datatable_name }}").DataTable({% autoescape off %}{{ datatable_options }}{% endautoescape %});
+        
+        // Create the overlay effect when processing
+        {{ datatable_name }}.on('processing.dt', function(event, settings, processing) {
+            if (processing) {
+                $('[type="search"]').addClass('loading-spinner');
+            }
+            else {
+                $('[type="search"]').removeClass('loading-spinner');
+            }
+        });
 
         // Add the popover to hoverable items
         {{ datatable_name }}.on('draw.dt', function() {
@@ -88,20 +97,7 @@
             );
         });
 
-//         // Create the overlay effect when processing
-//         {{ datatable_name }}.on('processing.dt', function(event, settings, processing) {
-//             if (processing) {
-//                 $(".dataTables_scrollBody").addClass("processing");
-//             }
-//             else {
-//                 $(".dataTables_scrollBody").removeClass("processing");
-//             }
-//             
-//             $("#{{ datatable_name }} tr.even").css('background-color', processing ? 'transparent' : 'rgb(255, 255, 255)');
-//             
-//         });
-
-        {% if write_permission %}            
+                {% if write_permission %}            
             $("#{{ datatable_name }} tbody").on("dblclick", "tr", function () {
                 var row_object = this;
                 var row_id = $(this).attr("id");

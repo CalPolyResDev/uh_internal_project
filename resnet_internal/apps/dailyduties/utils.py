@@ -365,7 +365,9 @@ class EmailManager(EmailConnectionMixin):
 
                 message_uids = message_uids[message_range[0]:message_range[1] + 1]
 
-            return (self._get_message_summaries(mailbox_name, message_uids), num_available_messages)
+            messages = self._get_message_summaries(mailbox_name, message_uids)
+            messages.sort(key=itemgetter('date'), reverse=True)
+            return (messages, num_available_messages)
         else:
             def retrieve_results_for_mailbox(mailbox_name):
                 message_results = []
@@ -382,7 +384,7 @@ class EmailManager(EmailConnectionMixin):
                 EmailConnectionMixin._release_connection(connection)
                 return message_results
 
-            with ThreadPoolExecutor(max_workers=1) as pool:
+            with ThreadPoolExecutor(max_workers=20) as pool:
                 message_results = pool.map(retrieve_results_for_mailbox, self.SEARCH_MAILBOXES)
             message_results = list(itertools.chain(*message_results))  # Flatten list of lists
 
@@ -411,7 +413,7 @@ class EmailManager(EmailConnectionMixin):
             for message in message_results:
                 message_results_by_mailbox[message['mailbox_name']].append(message)
 
-            with ThreadPoolExecutor(max_workers=1) as pool:
+            with ThreadPoolExecutor(max_workers=20) as pool:
                 pool.map(lambda mailbox_results: retrieve_messages_for_mailbox(mailbox_results[0], mailbox_results[1]), message_results_by_mailbox.items())
 
             # Sort and return

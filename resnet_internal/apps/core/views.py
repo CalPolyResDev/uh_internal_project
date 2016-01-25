@@ -78,14 +78,14 @@ class CSDDomainAssignmentEditView(TemplateView):
 
 
 class RoomsView(ChainedSelectFormViewMixin, DatatablesView):
-    template_name = "core/rooms.html"
+    template_name = "core/rooms.djhtml"
     form_class = RoomCreateForm
     populate_class = PopulateRooms
     model = Room
     success_url = reverse_lazy('rooms')
 
 
-def handler500(request, exception):
+def handler500(request):
     """500 error handler which includes ``request`` in the context."""
 
     from django.template import loader
@@ -93,4 +93,4 @@ def handler500(request, exception):
 
     template = loader.get_template('500.html')
 
-    return HttpResponseServerError(template.render(RequestContext(request)))
+    return HttpResponseServerError(template.render(request))

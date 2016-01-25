@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 class ComputersView(ChainedSelectFormViewMixin, DatatablesView):
 
-    template_name = "computers/computers.html"
+    template_name = "computers/computers.djhtml"
     form_class = ComputerForm
     populate_class = PopulateComputers
     model = Computer

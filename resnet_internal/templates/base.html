@@ -26,7 +26,7 @@
         <link rel="stylesheet prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.css">
         <link rel="stylesheet prefetch" href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}">
 
-        <link rel="stylesheet prefetch" href="{% compile 'less/base.less' %}?version=1.0">
+        <link rel="stylesheet prefetch" href="{% compile 'less/base.less' %}?version=1.1">
 
         {% block extra_head %}{% endblock %}
 
@@ -161,7 +161,11 @@
         <noscript>
             <div id="noscript-warning">Many features of this website require that JavaScript be enabled. Please do so.</div>
         </noscript>
-        {% clever_selects_js_import %}
+        <!-- Request not present on error pages -->
+        {% if request %}
+            {% clever_selects_js_import %}
+        {% endif %}
+        
         {% block extra_script %}
         {% endblock %}
     </body>
