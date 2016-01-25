@@ -1,43 +1,26 @@
-{% extends "base.html" %}
+{% extends "datatables/datatables_base.djhtml" %}
 {% load core_user_tests %}
-{% load datatables %}
-
 {% load crispy_forms_tags %}
 
-{% block subtitle %} | Computers{% endblock %}
+{% block page_title %}Printers{% endblock %}
+{% block datatable_title %}Printers{% endblock %}
 
-{% block main %}
-    <div class="col-xs-12">
-        <div class="page-header">
-            <h2>Computers</h2>
-        </div>
-    </div>
+{% block object_name %}printer{% endblock %}
 
-    {% if form.errors %}
-    <div class="col-xs-12">
-        <div class="bs-callout bs-callout-danger">
-            <h4>Form Error</h4>
-            The computer could not be added. Refer to the form below for details.
-        </div>
-    </div>
-    {% endif %}
-
-    <div class="col-xs-12">
-        <table id="computer_index" class="table table-striped table-bordered table-condensed" width="100%"></table>
-    </div>
-
-    {% if request.user|computers_modify_access %}
+{% block datatable_form %}
+    {% if request.user|ports_modify_access %}
     <div class="col-xs-12">
         {% crispy form %}
     </div>
     {% endif %}
 {% endblock %}
 
+{% block datatable_table_id %}printer_index{% endblock %}
+
 {% block extra_script %}
     {{ block.super }}
-    {% datatables_script %}
-    
-    {% if request.user|computers_modify_access %}
+
+    {% if request.user|printers_modify_access %}
     <script type="text/javascript">        
         $(document).ready(function() {
             $('.dateinput').datepicker({

@@ -21,7 +21,7 @@ from .models import Port, AccessPoint
 
 
 class PortsView(ChainedSelectFormViewMixin, DatatablesView):
-    template_name = "portmap/ports.html"
+    template_name = "portmap/ports.djhtml"
     form_class = PortCreateForm
     populate_class = PopulatePorts
     model = Port
