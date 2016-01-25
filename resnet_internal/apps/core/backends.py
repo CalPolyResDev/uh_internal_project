@@ -84,7 +84,7 @@ class CASLDAPBackend(CASBackend):
                     raise PermissionDenied('User %s is not in any of the allowed groups.' % principal_name)
 
                 if not user.ad_groups.all().filter(distinguished_name='CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu').exists() and settings.RESTRICT_LOGIN_TO_DEVELOPERS:
-                    raise PermissionError('Only developers can access the site on this server. Please use the primary site.')
+                    raise PermissionDenied('Only developers can access the site on this server. Please use the primary site.')
 
                 # Legacy Permissions Flags
                 net_admin_list = get_group_members('CN=StateHRDept - IS-ITS-Networks (132900 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu')
