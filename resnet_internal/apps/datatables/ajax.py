@@ -44,8 +44,6 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     item_name = 'item'
     remove_url_name = None
 
-    cached_forms = None
-
     column_definitions = OrderedDict()
     options = {
         "order": [[0, "asc"], [1, "asc"], [2, "asc"]],
