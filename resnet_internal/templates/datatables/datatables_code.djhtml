@@ -62,11 +62,6 @@
     $(document).ready(function() {
         {{ datatable_name }} = $("#{{ datatable_name }}").DataTable({% autoescape off %}{{ datatable_options }}{% endautoescape %});
         
-//         // Add spinner next to search box to indicate loading
-//         {{ datatable_name }}.on('init.dt', function() {
-//             $('.dataTables_filter').append('<img id="processing_spinner" height="20px" style="opacity: 0; padding-left: 5px;" src="{% static 'images/spinner.gif' %}">');
-//         });
-        
         // Create the overlay effect when processing
         {{ datatable_name }}.on('processing.dt', function(event, settings, processing) {
             if (processing) {
