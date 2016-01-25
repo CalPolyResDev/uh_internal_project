@@ -5,19 +5,6 @@
 
 {% block subtitle %} | {% block page_title %}{% endblock %}{% endblock %}
 
-{% block extra_head %}
-    <style>
-        .loading-spinner 
-        {
-            background:
-                url('{% static 'images/spinner.gif' %}')
-                no-repeat
-                95% 50%;
-            background-size: 16px 16px;
-        }
-    </style>
-{% endblock %}
-
 {% block main %}
     <div class="col-xs-12">
         <div class="page-header">
