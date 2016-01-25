@@ -23,8 +23,10 @@ from django_ajax.decorators import ajax
 from jfu.http import upload_receive, UploadResponse, JFUResponse
 
 from ..core.templatetags.srs_urls import srs_edit_url
+from ..core.models import Building
 from .models import DailyDuties
 from .utils import GetDutyData, EmailManager
+from resnet_internal.apps.core.models import CSDMapping
 
 
 logger = logging.getLogger(__name__)
@@ -349,3 +351,24 @@ def ticket_from_email(request):
         ticket_number = email_manager.create_ticket_from_email(mailbox_name, uid, post_items['requestor_username'], user_full_name)
 
     return {'redirect_url': srs_edit_url(ticket_number)}
+
+
+@ajax
+@require_POST
+def get_csd_email(request):
+    success = True
+
+    try:
+        csd_mappings = Building.objects.get(id=request.POST['building_id']).csdmappings
+        csd_emails = ['%s <%s>' % (mapping.name, mapping.email) for mapping in csd_mappings]
+        csd_email_string = csd_emails.join(', ')
+    except Building.DoesNotExist:
+        success = False
+        csd_email_string = ''
+
+    response = {
+        'email_string': csd_email_string,
+        'success': success
+    }
+
+    return response

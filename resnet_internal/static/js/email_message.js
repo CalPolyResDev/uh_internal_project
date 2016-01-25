@@ -55,10 +55,30 @@ function change_to_editor() {
     $('#send_and_archive_button').attr('data-container', 'body');
     $('#send_and_archive_button').attr('data-toggle', 'popover');
     $('#send_and_archive_button').attr('data-placement', 'bottom');
-    $('#send_and_archive_button').attr('data-content', reply_and_archive_popover_content);
+    $('#send_and_archive_button').attr('data-content', $('#send_and_archive_popover_content').html());
     $('#send_and_archive_button').popover({
         html: true
-    })
+    });
+    
+    add_button('CC a CSD', '', 'cc_csd_button');
+    $('#cc_csd_button').attr('title', 'Select Building:');
+    $('#cc_csd_button').attr('data-container', 'body');
+    $('#cc_csd_button').attr('data-toggle', 'popover');
+    $('#cc_csd_button').attr('data-placement', 'bottom');
+    $('#cc_csd_button').attr('data-content', $('#cc_csd_popover_content').html());
+    var cc_csd_popover = $('#cc_csd_button').popover({
+        html: true
+    });
+    
+//     cc_csd_popover.on("shown.bs.popover", function(e) {
+//         var parent_field = $("#id_community");
+//         console.log(parent_field);
+//         parent_field.on('change', function() {
+//             console.log('Here');
+//             $(this).loadAllChainedChoices();
+//         });
+//     });
+    
     
     $('#email_buttons').append('<button class="btn btn-default" type="button" id="attach_button">Attach</button>');
     $('#attach_button').popover({

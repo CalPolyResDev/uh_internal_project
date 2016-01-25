@@ -92,6 +92,7 @@
             <p id="email_body">{{ message.body_plain_text|linebreaksbr|urlize }}</p>
         {% endif %}
     </div>
+    
     <div style="display: none;" id="send_and_archive_popover_content">
         <div class="table-responsive">
             <table class='table table-hover table-condensed'>
@@ -103,6 +104,11 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+    </div>
+    <div style="display: none;" id="cc_csd_popover_content">
+        <div>
+            {{ form.as_p }}
         </div>
     </div>
     {% else %}
@@ -124,7 +130,6 @@
         var message_to = '{{ message.to|escapejs }}';
         var message_path = '{{ message.path|escapejs }}';
         var attach_button_content = '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' %}</span>';
-        var reply_and_archive_popover_content = $('#send_and_archive_popover_content').html();
         
         var email_archive_url = "{% url 'email_archive' %}";
         var send_email_url = "{% url 'send_email' %}";
