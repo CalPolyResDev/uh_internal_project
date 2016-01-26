@@ -293,7 +293,11 @@ class EmailManager(EmailConnectionMixin):
             response = server.fetch(message_uid_group, ['INTERNALDATE'])
 
             for uid, data in response.items():
-                unsorted_messages.append((uid, data[b'INTERNALDATE']))
+                # A deleted message that is not yet expunged will not have the INTERNALDATE
+                # key set but will be in this list. These should be ommitted.
+                date = data.get(b'INTERNALDATE', None)
+                if date is not None:
+                    unsorted_messages.append((uid, date))
 
         server.close_folder()
         return sorted(unsorted_messages, key=itemgetter(1), reverse=True)
