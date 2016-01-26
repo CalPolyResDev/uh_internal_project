@@ -23,6 +23,7 @@ django-crispy-forms~=1.5.2
 html2text==2015.11.4
 django-dbbackup~=2.3.2
 
+git+https://github.com/CalPolyResDev/django-ewiz.git
 git+https://github.com/CalPolyResDev/django-clever-selects.git
 git+https://github.com/CalPolyResDev/django-jfu.git
 
