@@ -27,12 +27,6 @@
         <link rel="stylesheet prefetch" href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}">
 
         <link rel="stylesheet prefetch" href="{% compile 'less/base.less' %}?version=1.1">
-        
-        {% block orientation_redirect %}
-            {% if request.user.is_authenticated and request.user.is_new_tech %}
-                <meta http-equiv="refresh" content="0; URL='{% url 'orientation_checklist' %}'" />
-            {% endif %}
-        {% endblock %}
 
         {% block extra_head %}{% endblock %}
 
