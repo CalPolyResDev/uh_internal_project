@@ -73,7 +73,7 @@
             </div>
             <div class="row" id="content">
                 {% block nav %}
-                {% if request.user.is_authenticated and not request.user.is_new_tech %}
+                {% if request.user.is_authenticated and request.user.orientation_complete %}
                 <div id="nav-wrapper">
                     <nav>
                         <div class="text-center nav-heading" id="drawer-trigger">
@@ -148,7 +148,7 @@
             });
 
             // Daily Duties URLs
-            {% if request.user.is_authenticated %}
+            {% if request.user.is_authenticated and request.user.orientation_complete %}
                 var daily_duties_refresh_url = "{% url 'daily_duties_refresh_duties' %}";
                 var daily_duties_update_url = "{% url 'daily_duties_update_duty' %}";
                 var daily_duties_email_redir_url = "{% url 'email_list' %}";
@@ -156,7 +156,7 @@
                 var daily_duties_printer_requests_redir_url = "{% url 'printer_request_list' %}";
             {% endif %}
         </script>
-        {% if request.user.is_authenticated %}
+        {% if request.user.is_authenticated and request.user.orientation_complete %}
             <script src="{% static 'js/dailyduties.js' %}?version=1.0"></script>
         {% endif %}
         
