@@ -21,7 +21,7 @@ from .models import Port, AccessPoint
 
 
 class PortsView(ChainedSelectFormViewMixin, DatatablesView):
-    template_name = "portmap/ports.html"
+    template_name = "portmap/ports.djhtml"
     form_class = PortCreateForm
     populate_class = PopulatePorts
     model = Port
@@ -29,7 +29,7 @@ class PortsView(ChainedSelectFormViewMixin, DatatablesView):
 
 
 class AccessPointsView(ChainedSelectFormViewMixin, DatatablesView):
-    template_name = "portmap/access_points.html"
+    template_name = "portmap/access_points.djhtml"
     form_class = AccessPointCreateForm
     populate_class = PopulateAccessPoints
     model = AccessPoint

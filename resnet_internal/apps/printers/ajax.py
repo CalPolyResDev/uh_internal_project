@@ -15,7 +15,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.db.models.query_utils import Q
 
 from ...settings.base import printers_modify_access_test
-from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
 from .forms import PrinterForm
 from .models import Printer
 
@@ -62,7 +62,7 @@ class PopulatePrinters(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"] = {"width": "80px", "type": "string", "searchable": False, "orderable": False, "editable": False, "title": "&nbsp;"}
+            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
 
         return super(PopulatePrinters, self).get_options()
 
@@ -139,3 +139,7 @@ class UpdatePrinter(BaseDatatablesUpdateView):
     form_class = PrinterForm
     model = Printer
     populate_class = PopulatePrinters
+
+
+class RemovePrinter(BaseDatatablesRemoveView):
+    model = Printer

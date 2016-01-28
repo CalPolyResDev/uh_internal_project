@@ -9,8 +9,6 @@ import logging
 
 from django.core.exceptions import ImproperlyConfigured
 from django.template import Library, TemplateSyntaxError
-from django.core.urlresolvers import reverse_lazy
-
 
 from ..ajax import RNINDatatablesPopulateView
 
@@ -19,7 +17,7 @@ logger = logging.getLogger(__name__)
 register = Library()
 
 
-@register.inclusion_tag('datatables/datatables_code.html', takes_context=True)
+@register.inclusion_tag('datatables/datatables_code.djhtml', takes_context=True)
 def datatables_script(context):
     """Renders Datatables Code into a django template."""
 

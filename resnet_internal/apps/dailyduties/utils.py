@@ -295,7 +295,7 @@ class EmailManager(EmailConnectionMixin):
         server = kwargs.get('connection', self.server)
 
         server.select_folder(mailbox_name)
-        imap_search_string = 'TEXT ' + search_string if search_string else 'ALL'
+        imap_search_string = 'TEXT "' + search_string + '"' if search_string else 'ALL'
 
         unsorted_message_uids = server.search(imap_search_string)
         message_uid_fetch_groups = self._create_uid_fetch_groups(unsorted_message_uids)
@@ -306,7 +306,11 @@ class EmailManager(EmailConnectionMixin):
             response = server.fetch(message_uid_group, ['INTERNALDATE'])
 
             for uid, data in response.items():
-                unsorted_messages.append((uid, data[b'INTERNALDATE']))
+                # A deleted message that is not yet expunged will not have the INTERNALDATE
+                # key set but will be in this list. These should be ommitted.
+                date = data.get(b'INTERNALDATE', None)
+                if date is not None:
+                    unsorted_messages.append((uid, date))
 
         server.close_folder()
         return sorted(unsorted_messages, key=itemgetter(1), reverse=True)
@@ -365,7 +369,9 @@ class EmailManager(EmailConnectionMixin):
 
                 message_uids = message_uids[message_range[0]:message_range[1] + 1]
 
-            return (self._get_message_summaries(mailbox_name, message_uids), num_available_messages)
+            messages = self._get_message_summaries(mailbox_name, message_uids)
+            messages.sort(key=itemgetter('date'), reverse=True)
+            return (messages, num_available_messages)
         else:
             def retrieve_results_for_mailbox(mailbox_name):
                 message_results = []
@@ -382,7 +388,7 @@ class EmailManager(EmailConnectionMixin):
                 EmailConnectionMixin._release_connection(connection)
                 return message_results
 
-            with ThreadPoolExecutor(max_workers=1) as pool:
+            with ThreadPoolExecutor(max_workers=20) as pool:
                 message_results = pool.map(retrieve_results_for_mailbox, self.SEARCH_MAILBOXES)
             message_results = list(itertools.chain(*message_results))  # Flatten list of lists
 
@@ -411,7 +417,7 @@ class EmailManager(EmailConnectionMixin):
             for message in message_results:
                 message_results_by_mailbox[message['mailbox_name']].append(message)
 
-            with ThreadPoolExecutor(max_workers=1) as pool:
+            with ThreadPoolExecutor(max_workers=20) as pool:
                 pool.map(lambda mailbox_results: retrieve_messages_for_mailbox(mailbox_results[0], mailbox_results[1]), message_results_by_mailbox.items())
 
             # Sort and return
@@ -527,7 +533,7 @@ class EmailManager(EmailConnectionMixin):
                 self.mark_message_replied(reply_information[0], reply_information[1])
 
                 original_message = self.get_email_message(reply_information[0], reply_information[1])
-                email_message.extra_headers['In-Reply-To'] = original_message['message-id']
+                email_message.extra_headers['In-Reply-To'] = original_message['message-id'].replace(',', ' ').replace('\n', '').replace('\r', '')
 
                 if original_message.get('references'):
                     email_message.extra_headers['References'] = (original_message['references'].strip() + ' ' + original_message['message-id']).replace(',', ' ').replace('\n', '').replace('\r', '')
