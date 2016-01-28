@@ -1,6 +1,6 @@
 """
-.. module:: resnet_internal.apps.portmap.views
-   :synopsis: University Housing Internal Port Map Views.
+.. module:: resnet_internal.apps.network.views
+   :synopsis: University Housing Internal Network Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
@@ -21,7 +21,7 @@ from .models import Port, AccessPoint
 
 
 class PortsView(ChainedSelectFormViewMixin, DatatablesView):
-    template_name = "portmap/portmap.html"
+    template_name = "portmap/ports.djhtml"
     form_class = PortCreateForm
     populate_class = PopulatePorts
     model = Port
@@ -29,7 +29,7 @@ class PortsView(ChainedSelectFormViewMixin, DatatablesView):
 
 
 class AccessPointsView(ChainedSelectFormViewMixin, DatatablesView):
-    template_name = "portmap/apmap.html"
+    template_name = "portmap/access_points.djhtml"
     form_class = AccessPointCreateForm
     populate_class = PopulateAccessPoints
     model = AccessPoint

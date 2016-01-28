@@ -1,0 +1,16 @@
+{% extends "datatables/datatables_base.djhtml" %}
+{% load core_user_tests %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}Rooms{% endblock %}
+{% block datatable_title %}Rooms{% endblock %}
+
+{% block object_name %}room{% endblock %}
+
+{% block datatable_form %}
+    <div class="col-xs-12">
+        {% crispy form %}
+    </div>
+{% endblock %}
+
+{% block datatable_table_id %}rooms{% endblock %}

@@ -5,16 +5,17 @@
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
-from concurrent.futures import ThreadPoolExecutor
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from email import header
 from imaplib import IMAP4
 from itertools import zip_longest
 from operator import itemgetter
-from ssl import SSLError, SSLEOFError
+from ssl import SSLError, SSLEOFError, CERT_NONE
 from threading import Lock
 import email
+import itertools
 import logging
 import os
 import socket
@@ -31,7 +32,6 @@ import imapclient
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
-import itertools
 
 
 imapclient.imapclient.imaplib._MAXLINE = 1000000
@@ -104,13 +104,15 @@ class EmailConnectionMixin(object):
         attempt_number = 0
         while not connection and attempt_number < 10:
             try:
-                connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
+                # TODO: Remove ssl_context when certificate comes in.
+                ssl_context = imapclient.create_default_context()
+                ssl_context.check_hostname = False
+                ssl_context.verify_mode = CERT_NONE
+
+                connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl, ssl_context=ssl_context)
                 connection.login(username, password)
-                connection.select_folder('INBOX')
-                connection.close_folder()
-            except (OSError, IMAP4.error) as exc:  # Office 365 seems to randomly reject connections and trying again usually results in a connection.
-                # Below line temporarily commented due to excessive traffic to Sentry.
-                # logger.warning("Can't connect to IMAP server: %s, trying again." % str(exc), exc_info=True)
+            except (OSError, IMAP4.error) as exc:
+                logger.error("Can't connect to IMAP server: %s, trying again." % str(exc), exc_info=True)
                 connection = None
             attempt_number += 1
 
@@ -160,6 +162,17 @@ class EmailConnectionMixin(object):
             connection = cls._reinitialize_connection(connection)
 
         return connection
+
+    @classmethod
+    def send_noop_to_all_connections(cls):
+        with cls.lock:
+            if cls.connection_list:
+                for index in range(0, len(cls.connection_list)):
+                    if cls.connection_list[index][1] is False:
+                        try:
+                            cls.connection_list[index][0].noop()
+                        except:
+                            cls.connection_list[index] = (cls._new_connection(), False)
 
     def _init_mail_connection(self):
         self.server = EmailConnectionMixin._get_tested_connection()
@@ -313,7 +326,7 @@ class EmailManager(EmailConnectionMixin):
 
         for message_uid_group in message_uid_fetch_groups:
             message_uid_group = list(filter(None.__ne__, message_uid_group))
-            response = server.fetch(message_uid_group, ['ALL'])
+            response = server.fetch(message_uid_group, ['FLAGS', 'INTERNALDATE', 'RFC822.SIZE', 'ENVELOPE'])
 
             for uid, data in response.items():
                 unread = b'\\Seen' not in data[b'FLAGS']
@@ -356,7 +369,9 @@ class EmailManager(EmailConnectionMixin):
 
                 message_uids = message_uids[message_range[0]:message_range[1] + 1]
 
-            return (self._get_message_summaries(mailbox_name, message_uids), num_available_messages)
+            messages = self._get_message_summaries(mailbox_name, message_uids)
+            messages.sort(key=itemgetter('date'), reverse=True)
+            return (messages, num_available_messages)
         else:
             def retrieve_results_for_mailbox(mailbox_name):
                 message_results = []
@@ -373,7 +388,7 @@ class EmailManager(EmailConnectionMixin):
                 EmailConnectionMixin._release_connection(connection)
                 return message_results
 
-            with ThreadPoolExecutor(max_workers=1) as pool:
+            with ThreadPoolExecutor(max_workers=20) as pool:
                 message_results = pool.map(retrieve_results_for_mailbox, self.SEARCH_MAILBOXES)
             message_results = list(itertools.chain(*message_results))  # Flatten list of lists
 
@@ -402,7 +417,7 @@ class EmailManager(EmailConnectionMixin):
             for message in message_results:
                 message_results_by_mailbox[message['mailbox_name']].append(message)
 
-            with ThreadPoolExecutor(max_workers=1) as pool:
+            with ThreadPoolExecutor(max_workers=20) as pool:
                 pool.map(lambda mailbox_results: retrieve_messages_for_mailbox(mailbox_results[0], mailbox_results[1]), message_results_by_mailbox.items())
 
             # Sort and return
@@ -438,17 +453,21 @@ class EmailManager(EmailConnectionMixin):
 
             return output_list
 
-        response = cache.get('email:raw:' + mailbox_name + ':' + str(uid))
+        cache_key = 'email:raw:' + mailbox_name + ':' + str(uid)
+        response = cache.get(cache_key)
 
         if not response:
             self.server.select_folder(mailbox_name, readonly=True)
             response = self.server.fetch(int(uid), ['ENVELOPE', 'BODY[]'])
             self.server.close_folder()
 
-            cache.set('email:raw:' + mailbox_name + ':' + str(uid), response, 172800)
+            cache.set(cache_key, response, 172800)
 
-        message = email.message_from_bytes(response[int(uid)][b'BODY[]'])
-        envelope = response[int(uid)][b'ENVELOPE']
+        try:
+            message = email.message_from_bytes(response[int(uid)][b'BODY[]'])
+            envelope = response[int(uid)][b'ENVELOPE']
+        except KeyError:
+            return None
 
         body_html = ""
         body_plain_text = ""

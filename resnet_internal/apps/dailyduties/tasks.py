@@ -15,17 +15,18 @@ from django.core.urlresolvers import reverse
 from html2text import html2text
 import requests
 
+
 try:
     from uwsgidecorators import timer
 except ImportError:
-    def timer(time):
+    def timer(time, **kwargs):
         def wrap(f):
             def wrap_2(num):
                 return f(num)
             return wrap_2
         return wrap
 
-from .utils import EmailManager
+from .utils import EmailManager, EmailConnectionMixin
 
 
 @timer(60)
@@ -59,27 +60,39 @@ def update_slack_email(num):
 
     with EmailManager() as email_manager:
         current_emails, num_available_messages = email_manager.get_messages('INBOX', '')
+        cache.set('previous_email_messages', current_emails, 10 * 60)
 
         if previous_email_messages is not None:
-            new_emails = [email for email in current_emails if email not in previous_email_messages]
+            new_emails = []
 
-            slack_attachments = []
+            for current_email in current_emails:
+                found = False
 
-            for email in new_emails:
-                email_message = email_manager.get_email_message('INBOX', email['uid'])
+                for prev_email in previous_email_messages:
+                    if current_email['uid'] == prev_email['uid']:
+                        found = True
+                        break
 
-                attachment = {
-                    'fallback': 'New email message from %s' % email['sender_name'],
-                    'color': 'good',
-                    'author_name': email['sender_name'] + ' (' + email['sender_address'] + ')',
-                    'title': 'Subject: ' + email['subject'],
-                    'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('email_view_message', kwargs={'mailbox_name': 'INBOX', 'uid': email['uid']})),
-                    'text': email_message['body_plain_text'] if email_message['body_plain_text'] else html2text(email_message['body_html']),
-
-                }
-                slack_attachments.append(attachment)
+                if not found:
+                    new_emails.append(current_email)
 
             if new_emails:
+                slack_attachments = []
+
+                for email in new_emails:
+                    email_message = email_manager.get_email_message('INBOX', email['uid'])
+
+                    attachment = {
+                        'fallback': 'New email message from %s' % email['sender_name'],
+                        'color': 'good',
+                        'author_name': email['sender_name'] + ' (' + email['sender_address'] + ')',
+                        'title': 'Subject: ' + email['subject'],
+                        'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('email_view_message', kwargs={'mailbox_name': 'INBOX', 'uid': email['uid']})),
+                        'text': email_message['body_plain_text'] if email_message['body_plain_text'] else html2text(email_message['body_html']),
+
+                    }
+                    slack_attachments.append(attachment)
+
                 payload = {'text': 'New Email Messages!' if len(new_emails) > 1 else 'New Email Message!',
                            'icon_url': urljoin(settings.DEFAULT_BASE_URL, static('images/icons/email.png')),
                            'channel': settings.SLACK_EMAIL_CHANNEL,
@@ -90,4 +103,7 @@ def update_slack_email(num):
 
                 requests.post(url, data=json.dumps(payload), headers=headers)
 
-    cache.set('previous_email_messages', current_emails, 10 * 60)
+
+@timer(60, target='workers')
+def keep_imap_alive(num):
+    EmailConnectionMixin.send_noop_to_all_connections()

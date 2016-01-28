@@ -20,8 +20,8 @@ logger = logging.getLogger(__name__)
 
 
 class PrintersView(DatatablesView):
-    template_name = "printers/printers.html"
+    template_name = "printers/printers.djhtml"
     model = Printer
     form_class = PrinterForm
     populate_class = PopulatePrinters
-    success_url = reverse_lazy('uh_printers')
+    success_url = reverse_lazy('printers')

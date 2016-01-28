@@ -1,16 +1,14 @@
 {% extends "base.html" %}
-{% load core_user_tests %}
 {% load datatables %}
-
 {% load crispy_forms_tags %}
+{% load staticfiles %}
 
-
-{% block subtitle %} | Rooms{% endblock %}
+{% block subtitle %} | {% block page_title %}{% endblock %}{% endblock %}
 
 {% block main %}
     <div class="col-xs-12">
         <div class="page-header">
-            <h2>Rooms</h2>
+            <h2>{% block datatable_title %}{% endblock %}</h2>
         </div>
     </div>
 
@@ -18,18 +16,20 @@
     <div class="col-xs-12">
         <div class="bs-callout bs-callout-danger">
             <h4>Form Error</h4>
-            The room could not be added. Refer to the form below for details.
+            The {% block object_name %}{% endblock %} could not be added. Refer to the form below for details.
         </div>
     </div>
     {% endif %}
 
     <div class="col-xs-12">
-        <table id="rooms"></table>
+        <table id="{% block datatable_table_id %}{% endblock %}" class="table table-striped table-bordered table-condensed" width="100%"></table>
     </div>
 
+    {% block datatable_form %}
     <div class="col-xs-12">
         {% crispy form %}
     </div>
+    {% endblock %}
 {% endblock %}
 
 {% block extra_script %}

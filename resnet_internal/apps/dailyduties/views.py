@@ -48,68 +48,72 @@ class EmailMessageView(TemplateView):
 
         with EmailManager() as email_manager:
             message = email_manager.get_email_message(mailbox_name, message_uid)
-            email_manager.mark_message_read(mailbox_name, message_uid)
 
-        def _address_list_to_string(address_list):
-            if not address_list:
-                return ''
+            if message:
+                email_manager.mark_message_read(mailbox_name, message_uid)
 
-            return_string = ''
+        if message:
+            def _address_list_to_string(address_list):
+                if not address_list:
+                    return ''
 
-            for name, email in address_list:
-                return_string += (name + ' <' + email + '>, ') if name else email + ', '
+                return_string = ''
 
-            return return_string[:-2]
+                for name, email in address_list:
+                    return_string += (name + ' <' + email + '>, ') if name else email + ', '
 
-        message['to'] = _address_list_to_string(message['to'])
-        message['from'] = _address_list_to_string(message['from'])
-        message['cc'] = _address_list_to_string(message['cc'])
-        message['reply_to'] = _address_list_to_string(message['reply_to'])
+                return return_string[:-2]
 
-        attachment_icons = ['accdb', 'avi', 'csv', 'doc', 'docx', 'mp4', 'mpeg', 'pdf', 'pps', 'ppt', 'pptx', 'rtf', 'swf', 'txt', 'xls', 'xlsx']
-        attachment_metadata = []
+            message['to'] = _address_list_to_string(message['to'])
+            message['from'] = _address_list_to_string(message['from'])
+            message['cc'] = _address_list_to_string(message['cc'])
+            message['reply_to'] = _address_list_to_string(message['reply_to'])
 
-        for attachment in message['attachments']:
-            extension = path.splitext(attachment['filename'])[1][1:]
-            metadata = {
-                'filename': attachment['filename'],
-                'size': len(attachment['filedata']),
-                'icon': static('images/attachment_icons/' + extension + '-icon.png') if extension in attachment_icons else static('images/attachment_icons/default.png'),
-                'url': reverse('email_get_attachment', kwargs={'uid': message_uid,
-                                                               'mailbox_name': mailbox_name,
-                                                               'attachment_index': message['attachments'].index(attachment)})
-            }
-            attachment_metadata.append(metadata)
-        message['attachments'] = attachment_metadata
+            attachment_icons = ['accdb', 'avi', 'csv', 'doc', 'docx', 'mp4', 'mpeg', 'pdf', 'pps', 'ppt', 'pptx', 'rtf', 'swf', 'txt', 'xls', 'xlsx']
+            attachment_metadata = []
 
-        quote_string = "On " + message['date'].strftime('%b %d, %Y at %I:%M%p') + ", " + message['from'] + " wrote:"
+            for attachment in message['attachments']:
+                extension = path.splitext(attachment['filename'])[1][1:]
+                metadata = {
+                    'filename': attachment['filename'],
+                    'size': len(attachment['filedata']),
+                    'icon': static('images/attachment_icons/' + extension + '-icon.png') if extension in attachment_icons else static('images/attachment_icons/default.png'),
+                    'url': reverse('email_get_attachment', kwargs={'uid': message_uid,
+                                                                   'mailbox_name': mailbox_name,
+                                                                   'attachment_index': message['attachments'].index(attachment)})
+                }
+                attachment_metadata.append(metadata)
+            message['attachments'] = attachment_metadata
 
-        if message['is_html']:
-            reply_html = message['body_html']
+            quote_string = "On " + message['date'].strftime('%b %d, %Y at %I:%M%p') + ", " + message['from'] + " wrote:"
 
-            if reply_html.find('<body>') >= 0 and not (reply_html.find('<p>') >= 0 and reply_html.find('<p') < reply_html.find('<body>')):
-                reply_html = reply_html.replace('<body>', '<body><p id="new_body"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician</p><div><div>' + quote_string + '<div><div><blockquote>').replace('</body>', '</blockquote></body>')
+            if message['is_html']:
+                reply_html = message['body_html']
+
+                if reply_html.find('<body>') >= 0 and not (reply_html.find('<p>') >= 0 and reply_html.find('<p') < reply_html.find('<body>')):
+                    reply_html = reply_html.replace('<body>', '<body><p id="new_body"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician</p><div><div>' + quote_string + '<div><div><blockquote>').replace('</body>', '</blockquote></body>')
+                else:
+                    reply_html = '<p id="start_message"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician<br /><br />For office hours and locations, please visit <a href="http://resnet.calpoly.edu">resnet.calpoly.edu</a>.</p><div><div>' + '<blockquote>\n' + quote_string + reply_html + '\n</blockquote>'
+
+                message['reply_html'] = reply_html
             else:
-                reply_html = '<p id="start_message"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician<br /><br />For office hours and locations, please visit <a href="http://resnet.calpoly.edu">resnet.calpoly.edu</a>.</p><div><div>' + '<blockquote>\n' + quote_string + reply_html + '\n</blockquote>'
+                reply_text = message['body_plain_text']
+                reply_text = '>'.join(reply_text.splitlines(True))
+                reply_text = get_plaintext_signature(self.request.user.get_full_name()) + '\n\n>' + quote_string + '\n\n>' + reply_text
+                message['reply_plain_text'] = reply_text
 
-            message['reply_html'] = reply_html
-        else:
-            reply_text = message['body_plain_text']
-            reply_text = '>'.join(reply_text.splitlines(True))
-            reply_text = get_plaintext_signature(self.request.user.get_full_name()) + '\n\n>' + quote_string + '\n\n>' + reply_text
-            message['reply_plain_text'] = reply_text
+            if message['is_html']:
+                def content_id_match_to_url(match):
+                    content_id = match.groupdict()['content_id']
+                    return 'src="' + reverse('email_get_attachment', kwargs={'uid': message_uid,
+                                                                   'mailbox_name': mailbox_name,
+                                                                   'content_id': content_id}) + '"'
 
-        if message['is_html']:
-            def content_id_match_to_url(match):
-                content_id = match.groupdict()['content_id']
-                return 'src="' + reverse('email_get_attachment', kwargs={'uid': message_uid,
-                                                               'mailbox_name': mailbox_name,
-                                                               'content_id': content_id}) + '"'
+                message['body_html'] = re.sub(r'src="cid:(?P<content_id>[^"]+)"', content_id_match_to_url, message['body_html'])
 
-            message['body_html'] = re.sub(r'src="cid:(?P<content_id>[^"]+)"', content_id_match_to_url, message['body_html'])
+            context['message'] = message
+            context['archive_folders'] = get_archive_folders()
 
-        context['message'] = message
-        context['archive_folders'] = get_archive_folders()
         return context
 
 

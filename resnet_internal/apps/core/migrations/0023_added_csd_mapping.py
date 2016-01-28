@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-from django.db.migrations.operations.special import RunPython
+# from django.db.migrations.operations.special import RunPython
 import django.db.models.deletion
 
 

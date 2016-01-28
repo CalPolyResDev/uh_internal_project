@@ -13,13 +13,18 @@ import logging
 import shlex
 
 from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
+from django.db.models.query import QuerySet
 from django.forms import models as model_forms
 from django.http.response import HttpResponseNotAllowed
-
-from django.views.generic.edit import ModelFormMixin, ProcessFormView
+from django.utils.decorators import classonlymethod
+from django.views.decorators.http import require_POST
+from django.views.generic.edit import ModelFormMixin, ProcessFormView, View
+from django_ajax.decorators import ajax
 from django_ajax.mixin import AJAXMixin
 from django_datatables_view.base_datatable_view import BaseDatatableView
+from django_datatables_view.mixins import JSONResponseView
 
 from ..core.utils import dict_merge
 
@@ -34,28 +39,35 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     data_source = None
     update_source = None
     form_class = None
-    max_display_length = 200
 
-    cached_forms = None
+    max_display_length = 2000
+    item_name = 'item'
+    remove_url_name = None
 
     column_definitions = OrderedDict()
     options = {
         "order": [[0, "asc"], [1, "asc"], [2, "asc"]],
         "language": {
             "search": "Filter records: ",
-            "zeroRecords": "No records to display."
+            "zeroRecords": "No records to display.",
+            "loadingRecords": "Loading...",
         },
         "dom": "<'row'<'col-sm-12'f>>" +
                "<'row'<'col-sm-12'tr>>" +
                "<'row'<'col-sm-12'i>>",
-        "processing": True,
+        "processing": False,
         "serverSide": True,
         "lengthChange": False,
 
         "scrollX": True,
         "scrollY": "75vh",
         "deferRender": True,
-        "scroller": True,
+        "scroller": {
+            "displayBuffer": 20,
+            "boundaryScale": 0.25,
+            "serverWait": 50,
+            "loadingIndicator": True,
+        }
     }
 
     extra_options = {}
@@ -63,7 +75,6 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     base_column_template = """
         <div class='wrapper' column='{column}'>
             {display_block}
-            {form_field_block}
         </div>
     """
 
@@ -86,11 +97,16 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         if self.request:
             self._initialize_write_permissions(self.request.user)
 
+        self.get_options()
+
     def get_table_name(self):
         return self.table_name
 
     def get_update_source(self):
         return self.update_source
+
+    def get_form_source(self):
+        return self.form_source
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = True
@@ -122,6 +138,12 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
     def get_columns(self):
         return list(self.column_definitions.keys())
+
+    def get_item_name(self):
+        return self.item_name
+
+    def get_remove_url(self):
+        return reverse_lazy(self.remove_url_name)
 
     def _get_columns_by_attribute(self, attribute, default=True, test=True):
         """ Returns a filtered list of columns that have the given attribute.
@@ -200,7 +222,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name=link_class_name, link_display=link_display)
         display_block = self.display_block_template.format(value="", link_block=link_block, inline_images="")
 
-        return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
+        return self.base_column_template.format(column=column, display_block=display_block)
 
     def render_column(self, row, column):
         """Renders columns with customized HTML.
@@ -213,28 +235,47 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         """
 
-        if not self.cached_forms:
-            self.cached_forms = {}
-
-        if row.id not in self.cached_forms:
-            form = self.form_class(instance=row, auto_id="id_{id}-%s".format(id=row.id))
-            self.cached_forms[row.id] = form
+        if column in self._get_columns_by_attribute("remove_column", default=False, test=True):
+            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="action_red", link_display="Remove")
         else:
-            form = self.cached_forms[row.id]
+            return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column))
 
-        if 'class' in form.fields[column].widget.attrs:
-            form.fields[column].widget.attrs['class'] += " form-control editbox"
-        else:
-            form.fields[column].widget.attrs['class'] = " form-control editbox"
+    def retrieve_editable_row(self, item):
+        form = self.form_class(instance=item, auto_id="id_{id}-%s".format(id=item.id))
 
-        if not(column in self.get_editable_columns() and self.get_write_permissions()):
-            form.fields[column].widget.attrs['readonly'] = "readonly"
-            form.fields[column].widget.attrs['disabled'] = "disabled"
+        row_editable = {}
 
-        return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column), form_field_block=str(form[column]))
+        for column in self.get_columns():
+            if column in form.fields.keys():
+                if 'class' in form.fields[column].widget.attrs:
+                    form.fields[column].widget.attrs['class'] += " form-control editbox"
+                else:
+                    form.fields[column].widget.attrs['class'] = " form-control editbox"
+
+                if not(column in self.get_editable_columns() and self.get_write_permissions()):
+                    form.fields[column].widget.attrs['readonly'] = "readonly"
+                    form.fields[column].widget.attrs['disabled'] = "disabled"
+
+                row_editable.update({column: str(form[column])})
+
+        return row_editable
 
     def prepare_results(self, qs):
         data = []
+
+        if isinstance(qs, QuerySet):
+            select_fields = []
+            related_columns = self._get_columns_by_attribute("related", default=False)
+            custom_lookup_columns = self._get_columns_by_attribute("custom_lookup", default=False)
+
+            for column_name in related_columns:
+                select_fields.append(column_name)
+            for column_name in custom_lookup_columns:
+                column = self.column_definitions[column_name]
+                select_fields.append(column['lookup_field'][0:column['lookup_field'].rfind('__')])
+
+            if select_fields:
+                qs = qs.select_related(*select_fields)
 
         for item in qs:
             row = {}
@@ -294,6 +335,21 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         return qs
 
 
+class RNINDatatablesFormView(JSONResponseView):
+    """ The base datatable form retrieval view for University Housing Internal datatables."""
+
+    populate_class = None
+
+    def get_context_data(self, **kwargs):
+        populate_class_instance = self.populate_class()
+        populate_class_instance._initialize_write_permissions(self.request.user)
+
+        item_id = self.request.POST['item_id']
+        item = populate_class_instance.model.objects.get(id=item_id)
+
+        return {'editable_row_columns': populate_class_instance.retrieve_editable_row(item)}
+
+
 class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
     """ Base class to update datatable rows."""
 
@@ -308,6 +364,7 @@ class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
         else:
             self.populate_class_instance = self.populate_class()
             self.populate_class_instance._initialize_write_permissions(request.user)
+            self.populate_class_instance.get_options()
 
         self.fields = self.form_class._meta.fields
 
@@ -359,8 +416,34 @@ def redraw_row(request, populate_class, row_id):
 
     populate_class_instance = populate_class()
     populate_class_instance._initialize_write_permissions(request.user)
+    populate_class_instance.get_options()
 
     row_object = populate_class_instance.model.objects.get(id=row_id)
     rendered_row = populate_class_instance.prepare_results([row_object])[0]
 
     return {"rendered_row": rendered_row}
+
+
+class BaseDatatablesRemoveView(AJAXMixin, View):
+    model = None
+
+    def post(self, request, *args, **kwargs):
+        """ Removes item from the datatable
+
+        :param id: The item's id.
+        :type  id: str
+
+        """
+
+        # Pull post parameters
+        item_id = request.POST["item_id"]
+
+        response = {}
+        response["success"] = True
+        response["error_message"] = None
+        response["item_id"] = item_id
+
+        item_instance = self.model.objects.get(id=item_id)
+        item_instance.delete()
+
+        return response

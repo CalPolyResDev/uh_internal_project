@@ -1,0 +1,44 @@
+{% extends "datatables/datatables_base.djhtml" %}
+{% load core_user_tests %}
+{% load crispy_forms_tags %}
+
+{% block page_title %}Printers{% endblock %}
+{% block datatable_title %}Printers{% endblock %}
+
+{% block object_name %}printer{% endblock %}
+
+{% block datatable_form %}
+    {% if request.user|ports_modify_access %}
+    <div class="col-xs-12">
+        {% crispy form %}
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block datatable_table_id %}printer_index{% endblock %}
+
+{% block extra_script %}
+    {{ block.super }}
+
+    {% if request.user|printers_modify_access %}
+    <script type="text/javascript">        
+        $(document).ready(function() {
+            $('.dateinput').datepicker({
+                dateFormat: 'yy-mm-dd',
+            });
+            
+            $(".ip_address_field").before('<input type="radio" name="dhcp" value="static" checked>&nbsp;Static&nbsp;<input type="radio" name="dhcp" value="dynamic">&nbsp;Dynamic');
+
+            $('input[type=radio][name=dhcp]').change(function() {
+                if (this.value == 'static') {
+                    $(this).siblings(".ip_address_field").show();
+                }
+                else {
+                    $(this).siblings(".ip_address_field").hide();
+                    $(this).siblings(".ip_address_field").val("");
+                }
+            });
+        });
+    </script>
+    {% endif %}
+{% endblock %}

@@ -15,13 +15,14 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
 from django.db.models import Q
+from django.utils.decorators import classonlymethod
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ...settings.base import computers_modify_access_test
 from ..core.models import StaffMapping
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
 from .forms import ComputerForm
 from .models import Computer, Pinhole, DomainName
 
@@ -37,10 +38,16 @@ class PopulateComputers(RNINDatatablesPopulateView):
     """Renders the computer index."""
 
     table_name = "computer_index"
-    data_source = reverse_lazy('populate_uh_computers')
-    update_source = reverse_lazy('update_uh_computer')
+
+    data_source = reverse_lazy('populate_computers')
+    update_source = reverse_lazy('update_computer')
+    form_source = reverse_lazy('form_computer')
+
     form_class = ComputerForm
     model = Computer
+
+    item_name = 'computer'
+    remove_url_name = 'remove_computer'
 
     column_definitions = OrderedDict()
     column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
@@ -66,7 +73,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"] = {"width": "80px", "type": "string", "searchable": False, "orderable": False, "editable": False, "title": "&nbsp;"}
+            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
 
         return super(PopulateComputers, self).get_options()
 
@@ -98,7 +105,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
             inline_images = ""
 
             try:
-                record_url = reverse('view_uh_computer_record', kwargs={'ip_address': getattr(row, column)})
+                record_url = reverse('view_computer_record', kwargs={'ip_address': getattr(row, column)})
             except NoReverseMatch:
                 pass
             else:
@@ -136,8 +143,6 @@ class PopulateComputers(RNINDatatablesPopulateView):
 
             display_block = self.display_block_template.format(value="", link_block=link_block, inline_images="")
             return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
-        elif column == 'remove':
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", link_class_name="remove", link_display="Remove")
         else:
             return super(PopulateComputers, self).render_column(row, column)
 
@@ -187,43 +192,48 @@ class PopulateComputers(RNINDatatablesPopulateView):
         return qs
 
 
+class RetrieveComputerForm(RNINDatatablesFormView):
+    populate_class = PopulateComputers
+
+
 class UpdateComputer(BaseDatatablesUpdateView):
     form_class = ComputerForm
     model = Computer
     populate_class = PopulateComputers
 
 
-@ajax
-@require_POST
-def remove_computer(request):
-    """ Removes computers from the computer index if no pinhole/domain name records are associated with it.
+class RemoveComputer(BaseDatatablesRemoveView):
+    model = Computer
 
-    :param computer_id: The computer's id.
-    :type computer_id: int
+    def post(self, request, *args, **kwargs):
+        """ Removes computers from the computer index if no pinhole/domain name records are associated with it.
 
-    """
+        :param computer_id: The computer's id.
+        :type computer_id: int
 
-    # Pull post parameters
-    computer_id = request.POST["computer_id"]
+        """
 
-    context = {}
-    context["success"] = True
-    context["error_message"] = None
-    context["computer_id"] = computer_id
+        # Pull post parameters
+        computer_id = request.POST["item_id"]
 
-    computer_instance = Computer.objects.get(id=computer_id)
-    ip_address = computer_instance.ip_address
+        response = {}
+        response["success"] = True
+        response["error_message"] = None
+        response["item_id"] = computer_id
 
-    pinholes_count = Pinhole.objects.filter(ip_address=ip_address).count()
-    domain_names_count = DomainName.objects.filter(ip_address=ip_address).count()
+        computer_instance = Computer.objects.get(id=computer_id)
+        ip_address = computer_instance.ip_address
 
-    if pinholes_count > 0 or domain_names_count > 0:
-        context["success"] = False
-        context["error_message"] = "This computer cannot be deleted because it still has pinholes and/or domain names associated with it."
-    else:
-        computer_instance.delete()
+        pinholes_count = Pinhole.objects.filter(ip_address=ip_address).count()
+        domain_names_count = DomainName.objects.filter(ip_address=ip_address).count()
 
-    return context
+        if pinholes_count > 0 or domain_names_count > 0:
+            response["success"] = False
+            response["error_message"] = "This computer cannot be deleted because it still has pinholes and/or domain names associated with it."
+        else:
+            computer_instance.delete()
+
+        return response
 
 
 @ajax

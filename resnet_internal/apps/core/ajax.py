@@ -8,18 +8,20 @@
 
 from collections import OrderedDict
 from datetime import datetime, timedelta
-import logging
 from operator import itemgetter
+import ast
+import logging
 
 from clever_selects.views import ChainedSelectChoicesView
 from django.core.urlresolvers import reverse_lazy
 from django.template import Template, RequestContext
+from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
 from ...settings.base import technician_access_test
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView
+from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
 from .forms import RoomCreateForm, RoomUpdateForm
-from .models import Building, Room, SubDepartment
+from .models import Building, Room, SubDepartment, CSDMapping
 from .utils import NetworkReachabilityTester, get_ticket_list
 
 
@@ -150,6 +152,39 @@ def get_tickets(request):
     return data
 
 
+@ajax
+@require_POST
+def update_csd_domain(request):
+    """Updates a csd domain mapping.
+
+    :param mapping_id: The mapping id.
+    :type mapping_id: int
+    :param csd_info: The updated info for the mapping.
+    :type csd_info: dict
+
+    """
+
+    # Pull post parameters
+    mapping_id = request.POST["mapping_id"]
+    csd_info_dict = ast.literal_eval(request.POST["csd_info"])
+    csd_name = csd_info_dict['name']
+    csd_email = csd_info_dict['email']
+
+    csd_mapping = CSDMapping.objects.get(id=mapping_id)
+    csd_mapping.name = csd_name
+    csd_mapping.email = csd_email
+    csd_mapping.save()
+
+    data = {
+        'inner-fragments': {
+            "#row_{id}_name".format(id=mapping_id): csd_name,
+            "#row_{id}_email".format(id=mapping_id): csd_email,
+        },
+    }
+
+    return data
+
+
 class BuildingChainedAjaxView(ChainedSelectChoicesView):
 
     def get_child_set(self):
@@ -172,25 +207,46 @@ class PopulateRooms(RNINDatatablesPopulateView):
     """Renders the room listing."""
 
     table_name = "rooms"
+
     data_source = reverse_lazy('populate_rooms')
     update_source = reverse_lazy('update_room')
+    form_source = reverse_lazy('form_room')
+
     form_class = RoomCreateForm
     model = Room
+
+    item_name = 'room'
+    remove_url_name = 'remove_room'
 
     column_definitions = OrderedDict()
     column_definitions["community"] = {"type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "building__community__name"}
     column_definitions["building"] = {"type": "string", "editable": False, "title": "Building", "related": True, "lookup_field": "name"}
     column_definitions["name"] = {"type": "string", "title": "Name"}
+    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
         "scrollX": False,
     }
 
+    def get_options(self):
+        if self.get_write_permissions():
+            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
+
+        return super().get_options()
+
     def _initialize_write_permissions(self, user):
         self.write_permissions = technician_access_test(user)
+
+
+class RetrieveRoomForm(RNINDatatablesFormView):
+    populate_class = PopulateRooms
 
 
 class UpdateRoom(BaseDatatablesUpdateView):
     form_class = RoomUpdateForm
     model = Room
     populate_class = PopulateRooms
+
+
+class RemoveRoom(BaseDatatablesRemoveView):
+    model = Room

@@ -35,12 +35,12 @@
                                     <p>Please use any browser other than IE.</p>
                                 </audio>
                             </td>
-                            <td><a id="marknew_{{ voicemail.message_uid }}" class="mark" onclick="mark_new('{{ voicemail.message_uid }}');">Mark New</a>
+                            <td><a id="marknew_{{ voicemail.message_uid }}" class="action_blue" onclick="mark_new('{{ voicemail.message_uid }}');">Mark New</a>
                                 <div id="spinner_mark_new_{{ voicemail.message_uid }}" class="spinner" style="display:none;">
                                     <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
                                 </div>
                             </td>
-                            <td><a id="archive_{{ voicemail.message_uid }}" class="remove" onclick="remove_voicemail('{{ voicemail.message_uid }}');">Archive</a>
+                            <td><a id="archive_{{ voicemail.message_uid }}" class="action_red" onclick="remove_voicemail('{{ voicemail.message_uid }}');">Archive</a>
                                 <div id="spinner_{{ voicemail.message_uid }}" class="spinner" style="display: none;">
                                     <img id="img-spinner" src="{% static 'images/spinner.gif' %}" alt="Loading" height="15" />
                                 </div>
