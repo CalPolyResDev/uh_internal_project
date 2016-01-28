@@ -295,7 +295,7 @@ class EmailManager(EmailConnectionMixin):
         server = kwargs.get('connection', self.server)
 
         server.select_folder(mailbox_name)
-        imap_search_string = 'TEXT ' + search_string if search_string else 'ALL'
+        imap_search_string = 'TEXT "' + search_string + '"' if search_string else 'ALL'
 
         unsorted_message_uids = server.search(imap_search_string)
         message_uid_fetch_groups = self._create_uid_fetch_groups(unsorted_message_uids)
