@@ -16,6 +16,7 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.staticfiles.templatetags.staticfiles import static as staticfiles
 from django.core.exceptions import PermissionDenied
+from django.views.decorators.cache import cache_page
 from django.views.defaults import permission_denied, page_not_found
 from django.views.generic import RedirectView
 from django_cas_ng.views import login as auth_login, logout as auth_logout
@@ -42,7 +43,6 @@ from .apps.rosters.views import RosterGenerateView
 from .settings.base import (technician_access_test, staff_access_test, printers_access_test, printers_modify_access_test,
                             ports_access_test, ports_modify_access_test, computers_access_test, computers_modify_access_test,
                             computer_record_modify_access_test, csd_access_test, ral_manager_access_test)
-from django.views.decorators.cache import cache_page
 
 
 def permissions_check(test_func, raise_exception=True):
