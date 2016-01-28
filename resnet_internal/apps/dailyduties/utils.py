@@ -533,7 +533,7 @@ class EmailManager(EmailConnectionMixin):
                 self.mark_message_replied(reply_information[0], reply_information[1])
 
                 original_message = self.get_email_message(reply_information[0], reply_information[1])
-                email_message.extra_headers['In-Reply-To'] = original_message['message-id']
+                email_message.extra_headers['In-Reply-To'] = original_message['message-id'].replace(',', ' ').replace('\n', '').replace('\r', '')
 
                 if original_message.get('references'):
                     email_message.extra_headers['References'] = (original_message['references'].strip() + ' ' + original_message['message-id']).replace(',', ' ').replace('\n', '').replace('\r', '')
