@@ -97,7 +97,7 @@
             );
         });
 
-                {% if write_permission %}            
+        {% if write_permission %}
             $("#{{ datatable_name }} tbody").on("dblclick", "tr", function () {
                 var row_object = this;
                 var row_id = $(this).attr("id");
@@ -142,7 +142,7 @@
     
                     editable_columns.each(function () {
                         column_name = $(this).parent().attr("column");
-                        value = $(row_object).val();
+                        value = $(this).val();
                         initial_data[column_name] = value;
                     });
     
