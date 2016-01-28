@@ -97,15 +97,11 @@
             );
         });
 
-                {% if write_permission %}            
+        {% if write_permission %}
             $("#{{ datatable_name }} tbody").on("dblclick", "tr", function () {
                 var row_object = this;
                 var row_id = $(this).attr("id");
                 var csrftoken = Cookies.get('csrftoken');
-                
-                // Unbind previous actions
-                $(this).unbind("blur");
-                $(this).unbind("focus");
                 
                 function csrfSafeMethod(method) {
                     // these HTTP methods do not require CSRF protection
@@ -142,7 +138,7 @@
     
                     editable_columns.each(function () {
                         column_name = $(this).parent().attr("column");
-                        value = $(row_object).val();
+                        value = $(this).val();
                         initial_data[column_name] = value;
                     });
     
@@ -152,14 +148,14 @@
                     // http://stackoverflow.com/a/16886052
                     var delayed_function, blurred_from;
     
-                    $(row_object).on('blur', ':input', function(event) {
+                    $(row_object).one('blur', ':input', function(event) {
                         blurred_from = event.delegateTarget;
                         delayed_function = setTimeout(function() {
                             handle_edit();
                         }, 0);
                     });
     
-                    $(row_object).on('focus', ':input', function(event) {
+                    $(row_object).one('focus', ':input', function(event) {
                         if (blurred_from === event.delegateTarget) {
                             clearTimeout(delayed_function);
                         }
@@ -167,15 +163,19 @@
                     
                     // Keypress actions
                     // http://stackoverflow.com/a/1160109
-                    $(document).keyup(function(e) {
+                    $(row_object).on('keyup', function(e) {
                         if (e.keyCode == 13 || e.keyCode == 27) {
+                            $(row_object).off('blur', ':input');
+                            $(row_object).off('focus', ':input');
                             handle_edit();
                         }
                     });
     
                     // User focused out of the row
                     function handle_edit() {
-                        var changed_data = {}
+                        var changed_data = {};
+
+                        $(row_object).off('keyup');
     
                         // Get data post edit
                         editable_columns.each(function() {

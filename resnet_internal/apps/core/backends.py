@@ -122,6 +122,10 @@ class CASLDAPBackend(CASBackend):
                 user.first_name = user_info["givenName"]
                 user.last_name = user_info["sn"]
                 user.email = user_info["mail"]
+
+                if user.is_technician and user.is_new_tech is None:
+                    user.is_new_tech = True
+
                 user.save()
 
         return user
