@@ -108,25 +108,37 @@ function change_to_editor() {
 }
 
 function submit_cc_csd_form() {
-    console.log('Submitting...');
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
     $.ajax({
         data: { building_id: $('.popover-content > div > form > fieldset > div > div > #id_building').val() },
         type: 'POST',
         url: DjangoReverse.email_get_cc_csd(),
         success: function(response) {
+            console.log(response);
             var cc = $('#cc').val();
             if (cc.length) {
-                cc = cc + ', ' + response.content.csd_email_string;
+                cc = cc + ', ' + response.content.email_string;
             }
             else {
-                cc = response.content.csd_email_string;
+                cc = response.content.email_string;
             }
             $('#cc').val(cc);
         }
     });
     
-    cc_csd_popover.hide();
-    return false;
+    $('#cc_csd_button').data('bs.popover').hide();
 }
 
 function reply() {

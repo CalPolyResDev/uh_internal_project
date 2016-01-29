@@ -360,8 +360,8 @@ def get_csd_email(request):
 
     try:
         csd_mappings = Building.objects.get(id=request.POST['building_id']).csdmappings
-        csd_emails = ['%s <%s>' % (mapping.name, mapping.email) for mapping in csd_mappings]
-        csd_email_string = csd_emails.join(', ')
+        csd_emails = ['%s <%s>' % (mapping.name, mapping.email) for mapping in csd_mappings.all()]
+        csd_email_string = ', '.join(csd_emails)
     except Building.DoesNotExist:
         success = False
         csd_email_string = ''
