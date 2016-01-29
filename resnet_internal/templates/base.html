@@ -128,6 +128,8 @@
         <script src="{% static 'js/jquery.blockUI.js' %}"></script>
         
         <script type="text/javascript" src="https://cdn.rawgit.com/js-cookie/js-cookie/v2.1.0/src/js.cookie.js"></script>
+        
+        <script src="{% url 'js_reverse' %}" type="text/javascript"></script>
         <script src="{% static 'js/modal-frames.js' %}?version=1.0"></script>
         <script src="{% static 'js/navbar.js' %}?version=1.0"></script>
         
@@ -146,18 +148,9 @@
                     html: true,
                 });
             });
-
-            // Daily Duties URLs
-            {% if request.user.is_authenticated %}
-                var daily_duties_refresh_url = "{% url 'daily_duties_refresh_duties' %}";
-                var daily_duties_update_url = "{% url 'daily_duties_update_duty' %}";
-                var daily_duties_email_redir_url = "{% url 'email_list' %}";
-                var daily_duties_voicemail_redir_url = "{% url 'voicemail_list' %}";
-                var daily_duties_printer_requests_redir_url = "{% url 'printer_request_list' %}";
-            {% endif %}
         </script>
         {% if request.user.is_authenticated %}
-            <script src="{% static 'js/dailyduties.js' %}?version=1.0"></script>
+            <script src="{% static 'js/dailyduties.js' %}?version=1.1"></script>
         {% endif %}
         
         <script type="text/javascript" src="https://taskmaster.its.calpoly.edu/s/218fb7ab581f4ac8ba1588798ae8d47d-T/en_USrqvfjr/64026/42/1.4.27/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=cdd699b5"></script>
