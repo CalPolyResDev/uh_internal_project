@@ -22,11 +22,10 @@ from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from jfu.http import upload_receive, UploadResponse, JFUResponse
 
-from ..core.templatetags.srs_urls import srs_edit_url
 from ..core.models import Building
+from ..core.templatetags.srs_urls import srs_edit_url
 from .models import DailyDuties
 from .utils import GetDutyData, EmailManager
-from resnet_internal.apps.core.models import CSDMapping
 
 
 logger = logging.getLogger(__name__)
