@@ -16,25 +16,27 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.staticfiles.templatetags.staticfiles import static as staticfiles
 from django.core.exceptions import PermissionDenied
+from django.views.decorators.cache import cache_page
 from django.views.defaults import permission_denied, page_not_found
 from django.views.generic import RedirectView
 from django_cas_ng.views import login as auth_login, logout as auth_logout
+from django_js_reverse.views import urls_js
 
 from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.adgroups.views import ResTechListEditView
-from .apps.computers.ajax import PopulateComputers, UpdateComputer, RetrieveComputerForm, remove_domain_name, remove_pinhole
+from .apps.computers.ajax import PopulateComputers, UpdateComputer, remove_pinhole, remove_domain_name, RemoveComputer, RetrieveComputerForm
 from .apps.computers.views import ComputersView, ComputerRecordsView, RDPRequestView, PinholeRequestView, DomainNameRequestView
-from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, PopulateRooms, UpdateRoom, RetrieveRoomForm, update_csd_domain
+from .apps.core.ajax import update_network_status, get_tickets, BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, PopulateRooms, UpdateRoom, RemoveRoom, RetrieveRoomForm, update_csd_domain
 from .apps.core.views import IndexView, handler500, TicketSummaryView, RoomsView, CSDDomainAssignmentEditView
 from .apps.dailyduties.ajax import refresh_duties, update_duty, remove_voicemail, get_email_folders, get_mailbox_summary, email_mark_unread, email_mark_read, email_archive, send_email, attachment_upload, attachment_delete, ticket_from_email, get_csd_email
 from .apps.dailyduties.views import VoicemailListView, VoicemailAttachmentRequestView, EmailMessageView, EmailListView, EmailAttachmentRequestView, EmailComposeView
 from .apps.orientation.ajax import complete_task, complete_orientation
 from .apps.orientation.views import ChecklistView, OnityDoorAccessView, SRSAccessView, PayrollView
-from .apps.portmap.ajax import PopulatePorts, UpdatePort, change_port_status, PortChainedAjaxView, UpdateAccessPoint, PopulateAccessPoints, RetrievePortForm, RetrieveAccessPointForm
+from .apps.portmap.ajax import PopulatePorts, UpdatePort, change_port_status, PortChainedAjaxView, PopulateAccessPoints, UpdateAccessPoint, RemovePort, RemoveAccessPoint, RetrievePortForm, RetrieveAccessPointForm
 from .apps.portmap.views import PortsView, AccessPointsView, PortFrameView, AccessPointFrameView
 from .apps.printerrequests.ajax import change_request_status, update_part_inventory, update_toner_inventory
 from .apps.printerrequests.views import RequestsListView, InventoryView, OnOrderView
-from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, RetrievePrinterForm
+from .apps.printers.ajax import PopulatePrinters, UpdatePrinter, RemovePrinter, RetrievePrinterForm
 from .apps.printers.views import PrintersView
 from .apps.residents.views import SearchView
 from .apps.rosters.views import RosterGenerateView
@@ -96,21 +98,28 @@ urlpatterns = [
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
     url(r'^login/$', auth_login, name='login'),
     url(r'^logout/$', auth_logout, name='logout', kwargs={'next_page': settings.CAS_LOGOUT_URL}),
+
+    url(r'^jsreverse/$', cache_page(3600)(urls_js), name='js_reverse'),
+
     url(r'^ajax/chained_building/$', BuildingChainedAjaxView.as_view(), name='core_chained_building'),
     url(r'^ajax/chained_room/$', RoomChainedAjaxView.as_view(), name='core_chained_room'),
     url(r'^ajax/chained_sub_department/$', SubDepartmentChainedAjaxView.as_view(), name='core_chained_sub_department'),
+
     url(r'^core/network_status/update/$', update_network_status, name='core_update_network_status'),
+
     url(r'^core/tickets/list/$', login_required(technician_access(get_tickets)), name='core_get_tickets'),
     url(r'^core/tickets/list/(?P<ticket_id>\b[0-9]*\b)/$', login_required(technician_access(TicketSummaryView.as_view())), name='core_ticket_summary'),
 
     url(r'^rooms/$', login_required(technician_access(RoomsView.as_view())), name='rooms'),
     url(r'^rooms/populate/$', login_required(technician_access(PopulateRooms.as_view())), name='populate_rooms'),
     url(r'^rooms/update/$', login_required(technician_access(UpdateRoom.as_view())), name='update_room'),
-    url(r'^rooms/remove/$', login_required(technician_access(UpdateRoom.remove_item_as_view())), name='remove_room'),
+
+    url(r'^rooms/remove/$', login_required(technician_access(RemoveRoom.as_view())), name='remove_room'),
     url(r'^rooms/form/$', login_required(technician_access(RetrieveRoomForm.as_view())), name='form_room'),
 
     url(r'^csd/assign_domain/$', login_required(ral_manager_access(CSDDomainAssignmentEditView.as_view())), name='csd_assign_domain'),
     url(r'^csd/assign_domain/update/$', login_required(ral_manager_access(update_csd_domain)), name='update_csd_domain'),
+
 ]
 
 # Daily Duties
@@ -161,7 +170,7 @@ urlpatterns += [
     url(r'^computers/populate/$', login_required(computers_access(PopulateComputers.as_view())), name='populate_computers'),
     url(r'^computers/update/$', login_required(computers_modify_access(UpdateComputer.as_view())), name='update_computer'),
     url(r'^computers/form/$', login_required(computers_modify_access(RetrieveComputerForm.as_view())), name='form_computer'),
-    url(r'^computers/remove/$', login_required(computers_modify_access(UpdateComputer.remove_item_as_view())), name='remove_computer'),
+    url(r'^computers/remove/$', login_required(computers_modify_access(RemoveComputer.as_view())), name='remove_computer'),
     url(r'^computers/remove_pinhole/$', login_required(computer_record_modify_access(remove_pinhole)), name='remove_computer_pinhole'),
     url(r'^computers/remove_domain_name/$', login_required(computer_record_modify_access(remove_domain_name)), name='remove_computer_domain_name'),
     url(r'^computers/(?P<ip_address>\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b)/$', login_required(computers_access(ComputerRecordsView.as_view())), name='view_computer_record'),
@@ -186,7 +195,7 @@ urlpatterns += [
     url(r'^printers/populate/$', login_required(printers_access(PopulatePrinters.as_view())), name='populate_printers'),
     url(r'^printers/update/$', login_required(printers_modify_access(UpdatePrinter.as_view())), name='update_printer'),
     url(r'^printers/form/$', login_required(printers_access(RetrievePrinterForm.as_view())), name='form_printer'),
-    url(r'^printers/remove/$', login_required(printers_modify_access(UpdatePrinter.remove_item_as_view())), name='remove_printer'),
+    url(r'^printers/remove/$', login_required(printers_modify_access(RemovePrinter.as_view())), name='remove_printer'),
 ]
 
 # Network
@@ -196,7 +205,7 @@ urlpatterns += [
     url(r'^ports/update/$', login_required(ports_modify_access(UpdatePort.as_view())), name='update_port'),
     url(r'^ports/form/$', login_required(ports_access(RetrievePortForm.as_view())), name='form_port'),
     url(r'^ports/change_status/$', login_required(ports_modify_access(change_port_status)), name='change_port_status'),
-    url(r'^ports/remove/$', login_required(ports_modify_access(UpdatePort.remove_item_as_view())), name='remove_port'),
+    url(r'^ports/remove/$', login_required(ports_modify_access(RemovePort.as_view())), name='remove_port'),
 
     url(r'^ports/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(ports_access(PortFrameView.as_view())), name='port_info_frame'),
     url(r'^ports/ajax/chained_port/$', PortChainedAjaxView.as_view(), name='ports_chained_port'),
@@ -205,7 +214,7 @@ urlpatterns += [
     url(r'^access-points/populate/$', login_required(ports_access(PopulateAccessPoints.as_view())), name='populate_access_points'),
     url(r'^access-points/update/$', login_required(ports_modify_access(UpdateAccessPoint.as_view())), name='update_access_point'),
     url(r'^access-points/form/$', login_required(ports_access(RetrieveAccessPointForm.as_view())), name='form_access_point'),
-    url(r'^access-points/remove/$', login_required(ports_modify_access(UpdateAccessPoint.remove_item_as_view())), name='remove_access_point'),
+    url(r'^access-points/remove/$', login_required(ports_modify_access(RemoveAccessPoint.as_view())), name='remove_access_point'),
     url(r'^access-points/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(ports_access(AccessPointFrameView.as_view())), name='access_point_info_frame'),
 ]
 

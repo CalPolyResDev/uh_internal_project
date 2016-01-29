@@ -164,7 +164,7 @@ function forward() {
 function archive(destination_folder) {
     $.blockUI({message: '<h1>Archiving...</h1>'});
 
-    ajaxPost(email_archive_url, 
+    ajaxPost(DjangoReverse.email_archive(), 
         {'message0': message_path, 
             'destination_folder': destination_folder}, 
         function(response_context) {
@@ -182,7 +182,7 @@ function create_ticket() {
     newTicketWindow.document.body.innerHTML = '<h1>Creating Ticket...</h1>';
     
     var requestor_username = $('#ticket_requestor_username').val();
-    ajaxPost(create_ticket_url,
+    ajaxPost(DjangoReverse.email_create_ticket(),
         {'message_path': message_path, 'requestor_username': requestor_username},
         function(response) {
             if (response['redirect_url']) {
@@ -229,7 +229,7 @@ function send_email(archive_folder) {
     post_dict['is_html'] = is_html;
     post_dict['in_reply_to'] = in_reply_to;
 
-    ajaxPost(send_email_url, post_dict, 
+    ajaxPost(DjangoReverse.send_email(), post_dict, 
         function(response_context) {
             $.unblockUI();
             

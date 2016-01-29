@@ -22,7 +22,9 @@ django-static-precompiler~=1.1
 django-crispy-forms~=1.6.0
 html2text==2016.1.8
 django-dbbackup~=2.3.2
+django-js-reverse~=0.6.0
 
+git+https://github.com/CalPolyResDev/django-ewiz.git
 git+ssh://git@code.its.calpoly.edu:7999/rmsc/rmsconnector.git
 git+ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git
 

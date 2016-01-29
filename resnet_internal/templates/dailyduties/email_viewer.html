@@ -136,10 +136,6 @@
         var message_to = '{{ message.to|escapejs }}';
         var message_path = '{{ message.path|escapejs }}';
         var attach_button_content = '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' %}</span>';
-        
-        var email_archive_url = "{% url 'email_archive' %}";
-        var send_email_url = "{% url 'send_email' %}";
-        var create_ticket_url = "{% url 'email_create_ticket' %}";
     </script>
     <script src="{% static 'js/email_message.js' %}?version=1.0"></script>
 {% endblock %}
