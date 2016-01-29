@@ -16,9 +16,11 @@ from django.contrib import admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.staticfiles.templatetags.staticfiles import static as staticfiles
 from django.core.exceptions import PermissionDenied
+from django.views.decorators.cache import cache_page
 from django.views.defaults import permission_denied, page_not_found
 from django.views.generic import RedirectView
 from django_cas_ng.views import login as auth_login, logout as auth_logout
+from django_js_reverse.views import urls_js
 
 from .apps.adgroups.ajax import remove_resnet_tech
 from .apps.adgroups.views import ResTechListEditView
@@ -96,10 +98,15 @@ urlpatterns = [
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
     url(r'^login/$', auth_login, name='login'),
     url(r'^logout/$', auth_logout, name='logout', kwargs={'next_page': settings.CAS_LOGOUT_URL}),
+
+    url(r'^jsreverse/$', cache_page(3600)(urls_js), name='js_reverse'),
+
     url(r'^ajax/chained_building/$', BuildingChainedAjaxView.as_view(), name='core_chained_building'),
     url(r'^ajax/chained_room/$', RoomChainedAjaxView.as_view(), name='core_chained_room'),
     url(r'^ajax/chained_sub_department/$', SubDepartmentChainedAjaxView.as_view(), name='core_chained_sub_department'),
+
     url(r'^core/network_status/update/$', update_network_status, name='core_update_network_status'),
+
     url(r'^core/tickets/list/$', login_required(technician_access(get_tickets)), name='core_get_tickets'),
     url(r'^core/tickets/list/(?P<ticket_id>\b[0-9]*\b)/$', login_required(technician_access(TicketSummaryView.as_view())), name='core_ticket_summary'),
 

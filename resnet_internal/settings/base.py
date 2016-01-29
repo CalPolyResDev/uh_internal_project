@@ -283,6 +283,9 @@ STATICFILES_FINDERS = (
 # The directory that will hold database backups on the application server.
 DBBACKUP_BACKUP_DIRECTORY = str(PROJECT_DIR.joinpath("backups").resolve())
 
+# Django-JS-Reverse Variable Name
+JS_REVERSE_JS_VAR_NAME = 'DjangoReverse'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -338,6 +341,7 @@ INSTALLED_APPS = (
     'dbbackup',
     'clever_selects',
     'crispy_forms',
+    'django_js_reverse',
     'resnet_internal.apps.core',
     'resnet_internal.apps.core.templatetags.__init__.default_app_config',
     'resnet_internal.apps.dailyduties',
