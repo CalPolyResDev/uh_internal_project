@@ -34,7 +34,7 @@ def update_network_status(request):
     network_reachability.sort(key=itemgetter('status', 'display_name'))
 
     raw_response = """
-        <table class="table table-hover table-striped table-condensed">
+        <table class="table table-hover table-condensed">
             <thead>
                 <tr>
                     <th>Name</th>
