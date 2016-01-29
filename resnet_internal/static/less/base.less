@@ -9,7 +9,7 @@
 @polydarkgrey: rgb(238,238,231);
 
 @lightgreyborder: rgb(198, 198, 198);
-@hovergrey: rgb(243, 243, 241);
+@hovergrey: darken(rgb(243, 243, 241), 5%);
 
 /* Resposive table hack. See http://getbootstrap.com/css/#tables-responsive */
 @-moz-document url-prefix() {
@@ -146,6 +146,10 @@ nav {
 .link-group {
     padding-left: 0;
     padding-right: 0;
+    
+    a {
+        text-decoration: none;
+    }
 
     img {
         margin-top: -2px;
