@@ -366,6 +366,10 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 
 /* bootstrap overrides */
 
+.btn {
+    border-radius: 0;
+}
+
 .btn-primary {
     background-color: @polydarkgreen;
     border-color: darken(@polydarkgreen, 10%);
@@ -374,6 +378,10 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
     background-color: darken(@polydarkgreen, 5%) !important;
     border-color: darken(darken(@polydarkgreen, 5%), 10%) !important;
+}
+
+.btn-group .btn {
+    border-radius: 5px;
 }
 
 .btn-group > .btn:first-child {
