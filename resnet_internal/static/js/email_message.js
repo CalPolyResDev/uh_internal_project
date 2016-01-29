@@ -55,10 +55,49 @@ function change_to_editor() {
     $('#send_and_archive_button').attr('data-container', 'body');
     $('#send_and_archive_button').attr('data-toggle', 'popover');
     $('#send_and_archive_button').attr('data-placement', 'bottom');
-    $('#send_and_archive_button').attr('data-content', reply_and_archive_popover_content);
+    $('#send_and_archive_button').attr('data-content', $('#send_and_archive_popover_content').html());
     $('#send_and_archive_button').popover({
         html: true
-    })
+    });
+    
+    $('#id_community').attr('onchange', '$(this).loadAllChainedChoices();');
+
+    add_button('CC a CSD', '', 'cc_csd_button');
+    $('#cc_csd_button').attr('title', 'Select Building:');
+    $('#cc_csd_button').attr('data-container', 'body');
+    $('#cc_csd_button').attr('data-toggle', 'popover');
+    $('#cc_csd_button').attr('data-placement', 'bottom');
+    $('#cc_csd_button').attr('data-content', $('#cc_csd_popover_content').html());
+    var cc_csd_popover = $('#cc_csd_button').popover({
+        html: true
+    });
+    
+    $('#cc_csd_button').on('shown.bs.popover', function() {
+        $('#cc_csd_button').data('bs.popover').tip().find('.popover-content > div > form').attr('onsubmit', 'return submit_cc_csd_form();');
+    });
+    
+    // Not so clever selects...
+    var ccCSDMutationObserver = new MutationObserver(function(mutations, observer) {
+        var selected_community = $('.popover-content > div > form > fieldset > div > div > #id_community').val();
+        $('#cc_csd_popover_content > div > form > fieldset > div > div > #id_community').attr('chained_ids', 'id_building');
+        
+        // Replacing popover content dynamically: https://github.com/twbs/bootstrap/issues/6014
+        var popover = $('#cc_csd_button').data('bs.popover');
+        popover.tip().find('.popover-content').html($('#cc_csd_popover_content').html());
+        
+        // Reselect correct community without triggering AJAX call.
+        var community_field = popover.tip().find('.popover-content > div > form > fieldset > div > div > #id_community');
+        var community_field_onchange = community_field.attr('onchange');
+        community_field.attr('onchange', '');
+        community_field.val(selected_community);
+        community_field.attr('onchange', community_field_onchange);
+    });
+    
+    ccCSDMutationObserver.observe(document.getElementById('cc_csd_popover_content'), {
+        subtree: true,
+        childList: true
+    });
+    
     
     $('#email_buttons').append('<button class="btn btn-default" type="button" id="attach_button">Attach</button>');
     $('#attach_button').popover({
@@ -66,6 +105,39 @@ function change_to_editor() {
         container: 'body',
         content: attach_button_content
     });
+}
+
+function submit_cc_csd_form() {
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    $.ajax({
+        data: { building_id: $('.popover-content > div > form > fieldset > div > div > #id_building').val() },
+        type: 'POST',
+        url: DjangoReverse.email_get_cc_csd(),
+        success: function(response) {
+            var cc = $('#cc').val();
+            if (cc.length) {
+                cc = cc + ', ' + response.content.email_string;
+            }
+            else {
+                cc = response.content.email_string;
+            }
+            $('#cc').val(cc);
+        }
+    });
+    
+    $('#cc_csd_button').data('bs.popover').hide();
 }
 
 function reply() {
