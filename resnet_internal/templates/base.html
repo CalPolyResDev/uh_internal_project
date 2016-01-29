@@ -27,12 +27,6 @@
         <link rel="stylesheet prefetch" href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}">
 
         <link rel="stylesheet prefetch" href="{% compile 'less/base.less' %}?version=1.1">
-        
-        {% block orientation_redirect %}
-            {% if request.user.is_authenticated and request.user.is_new_tech %}
-                <meta http-equiv="refresh" content="0; URL='{% url 'orientation_checklist' %}'" />
-            {% endif %}
-        {% endblock %}
 
         {% block extra_head %}{% endblock %}
 
@@ -73,7 +67,7 @@
             </div>
             <div class="row" id="content">
                 {% block nav %}
-                {% if request.user.is_authenticated and not request.user.is_new_tech %}
+                {% if request.user.is_authenticated and request.user.orientation_complete or request.user.is_authenticated and not request.user.is_technician %}
                 <div id="nav-wrapper">
                     <nav>
                         <div class="text-center nav-heading" id="drawer-trigger">
@@ -148,8 +142,9 @@
                     html: true,
                 });
             });
-        </script>
-        {% if request.user.is_authenticated %}
+
+        // The below Django Template If statement looks terrible but and has higher precedence and parens are not allowed.
+        {% if request.user.is_authenticated and request.user.orientation_complete or request.user.is_authenticated and not request.user.is_technician %}
             <script src="{% static 'js/dailyduties.js' %}?version=1.1"></script>
         {% endif %}
         
