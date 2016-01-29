@@ -143,7 +143,7 @@
                 });
             });
         </script>
-        // The below Django Template If statement looks terrible but and has higher precedence and parens are not allowed.
+        <!-- The below Django Template If statement looks terrible but and has higher precedence and parens are not allowed.-->
         {% if request.user.is_authenticated and request.user.is_technician and request.user.orientation_complete %}
             <script src="{% static 'js/dailyduties.js' %}?version=1.1"></script>
         {% endif %}
