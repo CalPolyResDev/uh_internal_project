@@ -126,7 +126,6 @@ function submit_cc_csd_form() {
         type: 'POST',
         url: DjangoReverse.email_get_cc_csd(),
         success: function(response) {
-            console.log(response);
             var cc = $('#cc').val();
             if (cc.length) {
                 cc = cc + ', ' + response.content.email_string;
