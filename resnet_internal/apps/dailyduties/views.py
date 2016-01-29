@@ -37,7 +37,7 @@ class EmailMessageView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
     form_class = BuildingSelectForm
 
     def get_context_data(self, **kwargs):
-        context = super(EmailMessageView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
 
         message_uid = kwargs['uid']
         mailbox_name = kwargs['mailbox_name']
@@ -113,12 +113,12 @@ class EmailMessageView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
         return context
 
 
-class EmailComposeView(EmailMessageView, ChainedSelectFormViewMixin, FormMixin):
+class EmailComposeView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
     template_name = "dailyduties/email_compose.html"
     form_class = BuildingSelectForm
 
     def get_context_data(self, **kwargs):
-        context = super(EmailComposeView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context['email_template'] = get_plaintext_signature(self.request.user.get_full_name())
         return context
 

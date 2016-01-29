@@ -1,6 +1,9 @@
 {% extends "base_frame.html" %}
+
 {% load staticfiles %}
 {% load jfu_escaped %}
+{% load crispy_forms_tags %}
+
 {% block subtitle %} | Email{% endblock %}
 
 {% block extra_head %}
@@ -106,11 +109,14 @@
             </table>
         </div>
     </div>
+    {% block cc_csd_content %}
     <div style="display: none;" id="cc_csd_popover_content">
         <div>
-            {{ form.as_p }}
+            {% crispy form %}
+            <button class="btn btn-primary" onclick="submit_cc_csd_form();">Add</button>
         </div>
     </div>
+    {% endblock %}
     {% else %}
     <div class="col-xs-12">
         <h1>Could not retrieve email. It may have been deleted.</h1>
@@ -135,5 +141,5 @@
         var send_email_url = "{% url 'send_email' %}";
         var create_ticket_url = "{% url 'email_create_ticket' %}";
     </script>
-    <script src="{% static 'js/email_message.js' %}"></script>
+    <script src="{% static 'js/email_message.js' %}?version=1.0"></script>
 {% endblock %}
