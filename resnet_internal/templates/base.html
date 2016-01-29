@@ -67,7 +67,7 @@
             </div>
             <div class="row" id="content">
                 {% block nav %}
-                {% if request.user.is_authenticated and request.user.orientation_complete %}
+                {% if request.user.is_authenticated and request.user.orientation_complete or request.user.is_authenticated and not request.user.is_technician %}
                 <div id="nav-wrapper">
                     <nav>
                         <div class="text-center nav-heading" id="drawer-trigger">
@@ -143,7 +143,8 @@
                 });
             });
 
-        {% if request.user.is_authenticated and request.user.orientation_complete %}
+        // The below Django Template If statement looks terrible but and has higher precedence and parens are not allowed.
+        {% if request.user.is_authenticated and request.user.orientation_complete or request.user.is_authenticated and not request.user.is_technician %}
             <script src="{% static 'js/dailyduties.js' %}?version=1.1"></script>
         {% endif %}
         
