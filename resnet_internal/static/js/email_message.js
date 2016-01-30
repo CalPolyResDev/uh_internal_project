@@ -60,6 +60,7 @@ function change_to_editor() {
         html: true
     });
     
+    $('#id_community').attr('onchange', '$(this).loadAllChainedChoices();');
 
     add_button('CC a CSD', '', 'cc_csd_button');
     $('#cc_csd_button').attr('title', 'Select Building:');
@@ -70,16 +71,16 @@ function change_to_editor() {
     var cc_csd_popover = $('#cc_csd_button').popover({
         html: true
     });
-    
+
     // Not so clever selects...
+
     // Clever Selects has several issues within a popover:
-    //      1. It doesn't register the event handler. The workaround is to manually add on onchange attribute to the field.
+    //      1. It doesn't register the event handler. The workaround is to manually add on onchange attribute to the field
+    //         which is handled before the button is added above.
     //      2. Even then, the child field is updated in the source DOM, not in the popover. Therefore, the below code
     //         adds an observer for these changes then copies them to the popover.
     //      3. Something causes the chained_ids attribute of the parent field to be appended to everytime the parent
     //         value changes. Therefore, there is code to reset this attribute back to a singular 'id_building'. 
-
-    $('#id_community').attr('onchange', '$(this).loadAllChainedChoices();');
 
     var ccCSDMutationObserver = new MutationObserver(function(mutations, observer) {
         var selected_community = $('.popover-content > div > form > fieldset > div > div > #id_community').val();
