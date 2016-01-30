@@ -113,6 +113,11 @@
     <div style="display: none;" id="cc_csd_popover_content">
         <div>
             {% crispy form %}
+            <!-- Adding to the issues surrounding the clever selects, it seems impossible to
+                use a standard submit button to the form. jQuery was used to try and add submit
+                event listeners and onsubmit attributes neither of which resulted in the submit
+                function being called. Therefore the button is added below with the onclick
+                handler specified. -->
             <button class="btn btn-primary" onclick="submit_cc_csd_form();">Add</button>
         </div>
     </div>
