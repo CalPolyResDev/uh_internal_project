@@ -71,10 +71,6 @@ function change_to_editor() {
         html: true
     });
     
-    $('#cc_csd_button').on('shown.bs.popover', function() {
-        $('#cc_csd_button').data('bs.popover').tip().find('.popover-content > div > form').attr('onsubmit', 'return submit_cc_csd_form();');
-    });
-    
     // Not so clever selects...
     // Clever Selects has several issues within a popover:
     //      1. It doesn't register the event handler. The workaround is to manually add on onchange attribute to the field.
