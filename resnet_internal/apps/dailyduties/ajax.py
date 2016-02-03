@@ -131,7 +131,7 @@ def get_email_folders(request):
 
     html_response = "<ul><li class='jstree-open' id='root'>ResNet Email<ul>"
     current_parents = []
-    hide_list = ('Journal', 'Notes', 'Tasks', 'Voicemails', 'Archives/Voicemails',
+    hide_list = ('Journal', 'Notes', 'Tasks', 'Voicemails',
                  'Archive', 'Clutter', 'Drafts', 'Outbox')
 
     for flags, delimiter, folder_name in folder_response:
