@@ -194,12 +194,25 @@ function create_ticket() {
     // Popup blocking workaround: opening new windows must be a direct
     // consequence of user action. Therefore, open the window before the ajax
     // request completes then navigate to the edit ticket url.
+    var requestorUsername = $('#ticket_requestor_username').val();
+
+    if (!requestorUsername.length) {
+        $('#ticket_creation_form_group').addClass('has-error');
+        if (!$('#ticket_creation_form_group > .help-block').length) {
+            $('#ticket_creation_form_group').append('<label class="text-danger help-block">Please enter a username!</label>');
+        }
+        return;
+    }
+    else {
+        $('#ticket_creation_form_group').removeClass('has-error');
+        $('#ticket_creation_form_group > .help-block').remove();
+    }
+
     var newTicketWindow = window.open('', 'newTicketWindow');
     newTicketWindow.document.body.innerHTML = '<h1>Creating Ticket...</h1>';
-    
-    var requestor_username = $('#ticket_requestor_username').val();
+
     ajaxPost(DjangoReverse.email_create_ticket(),
-        {'message_path': message_path, 'requestor_username': requestor_username},
+        {'message_path': message_path, 'requestor_username': requestorUsername},
         function(response) {
             if (response['redirect_url']) {
                 newTicketWindow.location.href = response['redirect_url'];
