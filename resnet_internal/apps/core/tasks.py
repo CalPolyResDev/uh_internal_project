@@ -65,11 +65,12 @@ def update_slack_network_status(num):
                 slack_attachments.append(attachment)
                 cache.set(MAJOR_OUTAGE_CACHE_KEY, True, PREVIOUS_DOWN_DEVICE_TIMEOUT)
 
-        payload = {'text': 'Network Devices are Down!' if len(slack_attachments) > 1 else 'A Network Device is Down!',
-                           'icon_url': urljoin(settings.DEFAULT_BASE_URL, static('images/icons/aruba.png')),
-                           'channel': settings.SLACK_NETWORK_STATUS_CHANNEL,
-                           'attachments': slack_attachments}
+        if slack_attachments:
+            payload = {'text': 'Network Devices are Down!' if len(slack_attachments) > 1 else 'A Network Device is Down!',
+                               'icon_url': urljoin(settings.DEFAULT_BASE_URL, static('images/icons/aruba.png')),
+                               'channel': settings.SLACK_NETWORK_STATUS_CHANNEL,
+                               'attachments': slack_attachments}
 
-        url = settings.SLACK_WEBHOOK_URL
-        headers = {'content-type': 'application/json'}
-        requests.post(url, data=json.dumps(payload), headers=headers)
+            url = settings.SLACK_WEBHOOK_URL
+            headers = {'content-type': 'application/json'}
+            requests.post(url, data=json.dumps(payload), headers=headers)
