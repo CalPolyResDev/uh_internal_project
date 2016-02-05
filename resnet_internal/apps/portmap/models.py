@@ -77,7 +77,7 @@ class AccessPoint(Model):
         return self.building.community
 
 
-class NetworkDevice(Model):
+class NetworkInfrastructureDevice(Model):
     """Network Infrastructure Device."""
 
     display_name = CharField(max_length=100, verbose_name='Display Name')
