@@ -232,7 +232,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "port__room__building__name"}
     column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "custom_lookup": True, "lookup_field": "port__room__name"}
     column_definitions["port"] = {"width": "80px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "jack"}
-    column_definitions["name"] = {"width": "80px", "type": "string", "title": "Name"}
+    column_definitions["display_name"] = {"width": "80px", "type": "string", "title": "Name"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
     column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
     column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}

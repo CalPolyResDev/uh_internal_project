@@ -19,6 +19,16 @@ from ..computers.fields import MACAddressField
 from ..core.models import Room
 
 
+class NetworkDevice(Model):
+    """Network Device"""
+
+    display_name = CharField(max_length=100, verbose_name='Display Name')
+    dns_name = CharField(max_length=75, verbose_name='DNS Name', null=True)
+    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address', null=True)
+    mac_address = MACAddressField(verbose_name='MAC Address', null=True)
+    upstream_device = ForeignKey('NetworkDevice', related_name='downstream_%(class)s', null=True)
+
+
 class Port(Model):
 
     room = ForeignKey(Room, verbose_name='Room', null=True)
@@ -54,14 +64,12 @@ AP_TYPES = ['5 Ghz', '2.4 Ghz', 'Air Monitor']
 AP_TYPE_CHOICES = [(AP_TYPES.index(ap_type), ap_type) for ap_type in AP_TYPES]
 
 
-class AccessPoint(Model):
+class AccessPoint(NetworkDevice):
+    """Access Point"""
 
-    name = CharField(max_length=30, verbose_name='DNS Name')
     property_id = CharField(max_length=7, unique=True, verbose_name='Property ID')
     serial_number = CharField(max_length=9, unique=True, verbose_name='Serial Number')
-    mac_address = MACAddressField(unique=True, verbose_name='MAC Address')
     port = OneToOneField(Port, related_name='access_point')
-    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address')
     ap_type = PositiveSmallIntegerField(choices=AP_TYPE_CHOICES, verbose_name='Type')
 
     @cached_property
@@ -75,15 +83,6 @@ class AccessPoint(Model):
     @cached_property
     def community(self):
         return self.building.community
-
-
-class NetworkDevice(Model):
-    """Network Device"""
-    display_name = CharField(max_length=100, verbose_name='Display Name')
-    dns_name = CharField(max_length=75, verbose_name='DNS Name', null=True)
-    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address', null=True)
-    mac_address = MACAddressField(verbose_name='MAC Address', null=True)
-    upstream_device = ForeignKey('NetworkDevice', related_name='downstream_%(class)s', null=True)
 
 
 class NetworkInfrastructureDevice(NetworkDevice):

@@ -17,6 +17,8 @@ from django.forms.models import ModelForm
 
 from ..core.models import Community, Building, Room
 from .models import Port, AccessPoint
+from django.forms.fields import CharField
+from django.forms.widgets import HiddenInput
 
 
 class PortCreateForm(ChainedChoicesModelForm):
@@ -92,7 +94,7 @@ class AccessPointCreateForm(ChainedChoicesModelForm):
                 Field('building', autocomplete='off'),
                 Field('room', autocomplete='off'),
                 Field('port', autocomplete='off'),
-                Field('name', placeholder=self.fields['name'].label),
+                Field('dns_name', placeholder=self.fields['dns_name'].label),
                 Field('property_id', placeholder=self.fields['property_id'].label),
                 Field('serial_number', placeholder=self.fields['serial_number'].label),
                 Field('mac_address', placeholder=self.fields['mac_address'].label),
@@ -108,13 +110,27 @@ class AccessPointCreateForm(ChainedChoicesModelForm):
         for field_name in self.fields:
             self.fields[field_name].error_messages = {'required': 'A ' + field_name + ' is required.'}
 
+    def save(self, commit=True):
+        access_point = super().save(commit=False)
+        access_point.display_name = access_point.dns_name
+        if commit:
+            access_point.save()
+        return access_point
+
     class Meta:
         model = AccessPoint
-        fields = ['community', 'building', 'room', 'port', 'name', 'property_id', 'serial_number', 'mac_address', 'ip_address', 'ap_type']
+        fields = ['community', 'building', 'room', 'port', 'dns_name', 'property_id', 'serial_number', 'mac_address', 'ip_address', 'ap_type']
 
 
 class AccessPointUpdateForm(ModelForm):
 
+    def save(self, commit=True):
+        access_point = super().save(commit=False)
+        access_point.display_name = access_point.dns_name
+        if commit:
+            access_point.save()
+        return access_point
+
     class Meta:
         model = AccessPoint
-        fields = ['name', 'property_id', 'serial_number', 'mac_address', 'ip_address', 'ap_type']
+        fields = ['dns_name', 'property_id', 'serial_number', 'mac_address', 'ip_address', 'ap_type']
