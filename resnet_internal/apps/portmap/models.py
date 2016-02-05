@@ -77,9 +77,15 @@ class AccessPoint(Model):
         return self.building.community
 
 
-class NetworkInfrastructureDevice(Model):
-    """Network Infrastructure Device."""
-
+class NetworkDevice(Model):
+    """Network Device"""
     display_name = CharField(max_length=100, verbose_name='Display Name')
-    dns_name = CharField(max_length=75, verbose_name='DNS Name')
-    ip_address = GenericIPAddressField(verbose_name='IP Address', protocol='IPv4')
+    dns_name = CharField(max_length=75, verbose_name='DNS Name', null=True)
+    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address', null=True)
+    mac_address = MACAddressField(verbose_name='MAC Address', null=True)
+    upstream_device = ForeignKey('NetworkDevice', related_name='downstream_%(class)s', null=True)
+
+
+class NetworkInfrastructureDevice(NetworkDevice):
+    """Network Infrastructure Device."""
+    pass
