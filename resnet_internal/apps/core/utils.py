@@ -16,7 +16,7 @@ from django.core.cache import cache
 from srsconnector.models import ServiceRequest
 
 from ...settings.base import technician_access_test
-from .models import NetworkDevice
+from ..portmap.models import NetworkDevice
 
 
 logger = logging.getLogger(__name__)

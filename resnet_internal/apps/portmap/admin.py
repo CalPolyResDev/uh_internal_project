@@ -2,7 +2,7 @@ from clever_selects.admin import ChainedSelectAdminMixin
 from django.contrib import admin
 
 from .forms import AccessPointCreateForm, PortCreateForm
-from .models import Port, AccessPoint
+from .models import Port, AccessPoint, NetworkDevice
 
 
 class PortAdmin(ChainedSelectAdminMixin, admin.ModelAdmin):
@@ -16,4 +16,11 @@ class AccessPointAdmin(ChainedSelectAdminMixin, admin.ModelAdmin):
     list_display = ['name', 'mac_address', 'ip_address', 'port', 'ap_type']
     form = AccessPointCreateForm
 
+
 admin.site.register(AccessPoint, AccessPointAdmin)
+
+
+class NetworkDeviceAdmin(admin.ModelAdmin):
+    list_display = ['display_name', 'dns_name', 'ip_address']
+
+admin.site.register(NetworkDevice, NetworkDeviceAdmin)
