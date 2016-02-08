@@ -30,6 +30,9 @@ class NetworkDevice(Model):
     upstream_device = ForeignKey('NetworkDevice', related_name='downstream_devices', null=True)
     room = ForeignKey(Room, verbose_name='Room', null=True)
 
+    def __str__(self):
+        return self.display_name
+
 
 class Port(NetworkDevice):
 
