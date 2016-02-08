@@ -231,9 +231,9 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     column_definitions = OrderedDict()
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "upstream_device__room__building__community__name"}
     column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "upstream_device__room__building__name"}
-    column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "custom_lookup": True, "lookup_field": "upstream_device__room__name"}
+    column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "related": True, "lookup_field": "name"}
     column_definitions["upstream_device"] = {"width": "80px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "id"}
-    column_definitions["display_name"] = {"width": "80px", "type": "string", "title": "Name"}
+    column_definitions["dns_name"] = {"width": "80px", "type": "string", "title": "Name"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
     column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
     column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}

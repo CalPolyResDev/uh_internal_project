@@ -82,10 +82,6 @@ class AccessPoint(NetworkDevice):
     ap_type = PositiveSmallIntegerField(choices=AP_TYPE_CHOICES, verbose_name='Type')
 
     @cached_property
-    def room(self):
-        return self.upstream_device.room
-
-    @cached_property
     def building(self):
         return self.room.building
 

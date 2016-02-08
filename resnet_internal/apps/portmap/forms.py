@@ -100,7 +100,7 @@ class AccessPointCreateForm(ChainedChoicesModelForm):
                 Field('ap_type', placeholder=self.fields['ap_type'].label),
             ),
             FormActions(
-                Submit('submit', 'Add Port'),
+                Submit('submit', 'Add Access Point'),
             )
         )
 
