@@ -10,8 +10,6 @@ def update_fk(apps, schema_editor):
     Port = apps.get_model('portmap', 'Port')
     NetworkDevice = apps.get_model('portmap', 'NetworkDevice')
 
-    input('Packet capture now.')
-
     for access_point in AccessPoint.objects.all():
         port = Port.objects.get(old_id=access_point.old_port)
         network_device = NetworkDevice.objects.get(id=access_point.networkdevice_ptr.id)
