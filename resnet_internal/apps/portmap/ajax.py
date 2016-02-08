@@ -53,8 +53,8 @@ class PopulatePorts(RNINDatatablesPopulateView):
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
     column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
     column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "related": True, "lookup_field": "name"}
-    column_definitions["switch_ip"] = {"width": "150px", "type": "ip-address", "title": "Switch IP", "custom_lookup": True, "lookup_field": "upstream_device__ip_address"}
     column_definitions["switch_name"] = {"width": "100px", "type": "string", "title": "Switch Name", "custom_lookup": True, "lookup_field": "upstream_device__display_name"}
+    column_definitions["switch_ip"] = {"width": "150px", "type": "ip-address", "title": "Switch IP", "custom_lookup": True, "lookup_field": "upstream_device__ip_address"}
     column_definitions["display_name"] = {"width": "50px", "type": "string", "editable": False, "title": "Jack"}
     column_definitions["blade_number"] = {"width": "50px", "type": "numeric", "title": "Blade"}
     column_definitions["port_number"] = {"width": "50px", "type": "numeric", "title": "Port"}
