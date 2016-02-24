@@ -6,24 +6,22 @@
 
 """
 
-from django.db.models.base import Model
-from django.db.models.fields import BooleanField, CharField, GenericIPAddressField, DateField
+from django.db.models.fields import BooleanField, CharField, DateField
 from django.db.models.fields.related import ForeignKey
 
-from ..computers.fields import MACAddressField
 from ..core.models import Department, SubDepartment
+from ..portmap.models import NetworkDevice
 
 
-class Printer(Model):
+class Printer(NetworkDevice):
 
     department = ForeignKey(Department, verbose_name='Department')
     sub_department = ForeignKey(SubDepartment, verbose_name='Sub Department')
-    printer_name = CharField(max_length=60, verbose_name='Printer Name', unique=True)
-    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address', blank=True, null=True, unique=True)
-    mac_address = MACAddressField(verbose_name='MAC Address', unique=True)
+
     model = CharField(max_length=25, verbose_name='Model')
     serial_number = CharField(max_length=20, verbose_name='Serial Number', blank=True, null=True, unique=True, default=None)
     property_id = CharField(max_length=50, verbose_name='Cal Poly Property ID', blank=True, null=True, unique=True, default=None)
+
     location = CharField(max_length=100, verbose_name='Location', blank=True, null=True)
     date_purchased = DateField(verbose_name='Date Purchased')
     description = CharField(max_length=100, verbose_name='Description')
