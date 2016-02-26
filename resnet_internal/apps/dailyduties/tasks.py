@@ -36,6 +36,9 @@ def update_slack_voicemail(num):
     with EmailManager() as email_manager:
         current_voicemails = email_manager.get_all_voicemail_messages()
 
+    for voicemail in current_voicemails:
+        del voicemail['unread']
+
     if previous_voicemail_messages is not None:
         new_voicemails = [voicemail for voicemail in current_voicemails if voicemail not in previous_voicemail_messages]
 
