@@ -147,6 +147,9 @@ class PermissionClass(Model):
     name = CharField(max_length=50, verbose_name='Class Name', unique=True)
     groups = ManyToManyField(ADGroup, related_name='permissionclasses', verbose_name='AD Groups')
 
+    class Meta:
+        verbose_name_plural = 'permission classes'
+
 
 class StaffMapping(Model):
     """A mapping of various department staff to their respective positions."""

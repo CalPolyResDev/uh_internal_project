@@ -4,7 +4,7 @@ from django.contrib import admin
 from .forms import RoomCreateForm
 from .models import (Community, Building, Room, Department, SubDepartment, SiteAnnouncements,
                      StaffMapping, CSDMapping, TechFlair, ResNetInternalUser as InternalUser,
-                     NetworkDevice, ADGroup, NavbarLink)
+                     NetworkDevice, ADGroup, NavbarLink, PermissionClass)
 
 
 class SiteAnnouncementsAdmin(admin.ModelAdmin):
@@ -42,6 +42,10 @@ class RoomAdmin(ChainedSelectAdminMixin, admin.ModelAdmin):
     form = RoomCreateForm
 
 
+class PermissionClassAdmin(admin.ModelAdmin):
+    list_display = ['name']
+
+
 class ADGroupAdmin(admin.ModelAdmin):
     list_display = ['display_name', 'distinguished_name']
 
@@ -60,5 +64,6 @@ admin.site.register(CSDMapping, CSDMappingAdmin)
 admin.site.register(TechFlair, TechFlairAdmin)
 admin.site.register(InternalUser, InternalUserAdmin)
 admin.site.register(NetworkDevice, NetworkDeviceAdmin)
+admin.site.register(PermissionClass, PermissionClassAdmin)
 admin.site.register(ADGroup, ADGroupAdmin)
 admin.site.register(NavbarLink, NavBarLinkAdmin)
