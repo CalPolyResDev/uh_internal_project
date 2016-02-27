@@ -30,11 +30,11 @@ def specializations(request):
             user_specializations.append(group.display_name)
 
         try:
-            tech = TechFlair.objects.get(tech=request.user)
+            tech_flair = TechFlair.objects.get(tech=request.user)
         except TechFlair.DoesNotExist:
             pass
         else:
-            user_specializations.append(tech.flair)
+            user_specializations.append(tech_flair.flair)
 
         if "akavanau" in request.user.username:
             user_specializations.append('ResNet Development Team BDFL')
