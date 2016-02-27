@@ -26,45 +26,22 @@ def specializations(request):
     if request.user.is_authenticated() and not request.is_ajax():
         display_name = request.user.get_full_name()
 
-#         # Other Department specializations
-#         if request.user.is_net_admin:
-#             user_specializations.append('ITS Network Administrator')
-#
-#         if request.user.is_telecom:
-#             user_specializations.append('IS Telecom Administrator')
-#
-#         if request.user.is_tag_readonly:
-#             user_specializations.append('UH TAG Member (read-only)')
-#
-#         # ResNet Titles
-#         if request.user.is_technician:
-#             user_specializations.append('ResNet Technician')
-#
+        for group in request.user.ad_groups.all():
+            user_specializations.append(group.display_name)
+
         try:
             tech = TechFlair.objects.get(tech=request.user)
         except TechFlair.DoesNotExist:
             pass
         else:
             user_specializations.append(tech.flair)
-#
-#         if request.user.is_rn_staff:
-#             user_specializations.append('ResNet Staff')
-#         if request.user.is_developer:
-#             if "akavanau" in request.user.username:
-#                 user_specializations.append('ResNet Development Team BDFL')
-#             else:
-#                 user_specializations.append('ResNet Developer')
-#
-#         if request.user.is_tag:
-#             user_specializations.append('UH TAG Member')
-#
-#         # User is new technician (requires orientation)
-#         if request.user.is_new_tech:
-#             user_specializations = ['New ResNet Technician']
-#
-#         # Empty user specializations
-#         if not user_specializations:
-#             user_specializations = ['No Specializations Available']
+
+        if "akavanau" in request.user.username:
+            user_specializations.append('ResNet Development Team BDFL')
+
+        # User is new technician (requires orientation)
+        if request.user.orientation_access and not request.user.orientation_complete:
+            user_specializations = ['New ResNet Technician']
 
     # Set context
     extra_context['user_display_name'] = display_name
