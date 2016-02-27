@@ -22,7 +22,8 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from ldap_groups.exceptions import InvalidGroupDN
 from ldap_groups.groups import ADGroup as LDAPADGroup
-from resnet_internal.settings.base import ORIENTATION_ACCESS,\
+
+from ...settings.base import ORIENTATION_ACCESS,\
     DAILY_DUTIES_ACCESS, TICKET_ACCESS, NETWORK_MODIFY_ACCESS,\
     COMPUTERS_MODIFY_ACCESS, COMPUTERS_RECORD_MODIFY_ACCESS,\
     PRINTERS_MODIFY_ACCESS
