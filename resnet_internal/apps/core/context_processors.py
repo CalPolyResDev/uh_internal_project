@@ -8,6 +8,7 @@
 
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.cache import cache
+from django.db.models import Q
 
 from resnet_internal.apps.core.models import NavbarLink
 
@@ -25,45 +26,45 @@ def specializations(request):
     if request.user.is_authenticated() and not request.is_ajax():
         display_name = request.user.get_full_name()
 
-        # Other Department specializations
-        if request.user.is_net_admin:
-            user_specializations.append('ITS Network Administrator')
-
-        if request.user.is_telecom:
-            user_specializations.append('IS Telecom Administrator')
-
-        if request.user.is_tag_readonly:
-            user_specializations.append('UH TAG Member (read-only)')
-
-        # ResNet Titles
-        if request.user.is_technician:
-            user_specializations.append('ResNet Technician')
-
+#         # Other Department specializations
+#         if request.user.is_net_admin:
+#             user_specializations.append('ITS Network Administrator')
+#
+#         if request.user.is_telecom:
+#             user_specializations.append('IS Telecom Administrator')
+#
+#         if request.user.is_tag_readonly:
+#             user_specializations.append('UH TAG Member (read-only)')
+#
+#         # ResNet Titles
+#         if request.user.is_technician:
+#             user_specializations.append('ResNet Technician')
+#
         try:
             tech = TechFlair.objects.get(tech=request.user)
         except TechFlair.DoesNotExist:
             pass
         else:
             user_specializations.append(tech.flair)
-
-        if request.user.is_rn_staff:
-            user_specializations.append('ResNet Staff')
-        if request.user.is_developer:
-            if "akavanau" in request.user.username:
-                user_specializations.append('ResNet Development Team BDFL')
-            else:
-                user_specializations.append('ResNet Developer')
-
-        if request.user.is_tag:
-            user_specializations.append('UH TAG Member')
-
-        # User is new technician (requires orientation)
-        if request.user.is_new_tech:
-            user_specializations = ['New ResNet Technician']
-
-        # Empty user specializations
-        if not user_specializations:
-            user_specializations = ['No Specializations Available']
+#
+#         if request.user.is_rn_staff:
+#             user_specializations.append('ResNet Staff')
+#         if request.user.is_developer:
+#             if "akavanau" in request.user.username:
+#                 user_specializations.append('ResNet Development Team BDFL')
+#             else:
+#                 user_specializations.append('ResNet Developer')
+#
+#         if request.user.is_tag:
+#             user_specializations.append('UH TAG Member')
+#
+#         # User is new technician (requires orientation)
+#         if request.user.is_new_tech:
+#             user_specializations = ['New ResNet Technician']
+#
+#         # Empty user specializations
+#         if not user_specializations:
+#             user_specializations = ['No Specializations Available']
 
     # Set context
     extra_context['user_display_name'] = display_name
@@ -79,7 +80,7 @@ def navbar(request):
         navbar = cache.get(cache_key)
 
         if not navbar:
-            links_for_user = NavbarLink.objects.filter(groups__id__in=request.user.ad_groups.values_list('id', flat=True)).distinct()
+            links_for_user = NavbarLink.objects.filter(Q(permission_classes__groups__users__id=request.user.id) | Q(show_to_all=True)).distinct()
             navbar = ''
 
             def a_inner_html(link):

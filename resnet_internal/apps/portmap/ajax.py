@@ -24,7 +24,7 @@ from django_ajax.decorators import ajax
 from paramiko import SSHClient, AutoAddPolicy
 from rmsconnector.utils import Resident
 
-from ...settings.base import ports_modify_access_test
+from ...settings.base import NETWORK_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm
 from .models import Port, AccessPoint
@@ -75,7 +75,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
         return super().get_options()
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = ports_modify_access_test(user)
+        self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
 
     def get_row_class(self, row):
         if not row.active:
@@ -247,7 +247,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
         return super().get_options()
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = ports_modify_access_test(user)
+        self.write_permissions = user.network_modify_access
 
     def get_display_block(self, row, column):
         if column == 'port':

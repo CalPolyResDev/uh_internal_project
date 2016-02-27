@@ -18,7 +18,7 @@
     <div class="col-xs-12 col-md-6 col-lg-5">
         <h2>Ticket Summary</h2>
         <div id="tickets-response" class="table-responsive table-wrapper-cutoff">
-        {% if request.user.is_authenticated and request.user|technician_access %}
+        {% if request.user.is_authenticated and request.user.ticket_access %}
             <p>Loading...</p>
         {% elif request.user.is_authenticated %}
             <p>The Ticket Summary is only currently available to ResNet Technicians.</p>
@@ -33,7 +33,7 @@
 <script type="text/javascript">
     $(document).ready(function() {
         ajaxGet("{% url 'core_update_network_status' %}");
-        {% if request.user.is_authenticated and request.user|technician_access %}
+        {% if request.user.is_authenticated and request.user.ticket_access %}
             ajaxGet("{% url 'core_get_tickets' %}");
         {% endif %}
     });

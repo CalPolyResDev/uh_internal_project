@@ -28,11 +28,8 @@ class NetworkDeviceAdmin(admin.ModelAdmin):
 
 
 class InternalUserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'first_name', 'last_name', 'is_active',
-                    'is_net_admin', 'is_telecom', 'is_tag', 'is_rn_staff', 'is_technician',
-                    'is_new_tech', 'orientation_complete', 'is_developer']
-    list_filter = ['is_active', 'is_net_admin', 'is_telecom', 'is_tag', 'is_rn_staff',
-                   'is_technician', 'is_new_tech', 'is_developer']
+    list_display = ['username', 'first_name', 'last_name', 'is_active']
+    list_filter = ['is_active']
 
 
 class BuildingAdmin(admin.ModelAdmin):

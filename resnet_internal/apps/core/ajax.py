@@ -18,7 +18,7 @@ from django.template import Template, RequestContext
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
-from ...settings.base import technician_access_test
+from ...settings.base import ROOMS_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
 from .forms import RoomCreateForm, RoomUpdateForm
 from .models import Building, Room, SubDepartment, CSDMapping
@@ -235,7 +235,7 @@ class PopulateRooms(RNINDatatablesPopulateView):
         return super().get_options()
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = technician_access_test(user)
+        self.write_permissions = user.has_access(ROOMS_MODIFY_ACCESS)
 
 
 class RetrieveRoomForm(RNINDatatablesFormView):

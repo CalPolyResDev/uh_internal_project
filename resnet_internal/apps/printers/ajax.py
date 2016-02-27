@@ -14,7 +14,7 @@ from dateutil.relativedelta import relativedelta
 from django.core.urlresolvers import reverse_lazy
 from django.db.models.query_utils import Q
 
-from ...settings.base import printers_modify_access_test
+from ...settings.base import PRINTERS_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
 from .forms import PrinterForm
 from .models import Printer
@@ -67,7 +67,7 @@ class PopulatePrinters(RNINDatatablesPopulateView):
         return super(PopulatePrinters, self).get_options()
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = printers_modify_access_test(user)
+        self.write_permissions = user.has_access(PRINTERS_MODIFY_ACCESS)
 
     def get_row_class(self, row):
         if row.date_purchased:

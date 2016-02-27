@@ -22,6 +22,10 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from ldap_groups.exceptions import InvalidGroupDN
 from ldap_groups.groups import ADGroup as LDAPADGroup
+from resnet_internal.settings.base import ORIENTATION_ACCESS,\
+    DAILY_DUTIES_ACCESS, TICKET_ACCESS, NETWORK_MODIFY_ACCESS,\
+    COMPUTERS_MODIFY_ACCESS, COMPUTERS_RECORD_MODIFY_ACCESS,\
+    PRINTERS_MODIFY_ACCESS
 
 
 logger = logging.getLogger(__name__)
@@ -138,6 +142,11 @@ class ADGroup(Model):
         verbose_name = 'AD Group'
 
 
+class PermissionClass(Model):
+    name = CharField(max_length=50, verbose_name='Class Name', unique=True)
+    groups = ManyToManyField(ADGroup, related_name='permissionclasses', verbose_name='AD Groups')
+
+
 class StaffMapping(Model):
     """A mapping of various department staff to their respective positions."""
 
@@ -191,7 +200,7 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     first_name = CharField(max_length=30, blank=True, verbose_name='First Name')
     last_name = CharField(max_length=30, blank=True, verbose_name='Last Name')
     email = EmailField(blank=True, verbose_name='Email Address')
-    ad_groups = ManyToManyField(ADGroup, verbose_name='AD Groups')
+    ad_groups = ManyToManyField(ADGroup, verbose_name='AD Groups', related_name='users')
 
     is_active = BooleanField(default=True)
     is_staff = BooleanField(default=False)
@@ -200,32 +209,12 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     objects = InternalUserManager()
 
     #
-    # A set of flags for each user that decides what the user can and cannot see.
-    # Flags are determined by which tools a user needs to fill his/her job description.
-    #
-    is_new_tech = NullBooleanField(null=True)  # determines whether or not to show the orentation site
-    is_net_admin = BooleanField(default=False)  # limited access only to apps that network admins are allowed to use
-    is_telecom = BooleanField(default=False)  # limited access only to apps that telecom admins are allowed to use
-    is_tag = BooleanField(default=False)  # limited access only to apps that uh-tag mambers are allowed to use
-    is_tag_readonly = BooleanField(default=False)  # limited access only to apps that uh-tag mambers are allowed to use (read-only permissions)
-    is_technician = BooleanField(default=False)  # access to technician tools
-    is_rn_staff = BooleanField(default=False)  # access to all tools as well as staff tools
-    is_developer = BooleanField(default=False)  # full access to University Housing Internal
-
-    # RLIN Legacy flags
-    is_csd = BooleanField(default=False)
-    is_ral = BooleanField(default=False)
-    is_ral_manager = BooleanField(default=False)
-    is_ra = BooleanField(default=False)
-    is_fd_staff = BooleanField(default=False)
-
-    #
     # A set of flags that keeps a record of each user's orientation progress.
     #
     onity_complete = BooleanField(default=False)  # Onity Door access
     srs_complete = BooleanField(default=False)  # SRS Manager access
     payroll_complete = BooleanField(default=False)  # Payroll access
-    orientation_complete = BooleanField(default=False)  # Promotes user to Technicain status
+    orientation_complete = BooleanField(default=False)  # Promotes user to Technician status
 
     class Meta:
         verbose_name = 'University Housing Internal User'
@@ -251,6 +240,37 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
 
         send_mail(subject, message, from_email, [self.email])
 
+    def has_access(self, class_name):
+        return self.ad_groups.all().filter(permissionclasses__name=class_name).exists()
+
+    @cached_property
+    def orientation_access(self):
+        return self.has_access(ORIENTATION_ACCESS)
+
+    @cached_property
+    def daily_duties_access(self):
+        return self.has_access(DAILY_DUTIES_ACCESS)
+
+    @cached_property
+    def ticket_access(self):
+        return self.has_access(TICKET_ACCESS)
+
+    @cached_property
+    def network_modify_access(self):
+        return self.has_access(NETWORK_MODIFY_ACCESS)
+
+    @cached_property
+    def computers_modify_access(self):
+        return self.has_access(COMPUTERS_MODIFY_ACCESS)
+
+    @cached_property
+    def computers_record_modify_access(self):
+        return self.has_access(COMPUTERS_RECORD_MODIFY_ACCESS)
+
+    @cached_property
+    def printers_modify_access(self):
+        return self.has_access(PRINTERS_MODIFY_ACCESS)
+
 
 class TechFlair(Model):
     """A mapping of users to custom flair."""
@@ -265,7 +285,8 @@ class TechFlair(Model):
 
 class NavbarLink(Model):
     display_name = CharField(max_length=50, verbose_name='Display Name')
-    groups = ManyToManyField(ADGroup, verbose_name='AD Groups')
+    permission_classes = ManyToManyField(PermissionClass, verbose_name='Permission Classes')
+    show_to_all = BooleanField(verbose_name='Show To All Users', default=False)
     icon = CharField(max_length=100, verbose_name='Icon Static File Location', blank=True, null=True)
     sequence_index = SmallIntegerField(verbose_name='Sequence Index')
     parent_group = ForeignKey('NavbarLink', related_name='links', blank=True, null=True, verbose_name='Parent Link Group')
