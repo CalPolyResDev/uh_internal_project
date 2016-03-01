@@ -15,7 +15,6 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
 from django.db.models import Q
-from django.utils.decorators import classonlymethod
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from srsconnector.models import PinholeRequest, DomainNameRequest
@@ -52,7 +51,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
     column_definitions = OrderedDict()
     column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
     column_definitions["sub_department"] = {"width": "200px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
-    column_definitions["computer_name"] = {"width": "200px", "type": "string", "title": "Computer Name"}
+    column_definitions["display_name"] = {"width": "200px", "type": "string", "title": "Computer Name"}
     column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
     column_definitions["RDP"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "RDP"}

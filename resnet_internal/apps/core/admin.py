@@ -4,7 +4,7 @@ from django.contrib import admin
 from .forms import RoomCreateForm
 from .models import (Community, Building, Room, Department, SubDepartment, SiteAnnouncements,
                      StaffMapping, CSDMapping, TechFlair, ResNetInternalUser as InternalUser,
-                     NetworkDevice, ADGroup, NavbarLink)
+                     ADGroup, NavbarLink)
 
 
 class SiteAnnouncementsAdmin(admin.ModelAdmin):
@@ -21,10 +21,6 @@ class CSDMappingAdmin(admin.ModelAdmin):
 
 class TechFlairAdmin(admin.ModelAdmin):
     list_display = ['tech', 'flair']
-
-
-class NetworkDeviceAdmin(admin.ModelAdmin):
-    list_display = ['display_name', 'dns_name', 'ip_address']
 
 
 class InternalUserAdmin(admin.ModelAdmin):
@@ -62,6 +58,5 @@ admin.site.register(StaffMapping, StaffMappingAdmin)
 admin.site.register(CSDMapping, CSDMappingAdmin)
 admin.site.register(TechFlair, TechFlairAdmin)
 admin.site.register(InternalUser, InternalUserAdmin)
-admin.site.register(NetworkDevice, NetworkDeviceAdmin)
 admin.site.register(ADGroup, ADGroupAdmin)
 admin.site.register(NavbarLink, NavBarLinkAdmin)
