@@ -72,19 +72,8 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
     extra_options = {}
 
-    base_column_template = """
-        <div class='wrapper' column='{column}'>
-            {display_block}
-        </div>
-    """
-
-    display_block_template = """
-            <div class='value-display' title='{value}'>
-                {value}
-                {link_block}
-                {inline_images}
-            </div>
-    """
+    base_column_template = """<div class='wrapper' column='{column}'>{display_block}</div>"""
+    display_block_template = """<div class='value-display' title='{value}'>{value}{link_block}{inline_images}</div>"""
 
     href_link_block_template = """<a href='{link_url}' target='_blank' class='{link_class_name}'>{link_display}</a>"""
     onclick_link_block_template = """<a onclick='{onclick_action}' class='{link_class_name}'>{link_display}</a>"""
