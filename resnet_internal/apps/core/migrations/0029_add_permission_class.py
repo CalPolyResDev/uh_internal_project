@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0031_auto_20160226_1715'),
+        ('core', '0028_move_networkdevice_to_portmap_1'),
     ]
 
     operations = [

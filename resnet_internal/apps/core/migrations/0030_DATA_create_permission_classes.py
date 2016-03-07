@@ -313,7 +313,7 @@ def change_navbar_links_to_permission_classes(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0028_add_permission_class'),
+        ('core', '0029_add_permission_class'),
     ]
 
     operations = [
