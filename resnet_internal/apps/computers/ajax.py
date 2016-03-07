@@ -51,7 +51,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
     column_definitions = OrderedDict()
     column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
     column_definitions["sub_department"] = {"width": "200px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
-    column_definitions["computer_name"] = {"width": "200px", "type": "string", "title": "Computer Name"}
+    column_definitions["display_name"] = {"width": "200px", "type": "string", "title": "Computer Name"}
     column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
     column_definitions["RDP"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "RDP"}

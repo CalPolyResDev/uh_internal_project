@@ -43,6 +43,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     max_display_length = 2000
     item_name = 'item'
     remove_url_name = None
+    extra_related = None
 
     column_definitions = OrderedDict()
     options = {
@@ -263,8 +264,12 @@ class RNINDatatablesPopulateView(BaseDatatableView):
                 column = self.column_definitions[column_name]
                 select_fields.append(column['lookup_field'][0:column['lookup_field'].rfind('__')])
 
+            if self.extra_related:
+                for related_name in self.extra_related:
+                    select_fields.append(related_name)
+
             if select_fields:
-                qs = qs.select_related(*select_fields)
+                qs = qs.prefetch_related(*select_fields)
 
         for item in qs:
             row = {}

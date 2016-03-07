@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0027_DATA_add_csd_domain_assign_to_navbar'),
+        ('core', '0031_auto_20160226_1715'),
     ]
 
     operations = [

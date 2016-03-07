@@ -7,15 +7,15 @@
 """
 
 from copy import deepcopy
-import logging
 from operator import itemgetter
-import os
 from sys import platform
+import logging
+import os
 
 from django.core.cache import cache
 from srsconnector.models import ServiceRequest
 
-from .models import NetworkDevice
+from ..portmap.models import NetworkInfrastructureDevice
 
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ class NetworkReachabilityTester(object):
     def get_network_device_reachability(timeout):
         reachability_responses = []
 
-        network_devices = NetworkDevice.objects.all()
+        network_devices = NetworkInfrastructureDevice.objects.all()
 
         for network_device in network_devices:
             reachability_responses.append({'display_name': network_device.display_name,

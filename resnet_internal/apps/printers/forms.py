@@ -23,6 +23,9 @@ class PrinterForm(ChainedChoicesModelForm):
     def __init__(self, *args, **kwargs):
         super(PrinterForm, self).__init__(*args, **kwargs)
 
+        self.fields["date_purchased"].widget.attrs['class'] = "dateinput"
+        self.fields['display_name'].label = 'Printer Name'
+
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.html5_required = True
@@ -36,7 +39,7 @@ class PrinterForm(ChainedChoicesModelForm):
                 'Add a new printer',
                 Field('department', autocomplete='off'),
                 Field('sub_department', autocomplete='off'),
-                Field('printer_name', placeholder=self.fields['printer_name'].label),
+                Field('display_name', placeholder=self.fields['display_name'].label),
                 Field('mac_address', placeholder=self.fields['mac_address'].label),
                 Field('ip_address', css_class="ip_address_field", placeholder=self.fields['ip_address'].label, title="Leave blank for DHCP."),
                 Field('model', placeholder=self.fields['model'].label),
@@ -51,12 +54,10 @@ class PrinterForm(ChainedChoicesModelForm):
             )
         )
 
-        self.fields["date_purchased"].widget.attrs['class'] = "dateinput"
-
         # Make error messages a bit more readable
         for field_name in self.fields:
             self.fields[field_name].error_messages = {'required': 'A ' + field_name + ' is required.'}
 
     class Meta:
         model = Printer
-        fields = ['department', 'sub_department', 'printer_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'location', 'date_purchased', 'description']
+        fields = ['department', 'sub_department', 'display_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'location', 'date_purchased', 'description']

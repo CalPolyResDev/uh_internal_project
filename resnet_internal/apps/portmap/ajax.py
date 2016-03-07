@@ -41,6 +41,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
     data_source = reverse_lazy('populate_ports')
     update_source = reverse_lazy('update_port')
     form_source = reverse_lazy('form_port')
+    extra_related = ['downstream_devices']
 
     form_class = PortCreateForm
     model = Port
@@ -52,12 +53,12 @@ class PopulatePorts(RNINDatatablesPopulateView):
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
     column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
     column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "related": True, "lookup_field": "name"}
-    column_definitions["switch_ip"] = {"width": "150px", "type": "ip-address", "title": "Switch IP"}
-    column_definitions["switch_name"] = {"width": "100px", "type": "string", "title": "Switch Name"}
-    column_definitions["jack"] = {"width": "50px", "type": "string", "editable": False, "title": "Jack"}
-    column_definitions["blade"] = {"width": "50px", "type": "numeric", "title": "Blade"}
-    column_definitions["port"] = {"width": "50px", "type": "numeric", "title": "Port"}
-    column_definitions["access_point"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP", "related": True, "lookup_field": "id"}
+    column_definitions["switch_name"] = {"width": "100px", "type": "string", "title": "Switch Name", "custom_lookup": True, "lookup_field": "upstream_device__display_name"}
+    column_definitions["switch_ip"] = {"width": "150px", "type": "ip-address", "title": "Switch IP", "custom_lookup": True, "lookup_field": "upstream_device__ip_address"}
+    column_definitions["display_name"] = {"width": "50px", "type": "string", "editable": False, "title": "Jack"}
+    column_definitions["blade_number"] = {"width": "50px", "type": "numeric", "title": "Blade"}
+    column_definitions["port_number"] = {"width": "50px", "type": "numeric", "title": "Port"}
+    column_definitions["downstream_devices"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP", "related": True, "lookup_field": "id"}
     column_definitions["active"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
@@ -82,10 +83,10 @@ class PopulatePorts(RNINDatatablesPopulateView):
             return "disabled"
 
     def render_column(self, row, column):
-        if column == 'access_point':
+        if column == 'downstream_devices':
             try:
-                access_point = row.access_point
-            except ObjectDoesNotExist:
+                access_point = row.downstream_devices.all()[0]
+            except (ObjectDoesNotExist, IndexError):
                 link_block = ""
             else:
                 ap_url = reverse('access_point_info_frame', kwargs={'pk': access_point.id})
@@ -169,16 +170,16 @@ def change_port_status(request):
     # Set up paramiko ssh client
     ssh_client = SSHClient()
     ssh_client.set_missing_host_key_policy(AutoAddPolicy())
-    ssh_client.connect(str(port_instance.switch_ip), username=settings.RESNET_SWITCH_SSH_USER, password=settings.RESNET_SWITCH_SSH_PASSWORD, allow_agent=False, look_for_keys=False)
+    ssh_client.connect(str(port_instance.upstream_device.ip_address), username=settings.RESNET_SWITCH_SSH_USER, password=settings.RESNET_SWITCH_SSH_PASSWORD, allow_agent=False, look_for_keys=False)
     ssh_shell = ssh_client.invoke_shell()
 
     if ssh_shell.get_transport().is_active():
         ssh_shell.send('conf t\n')
         time.sleep(.5)
-        ssh_shell.send('interface Gi' + str(port_instance.blade) + '/' + str(port_instance.port) + '\n')
+        ssh_shell.send('interface Gi' + str(port_instance.blade_number) + '/' + str(port_instance.port_number) + '\n')
         time.sleep(.5)
     else:
-        raise IOError('Lost connection to switch {switch}.'.format(switch=port_instance.switch_ip))
+        raise IOError('Lost connection to switch {switch}.'.format(switch=port_instance.upstream_device.ip_address))
 
     if ssh_shell.get_transport().is_active():
         if port_instance.active:
@@ -203,7 +204,7 @@ def change_port_status(request):
             port_instance.active = not port_instance.active
             port_instance.save()
     else:
-        raise IOError('Lost connection to switch {switch}.'.format(switch=port_instance.switch_ip))
+        raise IOError('Lost connection to switch {switch}.'.format(switch=port_instance.upstream_device.ip_address))
 
     # Close ssh connection(s)
     ssh_shell.close()
@@ -228,11 +229,11 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     remove_url_name = 'remove_access_point'
 
     column_definitions = OrderedDict()
-    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "port__room__building__community__name"}
-    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "port__room__building__name"}
-    column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "custom_lookup": True, "lookup_field": "port__room__name"}
-    column_definitions["port"] = {"width": "80px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "jack"}
-    column_definitions["name"] = {"width": "80px", "type": "string", "title": "Name"}
+    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "upstream_device__room__building__community__name"}
+    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "upstream_device__room__building__name"}
+    column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "related": True, "lookup_field": "name"}
+    column_definitions["upstream_device"] = {"width": "80px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "id"}
+    column_definitions["dns_name"] = {"width": "80px", "type": "string", "title": "Name"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
     column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
     column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
@@ -250,8 +251,8 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
         self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
 
     def get_display_block(self, row, column):
-        if column == 'port':
-            port = row.port
+        if column == 'upstream_device':
+            port = row.upstream_device.port
             port_url = reverse('port_info_frame', kwargs={'pk': port.id})
             port_icon = self.icon_template.format(icon_url=static('images/icons/icon_ethernet.png'))
             port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_class_name="", link_display=port_icon)
