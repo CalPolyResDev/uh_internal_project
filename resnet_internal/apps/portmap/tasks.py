@@ -28,12 +28,18 @@ def update_slack_network_status(num):
     device_statuses = NetworkReachabilityTester.get_network_device_reachability(REACHABILITY_TESTER_PING_TIMEOUT)
     down_devices = [device for device in device_statuses if not device['status']]
 
+    def down_device_cache_key(device):
+        return 'down_device::' + device['dns_name']
+
+    def up_device_cache_key(device):
+        return 'up_device::' + device['dns_name']
+
     if down_devices:
         slack_attachments = []
 
         if len(down_devices) < len(device_statuses) * MAJOR_OUTAGE_THRESHOLD:  # Less than threshold
             for device in down_devices:
-                device_cache_key = 'down_device::' + device['ip_address']
+                device_cache_key = down_device_cache_key(device)
 
                 if cache.get(device_cache_key) is None:
                     attachment = {
@@ -44,13 +50,30 @@ def update_slack_network_status(num):
                         'fields': [
                             {'title': 'IP Address', 'value': device['ip_address']},
                             {'title': 'DNS Name', 'value': device['dns_name']},
-                        ]
+                        ],
                     }
                     slack_attachments.append(attachment)
 
                 cache.set(device_cache_key, device, PREVIOUS_DOWN_DEVICE_TIMEOUT)
-        else:  # Major issues
 
+            for device in device_statuses:
+                if device['status'] and cache.get(down_device_cache_key(device)) and cache.get(up_device_cache_key(device)) is None:
+
+                    attachment = {
+                        'fallback': 'Network Device Back Up: ' + device['display_name'],
+                        'color': 'good',
+                        'title': device['display_name'],
+                        'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('home')),
+                        'fields': [
+                            {'title': 'IP Address', 'value': device['ip_address']},
+                            {'title': 'DNS Name', 'value': device['dns_name']},
+                        ],
+                    }
+                    slack_attachments.append(attachment)
+
+                    cache.set(up_device_cache_key(device), device, PREVIOUS_DOWN_DEVICE_TIMEOUT)
+
+        else:  # Major issues
             if cache.get(MAJOR_OUTAGE_CACHE_KEY) is None:
                 attachment = {
                     'fallback': '%d Network Devices Down!' % len(down_devices),
