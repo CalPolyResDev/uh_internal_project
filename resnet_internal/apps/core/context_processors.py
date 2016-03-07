@@ -10,10 +10,8 @@ from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.cache import cache
 from django.db.models import Q
 
-from resnet_internal.apps.core.models import NavbarLink
-
-from .models import TechFlair
 from ...settings.base import ORIENTATION_ACCESS
+from .models import TechFlair, NavbarLink
 
 
 def specializations(request):

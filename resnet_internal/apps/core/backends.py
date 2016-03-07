@@ -17,6 +17,7 @@ from ldap3 import Server, Connection, ObjectDef, AttrDef, Reader
 from ldap_groups.exceptions import InvalidGroupDN
 from ldap_groups.groups import ADGroup as LDAPADGroup
 
+from ...settings.base import ORIENTATION_ACCESS
 from .models import ADGroup
 
 
@@ -97,7 +98,7 @@ class CASLDAPBackend(CASBackend):
                 user.last_name = user_info["sn"]
                 user.email = user_info["mail"]
 
-                if user.has_access('orientation_access') and user.is_new_tech is None:
+                if user.has_access(ORIENTATION_ACCESS) and user.is_new_tech is None:
                     user.is_new_tech = True
 
                 user.save()

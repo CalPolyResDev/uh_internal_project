@@ -26,7 +26,7 @@
         {% if request.user.is_authenticated and ticket_access %}
             <p>Loading...</p>
         {% elif request.user.is_authenticated %}
-            <p>The Ticket Summary is only currently available to ResNet Technicians. {{ ticket_access }}</p>
+            <p>The Ticket Summary is only currently available to ResNet Technicians.</p>
         {% else %}
             <p>Please log in to view tickets.</p>
         {% endif %}

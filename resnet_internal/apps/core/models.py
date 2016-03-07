@@ -15,18 +15,13 @@ from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db.models.base import Model
-from django.db.models.fields import (CharField, TextField, DateTimeField, EmailField, NullBooleanField, BooleanField, GenericIPAddressField,
+from django.db.models.fields import (CharField, TextField, DateTimeField, EmailField, BooleanField,
     URLField, SmallIntegerField, PositiveSmallIntegerField)
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.utils import timezone
 from django.utils.functional import cached_property
 from ldap_groups.exceptions import InvalidGroupDN
 from ldap_groups.groups import ADGroup as LDAPADGroup
-
-from ...settings.base import ORIENTATION_ACCESS,\
-    DAILY_DUTIES_ACCESS, TICKET_ACCESS, NETWORK_MODIFY_ACCESS,\
-    COMPUTERS_MODIFY_ACCESS, COMPUTERS_RECORD_MODIFY_ACCESS,\
-    PRINTERS_MODIFY_ACCESS
 
 
 logger = logging.getLogger(__name__)
