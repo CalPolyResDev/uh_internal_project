@@ -31,16 +31,9 @@ def datatables_script(context):
         if not issubclass(datatables_class, RNINDatatablesPopulateView):
             raise ImproperlyConfigured("The populate_class instance variable is either not set or is not a subclass of RNINDatatablesPopulateView.")
 
-        datatables_class_instance = datatables_class()
-        datatables_class_instance._initialize_write_permissions(context["user"])
+        datatables_class_instance = datatables_class(request=context['request'])
 
-        context['datatable_name'] = datatables_class_instance.get_table_name()
-        context['datatable_options'] = datatables_class_instance.get_options_serialized()
-        context['datatable_update_url'] = datatables_class_instance.get_update_source()
-        context['datatable_form_url'] = datatables_class_instance.get_form_source()
-        context['write_permission'] = datatables_class_instance.get_write_permissions()
-        context['remove_url'] = datatables_class_instance.get_remove_url()
-        context['item_name'] = datatables_class_instance.get_item_name()
+        context.update(datatables_class_instance.get_context_data())
     else:
         raise ImproperlyConfigured("The datatables template tag requires the datatables class passed into context to not be None. (context['datatables_class'])")
 

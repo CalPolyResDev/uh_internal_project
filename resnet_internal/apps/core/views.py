@@ -78,7 +78,7 @@ class CSDDomainAssignmentEditView(TemplateView):
 
 
 class RoomsView(ChainedSelectFormViewMixin, DatatablesView):
-    template_name = "core/rooms.djhtml"
+    template_name = "datatables/datatables_base.djhtml"
     form_class = RoomCreateForm
     populate_class = PopulateRooms
     model = Room
