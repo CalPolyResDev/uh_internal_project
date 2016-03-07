@@ -1,6 +1,11 @@
 {% extends "datatables/datatables_base.djhtml" %}
-{% load core_user_tests %}
 {% load crispy_forms_tags %}
+{% load core_filters %}
+
+{% block global_scope %}
+    {% user_has_permission "network_modify" as network_modify_access %}
+    {{ block.super }}
+{% endblock %}
 
 {% block page_title %}Ports{% endblock %}
 {% block datatable_title %}Ports{% endblock %}
@@ -8,7 +13,7 @@
 {% block object_name %}port{% endblock %}
 
 {% block datatable_form %}
-    {% if request.user|ports_modify_access %}
+    {% if network_modify_access %}
     <div class="col-xs-12">
         {% crispy form %}
     </div>
@@ -19,7 +24,7 @@
 
 {% block extra_script %}
     {{ block.super }}
-    {% if request.user|ports_modify_access %}
+    {% if network_modify_access %}
     <script type="text/javascript">
         function confirm_status_change(port_id) {
             var response = confirm('Are you sure you want to change the status of this port?');

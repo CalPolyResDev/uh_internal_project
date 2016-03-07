@@ -1,6 +1,12 @@
 {% extends "datatables/datatables_base.djhtml" %}
-{% load core_user_tests %}
 {% load crispy_forms_tags %}
+{% load core_filters %}
+
+{% block global_scope %}
+    {% user_has_permission "network_modify" as network_modify_access %}
+    {{ block.super }}
+{% endblock %}
+
 
 {% block page_title %}Access Points{% endblock %}
 {% block datatable_title %}Access Points{% endblock %}
@@ -8,7 +14,7 @@
 {% block object_name %}access point{% endblock %}
 
 {% block datatable_form %}
-    {% if request.user|ports_modify_access %}
+    {% if network_modify_access %}
     <div class="col-xs-12">
         {% crispy form %}
     </div>

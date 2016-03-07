@@ -1,5 +1,4 @@
 {% extends "datatables/datatables_base.djhtml" %}
-{% load core_user_tests %}
 {% load crispy_forms_tags %}
 
 {% block page_title %}Rooms{% endblock %}

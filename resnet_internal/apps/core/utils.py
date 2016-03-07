@@ -7,15 +7,14 @@
 """
 
 from copy import deepcopy
-import logging
 from operator import itemgetter
-import os
 from sys import platform
+import logging
+import os
 
 from django.core.cache import cache
 from srsconnector.models import ServiceRequest
 
-from ...settings.base import technician_access_test
 from ..portmap.models import NetworkInfrastructureDevice
 
 
@@ -73,9 +72,9 @@ def dict_merge(base, merge):
 
 def get_ticket_list(user):
     user_teams = []
-    if user.is_rn_staff:
+    if user.ad_groups.all().filter(display_name='UH TAG Member').exists():
         user_teams.append('SA University Housing')
-    if technician_access_test(user):
+    if user.ad_groups.all().filter(display_name='ResNet Technician').exists():
         user_teams.append('SA RESNET')
 
     cache_key = 'ticket_list:' + str(user_teams)

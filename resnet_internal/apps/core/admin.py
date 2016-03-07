@@ -4,7 +4,7 @@ from django.contrib import admin
 from .forms import RoomCreateForm
 from .models import (Community, Building, Room, Department, SubDepartment, SiteAnnouncements,
                      StaffMapping, CSDMapping, TechFlair, ResNetInternalUser as InternalUser,
-                     ADGroup, NavbarLink)
+                     ADGroup, NavbarLink, PermissionClass)
 
 
 class SiteAnnouncementsAdmin(admin.ModelAdmin):
@@ -24,11 +24,8 @@ class TechFlairAdmin(admin.ModelAdmin):
 
 
 class InternalUserAdmin(admin.ModelAdmin):
-    list_display = ['username', 'first_name', 'last_name', 'is_active',
-                    'is_net_admin', 'is_telecom', 'is_tag', 'is_rn_staff', 'is_technician',
-                    'is_new_tech', 'orientation_complete', 'is_developer']
-    list_filter = ['is_active', 'is_net_admin', 'is_telecom', 'is_tag', 'is_rn_staff',
-                   'is_technician', 'is_new_tech', 'is_developer']
+    list_display = ['username', 'first_name', 'last_name', 'is_active']
+    list_filter = ['is_active']
 
 
 class BuildingAdmin(admin.ModelAdmin):
@@ -39,6 +36,10 @@ class RoomAdmin(ChainedSelectAdminMixin, admin.ModelAdmin):
     list_display = ['name', 'building']
     list_filter = ['building']
     form = RoomCreateForm
+
+
+class PermissionClassAdmin(admin.ModelAdmin):
+    list_display = ['name']
 
 
 class ADGroupAdmin(admin.ModelAdmin):
@@ -58,5 +59,6 @@ admin.site.register(StaffMapping, StaffMappingAdmin)
 admin.site.register(CSDMapping, CSDMappingAdmin)
 admin.site.register(TechFlair, TechFlairAdmin)
 admin.site.register(InternalUser, InternalUserAdmin)
+admin.site.register(PermissionClass, PermissionClassAdmin)
 admin.site.register(ADGroup, ADGroupAdmin)
 admin.site.register(NavbarLink, NavBarLinkAdmin)

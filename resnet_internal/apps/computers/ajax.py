@@ -19,7 +19,7 @@ from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
-from ...settings.base import computers_modify_access_test
+from ...settings.base import COMPUTERS_MODIFY_ACCESS
 from ..core.models import StaffMapping
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
 from .forms import ComputerForm
@@ -77,7 +77,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
         return super(PopulateComputers, self).get_options()
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = computers_modify_access_test(user)
+        self.write_permissions = user.has_access(COMPUTERS_MODIFY_ACCESS)
 
     def get_row_class(self, row):
         if row.date_purchased:
