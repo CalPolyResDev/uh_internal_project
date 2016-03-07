@@ -247,7 +247,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
         return super().get_options()
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = user.network_modify_access
+        self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
 
     def get_display_block(self, row, column):
         if column == 'port':

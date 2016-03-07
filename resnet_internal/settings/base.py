@@ -178,6 +178,27 @@ ROSTER_ACCESS = 'roster'
 RESIDENT_LOOKUP_ACCESS = 'resident_lookup'
 PRINTER_REQUEST_CREATE_ACCESS = 'printer_request_create'
 
+ACCESS_PERMISSIONS = [
+    DEVELOPER_ACCESS,
+    TICKET_ACCESS,
+    ROOMS_ACCESS,
+    ROOMS_MODIFY_ACCESS,
+    DAILY_DUTIES_ACCESS,
+    ORIENTATION_ACCESS,
+    TECHNICIAN_LIST_ACCESS,
+    NETWORK_ACCESS,
+    NETWORK_MODIFY_ACCESS,
+    COMPUTERS_ACCESS,
+    COMPUTERS_MODIFY_ACCESS,
+    COMPUTERS_RECORD_MODIFY_ACCESS,
+    PRINTERS_ACCESS,
+    PRINTERS_MODIFY_ACCESS,
+    CSD_ASSIGNMENT_ACCESS,
+    ROSTER_ACCESS,
+    RESIDENT_LOOKUP_ACCESS,
+    PRINTER_REQUEST_CREATE_ACCESS,
+]
+
 
 # ======================================================================================================== #
 #                                        Authentication Configuration                                      #

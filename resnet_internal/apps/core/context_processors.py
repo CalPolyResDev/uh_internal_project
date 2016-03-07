@@ -13,6 +13,7 @@ from django.db.models import Q
 from resnet_internal.apps.core.models import NavbarLink
 
 from .models import TechFlair
+from ...settings.base import ORIENTATION_ACCESS
 
 
 def specializations(request):
@@ -40,7 +41,7 @@ def specializations(request):
             user_specializations.append('ResNet Development Team BDFL')
 
         # User is new technician (requires orientation)
-        if request.user.orientation_access and not request.user.orientation_complete:
+        if request.user.has_access(ORIENTATION_ACCESS) and not request.user.orientation_complete:
             user_specializations = ['New ResNet Technician']
 
     # Set context

@@ -247,34 +247,6 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
     def has_access(self, class_name):
         return self.ad_groups.all().filter(permissionclasses__name=class_name).exists()
 
-    @cached_property
-    def orientation_access(self):
-        return self.has_access(ORIENTATION_ACCESS)
-
-    @cached_property
-    def daily_duties_access(self):
-        return self.has_access(DAILY_DUTIES_ACCESS)
-
-    @cached_property
-    def ticket_access(self):
-        return self.has_access(TICKET_ACCESS)
-
-    @cached_property
-    def network_modify_access(self):
-        return self.has_access(NETWORK_MODIFY_ACCESS)
-
-    @cached_property
-    def computers_modify_access(self):
-        return self.has_access(COMPUTERS_MODIFY_ACCESS)
-
-    @cached_property
-    def computers_record_modify_access(self):
-        return self.has_access(COMPUTERS_RECORD_MODIFY_ACCESS)
-
-    @cached_property
-    def printers_modify_access(self):
-        return self.has_access(PRINTERS_MODIFY_ACCESS)
-
 
 class TechFlair(Model):
     """A mapping of users to custom flair."""

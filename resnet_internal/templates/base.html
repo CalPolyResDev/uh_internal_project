@@ -2,6 +2,14 @@
 {% load compile_static %}
 {% load staticfiles %}
 {% load clever_selects_extras %}
+{% load core_filters %}
+
+{% block global_scope %}
+<!-- http://stackoverflow.com/questions/18784450/django-templates-context-variables-scope -->
+
+{% user_has_permission "orientation" as orientation_access %}
+{% user_has_permission "daily_duties" as daily_duties_access %}
+
 <html>
     <head>
         <meta charset="UTF-8">
@@ -66,7 +74,7 @@
             </div>
             <div class="row" id="content">
                 {% block nav %}
-                {% if request.user.is_authenticated and request.user.orientation_complete or request.user.is_authenticated and not request.user.orientation_access %}
+                {% if request.user.is_authenticated and request.user.orientation_complete or request.user.is_authenticated and not orientation_access %}
                 <div id="nav-wrapper">
                     <nav>
                         <div class="text-center nav-heading" id="drawer-trigger">
@@ -143,7 +151,7 @@
             });
         </script>
         <!-- The below Django Template If statement looks terrible but and has higher precedence and parens are not allowed.-->
-        {% if request.user.is_authenticated and request.user.daily_duties_access and request.user.orientation_complete %}
+        {% if request.user.is_authenticated and daily_duties_access and request.user.orientation_complete %}
             <script src="{% static 'js/dailyduties.js' %}?version=1.2"></script>
         {% endif %}
         
@@ -170,3 +178,5 @@
         {% endblock %}
     </body>
 </html>
+
+{% endblock %}
