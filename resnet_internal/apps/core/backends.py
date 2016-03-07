@@ -98,9 +98,6 @@ class CASLDAPBackend(CASBackend):
                 user.last_name = user_info["sn"]
                 user.email = user_info["mail"]
 
-                if user.has_access(ORIENTATION_ACCESS) and user.is_new_tech is None:
-                    user.is_new_tech = True
-
                 user.save()
 
         return user
