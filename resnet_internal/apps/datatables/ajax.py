@@ -89,6 +89,19 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         self.get_options()
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(self, *args, **kwargs)
+
+        context['datatable_name'] = self.get_table_name()
+        context['datatable_options'] = self.get_options_serialized()
+        context['datatable_update_url'] = self.get_update_source()
+        context['datatable_form_url'] = self.get_form_source()
+        context['write_permission'] = self.get_write_permissions()
+        context['remove_url'] = self.get_remove_url()
+        context['item_name'] = self.get_item_name()
+
+        return context
+
     def get_table_name(self):
         return self.table_name
 
@@ -102,8 +115,12 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         self.write_permissions = True
 
     def get_write_permissions(self):
-        if not self.write_permissions:
-            raise ImproperlyConfigured("Write permissions were not initialized.")
+        write_permissions = getattr(self, 'write_permissions', None)
+        if not write_permissions:
+            if getattr(self, 'request', None):
+                self._initialize_write_permissions(self.request.user)
+            else:
+                raise ImproperlyConfigured("Write permissions were not initialized.")
 
         return self.write_permissions
 

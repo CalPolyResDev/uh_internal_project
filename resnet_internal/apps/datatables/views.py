@@ -26,4 +26,5 @@ class DatatablesView(CreateView):
     def get_context_data(self, **kwargs):
         context = super(DatatablesView, self).get_context_data(**kwargs)
         context["datatables_class"] = self.populate_class
+        context.update(self.populate_class(request=self.request).get_context_data())
         return context
