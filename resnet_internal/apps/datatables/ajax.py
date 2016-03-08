@@ -18,10 +18,7 @@ from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.forms import models as model_forms
 from django.http.response import HttpResponseNotAllowed
-from django.utils.decorators import classonlymethod
-from django.views.decorators.http import require_POST
 from django.views.generic.edit import ModelFormMixin, ProcessFormView, View
-from django_ajax.decorators import ajax
 from django_ajax.mixin import AJAXMixin
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django_datatables_view.mixins import JSONResponseView
@@ -309,6 +306,12 @@ class RNINDatatablesPopulateView(BaseDatatableView):
             data.append(row)
         return data
 
+    def check_params_for_flags(self, params, qs):
+        return qs, []
+
+    def get_extra_params(self, params):
+        return params
+
     def filter_queryset(self, qs):
         """ Filters the QuerySet by submitted search parameters.
 
@@ -333,8 +336,11 @@ class RNINDatatablesPopulateView(BaseDatatableView):
             column_q = Q()
             param_q = Q()
 
+            params = self.get_extra_params(params)
+            qs, flags = self.check_params_for_flags(params, qs)
+
             for param in params:
-                if param != "":
+                if param != "" and param not in flags:
                     for searchable_column in searchable_columns:
                         column_q |= Q(**{searchable_column + "__icontains": param})
 
