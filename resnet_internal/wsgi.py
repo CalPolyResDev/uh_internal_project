@@ -87,7 +87,7 @@ django.setup()
 
 # Import any functions with uWSGI decoraters here:
 from resnet_internal.apps.dailyduties.tasks import update_slack_voicemail, update_slack_email  # noqa
-from resnet_internal.apps.core.tasks import update_slack_network_status  # noqa
+from resnet_internal.apps.portmap.tasks import update_slack_network_status  # noqa
 
 # Send any wsgi errors to Sentry
 application = Sentry(WSGIHandler())
