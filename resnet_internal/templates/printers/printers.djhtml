@@ -1,31 +1,10 @@
 {% extends "datatables/datatables_base.djhtml" %}
 {% load crispy_forms_tags %}
-{% load core_filters %}
-
-{% block global_scope %}
-    {% user_has_permission "printers_modify" as printers_modify_access %}
-    {{ block.super }}
-{% endblock %}
-
-{% block page_title %}Printers{% endblock %}
-{% block datatable_title %}Printers{% endblock %}
-
-{% block object_name %}printer{% endblock %}
-
-{% block datatable_form %}
-    {% if printers_modify_access %}
-    <div class="col-xs-12">
-        {% crispy form %}
-    </div>
-    {% endif %}
-{% endblock %}
-
-{% block datatable_table_id %}printer_index{% endblock %}
 
 {% block extra_script %}
     {{ block.super }}
 
-    {% if printers_modify_access %}
+    {% if write_permission %}
     <script type="text/javascript">        
         $(document).ready(function() {
             $('.dateinput').datepicker({

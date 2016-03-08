@@ -29,7 +29,7 @@ class PortsView(ChainedSelectFormViewMixin, DatatablesView):
 
 
 class AccessPointsView(ChainedSelectFormViewMixin, DatatablesView):
-    template_name = "portmap/access_points.djhtml"
+    template_name = "datatables/datatables_base.djhtml"
     form_class = AccessPointCreateForm
     populate_class = PopulateAccessPoints
     model = AccessPoint
