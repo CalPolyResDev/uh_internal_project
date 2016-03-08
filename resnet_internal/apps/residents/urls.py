@@ -14,5 +14,5 @@ from .views import SearchView
 app_name = 'residents'
 
 urlpatterns = [
-    url(r'^$', login_required(SearchView.as_view()), name='resident_lookup'),
+    url(r'^$', login_required(SearchView.as_view()), name='home'),
 ]

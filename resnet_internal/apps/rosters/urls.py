@@ -14,5 +14,5 @@ from .views import RosterGenerateView
 app_name = 'rosters'
 
 urlpatterns = [
-    url(r'^$', login_required(RosterGenerateView.as_view()), name='generate')
+    url(r'^$', login_required(RosterGenerateView.as_view()), name='home')
 ]

@@ -15,7 +15,7 @@ from .views import ChecklistView, PayrollView, OnityDoorAccessView, SRSAccessVie
 app_name = 'orientation'
 
 urlpatterns = [
-    url(r'^$', login_required(orientation_access(ChecklistView.as_view())), name='checklist'),
+    url(r'^$', login_required(orientation_access(ChecklistView.as_view())), name='home'),
     url(r'^payroll/$', login_required(orientation_access(PayrollView.as_view())), name='payroll'),
     url(r'^onity/$', login_required(orientation_access(OnityDoorAccessView.as_view())), name='onity'),
     url(r'^srs/$', login_required(orientation_access(SRSAccessView.as_view())), name='srs'),
