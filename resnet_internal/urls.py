@@ -23,7 +23,7 @@ handler500 = handler500
 logger = logging.getLogger(__name__)
 
 urlpatterns = [
-    url(r'^technicians/$', include('adgroups.urls')),
+    url(r'^technicians/$', include('technicians.urls')),
     url(r'^computers/$', include('computers.urls')),
     url(r'^$', include('core.urls')),
     url(r'^dailyduties/$', include('dailyduties.urls')),

@@ -14,9 +14,9 @@ from .ajax import remove_resnet_tech
 from .views import ResTechListEditView
 
 
-app_name = 'adgroups'
+app_name = 'technicians'
 
 urlpatterns = [
-    url(r'^$', login_required(technician_list_access(ResTechListEditView.as_view())), name='restech_list_edit'),
-    url(r'^remove/$', login_required(technician_list_access(remove_resnet_tech)), name='remove_resnet_tech'),
+    url(r'^$', login_required(technician_list_access(ResTechListEditView.as_view())), name='home'),
+    url(r'^remove/$', login_required(technician_list_access(remove_resnet_tech)), name='remove'),
 ]
