@@ -24,11 +24,11 @@ class NetworkDevice(Model):
     """Network Device"""
 
     display_name = CharField(max_length=100, verbose_name='Display Name')
-    dns_name = CharField(max_length=75, verbose_name='DNS Name', null=True)
-    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address', null=True)
-    mac_address = MACAddressField(verbose_name='MAC Address', null=True)
-    upstream_device = ForeignKey('NetworkDevice', related_name='downstream_devices', null=True)
-    room = ForeignKey(Room, verbose_name='Room', null=True)
+    dns_name = CharField(max_length=75, verbose_name='DNS Name', null=True, blank=True)
+    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address', null=True, blank=True)
+    mac_address = MACAddressField(verbose_name='MAC Address', null=True, blank=True)
+    upstream_device = ForeignKey('NetworkDevice', related_name='downstream_devices', null=True, blank=True)
+    room = ForeignKey(Room, verbose_name='Room', null=True, blank=True)
 
     def __str__(self):
         return self.display_name
