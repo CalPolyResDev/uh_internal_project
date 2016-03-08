@@ -91,44 +91,24 @@ class PopulatePrinters(RNINDatatablesPopulateView):
         else:
             return super(PopulatePrinters, self).get_display_block(row, column)
 
-    def filter_queryset(self, qs):
-        search_parameters = self.request.GET.get('search[value]', None)
-        searchable_columns = self.get_searchable_columns()
+    def check_params_for_flags(self, params, qs):
         flags = ["?dhcp", "?old", "?older", "?replace"]
 
-        if search_parameters:
-            try:
-                params = shlex.split(search_parameters)
-            except ValueError:
-                params = search_parameters.split(" ")
-            columnQ = Q()
-            paramQ = Q()
+        # Check for flags
+        for param in params:
+            if param[:1] == '?':
+                flag = param[1:]
 
-            # Check for flags
-            for param in params:
-                if param[:1] == '?':
-                    flag = param[1:]
+                if flag == "dhcp":
+                    qs = qs.filter(dhcp=True)
+                elif flag == "old":
+                    qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLD_YEARS))
+                elif flag == "older":
+                    qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLDER_YEARS))
+                elif flag == "replace":
+                    qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=REPLACE_YEARS))
 
-                    if flag == "dhcp":
-                        qs = qs.filter(dhcp=True)
-                    elif flag == "old":
-                        qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLD_YEARS))
-                    elif flag == "older":
-                        qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLDER_YEARS))
-                    elif flag == "replace":
-                        qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=REPLACE_YEARS))
-
-            for param in params:
-                if param != "" and param not in flags:
-                    for searchable_column in searchable_columns:
-                        columnQ |= Q(**{searchable_column + "__icontains": param})
-
-                    paramQ.add(columnQ, Q.AND)
-                    columnQ = Q()
-            if paramQ:
-                qs = qs.filter(paramQ)
-
-        return qs
+        return qs, flags
 
 
 class RetrievePrinterForm(RNINDatatablesFormView):

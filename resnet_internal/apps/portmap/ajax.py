@@ -100,42 +100,21 @@ class PopulatePorts(RNINDatatablesPopulateView):
         else:
             return super().render_column(row, column)
 
-    def filter_queryset(self, qs):
-        search_parameters = self.request.GET.get('search[value]', None)
-        searchable_columns = self.get_searchable_columns()
+    def get_extra_params(self, params):
+        # Check for email lookup flag
+        for param in params:
+            if param[:1] == '?':
+                email = param[1:]
 
-        if search_parameters:
-            try:
-                params = shlex.split(search_parameters)
-            except ValueError:
-                params = search_parameters.split(" ")
-            columnQ = Q()
-            paramQ = Q()
+                if email:
+                    try:
+                        resident = Resident(principal_name=email)
+                        params = [resident.address_dict['community'], resident.address_dict['building'], resident.address_dict['room']]
+                    except (ObjectDoesNotExist, ImproperlyConfigured):
+                        params = ['Address', 'Not', 'Found']
+                break
 
-            # Check for email lookup flag
-            for param in params:
-                if param[:1] == '?':
-                    email = param[1:]
-
-                    if email:
-                        try:
-                            resident = Resident(principal_name=email)
-                            params = [resident.address_dict['community'], resident.address_dict['building'], resident.address_dict['room']]
-                        except (ObjectDoesNotExist, ImproperlyConfigured):
-                            params = ['Address', 'Not', 'Found']
-                    break
-
-            for param in params:
-                if param != "":
-                    for searchable_column in searchable_columns:
-                        columnQ |= Q(**{searchable_column + "__icontains": param})
-
-                    paramQ.add(columnQ, Q.AND)
-                    columnQ = Q()
-            if paramQ:
-                qs = qs.filter(paramQ)
-
-        return qs
+        return params
 
 
 class RetrievePortForm(RNINDatatablesFormView):
