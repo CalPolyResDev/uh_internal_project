@@ -88,7 +88,7 @@ def update_slack_network_status(num):
             cache.set(MAJOR_OUTAGE_CACHE_KEY, True, PREVIOUS_DOWN_DEVICE_TIMEOUT)
 
     if slack_attachments:
-        payload = {'text': 'Network Devices have changed status!' if len(slack_attachments) > 1 else 'A Network Device has changed status!',
+        payload = {'text': 'Network Devices have Changed Status!' if len(slack_attachments) > 1 else 'A Network Device has Changed Status!',
                            'icon_url': urljoin(settings.DEFAULT_BASE_URL, static('images/icons/aruba.png')),
                            'channel': settings.SLACK_NETWORK_STATUS_CHANNEL,
                            'attachments': slack_attachments}
