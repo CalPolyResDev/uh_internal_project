@@ -44,7 +44,7 @@ def update_slack_network_status(num):
                 attachment = {
                     'fallback': 'Network Device Down: ' + device['display_name'],
                     'color': 'danger',
-                    'title': device['display_name'],
+                    'title': 'Device Down: ' + device['display_name'] + '!',
                     'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('home')),
                     'fields': [
                         {'title': 'IP Address', 'value': device['ip_address']},
@@ -61,7 +61,7 @@ def update_slack_network_status(num):
                 attachment = {
                     'fallback': 'Network Device Back Up: ' + device['display_name'],
                     'color': 'good',
-                    'title': device['display_name'],
+                    'title': 'Device Up: ' + device['display_name'] + '!',
                     'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('home')),
                     'fields': [
                         {'title': 'IP Address', 'value': device['ip_address']},
@@ -88,7 +88,7 @@ def update_slack_network_status(num):
             cache.set(MAJOR_OUTAGE_CACHE_KEY, True, PREVIOUS_DOWN_DEVICE_TIMEOUT)
 
     if slack_attachments:
-        payload = {'text': 'Network Devices are Down!' if len(slack_attachments) > 1 else 'A Network Device is Down!',
+        payload = {'text': 'Network Devices have changed status!' if len(slack_attachments) > 1 else 'A Network Device has changed status!',
                            'icon_url': urljoin(settings.DEFAULT_BASE_URL, static('images/icons/aruba.png')),
                            'channel': settings.SLACK_NETWORK_STATUS_CHANNEL,
                            'attachments': slack_attachments}
