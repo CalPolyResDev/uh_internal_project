@@ -23,16 +23,16 @@ handler500 = handler500
 logger = logging.getLogger(__name__)
 
 urlpatterns = [
-    url(r'^technicians/$', include('technicians.urls')),
-    url(r'^computers/$', include('computers.urls')),
-    url(r'^$', include('core.urls')),
-    url(r'^dailyduties/$', include('dailyduties.urls')),
-    url(r'^orientation/$', include('orientation.urls')),
-    url(r'^network/$', include('portmap.urls')),
-    url(r'^printerrequests/$', include('printerrequests.urls')),
-    url(r'^printers/$', include('printers.urls')),
-    url(r'^residents/$', include('residents.urls')),
-    url(r'^rosters/$', include('rosters.urls')),
+    url(r'^technicians/', include('resnet_internal.apps.technicians.urls')),
+    url(r'^computers/', include('resnet_internal.apps.computers.urls')),
+    url(r'^', include('resnet_internal.apps.core.urls')),
+    url(r'^dailyduties/', include('resnet_internal.apps.dailyduties.urls')),
+    url(r'^orientation/', include('resnet_internal.apps.orientation.urls')),
+    url(r'^network/', include('resnet_internal.apps.portmap.urls')),
+    url(r'^printerrequests/', include('resnet_internal.apps.printerrequests.urls')),
+    url(r'^printers/', include('resnet_internal.apps.printers.urls')),
+    url(r'^residents/', include('resnet_internal.apps.residents.urls')),
+    url(r'^rosters/', include('resnet_internal.apps.rosters.urls')),
 ]
 
 

@@ -11,8 +11,8 @@ from django.conf import settings
 from django.contrib import admin
 from django.views.decorators.cache import cache_page
 from django.contrib.auth.decorators import login_required
-from django.contrib.staticfiles.templatetags import staticfiles
-from django.views.generic import RedirectView
+from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.views.generic.base import RedirectView
 from django_cas_ng.views import login as auth_login, logout as auth_logout
 from django_js_reverse.views import urls_js
 
@@ -25,7 +25,7 @@ app_name = 'core'
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='home'),
-    url(r'^favicon\.ico$', RedirectView.as_view(url=staticfiles('images/icons/favicon.ico'), permanent=True), name='favicon'),
+    url(r'^favicon\.ico$', RedirectView.as_view(url=static('images/icons/favicon.ico'), permanent=True), name='favicon'),
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
     url(r'^login/$', auth_login, name='login'),
     url(r'^logout/$', auth_logout, name='logout', kwargs={'next_page': settings.CAS_LOGOUT_URL}),
