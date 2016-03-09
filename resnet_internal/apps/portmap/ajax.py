@@ -14,6 +14,7 @@ import time
 from clever_selects.views import ChainedSelectChoicesView
 from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.encoding import smart_str
@@ -26,6 +27,7 @@ from ...settings.base import NETWORK_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm
 from .models import Port, AccessPoint
+from .utils import down_device_cache_key, up_device_cache_key
 
 
 logger = logging.getLogger(__name__)
@@ -77,7 +79,9 @@ class PopulatePorts(RNINDatatablesPopulateView):
         self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
 
     def get_row_class(self, row):
-        if not row.active:
+        if cache.get(down_device_cache_key(row.upstream_device)) and not cache.get(up_device_cache_key(row.upstream_device)):
+            return 'danger'
+        elif not row.active:
             return "disabled"
 
     def render_column(self, row, column):
