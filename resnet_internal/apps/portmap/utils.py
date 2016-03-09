@@ -10,9 +10,15 @@ from sys import platform
 import logging
 import os
 
+from django.core.cache import cache
+
 from .models import NetworkInfrastructureDevice, NetworkDevice
 
 logger = logging.getLogger(__name__)
+
+
+def port_is_down(port):
+    return cache.get(down_device_cache_key(port.upstream_device)) and not cache.get(up_device_cache_key(port.upstream_device))
 
 
 def get_dns_name(device):

@@ -14,7 +14,6 @@ import time
 from clever_selects.views import ChainedSelectChoicesView
 from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
-from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.encoding import smart_str
@@ -27,7 +26,7 @@ from ...settings.base import NETWORK_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm
 from .models import Port, AccessPoint
-from .utils import down_device_cache_key, up_device_cache_key
+from .utils import port_is_down
 
 
 logger = logging.getLogger(__name__)
@@ -68,9 +67,6 @@ class PopulatePorts(RNINDatatablesPopulateView):
         },
     }
 
-    def port_is_down(self, row):
-        return cache.get(down_device_cache_key(row.upstream_device)) and not cache.get(up_device_cache_key(row.upstream_device))
-
     def get_options(self):
         if self.get_write_permissions():
             self.column_definitions["active"].update({"width": "90px", "type": "string", "visible": True})
@@ -82,10 +78,12 @@ class PopulatePorts(RNINDatatablesPopulateView):
         self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
 
     def get_row_class(self, row):
-        if self.port_is_down(row):
+        if port_is_down(row):
             return 'danger'
         elif not row.active:
             return "disabled"
+        else:
+            return super().get_row_class(row)
 
     def render_column(self, row, column):
         if column == 'downstream_devices':
@@ -101,7 +99,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
             display_block = self.display_block_template.format(value="", link_block=link_block, inline_images="")
             return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
         elif column == 'active':
-            if self.port_is_down(row):
+            if port_is_down(row):
                 return self.display_block_template.format(value="", link_block="", inline_images="")
             else:
                 return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="action_blue", link_display="Deactivate" if getattr(row, column) else "Activate")
@@ -217,6 +215,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
 
     extra_related = [
         'upstream_device__port',
+        'upstream_device__port__upstream_device'
     ]
 
     column_definitions = OrderedDict()
@@ -237,6 +236,12 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
             self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
 
         return super().get_options()
+
+    def get_row_class(self, row):
+        if port_is_down(row.upstream_device):
+            return 'danger'
+        else:
+            return super().get_row_class(row)
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
