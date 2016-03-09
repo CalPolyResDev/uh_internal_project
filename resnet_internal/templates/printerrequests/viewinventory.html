@@ -68,11 +68,11 @@
 {{ block.super }}
 <script type="text/javascript">
     function update_toner_inventory(toner_id, quantity) {
-    	ajaxPost("{% url 'update_printer_toner_inventory' %}", {'toner_id': toner_id, 'quantity': quantity});
+    	ajaxPost("{% url 'printerrequests:update_toner_inventory' %}", {'toner_id': toner_id, 'quantity': quantity});
     }
 
     function update_part_inventory(part_id, quantity) {
-    	ajaxPost("{% url 'update_printer_part_inventory' %}", {'part_id': part_id, 'quantity': quantity});
+    	ajaxPost("{% url 'printerrequests:update_part_inventory' %}", {'part_id': part_id, 'quantity': quantity});
     }
 </script>
 {% endblock %}

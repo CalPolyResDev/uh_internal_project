@@ -184,7 +184,7 @@ def get_mailbox_summary(request, **kwargs):
         if message_range[1] + 2 > num_available_messages:
             next_group_url = None
         else:
-            next_group_url = reverse('email_get_mailbox_summary_range', kwargs={'mailbox_name': mailbox_name, 'search_string': search_string, 'message_group': str(int(message_group) + 1)})
+            next_group_url = reverse('dailyduties:email_get_mailbox_summary_range', kwargs={'mailbox_name': mailbox_name, 'search_string': search_string, 'message_group': str(int(message_group) + 1)})
     else:
         next_group_url = None
 
@@ -320,7 +320,7 @@ def attachment_upload(request, **kwargs):
         'name': file.name,
         'size': file.size,
         'cacheKey': cache_key,
-        'deleteUrl': reverse('jfu_delete', kwargs={'pk': cache_key}),
+        'deleteUrl': reverse('dailyduties:jfu_delete', kwargs={'pk': cache_key}),
         'deleteType': 'POST',
     }
 

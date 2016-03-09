@@ -18,7 +18,7 @@ from .models import Printer
 
 
 class PrinterForm(ChainedChoicesModelForm):
-    sub_department = ChainedModelChoiceField('department', reverse_lazy('core_chained_sub_department'), SubDepartment, label="Sub Department")
+    sub_department = ChainedModelChoiceField('department', reverse_lazy('core:chained_sub_department'), SubDepartment, label="Sub Department")
 
     def __init__(self, *args, **kwargs):
         super(PrinterForm, self).__init__(*args, **kwargs)

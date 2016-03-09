@@ -94,7 +94,7 @@ def get_tickets(request):
                 {% for ticket in tickets %}
                 <tr id="ticket_{{ ticket.ticket_id }}" class={{ ticket.display_class }}>
                     <td>
-                        <a onclick="openModalFrame('Ticket Summary', '{% url 'core_ticket_summary' ticket_id=ticket.ticket_id %}');" style="cursor:pointer;">
+                        <a onclick="openModalFrame('Ticket Summary', '{% url 'core:ticket_summary' ticket_id=ticket.ticket_id %}');" style="cursor:pointer;">
                             <img src="{% static 'images/srs_view_button.gif' %}">
                         </a>
                     </td>
@@ -209,15 +209,15 @@ class PopulateRooms(RNINDatatablesPopulateView):
 
     table_name = "rooms"
 
-    data_source = reverse_lazy('populate_rooms')
-    update_source = reverse_lazy('update_room')
-    form_source = reverse_lazy('form_room')
+    data_source = reverse_lazy('core:populate_rooms')
+    update_source = reverse_lazy('core:update_room')
+    form_source = reverse_lazy('core:form_room')
 
     form_class = RoomCreateForm
     model = Room
 
     item_name = 'room'
-    remove_url_name = 'remove_room'
+    remove_url_name = 'core:remove_room'
 
     column_definitions = OrderedDict()
     column_definitions["community"] = {"type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "building__community__name"}

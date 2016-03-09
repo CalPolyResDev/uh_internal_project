@@ -52,7 +52,7 @@
 {% block extra_script %}
     <script type="text/javascript">
         function complete_task(task) {
-            ajaxPost("{% url 'orientation_complete_task' %}", {"task": task});
+            ajaxPost("{% url 'orientation:complete_task' %}", {"task": task});
         };
     </script>
 {% endblock %}

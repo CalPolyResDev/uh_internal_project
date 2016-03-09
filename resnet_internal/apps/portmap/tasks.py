@@ -45,7 +45,7 @@ def update_slack_network_status(num):
                     'fallback': 'Network Device Down: ' + device['display_name'],
                     'color': 'danger',
                     'title': 'Device Down: ' + device['display_name'] + '!',
-                    'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('home')),
+                    'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('core:home')),
                     'fields': [
                         {'title': 'IP Address', 'value': device['ip_address']},
                         {'title': 'DNS Name', 'value': device['dns_name']},
@@ -62,7 +62,7 @@ def update_slack_network_status(num):
                     'fallback': 'Network Device Back Up: ' + device['display_name'],
                     'color': 'good',
                     'title': 'Device Up: ' + device['display_name'] + '!',
-                    'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('home')),
+                    'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('core:home')),
                     'fields': [
                         {'title': 'IP Address', 'value': device['ip_address']},
                         {'title': 'DNS Name', 'value': device['dns_name']},
@@ -78,7 +78,7 @@ def update_slack_network_status(num):
                 'fallback': '%d Network Devices Down!' % len(down_devices),
                 'color': 'danger',
                 'title': 'Many Network Devices Down!',
-                'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('home')),
+                'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('core:home')),
                 'fields': [
                     {'title': 'Device Count', 'value': len(down_devices)},
                     {'title': 'Note', 'value': 'Because so many devices are down, this is either a server error or a major network outage.'},

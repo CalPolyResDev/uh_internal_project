@@ -16,7 +16,7 @@ from ..core.models import Building, Community
 
 class BuildingSelectForm(ChainedChoicesForm):
     community = ModelChoiceField(queryset=Community.objects.all())
-    building = ChainedModelChoiceField('community', reverse_lazy('core_chained_building'), Building)
+    building = ChainedModelChoiceField('community', reverse_lazy('core:chained_building'), Building)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

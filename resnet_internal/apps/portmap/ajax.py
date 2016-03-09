@@ -9,7 +9,6 @@
 
 from collections import OrderedDict
 import logging
-import shlex
 import time
 
 from clever_selects.views import ChainedSelectChoicesView
@@ -17,7 +16,6 @@ from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.db.models import Q
 from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
@@ -38,16 +36,16 @@ class PopulatePorts(RNINDatatablesPopulateView):
 
     table_name = "ports"
 
-    data_source = reverse_lazy('populate_ports')
-    update_source = reverse_lazy('update_port')
-    form_source = reverse_lazy('form_port')
+    data_source = reverse_lazy('network:populate_ports')
+    update_source = reverse_lazy('network:update_port')
+    form_source = reverse_lazy('network:form_port')
     extra_related = ['downstream_devices']
 
     form_class = PortCreateForm
     model = Port
 
     item_name = 'port'
-    remove_url_name = 'remove_port'
+    remove_url_name = 'network:remove_port'
 
     column_definitions = OrderedDict()
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
@@ -89,7 +87,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
             except (ObjectDoesNotExist, IndexError):
                 link_block = ""
             else:
-                ap_url = reverse('access_point_info_frame', kwargs={'pk': access_point.id})
+                ap_url = reverse('network:access_point_info_frame', kwargs={'pk': access_point.id})
                 ap_icon = self.icon_template.format(icon_url=static('images/icons/wifi-xxl.png'))
                 link_block = self.popover_link_block_template.format(popover_title='AP Info', content_url=ap_url, link_class_name="", link_display=ap_icon)
 
@@ -197,15 +195,15 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
 
     table_name = "access_point_map"
 
-    data_source = reverse_lazy('populate_access_points')
-    update_source = reverse_lazy('update_access_point')
-    form_source = reverse_lazy('form_access_point')
+    data_source = reverse_lazy('network:populate_access_points')
+    update_source = reverse_lazy('network:update_access_point')
+    form_source = reverse_lazy('network:form_access_point')
 
     form_class = AccessPointCreateForm
     model = AccessPoint
 
     item_name = 'access point'
-    remove_url_name = 'remove_access_point'
+    remove_url_name = 'network:remove_access_point'
 
     column_definitions = OrderedDict()
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "upstream_device__room__building__community__name"}
@@ -232,7 +230,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     def get_display_block(self, row, column):
         if column == 'upstream_device':
             port = row.upstream_device.port
-            port_url = reverse('port_info_frame', kwargs={'pk': port.id})
+            port_url = reverse('network:port_info_frame', kwargs={'pk': port.id})
             port_icon = self.icon_template.format(icon_url=static('images/icons/icon_ethernet.png'))
             port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_class_name="", link_display=port_icon)
             return self.display_block_template.format(value=port.jack, link_block=port_block, inline_images="")

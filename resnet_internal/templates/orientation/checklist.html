@@ -14,7 +14,7 @@
                 <li id="onity" class="checked">Onity Door Access</li>
             {% else %}
                 <li id="onity">
-                    <a href="{% url 'orientation_onity' %}">Onity Door Access</a>
+                    <a href="{% url 'orientation:onity' %}">Onity Door Access</a>
                 </li>
             {% endif %}
     
@@ -22,7 +22,7 @@
                 <li id="srs" class="checked">Ticket Manager/SRS Access</li>
             {% else %}
                 <li id="srs">
-                    <a href="{% url 'orientation_srs' %}">Ticket Manager/SRS Access</a>
+                    <a href="{% url 'orientation:srs' %}">Ticket Manager/SRS Access</a>
                 </li>
             {% endif %}
     
@@ -30,7 +30,7 @@
                 <li id="payroll" class="checked">Payroll Access</li>
             {% else %}
                 <li id="payroll">
-                    <a href="{% url 'orientation_payroll' %}">Payroll Access</a>
+                    <a href="{% url 'orientation:payroll' %}">Payroll Access</a>
                 </li>
             {% endif %}
         </ul>
@@ -45,7 +45,7 @@
 {% block extra_script %}
     <script type="text/javascript">
         function complete_orientation() {
-            ajaxGet("{% url 'orientation_complete' %}");
+            ajaxGet("{% url 'orientation:complete' %}");
         };
     </script>
 {% endblock %}

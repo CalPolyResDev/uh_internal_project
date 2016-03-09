@@ -74,7 +74,7 @@ class EmailMessageView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
                     'filename': attachment['filename'],
                     'size': len(attachment['filedata']),
                     'icon': static('images/attachment_icons/' + extension + '-icon.png') if extension in attachment_icons else static('images/attachment_icons/default.png'),
-                    'url': reverse('email_get_attachment', kwargs={'uid': message_uid,
+                    'url': reverse('dailyduties:email_get_attachment', kwargs={'uid': message_uid,
                                                                    'mailbox_name': mailbox_name,
                                                                    'attachment_index': message['attachments'].index(attachment)})
                 }
@@ -101,7 +101,7 @@ class EmailMessageView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
             if message['is_html']:
                 def content_id_match_to_url(match):
                     content_id = match.groupdict()['content_id']
-                    return 'src="' + reverse('email_get_attachment', kwargs={'uid': message_uid,
+                    return 'src="' + reverse('dailyduties:email_get_attachment', kwargs={'uid': message_uid,
                                                                    'mailbox_name': mailbox_name,
                                                                    'content_id': content_id}) + '"'
 
