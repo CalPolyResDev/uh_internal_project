@@ -27,7 +27,6 @@ urlpatterns = [
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
     url(r'^technicians/', include('resnet_internal.apps.technicians.urls')),
     url(r'^computers/', include('resnet_internal.apps.computers.urls')),
-    url(r'^', include('resnet_internal.apps.core.urls')),
     url(r'^dailyduties/', include('resnet_internal.apps.dailyduties.urls')),
     url(r'^orientation/', include('resnet_internal.apps.orientation.urls')),
     url(r'^network/', include('resnet_internal.apps.portmap.urls')),
@@ -35,6 +34,7 @@ urlpatterns = [
     url(r'^printers/', include('resnet_internal.apps.printers.urls')),
     url(r'^residents/', include('resnet_internal.apps.residents.urls')),
     url(r'^rosters/', include('resnet_internal.apps.rosters.urls')),
+    url(r'^', include('resnet_internal.apps.core.urls')),
 ]
 
 
