@@ -36,6 +36,8 @@ class PortCreateForm(ChainedChoicesModelForm):
         self.helper.label_class = 'col-sm-2'
         self.helper.field_class = 'col-sm-10 col-md-8'
 
+        self.fields['display_name'].label = 'Jack'
+
         self.helper.layout = Layout(
             Fieldset(
                 'Add a new port',
