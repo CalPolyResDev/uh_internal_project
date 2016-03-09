@@ -206,7 +206,6 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     remove_url_name = 'network:remove_access_point'
 
     extra_related = [
-        'upstream_device',
         'upstream_device__port',
     ]
 
