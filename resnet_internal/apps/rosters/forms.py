@@ -46,7 +46,7 @@ class GenerationForm(Form):
             ),
             FormActions(
                 Hidden(name="mode", value="", css_id="id_mode"),
-                Submit('submit', 'Generate', onclick="$('#id_mode').val('normal'); return true;"),
-                Submit('submit', 'Generate CSV', onclick="$('#id_mode').val('csv'); return true;"),
+                Submit('submit', 'Generate', onsubmit="$('#id_mode').val('normal'); return true;"),
+                Submit('submit', 'Generate CSV', onsubmit="$('#id_mode').val('csv'); return true;"),
             ),
         )
