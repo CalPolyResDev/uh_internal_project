@@ -371,7 +371,7 @@ INSTALLED_APPS = (
     'resnet_internal.apps.dailyduties',
     'resnet_internal.apps.datatables',
     'resnet_internal.apps.datatables.templatetags.__init__.default_app_config',
-    'resnet_internal.apps.adgroups',
+    'resnet_internal.apps.technicians',
     'resnet_internal.apps.orientation',
     'resnet_internal.apps.computers',
     'resnet_internal.apps.portmap',

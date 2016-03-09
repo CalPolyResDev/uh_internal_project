@@ -8,11 +8,9 @@
 
 from collections import OrderedDict
 from datetime import datetime
-import shlex
 
 from dateutil.relativedelta import relativedelta
 from django.core.urlresolvers import reverse_lazy
-from django.db.models.query_utils import Q
 
 from ...settings.base import PRINTERS_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
@@ -30,15 +28,15 @@ class PopulatePrinters(RNINDatatablesPopulateView):
 
     table_name = "printer_index"
 
-    data_source = reverse_lazy('populate_printers')
-    update_source = reverse_lazy('update_printer')
-    form_source = reverse_lazy('form_printer')
+    data_source = reverse_lazy('printers:populate')
+    update_source = reverse_lazy('printers:update')
+    form_source = reverse_lazy('printers:form')
 
     form_class = PrinterForm
     model = Printer
 
     item_name = 'printer'
-    remove_url_name = 'remove_printer'
+    remove_url_name = 'printers:remove'
 
     column_definitions = OrderedDict()
     column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}

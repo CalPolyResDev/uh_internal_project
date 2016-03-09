@@ -17,7 +17,6 @@ from ldap3 import Server, Connection, ObjectDef, AttrDef, Reader
 from ldap_groups.exceptions import InvalidGroupDN
 from ldap_groups.groups import ADGroup as LDAPADGroup
 
-from ...settings.base import ORIENTATION_ACCESS
 from .models import ADGroup
 
 

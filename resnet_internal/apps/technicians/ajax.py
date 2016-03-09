@@ -1,16 +1,15 @@
 """
-.. module:: reslife_internal.adgroups.ajax
-   :synopsis: ResLife Internal AD Group Management AJAX Methods.
+.. module:: resnet_internal.technicians.ajax
+   :synopsis: University Housing Internal Technicians AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
 
-from srsconnector.models import AccountRequest
-
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from ldap_groups import ADGroup
+from srsconnector.models import AccountRequest
 
 
 @ajax

@@ -56,7 +56,7 @@
                 </div>
                 <div class="col-xs-12 col-md-4 login-display">
                     {% if request.user.is_authenticated %}
-                        <p>You are logged in as <b>{{ user_display_name }}</b>. (<a href="{% url 'logout' %}">Logout</a>)<br />
+                        <p>You are logged in as <b>{{ user_display_name }}</b>. (<a href="{% url 'core:logout' %}">Logout</a>)<br />
                         {# Display User Specializations #}
                         <span class="tech-flair">
                         {% for title in user_specializations %}
@@ -65,7 +65,7 @@
                         </span>
                         </p>
                     {% else %}
-                        <p>You are not currently logged in. (<a href="{% url 'login' %}">Login</a>)</p>
+                        <p>You are not currently logged in. (<a href="{% url 'core:login' %}">Login</a>)</p>
                     {% endif %}
                 </div>
             </header>
@@ -130,7 +130,7 @@
         
         <script type="text/javascript" src="https://cdn.rawgit.com/js-cookie/js-cookie/v2.1.0/src/js.cookie.js"></script>
         
-        <script src="{% url 'js_reverse' %}" type="text/javascript"></script>
+        <script src="{% url 'core:js_reverse' %}" type="text/javascript"></script>
         <script src="{% static 'js/modal-frames.js' %}?version=1.0"></script>
         <script src="{% static 'js/navbar.js' %}?version=1.0"></script>
         

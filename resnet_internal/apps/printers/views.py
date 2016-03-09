@@ -1,6 +1,6 @@
 """
-.. module:: reslife_internal.printers.views
-   :synopsis: ResLife Internal Printer Index Views.
+.. module:: resnet_internal.printers.views
+   :synopsis: University Housing Internal Printer Index Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -24,4 +24,4 @@ class PrintersView(DatatablesView):
     model = Printer
     form_class = PrinterForm
     populate_class = PopulatePrinters
-    success_url = reverse_lazy('printers')
+    success_url = reverse_lazy('printers:home')

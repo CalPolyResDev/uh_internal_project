@@ -8,16 +8,14 @@
 
 from collections import OrderedDict
 from datetime import datetime
+from srsconnector.models import PinholeRequest, DomainNameRequest
 import logging
-import shlex
 
 from dateutil.relativedelta import relativedelta
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
-from django.db.models import Q
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
-from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ...settings.base import COMPUTERS_MODIFY_ACCESS
 from ..core.models import StaffMapping
@@ -38,15 +36,15 @@ class PopulateComputers(RNINDatatablesPopulateView):
 
     table_name = "computer_index"
 
-    data_source = reverse_lazy('populate_computers')
-    update_source = reverse_lazy('update_computer')
-    form_source = reverse_lazy('form_computer')
+    data_source = reverse_lazy('computers:populate')
+    update_source = reverse_lazy('computers:update')
+    form_source = reverse_lazy('computers:form')
 
     form_class = ComputerForm
     model = Computer
 
     item_name = 'computer'
-    remove_url_name = 'remove_computer'
+    remove_url_name = 'computers:remove'
 
     column_definitions = OrderedDict()
     column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
@@ -104,7 +102,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
             inline_images = ""
 
             try:
-                record_url = reverse('view_computer_record', kwargs={'ip_address': getattr(row, column)})
+                record_url = reverse('computers:view_record', kwargs={'ip_address': getattr(row, column)})
             except NoReverseMatch:
                 pass
             else:
@@ -133,7 +131,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
     def render_column(self, row, column):
         if column == 'RDP':
             try:
-                rdp_file_url = reverse('rdp_request', kwargs={'ip_address': row.ip_address})
+                rdp_file_url = reverse('computers:rdp_request', kwargs={'ip_address': row.ip_address})
             except NoReverseMatch:
                 link_block = ""
             else:

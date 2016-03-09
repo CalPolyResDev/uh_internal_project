@@ -37,7 +37,7 @@ def complete_task(request):
 
     user.save()
 
-    return HttpResponseRedirect(reverse('orientation_checklist'))
+    return HttpResponseRedirect(reverse('orientation:home'))
 
 
 @ajax
@@ -49,4 +49,4 @@ def complete_orientation(request):
     user.is_new_tech = False
     user.save()
 
-    return HttpResponseRedirect(reverse('home'))
+    return HttpResponseRedirect(reverse('orientation:home'))

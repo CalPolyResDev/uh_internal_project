@@ -1,5 +1,5 @@
 """
-.. module:: reslife_internal.apps.rosters.fields
+.. module:: resnet_internal.apps.rosters.fields
    :synopsis: University Housing Internal Roster Generator Fields.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>

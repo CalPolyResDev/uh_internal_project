@@ -37,9 +37,9 @@
 {% block extra_script %}
 <script type="text/javascript">
     $(document).ready(function() {
-        ajaxGet("{% url 'core_update_network_status' %}");
+        ajaxGet("{% url 'core:update_network_status' %}");
         {% if request.user.is_authenticated and ticket_access %}
-            ajaxGet("{% url 'core_get_tickets' %}");
+            ajaxGet("{% url 'core:get_tickets' %}");
         {% endif %}
     });
 </script>

@@ -97,7 +97,7 @@ def change_request_status(request):
     request_instance.status = status
     request_instance.save()
 
-    return HttpResponseRedirect(reverse('printer_request_list'))
+    return HttpResponseRedirect(reverse('printerrequests:home'))
 
 
 @ajax

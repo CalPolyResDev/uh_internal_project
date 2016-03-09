@@ -25,7 +25,7 @@ class PortsView(ChainedSelectFormViewMixin, DatatablesView):
     form_class = PortCreateForm
     populate_class = PopulatePorts
     model = Port
-    success_url = reverse_lazy('ports')
+    success_url = reverse_lazy('network:ports')
 
 
 class AccessPointsView(ChainedSelectFormViewMixin, DatatablesView):
@@ -33,7 +33,7 @@ class AccessPointsView(ChainedSelectFormViewMixin, DatatablesView):
     form_class = AccessPointCreateForm
     populate_class = PopulateAccessPoints
     model = AccessPoint
-    success_url = reverse_lazy('access_points')
+    success_url = reverse_lazy('network:access_points')
 
 
 class AccessPointFrameView(DetailView):

@@ -68,11 +68,11 @@
 {{ block.super }}
 <script type="text/javascript">
     function update_ordered_toner(toner_id, ordered) {
-    	ajaxPost("{% url 'update_printer_toner_inventory' %}", {'toner_id': toner_id, 'ordered': ordered});
+    	ajaxPost("{% url 'printerrequests:update_toner_inventory' %}", {'toner_id': toner_id, 'ordered': ordered});
     }
 
     function update_ordered_parts(part_id, ordered) {
-    	ajaxPost("{% url 'update_printer_part_inventory' %}", {'part_id': part_id, 'ordered': ordered});
+    	ajaxPost("{% url 'printerrequests:update_part_inventory' %}", {'part_id': part_id, 'ordered': ordered});
     }
 </script>
 {% endblock %}

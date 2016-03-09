@@ -49,7 +49,7 @@
 {{ block.super }}
 <script type="text/javascript">
     function change_request_status(request_id, current_status) {
-    	ajaxPost("{% url 'change_printer_request_status' %}", {'request_id': request_id, 'current_status': current_status}, function(response_context) {
+    	ajaxPost("{% url 'printerrequests:change_status' %}", {'request_id': request_id, 'current_status': current_status}, function(response_context) {
 			if (!response_context["success"]) {
 				alert(response_context["error_message"]);
 				return false;

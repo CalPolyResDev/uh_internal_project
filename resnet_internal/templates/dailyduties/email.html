@@ -21,7 +21,7 @@
             <div id="email_buttons" class="col-xs-12 col-lg-7">
                 <div class="btn-toolbar">
                     <div class="btn-group btn-group-md">
-                        <button class="btn btn-primary" onclick="openModalFrame('Compose Email', '{% url 'email_compose' %}');">New</button>
+                        <button class="btn btn-primary" onclick="openModalFrame('Compose Email', '{% url 'dailyduties:email_compose' %}');">New</button>
                         <button class="btn btn-primary" onclick="$('input:checkbox').prop('checked', true);">Check All</button>
                         <button class="btn btn-primary" onclick="$('input:checkbox').prop('checked', false);">Uncheck All</button>
                         <button class="btn btn-primary" onclick="refresh_messages('INBOX');" id="refresh_button">Refresh</button>
