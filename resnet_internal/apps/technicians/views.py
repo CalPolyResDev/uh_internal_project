@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class SingleGroupEditView(FormView):
     """Base class for viewing and editing members of an Active Directory Group."""
 
-    template_name = "adgroups/single_group_list_edit.html"
+    template_name = "technicians/single_group_list_edit.html"
     form_class = AddADUserForm
     subtitle = "AD Group Membership Editor"
 
@@ -118,7 +118,7 @@ class SingleGroupEditView(FormView):
 class ResTechListEditView(SingleGroupEditView):
     """Lists the members of the ResTech group. Modifications to this group will respectively modify the ResTech Admin group."""
 
-    template_name = "adgroups/restech_list_edit.html"
+    template_name = "technicians/restech_list_edit.html"
     subtitle = "ResNet Technicians"
     group_name = "ResNet Technicians"
     group_dn = "CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu"
