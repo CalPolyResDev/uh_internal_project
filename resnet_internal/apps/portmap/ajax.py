@@ -205,9 +205,14 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     item_name = 'access point'
     remove_url_name = 'network:remove_access_point'
 
+    extra_related = [
+        'upstream_device',
+        'upstream_device__port',
+    ]
+
     column_definitions = OrderedDict()
-    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "upstream_device__room__building__community__name"}
-    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "upstream_device__room__building__name"}
+    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
+    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
     column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "related": True, "lookup_field": "name"}
     column_definitions["upstream_device"] = {"width": "80px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "id"}
     column_definitions["dns_name"] = {"width": "80px", "type": "string", "title": "Name"}
