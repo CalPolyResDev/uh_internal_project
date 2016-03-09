@@ -1,6 +1,6 @@
 """
-.. module:: reslife_internal.adgroups.ajax
-   :synopsis: ResLife Internal AD Group Management AJAX Methods.
+.. module:: resnet_internal.technicians.ajax
+   :synopsis: University Housing Internal Technicians AJAX Methods.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

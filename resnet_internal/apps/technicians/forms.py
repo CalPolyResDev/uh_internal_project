@@ -1,6 +1,6 @@
 """
-.. module:: reslife_internal.adgroups.forms
-   :synopsis: ResLife Internal AD Group Management Forms.
+.. module:: resnet_internal.technicians.forms
+   :synopsis: University Housing Internal Technicians Forms.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

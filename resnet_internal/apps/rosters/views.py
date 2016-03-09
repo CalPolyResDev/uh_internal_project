@@ -1,6 +1,6 @@
 """
-.. module:: reslife_internal.apps.rosters.views
-   :synopsis: ResLife Internal Roster Generator Views.
+.. module:: resnet_internal.apps.rosters.views
+   :synopsis: University Housing Internal Roster Generator Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

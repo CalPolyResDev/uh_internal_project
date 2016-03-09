@@ -1,6 +1,6 @@
 """
-.. module:: resnet_internal.apps.adgroups.urls
-   :synopsis: University Housing Internal AD Groups URLs
+.. module:: resnet_internal.apps.technicians.urls
+   :synopsis: University Housing Internal Technicians URLs
 
 .. moduleauthor:: Thomas Willson <thomas.willson@icloud.com>
 

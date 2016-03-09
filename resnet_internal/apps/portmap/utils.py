@@ -1,6 +1,6 @@
 """
-.. module:: resnet_internal.apps.portmap.utils
-   :synopsis: University Housing Internal Portmap Utilities.
+.. module:: resnet_internal.apps.network.utils
+   :synopsis: University Housing Internal Network Utilities.
 
 .. moduleauthor:: Thomas Willson <thomas.willson@icloud.com>
 

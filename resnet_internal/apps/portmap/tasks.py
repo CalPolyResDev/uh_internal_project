@@ -1,6 +1,6 @@
 """
-.. module:: resnet_internal.apps.core.tasks
-   :synopsis: ResNet Internal Core Tasks.
+.. module:: resnet_internal.apps.network.tasks
+   :synopsis: University Housing Internal Network Tasks.
 
 .. moduleauthor:: Thomas Willson <thomas.willson@me.com>
 """

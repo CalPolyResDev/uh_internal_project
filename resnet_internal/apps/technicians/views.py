@@ -1,6 +1,6 @@
 """
-.. module:: reslife_internal.adgroups.views
-   :synopsis: ResLife Internal AD Group Management Views.
+.. module:: resnet_internal.technicians.views
+   :synopsis: University Housing Internal Technicians Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

@@ -1,5 +1,5 @@
 """
-.. module:: reslife_internal.apps.rosters.forms
+.. module:: resnet_internal.apps.rosters.forms
    :synopsis: University Housing Internal Roster Generator Forms.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
