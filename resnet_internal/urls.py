@@ -13,6 +13,7 @@ import logging
 from django.conf import settings
 from django.conf.urls import url, include
 from django.conf.urls.static import static
+from django.contrib import admin
 from django.views.defaults import permission_denied, page_not_found
 
 from .apps.core.views import handler500
@@ -23,6 +24,7 @@ handler500 = handler500
 logger = logging.getLogger(__name__)
 
 urlpatterns = [
+    url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
     url(r'^technicians/', include('resnet_internal.apps.technicians.urls')),
     url(r'^computers/', include('resnet_internal.apps.computers.urls')),
     url(r'^', include('resnet_internal.apps.core.urls')),

@@ -6,27 +6,26 @@
 
 """
 
-from django.conf.urls import url, include
 from django.conf import settings
-from django.contrib import admin
-from django.views.decorators.cache import cache_page
+from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles.templatetags.staticfiles import static
+from django.views.decorators.cache import cache_page
 from django.views.generic.base import RedirectView
 from django_cas_ng.views import login as auth_login, logout as auth_logout
 from django_js_reverse.views import urls_js
 
-from .views import IndexView, RoomsView, TicketSummaryView, CSDDomainAssignmentEditView
 from .ajax import (BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, update_network_status, get_tickets, PopulateRooms,
                    UpdateRoom, RemoveRoom, RetrieveRoomForm, update_csd_domain)
 from .permissions import ticket_access, rooms_access, rooms_modify_access, csd_assignment_access
+from .views import IndexView, RoomsView, TicketSummaryView, CSDDomainAssignmentEditView
+
 
 app_name = 'core'
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='home'),
     url(r'^favicon\.ico$', RedirectView.as_view(url=static('images/icons/favicon.ico'), permanent=True), name='favicon'),
-    url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
     url(r'^login/$', auth_login, name='login'),
     url(r'^logout/$', auth_logout, name='logout', kwargs={'next_page': settings.CAS_LOGOUT_URL}),
 
