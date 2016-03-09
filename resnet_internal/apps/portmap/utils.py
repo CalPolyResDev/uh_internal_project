@@ -17,8 +17,8 @@ from .models import NetworkInfrastructureDevice, NetworkDevice
 logger = logging.getLogger(__name__)
 
 
-def port_is_down(port):
-    return cache.get(down_device_cache_key(port.upstream_device)) and not cache.get(up_device_cache_key(port.upstream_device))
+def device_is_down(device):
+    return cache.get(down_device_cache_key(device)) and not cache.get(up_device_cache_key(device))
 
 
 def get_dns_name(device):
