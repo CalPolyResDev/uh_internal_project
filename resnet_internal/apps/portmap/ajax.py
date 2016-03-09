@@ -68,6 +68,9 @@ class PopulatePorts(RNINDatatablesPopulateView):
         },
     }
 
+    def port_is_down(self, row):
+        return cache.get(down_device_cache_key(row.upstream_device)) and not cache.get(up_device_cache_key(row.upstream_device))
+
     def get_options(self):
         if self.get_write_permissions():
             self.column_definitions["active"].update({"width": "90px", "type": "string", "visible": True})
@@ -79,7 +82,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
         self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
 
     def get_row_class(self, row):
-        if cache.get(down_device_cache_key(row.upstream_device)) and not cache.get(up_device_cache_key(row.upstream_device)):
+        if self.port_is_down(row):
             return 'danger'
         elif not row.active:
             return "disabled"
@@ -98,7 +101,10 @@ class PopulatePorts(RNINDatatablesPopulateView):
             display_block = self.display_block_template.format(value="", link_block=link_block, inline_images="")
             return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
         elif column == 'active':
-            return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="action_blue", link_display="Deactivate" if getattr(row, column) else "Activate")
+            if self.port_is_down(row):
+                return self.display_block_template.format(value="", link_block="", inline_images="")
+            else:
+                return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="action_blue", link_display="Deactivate" if getattr(row, column) else "Activate")
         else:
             return super().render_column(row, column)
 
