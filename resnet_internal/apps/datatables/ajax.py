@@ -247,7 +247,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     def retrieve_editable_row(self, item):
         form = self.form_class(instance=item, auto_id="id_{id}-%s".format(id=item.id))
 
-        row_editable = {}
+        row_editable = OrderedDict()
 
         for column in self.get_columns():
             if column in form.fields.keys():
