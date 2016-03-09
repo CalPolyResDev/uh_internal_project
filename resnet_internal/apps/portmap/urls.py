@@ -11,8 +11,9 @@ from django.contrib.auth.decorators import login_required
 
 from ..core.permissions import network_access, network_modify_access
 from .ajax import (PopulatePorts, UpdatePort, RetrievePortForm, change_port_status, RemovePort, PortChainedAjaxView,
-                   PopulateAccessPoints, UpdateAccessPoint, RetrieveAccessPointForm, RemoveAccessPoint)
-from .views import PortsView, PortFrameView, AccessPointsView, AccessPointFrameView
+                   PopulateAccessPoints, UpdateAccessPoint, RetrieveAccessPointForm, RemoveAccessPoint,
+                   PopulateNetworkInfrastructureDevices, UpdateNetworkInfrastructureDevice, RetrieveNetworkInfrastructureDeviceForm, RemoveNetworkInfrastructureDevice)
+from .views import PortsView, PortFrameView, AccessPointsView, AccessPointFrameView, NetworkInfrastructureDevicesView
 
 app_name = 'network'
 
@@ -33,4 +34,10 @@ urlpatterns = [
     url(r'^access-points/form/$', login_required(network_access(RetrieveAccessPointForm.as_view())), name='form_access_point'),
     url(r'^access-points/remove/$', login_required(network_modify_access(RemoveAccessPoint.as_view())), name='remove_access_point'),
     url(r'^access-points/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(network_access(AccessPointFrameView.as_view())), name='access_point_info_frame'),
+
+    url(r'^network-infrastructure-devices/$', login_required(network_access(NetworkInfrastructureDevicesView.as_view())), name='network_infrastructure_devices'),
+    url(r'^network-infrastructure-devices/populate/$', login_required(network_access(PopulateNetworkInfrastructureDevices.as_view())), name='populate_network_infrastructure_devices'),
+    url(r'^network-infrastructure-devices/update/$', login_required(network_modify_access(UpdateNetworkInfrastructureDevice.as_view())), name='update_network_infrastructure_device'),
+    url(r'^network-infrastructure-devices/form/$', login_required(network_access(RetrieveNetworkInfrastructureDeviceForm.as_view())), name='form_network_infrastructure_device'),
+    url(r'^network-infrastructure-devices/remove/$', login_required(network_modify_access(RemoveNetworkInfrastructureDevice.as_view())), name='remove_network_infrastructure_device'),
 ]

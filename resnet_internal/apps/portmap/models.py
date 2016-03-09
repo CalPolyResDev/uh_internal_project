@@ -94,4 +94,17 @@ class AccessPoint(NetworkDevice):
 
 class NetworkInfrastructureDevice(NetworkDevice):
     """Network Infrastructure Device."""
-    pass
+
+    @cached_property
+    def building(self):
+        try:
+            return self.room.building
+        except AttributeError:
+            return None
+
+    @cached_property
+    def community(self):
+        try:
+            return self.room.building.community
+        except AttributeError:
+            return None
