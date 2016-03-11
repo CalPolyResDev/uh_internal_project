@@ -2,6 +2,12 @@
 {% block subtitle %} | View Ordered Printer Items{% endblock %}
 
 {% block main %}
+<div class="col-xs-12">
+    <div class="page-header">
+        <h2>Printer Supplies on Order</h2>
+    </div>
+</div>
+
 <div class="col-xs-12 col-md-6">
     <h2>Toner</h2>
     <table class="table table-hover">
@@ -62,11 +68,11 @@
 {{ block.super }}
 <script type="text/javascript">
     function update_ordered_toner(toner_id, ordered) {
-    	ajaxPost("{% url 'update_printer_toner_inventory' %}", {'toner_id': toner_id, 'ordered': ordered});
+    	ajaxPost("{% url 'printerrequests:update_toner_inventory' %}", {'toner_id': toner_id, 'ordered': ordered});
     }
 
     function update_ordered_parts(part_id, ordered) {
-    	ajaxPost("{% url 'update_printer_part_inventory' %}", {'part_id': part_id, 'ordered': ordered});
+    	ajaxPost("{% url 'printerrequests:update_part_inventory' %}", {'part_id': part_id, 'ordered': ordered});
     }
 </script>
 {% endblock %}

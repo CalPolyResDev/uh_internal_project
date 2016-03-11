@@ -22,6 +22,7 @@ from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from jfu.http import upload_receive, UploadResponse, JFUResponse
 
+from ..core.models import Building
 from ..core.templatetags.srs_urls import srs_edit_url
 from .models import DailyDuties
 from .utils import GetDutyData, EmailManager
@@ -183,7 +184,7 @@ def get_mailbox_summary(request, **kwargs):
         if message_range[1] + 2 > num_available_messages:
             next_group_url = None
         else:
-            next_group_url = reverse('email_get_mailbox_summary_range', kwargs={'mailbox_name': mailbox_name, 'search_string': search_string, 'message_group': str(int(message_group) + 1)})
+            next_group_url = reverse('dailyduties:email_get_mailbox_summary_range', kwargs={'mailbox_name': mailbox_name, 'search_string': search_string, 'message_group': str(int(message_group) + 1)})
     else:
         next_group_url = None
 
@@ -319,7 +320,7 @@ def attachment_upload(request, **kwargs):
         'name': file.name,
         'size': file.size,
         'cacheKey': cache_key,
-        'deleteUrl': reverse('jfu_delete', kwargs={'pk': cache_key}),
+        'deleteUrl': reverse('dailyduties:jfu_delete', kwargs={'pk': cache_key}),
         'deleteType': 'POST',
     }
 
@@ -349,3 +350,24 @@ def ticket_from_email(request):
         ticket_number = email_manager.create_ticket_from_email(mailbox_name, uid, post_items['requestor_username'], user_full_name)
 
     return {'redirect_url': srs_edit_url(ticket_number)}
+
+
+@ajax
+@require_POST
+def get_csd_email(request):
+    success = True
+
+    try:
+        csd_mappings = Building.objects.get(id=request.POST['building_id']).csdmappings
+        csd_emails = ['%s <%s>' % (mapping.name, mapping.email) for mapping in csd_mappings.all()]
+        csd_email_string = ', '.join(csd_emails)
+    except Building.DoesNotExist:
+        success = False
+        csd_email_string = ''
+
+    response = {
+        'email_string': csd_email_string,
+        'success': success
+    }
+
+    return response

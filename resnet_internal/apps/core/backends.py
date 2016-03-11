@@ -17,7 +17,7 @@ from ldap3 import Server, Connection, ObjectDef, AttrDef, Reader
 from ldap_groups.exceptions import InvalidGroupDN
 from ldap_groups.groups import ADGroup as LDAPADGroup
 
-from ..core.models import ADGroup
+from .models import ADGroup
 
 
 logger = logging.getLogger(__name__)
@@ -86,45 +86,16 @@ class CASLDAPBackend(CASBackend):
                 if not user.ad_groups.all().filter(distinguished_name='CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu').exists() and settings.RESTRICT_LOGIN_TO_DEVELOPERS:
                     raise PermissionDenied('Only developers can access the site on this server. Please use the primary site.')
 
-                # Legacy Permissions Flags
-                net_admin_list = get_group_members('CN=StateHRDept - IS-ITS-Networks (132900 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu')
-                telecom_list = get_group_members('CN=StateHRDept - IS-ITS-Telecommunications (133100 FacStf Only),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu')
-                tag_list = get_group_members('CN=UH-TAG,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
-                tag_readonly_list = get_group_members('CN=UH-TAG-READONLY,OU=User Groups,OU=Websites,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
-                technician_list = get_group_members('CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
-                rn_staff_list = get_group_members('CN=UH-RN-Staff,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
+                # Django Flags
                 developer_list = get_group_members('CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
-
-                csd_list = get_group_members('CN=UH-CSD,OU=Residential Life,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
-                ral_list = get_group_members('CN=UH-RAL,OU=Residential Life,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
-                ral_manager_list = get_group_members('CN=UH-RAL-Managers,OU=User Groups,OU=Websites,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
-                ra_list = get_group_members('CN=UH-RA,OU=Residential Life,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
-                fd_staff_list = get_group_members('CN=UH-FD-Staff,OU=Front Desk,OU=Residential Life,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
-
-                user.is_net_admin = principal_name in net_admin_list
-                user.is_telecom = principal_name in telecom_list
-                user.is_tag = principal_name in tag_list
-                user.is_tag_readonly = principal_name in tag_readonly_list
-                user.is_technician = principal_name in technician_list
-                user.is_rn_staff = principal_name in rn_staff_list
-
                 user.is_developer = principal_name in developer_list
                 user.is_staff = principal_name in developer_list
                 user.is_superuser = principal_name in developer_list
-
-                user.is_csd = principal_name in csd_list
-                user.is_ral = principal_name in ral_list
-                user.is_ral_manager = principal_name in ral_manager_list
-                user.is_ra = principal_name in ra_list
-                user.is_fd_staff = principal_name in fd_staff_list
 
                 user.full_name = user_info["displayName"]
                 user.first_name = user_info["givenName"]
                 user.last_name = user_info["sn"]
                 user.email = user_info["mail"]
-
-                if user.is_technician and user.is_new_tech is None:
-                    user.is_new_tech = True
 
                 user.save()
 

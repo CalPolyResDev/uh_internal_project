@@ -1,8 +1,15 @@
 <!DOCTYPE html>
-{% load core_user_tests %}
 {% load compile_static %}
 {% load staticfiles %}
 {% load clever_selects_extras %}
+{% load core_filters %}
+
+{% block global_scope %}
+<!-- http://stackoverflow.com/questions/18784450/django-templates-context-variables-scope -->
+
+{% user_has_permission "orientation" as orientation_access %}
+{% user_has_permission "daily_duties" as daily_duties_access %}
+
 <html>
     <head>
         <meta charset="UTF-8">
@@ -26,13 +33,7 @@
         <link rel="stylesheet prefetch" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.css">
         <link rel="stylesheet prefetch" href="{% static 'css/jqueryui/jqueryui-1.8.22.cp.css' %}">
 
-        <link rel="stylesheet prefetch" href="{% compile 'less/base.less' %}?version=1.1">
-        
-        {% block orientation_redirect %}
-            {% if request.user.is_authenticated and request.user.is_new_tech %}
-                <meta http-equiv="refresh" content="0; URL='{% url 'orientation_checklist' %}'" />
-            {% endif %}
-        {% endblock %}
+        <link rel="stylesheet prefetch" href="{% compile 'less/base.less' %}?version=1.2">
 
         {% block extra_head %}{% endblock %}
 
@@ -55,7 +56,7 @@
                 </div>
                 <div class="col-xs-12 col-md-4 login-display">
                     {% if request.user.is_authenticated %}
-                        <p>You are logged in as <b>{{ user_display_name }}</b>. (<a href="{% url 'logout' %}">Logout</a>)<br />
+                        <p>You are logged in as <b>{{ user_display_name }}</b>. (<a href="{% url 'core:logout' %}">Logout</a>)<br />
                         {# Display User Specializations #}
                         <span class="tech-flair">
                         {% for title in user_specializations %}
@@ -64,7 +65,7 @@
                         </span>
                         </p>
                     {% else %}
-                        <p>You are not currently logged in. (<a href="{% url 'login' %}">Login</a>)</p>
+                        <p>You are not currently logged in. (<a href="{% url 'core:login' %}">Login</a>)</p>
                     {% endif %}
                 </div>
             </header>
@@ -73,7 +74,7 @@
             </div>
             <div class="row" id="content">
                 {% block nav %}
-                {% if request.user.is_authenticated and not request.user.is_new_tech %}
+                {% if request.user.is_authenticated and request.user.orientation_complete or request.user.is_authenticated and not orientation_access %}
                 <div id="nav-wrapper">
                     <nav>
                         <div class="text-center nav-heading" id="drawer-trigger">
@@ -128,6 +129,8 @@
         <script src="{% static 'js/jquery.blockUI.js' %}"></script>
         
         <script type="text/javascript" src="https://cdn.rawgit.com/js-cookie/js-cookie/v2.1.0/src/js.cookie.js"></script>
+        
+        <script src="{% url 'core:js_reverse' %}" type="text/javascript"></script>
         <script src="{% static 'js/modal-frames.js' %}?version=1.0"></script>
         <script src="{% static 'js/navbar.js' %}?version=1.0"></script>
         
@@ -146,18 +149,10 @@
                     html: true,
                 });
             });
-
-            // Daily Duties URLs
-            {% if request.user.is_authenticated %}
-                var daily_duties_refresh_url = "{% url 'daily_duties_refresh_duties' %}";
-                var daily_duties_update_url = "{% url 'daily_duties_update_duty' %}";
-                var daily_duties_email_redir_url = "{% url 'email_list' %}";
-                var daily_duties_voicemail_redir_url = "{% url 'voicemail_list' %}";
-                var daily_duties_printer_requests_redir_url = "{% url 'printer_request_list' %}";
-            {% endif %}
         </script>
-        {% if request.user.is_authenticated %}
-            <script src="{% static 'js/dailyduties.js' %}?version=1.1"></script>
+        <!-- The below Django Template If statement looks terrible but and has higher precedence and parens are not allowed.-->
+        {% if request.user.is_authenticated and daily_duties_access and request.user.orientation_complete %}
+            <script src="{% static 'js/dailyduties.js' %}?version=1.2"></script>
         {% endif %}
         
         <script type="text/javascript" src="https://taskmaster.its.calpoly.edu/s/218fb7ab581f4ac8ba1588798ae8d47d-T/en_USrqvfjr/64026/42/1.4.27/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?locale=en-US&collectorId=cdd699b5"></script>
@@ -183,3 +178,5 @@
         {% endblock %}
     </body>
 </html>
+
+{% endblock %}

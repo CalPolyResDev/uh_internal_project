@@ -15,7 +15,7 @@ function add_duties() {
     });
 }
 function refreshDuties() {
-    ajaxGet(daily_duties_refresh_url, function(response_context) {
+    ajaxGet(DjangoReverse['dailyduties:refresh_duties'](), function(response_context) {
         $("#email_link").attr('data-content', response_context.email_content);
         $("#ticket_manager_link").attr('data-content', response_context.tickets_content);
         $("#voicemail_link").attr('data-content', response_context.voicemail_content);
@@ -23,13 +23,13 @@ function refreshDuties() {
     });
 }
 function updateEmail() {
-    updateDuty('email', daily_duties_email_redir_url, '_self');
+    updateDuty('email', DjangoReverse['dailyduties:email_list'](), '_self');
 }
 function updateVoicemail() {
-    updateDuty('voicemail', daily_duties_voicemail_redir_url, '_self');
+    updateDuty('voicemail', DjangoReverse['dailyduties:voicemail_list'](), '_self');
 }
 function updatePrinterRequests() {
-    updateDuty('printerrequests', daily_duties_printer_requests_redir_url, '_self');
+    updateDuty('printerrequests', DjangoReverse['printerrequests:home'](), '_self');
 }
 function updateTickets() {
     updateDuty('tickets', 'https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Main', '_blank');
@@ -51,7 +51,7 @@ function updateDuty(duty, redirect_url, target) {
             }
         }
     });
-    ajaxPost(daily_duties_update_url, {"duty": duty}, function(response_context) {
+    ajaxPost(DjangoReverse['dailyduties:update_duty'](), {"duty": duty}, function(response_context) {
         if (redirect_url && target !== '_blank') {
             window.open(redirect_url, target);
         }

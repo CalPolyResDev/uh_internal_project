@@ -10,11 +10,9 @@ from datetime import datetime
 
 from clever_selects.views import ChainedSelectFormViewMixin
 from django.core.urlresolvers import reverse_lazy
-from django.template.context import RequestContext
-from srsconnector.models import ServiceRequest
-
 from django.views.generic.base import TemplateView
 from ldap_groups import ADGroup as LDAPADGroup
+from srsconnector.models import ServiceRequest
 
 from ..datatables.views import DatatablesView
 from .ajax import PopulateRooms
@@ -78,11 +76,11 @@ class CSDDomainAssignmentEditView(TemplateView):
 
 
 class RoomsView(ChainedSelectFormViewMixin, DatatablesView):
-    template_name = "core/rooms.djhtml"
+    template_name = "datatables/datatables_base.djhtml"
     form_class = RoomCreateForm
     populate_class = PopulateRooms
     model = Room
-    success_url = reverse_lazy('rooms')
+    success_url = reverse_lazy('core:rooms')
 
 
 def handler500(request):

@@ -12,12 +12,10 @@ from clever_selects.views import ChainedSelectFormViewMixin
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.detail import DetailView
 
-from resnet_internal.apps.portmap.forms import AccessPointCreateForm
-
 from ..datatables.views import DatatablesView
-from .ajax import PopulatePorts, PopulateAccessPoints
-from .forms import PortCreateForm
-from .models import Port, AccessPoint
+from .ajax import PopulatePorts, PopulateAccessPoints, PopulateNetworkInfrastructureDevices
+from .forms import PortCreateForm, AccessPointCreateForm, NetworkInfrastructureDeviceCreateForm
+from .models import Port, AccessPoint, NetworkInfrastructureDevice
 
 
 class PortsView(ChainedSelectFormViewMixin, DatatablesView):
@@ -25,15 +23,23 @@ class PortsView(ChainedSelectFormViewMixin, DatatablesView):
     form_class = PortCreateForm
     populate_class = PopulatePorts
     model = Port
-    success_url = reverse_lazy('ports')
+    success_url = reverse_lazy('network:ports')
 
 
 class AccessPointsView(ChainedSelectFormViewMixin, DatatablesView):
-    template_name = "portmap/access_points.djhtml"
+    template_name = "datatables/datatables_base.djhtml"
     form_class = AccessPointCreateForm
     populate_class = PopulateAccessPoints
     model = AccessPoint
-    success_url = reverse_lazy('access_points')
+    success_url = reverse_lazy('network:access_points')
+
+
+class NetworkInfrastructureDevicesView(ChainedSelectFormViewMixin, DatatablesView):
+    template_name = "datatables/datatables_base.djhtml"
+    form_class = NetworkInfrastructureDeviceCreateForm
+    populate_class = PopulateNetworkInfrastructureDevices
+    model = NetworkInfrastructureDevice
+    success_url = reverse_lazy('network:network_infrastructure_devices')
 
 
 class AccessPointFrameView(DetailView):

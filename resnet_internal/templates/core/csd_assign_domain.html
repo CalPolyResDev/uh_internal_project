@@ -64,7 +64,7 @@
 {{ block.super }}
     <script type="text/javascript">
         function update_csd_domain(mapping_id, csd_info) {
-            ajaxPost("{% url 'update_csd_domain' %}", {'mapping_id': mapping_id, 'csd_info': csd_info});
+            ajaxPost("{% url 'core:update_csd_domain' %}", {'mapping_id': mapping_id, 'csd_info': csd_info});
         }
     </script>
 {% endblock %}

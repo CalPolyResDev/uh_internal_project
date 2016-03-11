@@ -1,6 +1,6 @@
 """
-.. module:: reslife_internal.apps.rosters.utils
-   :synopsis: ResLife Internal Roster Generator Utilities.
+.. module:: resnet_internal.apps.rosters.utils
+   :synopsis: University Housing Internal Roster Generator Utilities.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 

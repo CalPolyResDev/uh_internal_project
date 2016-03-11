@@ -21,7 +21,7 @@
             <div id="email_buttons" class="col-xs-12 col-lg-7">
                 <div class="btn-toolbar">
                     <div class="btn-group btn-group-md">
-                        <button class="btn btn-primary" onclick="openModalFrame('Compose Email', '{% url 'email_compose' %}');">New</button>
+                        <button class="btn btn-primary" onclick="openModalFrame('Compose Email', '{% url 'dailyduties:email_compose' %}');">New</button>
                         <button class="btn btn-primary" onclick="$('input:checkbox').prop('checked', true);">Check All</button>
                         <button class="btn btn-primary" onclick="$('input:checkbox').prop('checked', false);">Uncheck All</button>
                         <button class="btn btn-primary" onclick="refresh_messages('INBOX');" id="refresh_button">Refresh</button>
@@ -88,13 +88,8 @@
     {{ block.super }}
     <script type="text/javascript">
         // URLs for use in email.js
-        var email_folders_url = "{% url 'email_get_folders' %}";
-        var email_archive_url = "{% url 'email_archive' %}";
-        var email_mark_unread_url = "{% url 'email_mark_unread' %}";
-        var email_mark_read_url = "{% url 'email_mark_read' %}";
-        var email_remove_voicemail_url = "{% url 'remove_voicemail' %}";
         var spinner_url = "{% static 'images/spinner.gif' %}";
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
-    <script src="{% static 'js/email.js' %}?version=1.0"></script>
+    <script src="{% static 'js/email.js' %}?version=1.1"></script>
 {% endblock %}

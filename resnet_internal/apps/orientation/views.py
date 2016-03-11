@@ -27,7 +27,7 @@ class OnityDoorAccessView(FormView):
 
     template_name = "orientation/onity_door_access.html"
     form_class = OnityEmailForm
-    success_url = reverse_lazy('orientation_checklist')
+    success_url = reverse_lazy('orientation:home')
 
     def get_initial(self):
         full_name = self.request.user.get_full_name()
@@ -61,7 +61,7 @@ class SRSAccessView(FormView):
 
     template_name = "orientation/srs_access.html"
     form_class = SRSUploadForm
-    success_url = reverse_lazy('orientation_checklist')
+    success_url = reverse_lazy('orientation:home')
 
     def form_valid(self, form):
         # Create a new account request

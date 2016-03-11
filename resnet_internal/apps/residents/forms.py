@@ -72,7 +72,7 @@ class PrincipalNameSearchForm(Form):
 
 class AddressSearchForm(ChainedChoicesForm):
     community = ModelChoiceField(queryset=Community.objects.all(), label='Community', error_messages={'required': 'A community is required'})
-    building = ChainedModelChoiceField('community', reverse_lazy('core_chained_building'), Building, label='Building', error_messages={'required': 'A building is required'})
+    building = ChainedModelChoiceField('community', reverse_lazy('core:chained_building'), Building, label='Building', error_messages={'required': 'A building is required'})
     room = CharField(label='Room', error_messages={'required': 'A room number is required'})
 
     def __init__(self, user=None, *args, **kwargs):

@@ -36,6 +36,9 @@
         </script>
         <iframe id="email_body" frameborder="0" srcdoc="{{ message.body_html }}" width="100%" onload="resize_iframe(this)"></iframe>
     </div>
+    {% block cc_csd_content %}
+        {{ block.super }}
+    {% endblock %}
 {% endblock %}
 
 {% block extra_script %}

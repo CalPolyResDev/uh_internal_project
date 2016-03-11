@@ -159,22 +159,46 @@ SLACK_NETWORK_STATUS_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_NETWORK_S
 #                                              Access Permissions                                          #
 # ======================================================================================================== #
 
-technician_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician)
-staff_access_test = (lambda user: user.is_developer or user.is_rn_staff)
-developer_access_test = (lambda user: user.is_developer)
+DEVELOPER_ACCESS = 'developer'
+TICKET_ACCESS = 'ticket'
+ROOMS_ACCESS = 'rooms'
+ROOMS_MODIFY_ACCESS = 'rooms_modify'
+DAILY_DUTIES_ACCESS = 'daily_duties'
+ORIENTATION_ACCESS = 'orientation'
+TECHNICIAN_LIST_ACCESS = 'technician_list'
+NETWORK_ACCESS = 'network'
+NETWORK_MODIFY_ACCESS = 'network_modify'
+COMPUTERS_ACCESS = 'computers'
+COMPUTERS_MODIFY_ACCESS = 'computers_modify'
+COMPUTERS_RECORD_MODIFY_ACCESS = 'computers_record_modify'
+PRINTERS_ACCESS = 'printers'
+PRINTERS_MODIFY_ACCESS = 'printers_modify'
+CSD_ASSIGNMENT_ACCESS = 'csd_assignment'
+ROSTER_ACCESS = 'roster'
+RESIDENT_LOOKUP_ACCESS = 'resident_lookup'
+PRINTER_REQUEST_CREATE_ACCESS = 'printer_request_create'
 
-ports_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom or user.is_tag or user.is_tag_readonly)
-ports_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_telecom or user.is_tag)
+ACCESS_PERMISSIONS = [
+    DEVELOPER_ACCESS,
+    TICKET_ACCESS,
+    ROOMS_ACCESS,
+    ROOMS_MODIFY_ACCESS,
+    DAILY_DUTIES_ACCESS,
+    ORIENTATION_ACCESS,
+    TECHNICIAN_LIST_ACCESS,
+    NETWORK_ACCESS,
+    NETWORK_MODIFY_ACCESS,
+    COMPUTERS_ACCESS,
+    COMPUTERS_MODIFY_ACCESS,
+    COMPUTERS_RECORD_MODIFY_ACCESS,
+    PRINTERS_ACCESS,
+    PRINTERS_MODIFY_ACCESS,
+    CSD_ASSIGNMENT_ACCESS,
+    ROSTER_ACCESS,
+    RESIDENT_LOOKUP_ACCESS,
+    PRINTER_REQUEST_CREATE_ACCESS,
+]
 
-computers_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag or user.is_tag_readonly)
-computers_modify_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_technician or user.is_net_admin or user.is_tag)
-computer_record_modify_access_test = (lambda user: user.is_developer or user.is_net_admin or user.is_tag)
-
-csd_access_test = (lambda user: user.is_developer or user.is_ral_manager or user.is_csd)
-ral_manager_access_test = (lambda user: user.is_developer or user.is_rn_staff or user.is_ral_manager)
-
-printers_access_test = computers_access_test
-printers_modify_access_test = computers_modify_access_test
 
 # ======================================================================================================== #
 #                                        Authentication Configuration                                      #
@@ -283,6 +307,9 @@ STATICFILES_FINDERS = (
 # The directory that will hold database backups on the application server.
 DBBACKUP_BACKUP_DIRECTORY = str(PROJECT_DIR.joinpath("backups").resolve())
 
+# Django-JS-Reverse Variable Name
+JS_REVERSE_JS_VAR_NAME = 'DjangoReverse'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -314,6 +341,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'resnet_internal.apps.orientation.middleware.OrientationRedirectMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
 )
@@ -337,12 +365,13 @@ INSTALLED_APPS = (
     'dbbackup',
     'clever_selects',
     'crispy_forms',
+    'django_js_reverse',
     'resnet_internal.apps.core',
     'resnet_internal.apps.core.templatetags.__init__.default_app_config',
     'resnet_internal.apps.dailyduties',
     'resnet_internal.apps.datatables',
     'resnet_internal.apps.datatables.templatetags.__init__.default_app_config',
-    'resnet_internal.apps.adgroups',
+    'resnet_internal.apps.technicians',
     'resnet_internal.apps.orientation',
     'resnet_internal.apps.computers',
     'resnet_internal.apps.portmap',

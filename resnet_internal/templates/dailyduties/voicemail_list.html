@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load core_user_tests %}
 {% load staticfiles %}
 
 {% block subtitle %} | ResNet Voicemail Messages{% endblock %}
@@ -69,7 +68,7 @@
         var spinner = document.getElementById('spinner_' + message_uid); 
         spinner.style.display = 'block';
         
-        ajaxPost("{% url 'remove_voicemail' %}", {"message_uid": message_uid}, function(response_context) {
+        ajaxPost("{% url 'dailyduties:remove_voicemail' %}", {"message_uid": message_uid}, function(response_context) {
             var row = document.getElementById('voicemail_' + message_uid);
             row.parentNode.removeChild(row);
         });
@@ -82,7 +81,7 @@
         var spinner = document.getElementById('spinner_mark_new_' + message_uid); 
         spinner.style.display = 'block';
         
-        ajaxPost("{% url 'email_mark_unread' %}", {"message0": ('Voicemails/' + message_uid) }, function(response_context) {
+        ajaxPost("{% url 'dailyduties:email_mark_unread' %}", {"message0": ('Voicemails/' + message_uid) }, function(response_context) {
             var row = document.getElementById('voicemail_' + message_uid);
             row.className = 'bg-info';
             spinner.style.display = 'none';

@@ -9,12 +9,15 @@
 from os import path
 import re
 
+from clever_selects.views import ChainedSelectFormViewMixin
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponse
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
+from django.views.generic.edit import FormMixin
 
+from .forms import BuildingSelectForm
 from .utils import EmailManager, get_archive_folders, get_plaintext_signature
 
 
@@ -29,20 +32,13 @@ class EmailListView(TemplateView):
         return context
 
 
-class EmailComposeView(TemplateView):
-    template_name = "dailyduties/email_compose.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(EmailComposeView, self).get_context_data(**kwargs)
-        context['email_template'] = get_plaintext_signature(self.request.user.get_full_name())
-        return context
-
-
-class EmailMessageView(TemplateView):
+class EmailMessageView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
     template_name = "dailyduties/email_viewer.html"
+    form_class = BuildingSelectForm
 
     def get_context_data(self, **kwargs):
-        context = super(EmailMessageView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+
         message_uid = kwargs['uid']
         mailbox_name = kwargs['mailbox_name']
 
@@ -78,7 +74,7 @@ class EmailMessageView(TemplateView):
                     'filename': attachment['filename'],
                     'size': len(attachment['filedata']),
                     'icon': static('images/attachment_icons/' + extension + '-icon.png') if extension in attachment_icons else static('images/attachment_icons/default.png'),
-                    'url': reverse('email_get_attachment', kwargs={'uid': message_uid,
+                    'url': reverse('dailyduties:email_get_attachment', kwargs={'uid': message_uid,
                                                                    'mailbox_name': mailbox_name,
                                                                    'attachment_index': message['attachments'].index(attachment)})
                 }
@@ -105,7 +101,7 @@ class EmailMessageView(TemplateView):
             if message['is_html']:
                 def content_id_match_to_url(match):
                     content_id = match.groupdict()['content_id']
-                    return 'src="' + reverse('email_get_attachment', kwargs={'uid': message_uid,
+                    return 'src="' + reverse('dailyduties:email_get_attachment', kwargs={'uid': message_uid,
                                                                    'mailbox_name': mailbox_name,
                                                                    'content_id': content_id}) + '"'
 
@@ -114,6 +110,16 @@ class EmailMessageView(TemplateView):
             context['message'] = message
             context['archive_folders'] = get_archive_folders()
 
+        return context
+
+
+class EmailComposeView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
+    template_name = "dailyduties/email_compose.html"
+    form_class = BuildingSelectForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['email_template'] = get_plaintext_signature(self.request.user.get_full_name())
         return context
 
 

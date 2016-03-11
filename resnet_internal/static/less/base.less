@@ -9,7 +9,7 @@
 @polydarkgrey: rgb(238,238,231);
 
 @lightgreyborder: rgb(198, 198, 198);
-@hovergrey: rgb(243, 243, 241);
+@hovergrey: darken(rgb(243, 243, 241), 5%);
 
 /* Resposive table hack. See http://getbootstrap.com/css/#tables-responsive */
 @-moz-document url-prefix() {
@@ -93,6 +93,7 @@ hr {
     padding: 30px;
     width: 260px;
     float: left;
+    font-size: 13px;
 }
 
 nav {
@@ -145,6 +146,10 @@ nav {
 .link-group {
     padding-left: 0;
     padding-right: 0;
+    
+    a {
+        text-decoration: none;
+    }
 
     img {
         margin-top: -2px;
@@ -169,10 +174,6 @@ nav {
         cursor: pointer;
     }
 
-    ul li:hover a, ul li:focus a, ul li:active a {
-        text-decoration: underline;
-    }
-
     ul > ul > li {
         padding-left: 37px;
 
@@ -188,12 +189,14 @@ nav {
 }
 
 main {
-    margin-top: 25px;
+    margin-top: 0px;
     margin-right: 30px !important;
     margin-left: 260px !important;
     margin-bottom: 15px;
 
     padding-top: 10px;
+    
+    font-size: 13px;
 }
 
 .table-wrapper-cutoff {
@@ -362,6 +365,7 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 }
 
 /* bootstrap overrides */
+
 .btn {
     border-radius: 0;
 }
@@ -374,6 +378,10 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active {
     background-color: darken(@polydarkgreen, 5%) !important;
     border-color: darken(darken(@polydarkgreen, 5%), 10%) !important;
+}
+
+.btn-group .btn {
+    border-radius: 5px;
 }
 
 .btn-group > .btn:first-child {
@@ -394,8 +402,13 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
     padding: 3px 8px;
 }
 
+.input-group-addon {
+    font-size: 13px;
+}
+
 .input-group .form-control {
-    height: 34px;
+    height: 32px;
+    font-size: 13px;
 }
 
 .form-control:focus {
@@ -406,6 +419,20 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 .page-header {
     margin-top: 0;
     padding-bottom: 0;
+}
+
+/* Email */
+#email_buttons {
+    padding-right: 0px;
+}
+
+#email_buttons .btn {
+    font-size: 13px;
+}
+
+#email_search_wrapper {
+    padding-left: 0px;
+    padding-right: 5px;
 }
 
 /* Source: http://cpratt.co/twitter-bootstrap-callout-css-styles/ */

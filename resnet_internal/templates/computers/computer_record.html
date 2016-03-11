@@ -7,7 +7,7 @@
 
 {% block main %}
     <div class="col-xs-12">
-        <h4>Pinholes{% if request.user|computer_record_modify_access %}&nbsp;&nbsp;<small><a class="add_link" href="{% url 'pinhole_request' ip_address=ip_address %}">+Add Pinhole</a></small>{% endif %}</h4>
+        <h4>Pinholes{% if request.user|computer_record_modify_access %}&nbsp;&nbsp;<small><a class="add_link" href="{% url 'computers:pinhole_request' ip_address=ip_address %}">+Add Pinhole</a></small>{% endif %}</h4>
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -67,7 +67,7 @@
     </div>
     
     <div class="col-xs-12">
-        <h4>Domain Names (CNAME){% if request.user|computer_record_modify_access %}&nbsp;&nbsp;<small><a class="add_link" href="{% url 'domain_name_request' ip_address=ip_address %}">+Add Domain Name</a></small>{% endif %}</h4>
+        <h4>Domain Names (CNAME){% if request.user|computer_record_modify_access %}&nbsp;&nbsp;<small><a class="add_link" href="{% url 'computers:domain_name_request' ip_address=ip_address %}">+Add Domain Name</a></small>{% endif %}</h4>
         <table class="table table-hover">
             <thead>
                 <tr>
@@ -99,14 +99,14 @@
 {{ block.super }}
     <script type="text/javascript">
         function remove_pinhole(pinhole_id)  {
-            ajaxPost("{% url 'remove_computer_pinhole' %}", {"pinhole_id": pinhole_id}, function(response_context) {
+            ajaxPost("{% url 'computers:remove_pinhole' %}", {"pinhole_id": pinhole_id}, function(response_context) {
                 alert("A pinhole removal request has been created in your name. Please use SR#" + response_context["sr_number"] + " as a reference.")
                 $("#pinhole_" + pinhole_id).remove();
             });
         }
 
         function remove_domain_name(domain_name_id)  {
-            ajaxPost("{% url 'remove_computer_domain_name' %}", {"domain_name_id": domain_name_id}, function(response_context) {
+            ajaxPost("{% url 'computers:remove_domain_name' %}", {"domain_name_id": domain_name_id}, function(response_context) {
                 alert("A domain name removal request has been created in your name. Please use SR#" + response_context["sr_number"] + " as a reference.")
                 $("#domain_name_" + domain_name_id).remove();
             });

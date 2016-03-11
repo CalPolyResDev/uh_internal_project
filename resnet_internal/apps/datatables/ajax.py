@@ -18,10 +18,7 @@ from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.forms import models as model_forms
 from django.http.response import HttpResponseNotAllowed
-from django.utils.decorators import classonlymethod
-from django.views.decorators.http import require_POST
 from django.views.generic.edit import ModelFormMixin, ProcessFormView, View
-from django_ajax.decorators import ajax
 from django_ajax.mixin import AJAXMixin
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django_datatables_view.mixins import JSONResponseView
@@ -43,6 +40,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     max_display_length = 2000
     item_name = 'item'
     remove_url_name = None
+    extra_related = None
 
     column_definitions = OrderedDict()
     options = {
@@ -72,19 +70,8 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
     extra_options = {}
 
-    base_column_template = """
-        <div class='wrapper' column='{column}'>
-            {display_block}
-        </div>
-    """
-
-    display_block_template = """
-            <div class='value-display' title='{value}'>
-                {value}
-                {link_block}
-                {inline_images}
-            </div>
-    """
+    base_column_template = """<div class='wrapper' column='{column}'>{display_block}</div>"""
+    display_block_template = """<div class='value-display' title='{value}'>{value}{link_block}{inline_images}</div>"""
 
     href_link_block_template = """<a href='{link_url}' target='_blank' class='{link_class_name}'>{link_display}</a>"""
     onclick_link_block_template = """<a onclick='{onclick_action}' class='{link_class_name}'>{link_display}</a>"""
@@ -99,6 +86,19 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
         self.get_options()
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(self, *args, **kwargs)
+
+        context['datatable_name'] = self.get_table_name()
+        context['datatable_options'] = self.get_options_serialized()
+        context['datatable_update_url'] = self.get_update_source()
+        context['datatable_form_url'] = self.get_form_source()
+        context['write_permission'] = self.get_write_permissions()
+        context['remove_url'] = self.get_remove_url()
+        context['item_name'] = self.get_item_name()
+
+        return context
+
     def get_table_name(self):
         return self.table_name
 
@@ -112,8 +112,12 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         self.write_permissions = True
 
     def get_write_permissions(self):
-        if not self.write_permissions:
-            raise ImproperlyConfigured("Write permissions were not initialized.")
+        write_permissions = getattr(self, 'write_permissions', None)
+        if not write_permissions:
+            if getattr(self, 'request', None):
+                self._initialize_write_permissions(self.request.user)
+            else:
+                raise ImproperlyConfigured("Write permissions were not initialized.")
 
         return self.write_permissions
 
@@ -243,7 +247,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
     def retrieve_editable_row(self, item):
         form = self.form_class(instance=item, auto_id="id_{id}-%s".format(id=item.id))
 
-        row_editable = {}
+        row_editable = OrderedDict()
 
         for column in self.get_columns():
             if column in form.fields.keys():
@@ -274,8 +278,12 @@ class RNINDatatablesPopulateView(BaseDatatableView):
                 column = self.column_definitions[column_name]
                 select_fields.append(column['lookup_field'][0:column['lookup_field'].rfind('__')])
 
+            if self.extra_related:
+                for related_name in self.extra_related:
+                    select_fields.append(related_name)
+
             if select_fields:
-                qs = qs.select_related(*select_fields)
+                qs = qs.prefetch_related(*select_fields)
 
         for item in qs:
             row = {}
@@ -297,6 +305,12 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
             data.append(row)
         return data
+
+    def check_params_for_flags(self, params, qs):
+        return qs, []
+
+    def get_extra_params(self, params):
+        return params
 
     def filter_queryset(self, qs):
         """ Filters the QuerySet by submitted search parameters.
@@ -322,8 +336,11 @@ class RNINDatatablesPopulateView(BaseDatatableView):
             column_q = Q()
             param_q = Q()
 
+            params = self.get_extra_params(params)
+            qs, flags = self.check_params_for_flags(params, qs)
+
             for param in params:
-                if param != "":
+                if param != "" and param not in flags:
                     for searchable_column in searchable_columns:
                         column_q |= Q(**{searchable_column + "__icontains": param})
 

@@ -12,16 +12,15 @@ from django.db.models.fields.related import ForeignKey
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ..core.models import Department, SubDepartment
-from .fields import MACAddressField, ListField
+from ..portmap.models import NetworkDevice
+from .fields import ListField
 
 
-class Computer(Model):
+class Computer(NetworkDevice):
 
     department = ForeignKey(Department, verbose_name='Department')
     sub_department = ForeignKey(SubDepartment, verbose_name='Sub Department')
-    computer_name = CharField(max_length=25, verbose_name='Computer Name', unique=True)
-    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address', blank=True, null=True, unique=True)
-    mac_address = MACAddressField(verbose_name='MAC Address', unique=True)
+
     model = CharField(max_length=25, verbose_name='Model')
     serial_number = CharField(max_length=20, verbose_name='Serial Number', blank=True, null=True, unique=True, default=None)
     property_id = CharField(max_length=50, verbose_name='Cal Poly Property ID', blank=True, null=True, unique=True, default=None)

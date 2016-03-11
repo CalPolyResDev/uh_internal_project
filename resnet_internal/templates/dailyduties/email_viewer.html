@@ -1,6 +1,9 @@
 {% extends "base_frame.html" %}
+
 {% load staticfiles %}
 {% load jfu_escaped %}
+{% load crispy_forms_tags %}
+
 {% block subtitle %} | Email{% endblock %}
 
 {% block extra_head %}
@@ -35,12 +38,12 @@
         <div class="btn-group" role="group" id="email_buttons">
             <button class="btn btn-default" type="button" id="create_ticket_button" title="Requestor Username:"
                 data-container="body" data-toggle="popover" data-placement="bottom"
-                data-content='  <div class="input-group">
-                                    <input type="text" class="form-control" id="ticket_requestor_username">
+                data-content='  <div id="ticket_creation_form_group" class="form-group"><div class="input-group" style="width: 200px;">
+                                    <input type="text" class="form-control" size="10" id="ticket_requestor_username" required>
                                     <span class="input-group-btn">
-                                        <button class="btn btn-default" type="button" onclick="create_ticket()">Create</button>
+                                        <button class="btn btn-primary" type="button" onclick="create_ticket()">Create</button>
                                     </span>
-                                </div><!-- /input-group -->
+                                </div></div><!-- /input-group -->
                 '>Create Ticket</button>
             <button class="btn btn-default" type="button" onclick="reply();">Reply</button>
             <button class="btn btn-default" type="button" onclick="reply_all();">Reply All</button>
@@ -92,6 +95,7 @@
             <p id="email_body">{{ message.body_plain_text|linebreaksbr|urlize }}</p>
         {% endif %}
     </div>
+    
     <div style="display: none;" id="send_and_archive_popover_content">
         <div class="table-responsive">
             <table class='table table-hover table-condensed'>
@@ -105,6 +109,19 @@
             </table>
         </div>
     </div>
+    {% block cc_csd_content %}
+    <div style="display: none;" id="cc_csd_popover_content">
+        <div>
+            {% crispy form %}
+            <!-- Adding to the issues surrounding the clever selects, it seems impossible to
+                use a standard submit button to the form. jQuery was used to try and add submit
+                event listeners and onsubmit attributes neither of which resulted in the submit
+                function being called. Therefore the button is added below with the onclick
+                handler specified. -->
+            <button class="btn btn-primary" onclick="submit_cc_csd_form();">Add</button>
+        </div>
+    </div>
+    {% endblock %}
     {% else %}
     <div class="col-xs-12">
         <h1>Could not retrieve email. It may have been deleted.</h1>
@@ -123,12 +140,7 @@
         var message_reply_to = '{{ message.reply_to|escapejs }}';
         var message_to = '{{ message.to|escapejs }}';
         var message_path = '{{ message.path|escapejs }}';
-        var attach_button_content = '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' %}</span>';
-        var reply_and_archive_popover_content = $('#send_and_archive_popover_content').html();
-        
-        var email_archive_url = "{% url 'email_archive' %}";
-        var send_email_url = "{% url 'send_email' %}";
-        var create_ticket_url = "{% url 'email_create_ticket' %}";
+        var attach_button_content = '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.html' 'dailyduties:jfu_upload' %}</span>';
     </script>
-    <script src="{% static 'js/email_message.js' %}"></script>
+    <script src="{% static 'js/email_message.js' %}?version=1.1"></script>
 {% endblock %}
