@@ -134,3 +134,50 @@ class AccessPointUpdateForm(ModelForm):
     class Meta:
         model = AccessPoint
         fields = ['dns_name', 'property_id', 'serial_number', 'mac_address', 'ip_address', 'ap_type']
+
+
+class NetworkInfrastructureDeviceCreateForm(ChainedChoicesModelForm):
+    community = ModelChoiceField(queryset=Community.objects.all())
+    building = ChainedModelChoiceField('community', reverse_lazy('core:chained_building'), Building)
+    room = ChainedModelChoiceField('building', reverse_lazy('core:chained_room'), Room)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.html5_required = True
+
+        self.helper.form_class = 'form-horizontal table-add-form'
+        self.helper.label_class = 'col-sm-2'
+        self.helper.field_class = 'col-sm-10 col-md-8'
+
+        self.helper.layout = Layout(
+            Fieldset(
+                'Add a new network infrastructure device',
+                Field('community', autocomplete='off'),
+                Field('building', autocomplete='off'),
+                Field('room', autocomplete='off'),
+                Field('dns_name', placeholder=self.fields['dns_name'].label),
+                Field('display_name', placeholder=self.fields['display_name'].label),
+                Field('ip_address', placeholder=self.fields['ip_address'].label),
+            ),
+            FormActions(
+                Submit('submit', 'Add Device'),
+            )
+        )
+
+        # Make error messages a bit more readable
+        for field_name in self.fields:
+            self.fields[field_name].error_messages = {'required': 'A ' + field_name + ' is required.'}
+
+    class Meta:
+        model = NetworkInfrastructureDevice
+        fields = ['community', 'building', 'room', 'dns_name', 'display_name', 'ip_address']
+
+
+class NetworkInfrastructureDeviceUpdateForm(ModelForm):
+
+    class Meta:
+        model = NetworkInfrastructureDevice
+        fields = ['room', 'dns_name', 'display_name', 'ip_address']

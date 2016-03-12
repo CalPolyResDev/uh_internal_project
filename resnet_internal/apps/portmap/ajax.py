@@ -24,8 +24,8 @@ from rmsconnector.utils import Resident
 
 from ...settings.base import NETWORK_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
-from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm
-from .models import Port, AccessPoint
+from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm, NetworkInfrastructureDeviceCreateForm, NetworkInfrastructureDeviceUpdateForm
+from .models import Port, AccessPoint, NetworkInfrastructureDevice
 from .utils import device_is_down
 
 
@@ -275,3 +275,49 @@ class PortChainedAjaxView(ChainedSelectChoicesView):
 
     def get_child_set(self):
         return Port.objects.filter(room__id=self.parent_value)
+
+
+class PopulateNetworkInfrastructureDevices(RNINDatatablesPopulateView):
+    table_name = 'network_infrastructure_device_map'
+
+    data_source = reverse_lazy('network:populate_network_infrastructure_devices')
+    update_source = reverse_lazy('network:update_network_infrastructure_device')
+    form_source = reverse_lazy('network:form_network_infrastructure_device')
+
+    form_class = NetworkInfrastructureDeviceCreateForm
+    model = NetworkInfrastructureDevice
+
+    item_name = 'network infrastructure device'
+    remove_url_name = 'network:remove_network_infrastructure_device'
+
+    column_definitions = OrderedDict()
+    column_definitions["community"] = {"width": "100px", "type": "string", "editable": True, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
+    column_definitions["building"] = {"width": "100px", "type": "string", "editable": True, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
+    column_definitions["room"] = {"width": "80px", "type": "string", "editable": True, "title": "Room", "related": True, "lookup_field": "name"}
+    column_definitions["display_name"] = {"width": "80px", "type": "string", "title": "Name"}
+    column_definitions["dns_name"] = {"width": "80px", "type": "string", "title": "DNS"}
+    column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
+    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+
+    def get_options(self):
+        if self.get_write_permissions():
+            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
+
+        return super().get_options()
+
+    def _initialize_write_permissions(self, user):
+        self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
+
+
+class RetrieveNetworkInfrastructureDeviceForm(RNINDatatablesFormView):
+    populate_class = PopulateNetworkInfrastructureDevices
+
+
+class UpdateNetworkInfrastructureDevice(BaseDatatablesUpdateView):
+    form_class = NetworkInfrastructureDeviceUpdateForm
+    model = NetworkInfrastructureDevice
+    populate_class = PopulateNetworkInfrastructureDevices
+
+
+class RemoveNetworkInfrastructureDevice(BaseDatatablesRemoveView):
+    model = NetworkInfrastructureDevice
