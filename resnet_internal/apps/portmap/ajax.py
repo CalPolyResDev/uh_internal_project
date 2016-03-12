@@ -213,6 +213,12 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     item_name = 'access point'
     remove_url_name = 'network:remove_access_point'
 
+    extra_options = {
+        "language": {
+            "search": "Filter records: (?email)",
+        },
+    }
+
     extra_related = [
         'upstream_device__port',
         'upstream_device__port__upstream_device'
@@ -255,6 +261,22 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
             return self.display_block_template.format(value=port.jack, link_block=port_block, inline_images="")
         else:
             return super().get_display_block(row, column)
+
+    def get_extra_params(self, params):
+        # Check for email lookup flag
+        for param in params:
+            if param[:1] == '?':
+                email = param[1:]
+
+                if email:
+                    try:
+                        resident = Resident(principal_name=email)
+                        params = [resident.address_dict['community'], resident.address_dict['building'], resident.address_dict['room']]
+                    except (ObjectDoesNotExist, ImproperlyConfigured):
+                        params = ['Address', 'Not', 'Found']
+                break
+
+        return params
 
 
 class RetrieveAccessPointForm(RNINDatatablesFormView):
