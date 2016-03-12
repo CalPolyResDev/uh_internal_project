@@ -6,7 +6,8 @@
 
 """
 
-from datetime import datetime
+from concurrent.futures.thread import ThreadPoolExecutor
+from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
 from pytz import timezone
@@ -57,11 +58,21 @@ class APClientInfo(AirwavesAPIConnector):
 
 class DeviceInfo(AirwavesAPIConnector):
 
-    def __init__(self, ap_id):
+    def __init__(self, ap_id, **kwargs):
         super().__init__()
 
-        response_detail = self.get_XML('ap_detail.xml?id=' + str(ap_id))
-        response_list = self.get_XML('ap_list.xml?id=' + str(ap_id))
+        with ThreadPoolExecutor() as pool:
+            if kwargs.get('extra_client_detail', False):
+                ap_client_info_future = pool.submit(lambda: APClientInfo(ap_id))
+            else:
+                ap_client_info_future = None
+
+            response_detail_future = pool.submit(lambda: self.get_XML('ap_detail.xml?id=' + str(ap_id)))
+            response_list_future = pool.submit(lambda: self.get_XML('ap_list.xml?id=' + str(ap_id)))
+
+            response_detail = response_detail_future.result()
+            response_list = response_list_future.result()
+            ap_client_info = ap_client_info_future.result() if ap_client_info_future else None
 
         device_detail = response_detail['amp:amp_ap_detail']['ap']
         device_list = response_list['amp:amp_ap_list']['ap']
@@ -69,7 +80,7 @@ class DeviceInfo(AirwavesAPIConnector):
         self.ap_folder = device_detail['ap_folder']
         self.device_type = device_detail['ap_group']
         self.up = True if device_detail['is_up'] == 'true' else False
-        self.uptime = device_detail['snmp_uptime']
+        self.uptime = timedelta(seconds=int(device_detail['snmp_uptime']))
 
         self.radios = []
 
@@ -114,7 +125,7 @@ class DeviceInfo(AirwavesAPIConnector):
                 }
                 self.interfaces.append(interface_info)
 
-        self.client_count = device_list['client_count']
+        self.client_count = device_list.get('client_count', 0)
         self.controller_id = device_list['controller_id']
         self.firmware = device_list['firmware']
         self.ip_address = device_list['lan_ip']
@@ -138,6 +149,15 @@ class DeviceInfo(AirwavesAPIConnector):
                             detail_radio['transmit_power'] = radio['transmit_power']
 
                             break
+
+        if client_info:
+            for client in ap_client_info.clients:
+                for radio in self.radios:
+                    for radio_client in radio['clients']:
+                        if radio_client['mac_address'] == client['mac_address']:
+                            radio_client['username'] = client['username']
+                            radio_client['connect_time'] = client['connect_time']
+                            radio_client['role'] = client['role']
 
 
 class ClientInfo(AirwavesAPIConnector):

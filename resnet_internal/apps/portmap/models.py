@@ -11,7 +11,7 @@
 """
 
 from django.db.models.base import Model
-from django.db.models.fields import CharField, GenericIPAddressField, BooleanField, PositiveSmallIntegerField
+from django.db.models.fields import CharField, GenericIPAddressField, BooleanField, PositiveSmallIntegerField, IntegerField
 from django.db.models.fields.related import ForeignKey
 from django.utils.functional import cached_property
 
@@ -28,6 +28,7 @@ class NetworkDevice(Model):
     mac_address = MACAddressField(verbose_name='MAC Address', null=True, blank=True)
     upstream_device = ForeignKey('NetworkDevice', related_name='downstream_devices', null=True, blank=True)
     room = ForeignKey(Room, verbose_name='Room', null=True, blank=True)
+    airwaves_id = IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.display_name

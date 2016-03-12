@@ -221,20 +221,21 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
 
     extra_related = [
         'upstream_device__port',
-        'upstream_device__port__upstream_device'
+        'upstream_device__upstream_device',
     ]
 
     column_definitions = OrderedDict()
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
     column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
     column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "related": True, "lookup_field": "name"}
-    column_definitions["upstream_device"] = {"width": "80px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "id"}
+    column_definitions["upstream_device"] = {"width": "40px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "id"}
     column_definitions["dns_name"] = {"width": "80px", "type": "string", "title": "Name"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
     column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
-    column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
+    column_definitions["mac_address"] = {"width": "125px", "type": "string", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
     column_definitions["ap_type"] = {"width": "80px", "type": "string", "title": "Type"}
+    column_definitions["airwaves_id"] = {"width": "10px", "type": "string", "orderable": False}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     def get_options(self):
@@ -259,6 +260,15 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
             port_icon = self.icon_template.format(icon_url=static('images/icons/icon_ethernet.png'))
             port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_class_name="", link_display=port_icon)
             return self.display_block_template.format(value=port.jack, link_block=port_block, inline_images="")
+        elif column == 'airwaves_id':
+            if row.airwaves_id:
+                icon_block = self.icon_template.format(icon_url=static('images/icons/aruba.png'))
+                ap_status_url = reverse('network:access_point_status', kwargs={'id': row.airwaves_id})
+                onclick = """openModalFrame("AP Status: {name}", "{url}");""".format(name=row.display_name, url=ap_status_url)
+                link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name="", link_display=icon_block)
+                return self.display_block_template.format(value='', link_block=link_block, inline_images='')
+            else:
+                return ''
         else:
             return super().get_display_block(row, column)
 

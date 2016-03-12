@@ -13,7 +13,7 @@ admin.site.register(Port, PortAdmin)
 
 
 class AccessPointAdmin(ChainedSelectAdminMixin, admin.ModelAdmin):
-    list_display = ['display_name', 'mac_address', 'ip_address', 'upstream_device', 'ap_type']
+    list_display = ['display_name', 'mac_address', 'ip_address', 'upstream_device', 'ap_type', 'airwaves_id']
     form = AccessPointCreateForm
 
 

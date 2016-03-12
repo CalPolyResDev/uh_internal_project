@@ -1,0 +1,107 @@
+{% extends "base_frame.html" %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-xs-6">
+            <strong>IP Address:</strong> {{ ap.ip_address }}<br />
+            <strong>MAC Address:</strong> {{ ap.mac_address }}<br />
+            <strong>Last Contacted:</strong> {{ ap.last_contacted }}<br />
+            <strong>Last Reboot:</strong> {{ ap.last_reboot }}<br />
+            <strong>Manufacturer:</strong> {{ ap.manufacturer }}<br />
+            <strong>Model:</strong> {{ ap.model }}<br />
+        </div>
+        <div class="col-xs-6">
+            <strong>Serial Number:</strong> {{ ap.serial_number }}<br />
+            <strong>AP Folder:</strong> {{ ap.ap_folder }}<br />
+            <strong>Device Type:</strong> {{ ap.device_type }}<br />
+            <strong>Is Up:</strong> {{ ap.up }}<br />
+            <strong>Uptime:</strong> {{ ap.uptime }}<br />
+            <strong>Firmware:</strong> {{ ap.firmware }}<br />
+        </div>
+    </div>
+    {% for radio in ap.radios %}
+        <div class="row">
+            <div class="col-xs-12">
+                <hr>
+                <h3>Radio {{ radio.index }}</h3>
+            </div>
+            <div class="col-xs-6">
+                <strong>Operational Mode:</strong> {{ radio.operational_mode }}<br />
+                <strong>Interface:</strong> {{ radio.interface }}<br />
+            </div>
+            <div class="col-xs-6">
+                <strong>Type:</strong> {{ radio.type }}<br />
+                <strong>Client Count:</strong> {{ radio.clients|length }}<br />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <h4 style="padding-top: 10px">Clients:</h4>
+                <table class="table table-hover table-striped">
+                    <thead>
+                        <tr>
+                            <th>Associated</th>
+                            <th>Authenticated</th>
+                            <th>Username</th>
+                            <th>MAC Address</th>
+                            <th>Role</th>
+                            <th>Signal</th>
+                            <th>SNR</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if radio.clients %}
+                            {% for client in radio.clients %}
+                                <tr>
+                                    <td>{{ client.associated }}</td>
+                                    <td>{{ client.authenticated }}</td>
+                                    <td>{{ client.username }}</td>
+                                    <td>{{ client.mac_address }}</td>
+                                    <td>{{ client.role }}</td>
+                                    <td>{{ client.signal }}</td>
+                                    <td>{{ client.snr }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center">No clients associated.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endfor %}
+    <div class="row">
+        <div class="col-xs-12">
+            <hr>
+            <h3>Interfaces</h3>
+            <table class="table table-hover table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>MAC Address</th>
+                        <th>Enabled</th>
+                        <th>Connected</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if radio.interfaces %}
+                        {% for interface in radio.interfaces %}
+                            <tr>
+                                <td>{{ interface.name }}</td>
+                                <td>{{ interface.mac_address }}</td>
+                                <td>{{ interface.enabled }}</td>
+                                <td>{{ interface.connected }}</td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="4" class="text-center">This device has no interfaces.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
