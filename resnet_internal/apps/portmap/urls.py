@@ -14,6 +14,7 @@ from .ajax import (PopulatePorts, UpdatePort, RetrievePortForm, change_port_stat
                    PopulateAccessPoints, UpdateAccessPoint, RetrieveAccessPointForm, RemoveAccessPoint,
                    PopulateNetworkInfrastructureDevices, UpdateNetworkInfrastructureDevice, RetrieveNetworkInfrastructureDeviceForm, RemoveNetworkInfrastructureDevice)
 from .views import PortsView, PortFrameView, AccessPointsView, AccessPointFrameView, NetworkInfrastructureDevicesView
+from resnet_internal.apps.portmap.views import AccessPointStatusView
 
 app_name = 'network'
 
@@ -34,6 +35,7 @@ urlpatterns = [
     url(r'^access-points/form/$', login_required(network_access(RetrieveAccessPointForm.as_view())), name='form_access_point'),
     url(r'^access-points/remove/$', login_required(network_modify_access(RemoveAccessPoint.as_view())), name='remove_access_point'),
     url(r'^access-points/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(network_access(AccessPointFrameView.as_view())), name='access_point_info_frame'),
+    url(r'^access-points/status_frame/(?P<id>\b[0-9]+\b)/$', login_required(network_access(AccessPointStatusView.as_view())), name='access_point_status'),
 
     url(r'^network-infrastructure-devices/$', login_required(network_access(NetworkInfrastructureDevicesView.as_view())), name='network_infrastructure_devices'),
     url(r'^network-infrastructure-devices/populate/$', login_required(network_access(PopulateNetworkInfrastructureDevices.as_view())), name='populate_network_infrastructure_devices'),
