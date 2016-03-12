@@ -11,8 +11,7 @@
 """
 
 from django.db.models.base import Model
-from django.db.models.fields import CharField, GenericIPAddressField, BooleanField, PositiveSmallIntegerField,\
-    IntegerField
+from django.db.models.fields import CharField, GenericIPAddressField, BooleanField, PositiveSmallIntegerField, IntegerField
 from django.db.models.fields.related import ForeignKey
 from django.utils.functional import cached_property
 

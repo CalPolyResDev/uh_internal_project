@@ -10,14 +10,14 @@
 
 from clever_selects.views import ChainedSelectFormViewMixin
 from django.core.urlresolvers import reverse_lazy
+from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 
 from ..datatables.views import DatatablesView
+from .airwaves.data import DeviceInfo
 from .ajax import PopulatePorts, PopulateAccessPoints, PopulateNetworkInfrastructureDevices
 from .forms import PortCreateForm, AccessPointCreateForm, NetworkInfrastructureDeviceCreateForm
 from .models import Port, AccessPoint, NetworkInfrastructureDevice
-from .airwaves.data import DeviceInfo, APClientInfo
-from django.views.generic.base import TemplateView
 
 
 class PortsView(ChainedSelectFormViewMixin, DatatablesView):

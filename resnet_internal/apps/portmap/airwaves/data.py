@@ -6,13 +6,13 @@
 
 """
 
+from concurrent.futures.thread import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from urllib.parse import urlencode
 
 from pytz import timezone
 
 from .connector import AirwavesAPIConnector
-from concurrent.futures.thread import ThreadPoolExecutor
 
 
 class OverallStatistics(AirwavesAPIConnector):

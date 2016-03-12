@@ -13,8 +13,7 @@ from ..core.permissions import network_access, network_modify_access
 from .ajax import (PopulatePorts, UpdatePort, RetrievePortForm, change_port_status, RemovePort, PortChainedAjaxView,
                    PopulateAccessPoints, UpdateAccessPoint, RetrieveAccessPointForm, RemoveAccessPoint,
                    PopulateNetworkInfrastructureDevices, UpdateNetworkInfrastructureDevice, RetrieveNetworkInfrastructureDeviceForm, RemoveNetworkInfrastructureDevice)
-from .views import PortsView, PortFrameView, AccessPointsView, AccessPointFrameView, NetworkInfrastructureDevicesView
-from resnet_internal.apps.portmap.views import AccessPointStatusView
+from .views import PortsView, PortFrameView, AccessPointsView, AccessPointFrameView, NetworkInfrastructureDevicesView, AccessPointStatusView
 
 app_name = 'network'
 
