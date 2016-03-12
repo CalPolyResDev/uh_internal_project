@@ -66,8 +66,6 @@ class DeviceInfo(AirwavesAPIConnector):
         device_detail = response_detail['amp:amp_ap_detail']['ap']
         device_list = response_list['amp:amp_ap_list']['ap']
 
-        print(device_detail)
-
         self.ap_folder = device_detail['ap_folder']
         self.device_type = device_detail['ap_group']
         self.up = True if device_detail['is_up'] == 'true' else False
