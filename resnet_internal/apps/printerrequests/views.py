@@ -1,30 +1,76 @@
 """
-.. module:: resnet_internal.printerrequests.views
-   :synopsis: University Housing Internal Printer Request Views.
+.. module:: reslife_internal.printerrequests.views
+   :synopsis: ResLife Internal Printer Request Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
 """
 
+from datetime import datetime
 import logging
 
+from django.core.urlresolvers import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.views.generic.list import ListView
+from srsconnector.models import PrinterRequest
 
-from .forms import TonerCountForm, PartCountForm
+from ...settings.base import DAILY_DUTIES_ACCESS
+from ..core.models import CSDMapping
+from .forms import TonerCountForm, PartCountForm, TonerRequestForm, PartsRequestForm
 from .models import Request, Toner, Part
 
 
 logger = logging.getLogger(__name__)
 
+SERVICE_REQUEST_TYPE_MAP = {
+    "toner": '**TONER_REQUEST',
+    "parts": '**PARTS_REQUEST',
+}
 
-class RequestTonerView(FormView):
+
+class PrinterRequestMixin(object):
+    success_url = reverse_lazy('printerrequests')
+
+    def create_requests(self, priority, request_type, for_front_desk, printer, request_list, user):
+        # Create the service request
+        service_request = PrinterRequest()
+        service_request.priority = priority
+        service_request.requestor_username = user.username
+        service_request.printer_model = printer.model
+        service_request.printer_manufacturer = printer.make
+        service_request.request_type = SERVICE_REQUEST_TYPE_MAP[request_type]
+        service_request.request_list = request_list
+        service_request.work_log = 'Created Ticket for {full_name} ({email})'.format(user.get_full_name(), user.username)
+        service_request.save()
+
+        # Create the printer request.
+        printer_request = Request()
+        printer_request.ticket_id = service_request.ticket_id
+        printer_request.date_requested = datetime.now()
+        printer_request.priority = priority
+        printer_request.requestor = user.username
+
+        # Determine where to send it
+        try:
+            address = CSDMapping.objects.get(email=user.username).domain + " " + ("Front Desk" if for_front_desk else "CSD Office")
+        except CSDMapping.DoesNotExist:
+            updated_toner_service_request = PrinterRequest.objects.get(ticket_id=service_request.ticket_id)
+            address = "Building " + updated_toner_service_request.requestor_building + " Room " + updated_toner_service_request.requestor_room
+
+        printer_request.address = address
+        printer_request.status = Request.STATUSES.index("Open")
+
+        printer_request.save()
+
+        getattr(printer_request, request_type).add(*request_list)
+
+
+class RequestTonerView(PrinterRequestMixin, FormView):
     """Creates a service request for printer toner."""
 
-    template_name = "printers/request_toner.html"
+    template_name = "printerrequests/request_toner.djhtml"
     form_class = TonerRequestForm
-    success_url = reverse_lazy('printer_request_list')
 
     def form_valid(self, form):
         priority = form.cleaned_data['priority']
@@ -34,49 +80,17 @@ class RequestTonerView(FormView):
 
         toner = Toner.objects.get(id=toner_id)
         request_list = [toner]
-        requestor_alias = self.request.user.get_alias()
 
-        # Create the service request
-        toner_service_request = PrinterRequest()
-        toner_service_request.priority = priority
-        toner_service_request.requestor_username = requestor_alias
-        toner_service_request.printer_model = printer.model
-        toner_service_request.printer_manufacturer = printer.make
-        toner_service_request.request_type = '**TONER_REQUEST'
-        toner_service_request.request_list = request_list
-        toner_service_request.work_log = 'Created Ticket for %s.' % requestor_alias
+        self.create_requests(priority=priority, request_type='toner', for_front_desk=for_front_desk, printer=printer, request_list=request_list, user=self.request.user)
 
-        toner_service_request.save()
-
-        # Create the resnet request.
-        toner_request = Request()
-        toner_request.ticket_id = toner_service_request.ticket_id
-        toner_request.date_requested = datetime.now()
-        toner_request.priority = priority
-        toner_request.requestor = requestor_alias
-
-        # Determine where to send it
-        try:
-            address = CSDMapping.objects.get(csd_alias=requestor_alias).csd_domain + " " + ("Front Desk" if for_front_desk else "CSD Office")
-        except CSDMapping.DoesNotExist:
-            updated_toner_service_request = PrinterRequest.objects.get(ticket_id=toner_service_request.ticket_id)
-            address = "Building " + updated_toner_service_request.requestor_building + " Room " + updated_toner_service_request.requestor_room
-
-        toner_request.address = address
-        toner_request.status = Request.STATUSES.index("Open")
-
-        toner_request.save()
-        toner_request.add_toner(request_list)
-
-        return super(RequestTonerView, self).form_valid(form)
+        return super().form_valid(form)
 
 
-class RequestPartsView(FormView):
+class RequestPartsView(PrinterRequestMixin, FormView):
     """Creates a service request for printer parts."""
 
-    template_name = "printers/request_part.html"
+    template_name = "printerrequests/request_part.djhtml"
     form_class = PartsRequestForm
-    success_url = reverse_lazy('printer_request_list')
 
     def form_valid(self, form):
         priority = form.cleaned_data['priority']
@@ -85,45 +99,22 @@ class RequestPartsView(FormView):
 
         part = Part.objects.get(id=part_id)
         request_list = [part]
-        requestor_alias = self.request.user.get_alias()
 
-        # Create the service request
-        part_service_request = PrinterRequest()
-        part_service_request.priority = priority
-        part_service_request.requestor_username = requestor_alias
-        part_service_request.printer_model = printer.model
-        part_service_request.printer_manufacturer = printer.make
-        part_service_request.request_type = '**PARTS_REQUEST'
-        part_service_request.request_list = request_list
-        part_service_request.work_log = 'Created Ticket for %s.' % requestor_alias
+        self.create_requests(priority=priority, request_type='parts', for_front_desk=False, printer=printer, request_list=request_list, user=self.request.user)
 
-        part_service_request.save()
-
-        # Create the resnet request.
-        part_request = Request()
-        part_request.ticket_id = part_service_request.ticket_id
-        part_request.date_requested = datetime.now()
-        part_request.priority = priority
-        part_request.requestor = requestor_alias
-
-        part_request.address = address
-        part_request.status = Request.STATUSES.index("Open")
-
-        part_request.save()
-        part_request.add_parts(request_list)
-
-        return super(RequestPartsView, self).form_valid(form)
+        return super().form_valid(form)
 
 
 class RequestsListView(ListView):
     """Lists all open printer requests and supplies a form to modify the request status."""
 
-    template_name = "printerrequests/viewrequests.html"
+    template_name = "printerrequests/viewrequests.djhtml"
 
     def get_queryset(self):
         query = Request.objects.exclude(status=Request.STATUSES.index('Delivered'))
 
-        if self.request.user.has_access(TECHNICIAN_ACCESS):
+        # Only show all requests if the user has access to fulfill them
+        if not self.request.user.has_access(DAILY_DUTIES_ACCESS):
             query = query.filter(requestor=self.request.user.get_alias())
 
         return query
@@ -132,7 +123,7 @@ class RequestsListView(ListView):
 class InventoryView(TemplateView):
     """Lists inventory for both parts and toner."""
 
-    template_name = "printerrequests/viewinventory.html"
+    template_name = "printerrequests/viewinventory.djhtml"
     toner_form = TonerCountForm
     part_form = PartCountForm
 
@@ -167,4 +158,4 @@ class InventoryView(TemplateView):
 class OnOrderView(InventoryView):
     """Lists order counts for both parts and toner."""
 
-    template_name = "printerrequests/viewordered.html"
+    template_name = "printerrequests/viewordered.djhtml"

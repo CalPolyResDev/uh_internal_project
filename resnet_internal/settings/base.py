@@ -86,14 +86,6 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MiB
 
 DATABASES = {
     'default': dj_database_url.config(default=get_env_variable('RESNET_INTERNAL_DB_DEFAULT_DATABASE_URL')),
-    'printers': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'printers',
-        'USER': 'printers',
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_PRINTERS_PASSWORD'),
-        'HOST': 'data.resdev.calpoly.edu',
-        'PORT': '3306',
-    },
     'rms': {
         'ENGINE': 'django.db.backends.oracle',
         'NAME': 'mercprd.db.calpoly.edu:1521/mercprd',
@@ -112,12 +104,11 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = (
-    'resnet_internal.apps.printerrequests.routers.PrinterRequestsRouter',
     'rmsconnector.routers.RMSRouter',
     'srsconnector.routers.SRSRouter',
 )
 
-DBBACKUP_DATABASES = ['default', 'printers']
+DBBACKUP_DATABASES = ['default']
 
 # ======================================================================================================== #
 #                                            E-Mail Configuration                                          #
