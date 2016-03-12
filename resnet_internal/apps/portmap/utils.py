@@ -10,9 +10,30 @@ from sys import platform
 import logging
 import os
 
-from .models import NetworkInfrastructureDevice
+from django.core.cache import cache
+
+from .models import NetworkInfrastructureDevice, NetworkDevice
 
 logger = logging.getLogger(__name__)
+
+
+def device_is_down(device):
+    return cache.get(down_device_cache_key(device)) and not cache.get(up_device_cache_key(device))
+
+
+def get_dns_name(device):
+    if isinstance(device, NetworkDevice):
+        return device.dns_name
+    else:
+        return device['dns_name']
+
+
+def down_device_cache_key(device):
+    return 'down_device::' + get_dns_name(device)
+
+
+def up_device_cache_key(device):
+    return 'up_device::' + get_dns_name(device)
 
 
 class NetworkReachabilityTester(object):
