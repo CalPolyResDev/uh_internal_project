@@ -13,31 +13,40 @@ from .connector import AirwavesAPIConnector
 class DeviceQuery(AirwavesAPIConnector):
 
     def __init__(self, search_string):
-        response = self.getXML('ap_search.xml?query=' + urlencode(search_string))
+        super().__init__()
+
+        response = self.get_XML('ap_search.xml?' + urlencode({'query': search_string}))
 
         self.results = []
 
-        for record in response['amp:amp_ap_search']['record']:
-            self.results.append(int(record['@id']))
+        if 'record' in response['amp:amp_ap_search']:
+            for record in self._ensure_list(response['amp:amp_ap_search']['record']):
+                self.results.append(int(record['@id']))
 
 
 class ClientQuery(AirwavesAPIConnector):
 
     def __init__(self, search_string):
-        response = self.getXML('client_search.xml?query=' + urlencode(search_string))
+        super().__init__()
+
+        response = self.get_XML('client_search.xml?' + urlencode({'query': search_string}))
 
         self.results = []
 
-        for record in response['amp:amp_client_search']['record']:
-            self.results.append(int(record['@id']))
+        if 'record' in response['amp:amp_client_search']:
+            for record in self._ensure_list(response['amp:amp_client_search']['record']):
+                self.results.append(int(record['@id']))
 
 
 class AllDevices(AirwavesAPIConnector):
 
     def __init__(self):
-        response = self.getXML('ap_list.xml')
+        super().__init__()
+
+        response = self.get_XML('ap_list.xml')
 
         self.results = []
 
-        for record in response['amp:amp_ap_search']['ap']:
-            self.results.append(int(record['@id']))
+        if 'ap' in response['amp:amp_ap_search']:
+            for record in self._ensure_list(response['amp:amp_ap_search']['ap']):
+                self.results.append(int(record['@id']))

@@ -17,25 +17,29 @@ from .connector import AirwavesAPIConnector
 class OverallStatistics(AirwavesAPIConnector):
 
     def __init__(self):
+        super().__init__()
+
         response = self.get_JSON('amp_stats.json')
 
         self.up = {}
-        self.up['access_points'] = response['up']['tooltip']['thin']
-        self.up['controllers'] = response['up']['tooltip']['controllers']
-        self.up['switches'] = response['up']['tooltip']['routers']
+        self.up['access_points'] = int(response['up']['tooltip']['thin'])
+        self.up['controllers'] = int(response['up']['tooltip']['controller'])
+        self.up['switches'] = int(response['up']['tooltip']['router'])
 
         self.down = {}
-        self.down['access_points'] = response['down']['tooltip']['thin']
-        self.down['controllers'] = response['down']['tooltip']['controllers']
-        self.down['switches'] = response['down']['tooltip']['routers']
+        self.down['access_points'] = int(response['down']['tooltip']['thin'])
+        self.down['controllers'] = int(response['down']['tooltip']['controller'])
+        self.down['switches'] = int(response['down']['tooltip']['router'])
 
-        self.clients = response['client_count']['count']
+        self.clients = int(response['client_count']['count'])
 
 
 class APClientInfo(AirwavesAPIConnector):
 
     def __init__(self, ap_id):
-        response = self.get_JSON('list_view.json?list=client_of_device&fv_id=0&ap_id=' + str(ap_id))
+        super().__init__()
+
+        response = self.get_JSON('/api/list_view.json?list=client_of_device&fv_id=0&ap_id=' + str(ap_id))
 
         self.clients = []
 
@@ -54,11 +58,15 @@ class APClientInfo(AirwavesAPIConnector):
 class DeviceInfo(AirwavesAPIConnector):
 
     def __init__(self, ap_id):
+        super().__init__()
+
         response_detail = self.get_XML('ap_detail.xml?id=' + str(ap_id))
         response_list = self.get_XML('ap_list.xml?id=' + str(ap_id))
 
         device_detail = response_detail['amp:amp_ap_detail']['ap']
-        device_list = response_list['amp_amp_ap_list']['ap']
+        device_list = response_list['amp:amp_ap_list']['ap']
+
+        print(device_detail)
 
         self.ap_folder = device_detail['ap_folder']
         self.device_type = device_detail['ap_group']
@@ -68,7 +76,7 @@ class DeviceInfo(AirwavesAPIConnector):
         self.radios = []
 
         if 'radio' in device_detail:
-            for radio in list(device_detail['radio']):
+            for radio in self._ensure_list(device_detail['radio']):
                 radio_info = {
                     'index': radio['@index'],
                     'bssids': [],
@@ -79,7 +87,7 @@ class DeviceInfo(AirwavesAPIConnector):
                 }
 
                 if 'client' in radio:
-                    for client in list(radio['client']):
+                    for client in self._ensure_list(radio['client']):
                         client_info = {
                             'associated': True if client['assoc_stat'] == 'true' else False,
                             'authenticated': True if client['auth_stat'] == 'true' else False,
@@ -91,7 +99,7 @@ class DeviceInfo(AirwavesAPIConnector):
                         radio_info['clients'].append(client_info)
 
                 if 'bssid' in radio:
-                    for bssid in list(radio['bssid']):
+                    for bssid in self._ensure_list(radio['bssid']):
                         radio_info['bssids'].append(bssid)
 
                 self.radios.append(radio_info)
@@ -99,7 +107,7 @@ class DeviceInfo(AirwavesAPIConnector):
         self.interfaces = []
 
         if 'interface' in device_detail:
-            for interface in list(device_detail['interface']):
+            for interface in self._ensure_list(device_detail['interface']):
                 interface_info = {
                     'enabled': True if interface['admin_status'] == 'Up' else False,
                     'name': interface['name'],
@@ -112,9 +120,9 @@ class DeviceInfo(AirwavesAPIConnector):
         self.controller_id = device_list['controller_id']
         self.firmware = device_list['firmware']
         self.ip_address = device_list['lan_ip']
-        self.mac_address = device_list['mac_address']
-        self.last_contacted = datetime.fromtimestamp(device_list['last_contacted'])
-        self.last_reboot = datetime.fromtimestamp(device_list['last_reboot'])
+        self.mac_address = device_list['lan_mac']
+        self.last_contacted = datetime.fromtimestamp(int(device_list['last_contacted']))
+        self.last_reboot = datetime.fromtimestamp(int(device_list['last_reboot']))
         self.manufacturer = device_list['mfgr']
         self.model = device_list['model']['#text']
         self.monitor_only = True if device_list['monitor_only'] == 'true' else False
@@ -122,13 +130,13 @@ class DeviceInfo(AirwavesAPIConnector):
         self.serial_number = device_list['serial_number']
 
         if 'radio' in device_list:
-            for radio in list(device_list['radio']):
+            for radio in self._ensure_list(device_list['radio']):
                 if self.radios:
                     for detail_radio in self.radios:
                         if detail_radio['index'] == radio['@index']:
                             detail_radio['channel'] = radio['channel']
                             detail_radio['enabled'] = True if radio['enabled'] == 'true' else False
-                            detail_radio['mac_address'] = radio['mac_address']
+                            detail_radio['mac_address'] = radio['radio_mac']
                             detail_radio['transmit_power'] = radio['transmit_power']
 
                             break
@@ -137,29 +145,36 @@ class DeviceInfo(AirwavesAPIConnector):
 class ClientInfo(AirwavesAPIConnector):
 
     def __init__(self, client_mac):
-        response = self.get_XML('client_detail.xml?mac=' + urlencode(client_mac))
+        super().__init__()
+
+        response = self.get_XML('client_detail.xml?' + urlencode({'mac': client_mac}))
 
         client = response['amp:amp_client_detail']['client']
 
-        self.ap_id = client['ap']['@id']
-        self.ap_name = client['ap']['#text']
+        if 'ap' in client:
+            self.ap_id = client['ap']['@id']
+            self.ap_name = client['ap']['#text']
+        else:
+            self.ap_id = None
+            self.ap_name = None
 
         self.mac_address = client['@mac']
 
         self.associations = []
 
-        if 'association' in client['association']:
-            for association in list(client['association']):
+        if 'association' in client:
+            for association in self._ensure_list(client['association']):
                 association_info = {
                     'ap_id': association['ap']['@id'],
                     'bytes_used': association['bytes_used'],
                     'connect_time': self.datetime_from_xml_date(association['connect_time']),
                     'disconnect_time': self.datetime_from_xml_date(association['disconnect_time']),
                     'ip_addresses': [],
-                    'rssi': int(association['rssi']),
+                    'rssi': int(association['rssi']) if 'rssi' in association else None,
                 }
 
-                for lan in list(association['lan_elements']['lan']):
-                    association_info['ip_addresses'].append(lan['@ip_address'])
+                if 'lan_elements' in association:
+                    for lan in self._ensure_list(association['lan_elements']['lan']):
+                        association_info['ip_addresses'].append(lan['@ip_address'])
 
                 self.associations.append(association_info)

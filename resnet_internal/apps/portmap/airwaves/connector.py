@@ -22,10 +22,10 @@ class AirwavesAPIConnector(object):
     session = None
 
     def __init__(self, **kwargs):
-        self.url = settings['AIRWAVES']['url']
-        self.username = settings['AIRWAVES']['username']
-        self.password = settings['AIRWAVES']['password']
-        self.verify = settings['AIRWAVES']['verify_ssl']
+        self.url = settings.AIRWAVES['url']
+        self.username = settings.AIRWAVES['username']
+        self.password = settings.AIRWAVES['password']
+        self.verify = settings.AIRWAVES['verify_ssl']
 
         for k, v in kwargs:
             setattr(self, k, v)
@@ -33,7 +33,10 @@ class AirwavesAPIConnector(object):
     def login(self):
         response = AirwavesAPIConnector.session.post(urljoin(self.url, '/LOGIN'),
                           data={'credential_0': self.username,
-                                'credential_1': self.password})
+                                'credential_1': self.password,
+                                'destination': '/',
+                                'login': 'Log In'})
+
         AirwavesAPIConnector.session.headers.update({'X-BISCOTTI': response.headers['X-BISCOTTI']})
 
     def connect(self):
@@ -57,12 +60,12 @@ class AirwavesAPIConnector(object):
         if response.status_code != 200:
             raise Exception(response)
 
-        return response
+        return smart_text(response.content)
 
     def get_JSON(self, relative_url):
         response = self.get(relative_url)
 
-        return json.loads(smart_text(response.content))
+        return json.loads(smart_text(response))
 
     def get_XML(self, relative_url):
         response = self.get(relative_url)
@@ -72,4 +75,11 @@ class AirwavesAPIConnector(object):
         return xmltodict.parse(response)
 
     def datetime_from_xml_date(self, xml_date):
+        xml_date = ''.join(xml_date.rsplit(':', 1))
         return datetime.strptime(xml_date, AIRWAVES_XML_DATE_FORMAT)
+
+    def _ensure_list(self, item):
+        if not isinstance(item, list):
+            item = [item]
+
+        return item
