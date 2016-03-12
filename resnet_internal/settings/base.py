@@ -156,6 +156,17 @@ SLACK_EMAIL_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_EMAIL_CHANNEL')
 SLACK_NETWORK_STATUS_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_NETWORK_STATUS_CHANNEL')
 
 # ======================================================================================================== #
+#                                      Network Devices Configuration                                       #
+# ======================================================================================================== #
+
+AIRWAVES = {
+    'url': get_env_variable('RESNET_INTERNAL_AIRWAVES_URL'),
+    'username': get_env_variable('RESNET_INTERNAL_AIRWAVES_USERNAME'),
+    'password': get_env_variable('RESNET_INTERNAL_AIRWAVES_PASSWORD'),
+    'verify_ssl': string_to_bool(get_env_variable('RESNET_INTERNAL_AIRWAVES_VERIFY_SSL')),
+}
+
+# ======================================================================================================== #
 #                                              Access Permissions                                          #
 # ======================================================================================================== #
 
