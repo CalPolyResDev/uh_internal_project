@@ -26,6 +26,7 @@ from ...settings.base import NETWORK_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm, NetworkInfrastructureDeviceCreateForm, NetworkInfrastructureDeviceUpdateForm
 from .models import Port, AccessPoint, NetworkInfrastructureDevice
+from .utils import device_is_down
 
 
 logger = logging.getLogger(__name__)
@@ -77,8 +78,12 @@ class PopulatePorts(RNINDatatablesPopulateView):
         self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
 
     def get_row_class(self, row):
-        if not row.active:
+        if device_is_down(row.upstream_device):
+            return 'danger'
+        elif not row.active:
             return "disabled"
+        else:
+            return super().get_row_class(row)
 
     def render_column(self, row, column):
         if column == 'downstream_devices':
@@ -94,7 +99,10 @@ class PopulatePorts(RNINDatatablesPopulateView):
             display_block = self.display_block_template.format(value="", link_block=link_block, inline_images="")
             return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
         elif column == 'active':
-            return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="action_blue", link_display="Deactivate" if getattr(row, column) else "Activate")
+            if device_is_down(row.upstream_device):
+                return self.display_block_template.format(value="", link_block="", inline_images="")
+            else:
+                return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="action_blue", link_display="Deactivate" if getattr(row, column) else "Activate")
         else:
             return super().render_column(row, column)
 
@@ -205,21 +213,29 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     item_name = 'access point'
     remove_url_name = 'network:remove_access_point'
 
+    extra_options = {
+        "language": {
+            "search": "Filter records: (?email)",
+        },
+    }
+
     extra_related = [
         'upstream_device__port',
+        'upstream_device__upstream_device',
     ]
 
     column_definitions = OrderedDict()
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
     column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
     column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "related": True, "lookup_field": "name"}
-    column_definitions["upstream_device"] = {"width": "80px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "id"}
+    column_definitions["upstream_device"] = {"width": "40px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "id"}
     column_definitions["dns_name"] = {"width": "80px", "type": "string", "title": "Name"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
     column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
-    column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
+    column_definitions["mac_address"] = {"width": "125px", "type": "string", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
     column_definitions["ap_type"] = {"width": "80px", "type": "string", "title": "Type"}
+    column_definitions["airwaves_id"] = {"width": "10px", "type": "string", "orderable": False}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     def get_options(self):
@@ -227,6 +243,12 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
             self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
 
         return super().get_options()
+
+    def get_row_class(self, row):
+        if device_is_down(row.upstream_device.upstream_device):
+            return 'danger'
+        else:
+            return super().get_row_class(row)
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
@@ -238,8 +260,33 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
             port_icon = self.icon_template.format(icon_url=static('images/icons/icon_ethernet.png'))
             port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_class_name="", link_display=port_icon)
             return self.display_block_template.format(value=port.jack, link_block=port_block, inline_images="")
+        elif column == 'airwaves_id':
+            if row.airwaves_id:
+                icon_block = self.icon_template.format(icon_url=static('images/icons/aruba.png'))
+                ap_status_url = reverse('network:access_point_status', kwargs={'id': row.airwaves_id})
+                onclick = """openModalFrame("AP Status: {name}", "{url}");""".format(name=row.display_name, url=ap_status_url)
+                link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name="", link_display=icon_block)
+                return self.display_block_template.format(value='', link_block=link_block, inline_images='')
+            else:
+                return ''
         else:
             return super().get_display_block(row, column)
+
+    def get_extra_params(self, params):
+        # Check for email lookup flag
+        for param in params:
+            if param[:1] == '?':
+                email = param[1:]
+
+                if email:
+                    try:
+                        resident = Resident(principal_name=email)
+                        params = [resident.address_dict['community'], resident.address_dict['building'], resident.address_dict['room']]
+                    except (ObjectDoesNotExist, ImproperlyConfigured):
+                        params = ['Address', 'Not', 'Found']
+                break
+
+        return params
 
 
 class RetrieveAccessPointForm(RNINDatatablesFormView):

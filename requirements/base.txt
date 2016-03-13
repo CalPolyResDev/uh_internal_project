@@ -23,6 +23,7 @@ django-crispy-forms~=1.6.0
 html2text==2016.1.8
 django-dbbackup~=2.3.2
 django-js-reverse~=0.6.0
+xmltodict~=0.10.1
 
 git+https://github.com/CalPolyResDev/django-ewiz.git
 git+ssh://git@code.its.calpoly.edu:7999/rmsc/rmsconnector.git

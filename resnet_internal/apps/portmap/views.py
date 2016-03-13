@@ -10,9 +10,11 @@
 
 from clever_selects.views import ChainedSelectFormViewMixin
 from django.core.urlresolvers import reverse_lazy
+from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
 
 from ..datatables.views import DatatablesView
+from .airwaves.data import DeviceInfo
 from .ajax import PopulatePorts, PopulateAccessPoints, PopulateNetworkInfrastructureDevices
 from .forms import PortCreateForm, AccessPointCreateForm, NetworkInfrastructureDeviceCreateForm
 from .models import Port, AccessPoint, NetworkInfrastructureDevice
@@ -52,3 +54,14 @@ class PortFrameView(DetailView):
     template_name = "portmap/port_popover.html"
     model = Port
     context_object_name = 'port'
+
+
+class AccessPointStatusView(TemplateView):
+    template_name = "portmap/ap_status.djhtml"
+
+    def get_context_data(self, **kwargs):
+        context = TemplateView.get_context_data(self, **kwargs)
+
+        context['ap'] = DeviceInfo(kwargs['id'], extra_client_detail=True)
+
+        return context

@@ -15,7 +15,7 @@ from django.core.urlresolvers import reverse
 from uwsgidecorators import timer
 import requests
 
-from .utils import NetworkReachabilityTester
+from .utils import NetworkReachabilityTester, down_device_cache_key, up_device_cache_key
 
 PREVIOUS_DOWN_DEVICE_TIMEOUT = 60 * 60  # s
 MAJOR_OUTAGE_CACHE_KEY = 'down_device::large_outage'
@@ -27,12 +27,6 @@ REACHABILITY_TESTER_PING_TIMEOUT = 10  # ms
 def update_slack_network_status(num):
     device_statuses = NetworkReachabilityTester.get_network_device_reachability(REACHABILITY_TESTER_PING_TIMEOUT)
     down_devices = [device for device in device_statuses if not device['status']]
-
-    def down_device_cache_key(device):
-        return 'down_device::' + device['dns_name']
-
-    def up_device_cache_key(device):
-        return 'up_device::' + device['dns_name']
 
     slack_attachments = []
 
