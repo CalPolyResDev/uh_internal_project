@@ -6,7 +6,7 @@
 
 """
 
-from clever_selects.form_fields import ChainedModelChoiceField
+from clever_selects.form_fields import ChainedModelChoiceField, ModelChoiceField
 from clever_selects.forms import ChainedChoicesModelForm
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
@@ -15,7 +15,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.forms import Form, BooleanField, CharField, ChoiceField, Textarea, ValidationError
 from srsconnector.models import PRIORITY_CHOICES
 
-from ..core.models import SubDepartment
+from ..core.models import SubDepartment, Community, Building, Room
 from .fields import PortListFormField, DomainNameListFormFiled
 from .models import Computer
 
@@ -27,6 +27,9 @@ IP_REQUEST_INFORMATION = """<p>When this form is submitted, a service request wi
 
 class ComputerForm(ChainedChoicesModelForm):
     sub_department = ChainedModelChoiceField('department', reverse_lazy('core:chained_sub_department'), SubDepartment, label="Sub Department")
+    community = ModelChoiceField(queryset=Community.objects.all())
+    building = ChainedModelChoiceField('community', reverse_lazy('core:chained_building'), Building)
+    room = ChainedModelChoiceField('building', reverse_lazy('core:chained_room'), Room)
 
     def __init__(self, *args, **kwargs):
         super(ComputerForm, self).__init__(*args, **kwargs)
@@ -44,6 +47,9 @@ class ComputerForm(ChainedChoicesModelForm):
         self.helper.layout = Layout(
             Fieldset(
                 'Add a new computer',
+                Field('community', autocomplete='off'),
+                Field('building', autocomplete='off'),
+                Field('room', autocomplete='off'),
                 Field('department', autocomplete='off'),
                 Field('sub_department', autocomplete='off'),
                 Field('display_name', placeholder=self.fields['display_name'].label),
@@ -93,7 +99,7 @@ class ComputerForm(ChainedChoicesModelForm):
 
     class Meta:
         model = Computer
-        fields = ['department', 'sub_department', 'display_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'location', 'date_purchased', 'dn', 'description']
+        fields = ['community', 'building', 'room', 'department', 'sub_department', 'display_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'location', 'date_purchased', 'dn', 'description']
 
 
 class RequestPinholeForm(Form):
