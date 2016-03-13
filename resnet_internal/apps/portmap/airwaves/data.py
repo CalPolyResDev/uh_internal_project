@@ -150,7 +150,7 @@ class DeviceInfo(AirwavesAPIConnector):
 
                             break
 
-        if client_info:
+        if ap_client_info:
             for client in ap_client_info.clients:
                 for radio in self.radios:
                     for radio_client in radio['clients']:
