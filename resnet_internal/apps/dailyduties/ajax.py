@@ -204,11 +204,11 @@ def get_mailbox_summary(request, **kwargs):
                         <img src="{% static 'images/mail_reply.png' %}"></img>
                     {% endif %}
                 </td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.date }}</td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.sender_name }} &lt;{{email.sender_address }}&gt;</td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.subject }}</td>
+                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'dailyduties:email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.date }}</td>
+                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'dailyduties:email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.sender_name }} &lt;{{email.sender_address }}&gt;</td>
+                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'dailyduties:email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.subject }}</td>
                 {% if mailbox_name|length == 0 %}
-                    <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.mailbox }}</td>
+                    <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'dailyduties:email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.mailbox }}</td>
                 {% endif %}
             </tr>
             {% endfor %}

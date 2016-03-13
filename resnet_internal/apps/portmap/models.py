@@ -33,20 +33,26 @@ class NetworkDevice(Model):
     def __str__(self):
         return self.display_name
 
+    @cached_property
+    def building(self):
+        try:
+            return self.room.building
+        except AttributeError:
+            return None
+
+    @cached_property
+    def community(self):
+        try:
+            return self.room.building.community
+        except AttributeError:
+            return None
+
 
 class Port(NetworkDevice):
 
     blade_number = PositiveSmallIntegerField(verbose_name='Blade')
     port_number = PositiveSmallIntegerField(verbose_name='Port')
     active = BooleanField(default=True, verbose_name='Active')
-
-    @cached_property
-    def building(self):
-        return self.room.building
-
-    @cached_property
-    def community(self):
-        return self.room.building.community
 
     def __str__(self):
         return self.jack
@@ -84,28 +90,8 @@ class AccessPoint(NetworkDevice):
     serial_number = CharField(max_length=9, unique=True, verbose_name='Serial Number')
     ap_type = PositiveSmallIntegerField(choices=AP_TYPE_CHOICES, verbose_name='Type')
 
-    @cached_property
-    def building(self):
-        return self.room.building
-
-    @cached_property
-    def community(self):
-        return self.building.community
-
 
 class NetworkInfrastructureDevice(NetworkDevice):
     """Network Infrastructure Device."""
 
-    @cached_property
-    def building(self):
-        try:
-            return self.room.building
-        except AttributeError:
-            return None
-
-    @cached_property
-    def community(self):
-        try:
-            return self.room.building.community
-        except AttributeError:
-            return None
+    pass

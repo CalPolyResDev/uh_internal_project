@@ -23,6 +23,12 @@ class Command(BaseCommand):
                 if len(queryResult.results) == 1:
                     network_device.airwaves_id = queryResult.results[0]
                     network_device.save()
+            elif network_device.ip_address:
+                queryResult = DeviceQuery(network_device.ip_address)
+
+                if len(queryResult.results) == 1:
+                    network_device.airwaves_id = queryResult.results[0]
+                    network_device.save()
 
         with ThreadPoolExecutor(max_workers=25) as pool:
             pool.map(update_network_device, NetworkDevice.objects.all())

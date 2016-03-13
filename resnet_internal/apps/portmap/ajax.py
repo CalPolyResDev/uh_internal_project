@@ -263,8 +263,8 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
         elif column == 'airwaves_id':
             if row.airwaves_id:
                 icon_block = self.icon_template.format(icon_url=static('images/icons/aruba.png'))
-                ap_status_url = reverse('network:access_point_status', kwargs={'id': row.airwaves_id})
-                onclick = """openModalFrame("AP Status: {name}", "{url}");""".format(name=row.display_name, url=ap_status_url)
+                device_status_url = reverse('network:airwaves_device_status', kwargs={'id': row.airwaves_id})
+                onclick = """openModalFrame("AP Status: {name}", "{url}");""".format(name=row.display_name, url=device_status_url)
                 link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name="", link_display=icon_block)
                 return self.display_block_template.format(value='', link_block=link_block, inline_images='')
             else:
@@ -329,6 +329,7 @@ class PopulateNetworkInfrastructureDevices(RNINDatatablesPopulateView):
     column_definitions["display_name"] = {"width": "80px", "type": "string", "title": "Name"}
     column_definitions["dns_name"] = {"width": "80px", "type": "string", "title": "DNS"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
+    column_definitions["airwaves_id"] = {"width": "10px", "type": "string", "title": "", "orderable": False}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     def get_options(self):
@@ -339,6 +340,19 @@ class PopulateNetworkInfrastructureDevices(RNINDatatablesPopulateView):
 
     def _initialize_write_permissions(self, user):
         self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
+
+    def get_display_block(self, row, column):
+        if column == 'airwaves_id':
+            if row.airwaves_id:
+                icon_block = self.icon_template.format(icon_url=static('images/icons/aruba.png'))
+                device_status_url = reverse('network:airwaves_device_status', kwargs={'id': row.airwaves_id})
+                onclick = """openModalFrame("Network Infrastructure Device Status: {name}", "{url}");""".format(name=row.display_name, url=device_status_url)
+                link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name="", link_display=icon_block)
+                return self.display_block_template.format(value='', link_block=link_block, inline_images='')
+            else:
+                return ''
+        else:
+            return super().get_display_block(row, column)
 
 
 class RetrieveNetworkInfrastructureDeviceForm(RNINDatatablesFormView):
