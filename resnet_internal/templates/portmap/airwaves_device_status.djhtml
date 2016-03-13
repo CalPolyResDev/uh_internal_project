@@ -72,6 +72,7 @@
             </div>
         </div>
     {% endfor %}
+    {% if ap.interfaces %}
     <div class="row">
         <div class="col-xs-12">
             <hr>
@@ -86,22 +87,17 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% if radio.interfaces %}
-                        {% for interface in radio.interfaces %}
-                            <tr>
-                                <td>{{ interface.name }}</td>
-                                <td>{{ interface.mac_address }}</td>
-                                <td>{{ interface.enabled }}</td>
-                                <td>{{ interface.connected }}</td>
-                            </tr>
-                        {% endfor %}
-                    {% else %}
+                    {% for interface in ap.interfaces %}
                         <tr>
-                            <td colspan="4" class="text-center">This device has no interfaces.</td>
+                            <td>{{ interface.name }}</td>
+                            <td>{{ interface.mac_address }}</td>
+                            <td>{{ interface.enabled }}</td>
+                            <td>{{ interface.connected }}</td>
                         </tr>
-                    {% endif %}
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
     </div>
+    {% endif %}
 {% endblock %}

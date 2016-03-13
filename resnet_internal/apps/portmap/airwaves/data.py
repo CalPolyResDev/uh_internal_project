@@ -8,6 +8,7 @@
 
 from concurrent.futures.thread import ThreadPoolExecutor
 from datetime import datetime, timedelta
+from operator import itemgetter
 from urllib.parse import urlencode
 
 from pytz import timezone
@@ -125,8 +126,10 @@ class DeviceInfo(AirwavesAPIConnector):
                 }
                 self.interfaces.append(interface_info)
 
+            self.interfaces.sort(key=itemgetter('name'))
+
         self.client_count = device_list.get('client_count', 0)
-        self.controller_id = device_list['controller_id']
+        self.controller_id = device_list.get('controller_id', None)
         self.firmware = device_list['firmware']
         self.ip_address = device_list['lan_ip']
         self.mac_address = device_list['lan_mac']
@@ -146,7 +149,7 @@ class DeviceInfo(AirwavesAPIConnector):
                             detail_radio['channel'] = radio['channel']
                             detail_radio['enabled'] = True if radio['enabled'] == 'true' else False
                             detail_radio['mac_address'] = radio['radio_mac']
-                            detail_radio['transmit_power'] = radio['transmit_power'] if 'transmit_power' in radio else None
+                            detail_radio['transmit_power'] = radio.get('transmit_power', None)
 
                             break
 
@@ -188,7 +191,7 @@ class ClientInfo(AirwavesAPIConnector):
                     'connect_time': self.datetime_from_xml_date(association['connect_time']),
                     'disconnect_time': self.datetime_from_xml_date(association['disconnect_time']),
                     'ip_addresses': [],
-                    'rssi': int(association['rssi']) if 'rssi' in association else None,
+                    'rssi': int(association.get('rssi', None))
                 }
 
                 if 'lan_elements' in association:
