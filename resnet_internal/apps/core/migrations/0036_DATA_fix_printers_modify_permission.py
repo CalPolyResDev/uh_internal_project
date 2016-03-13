@@ -29,7 +29,7 @@ def fix_permission_class(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('core', '0030_DATA_create_permission_classes'),
+        ('core', '0035_DATA_add_infrastructure_device_link'),
     ]
 
     operations = [
