@@ -146,7 +146,7 @@ class DeviceInfo(AirwavesAPIConnector):
                             detail_radio['channel'] = radio['channel']
                             detail_radio['enabled'] = True if radio['enabled'] == 'true' else False
                             detail_radio['mac_address'] = radio['radio_mac']
-                            detail_radio['transmit_power'] = radio['transmit_power']
+                            detail_radio['transmit_power'] = radio['transmit_power'] if 'transmit_power' in radio else None
 
                             break
 
