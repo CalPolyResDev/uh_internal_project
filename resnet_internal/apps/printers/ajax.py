@@ -39,12 +39,15 @@ class PopulatePrinters(RNINDatatablesPopulateView):
     remove_url_name = 'printers:remove'
 
     column_definitions = OrderedDict()
-    column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
-    column_definitions["sub_department"] = {"width": "200px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
+    column_definitions["community"] = {"width": "100px", "type": "string", "editable": True, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
+    column_definitions["building"] = {"width": "100px", "type": "string", "editable": True, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
+    column_definitions["room"] = {"width": "80px", "type": "string", "editable": True, "title": "Room", "related": True, "lookup_field": "name"}
     column_definitions["display_name"] = {"width": "200px", "type": "string", "title": "Printer Name"}
     column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
     column_definitions["model"] = {"width": "200px", "type": "string", "title": "Model"}
+    column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
+    column_definitions["sub_department"] = {"width": "200px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
     column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
     column_definitions["location"] = {"width": "150px", "type": "string", "title": "Location"}
