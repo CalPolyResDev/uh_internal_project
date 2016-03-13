@@ -56,8 +56,8 @@ class PortFrameView(DetailView):
     context_object_name = 'port'
 
 
-class AccessPointStatusView(TemplateView):
-    template_name = "portmap/ap_status.djhtml"
+class DeviceStatusView(TemplateView):
+    template_name = "portmap/airwaves_device_status.djhtml"
 
     def get_context_data(self, **kwargs):
         context = TemplateView.get_context_data(self, **kwargs)
