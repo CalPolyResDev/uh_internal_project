@@ -6,15 +6,99 @@
 
 """
 
-from srsconnector.models import STATUS_CHOICES, PrinterRequest
+import logging
 
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseRedirect
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
+from srsconnector.models import STATUS_CHOICES, PrinterRequest
 
-from .models import Request, Toner, Part
+from .models import Request, PrinterType, Toner, Part
 from .utils import can_fulfill_request, send_replenishment_email, send_delivery_confirmation
+
+
+logger = logging.getLogger(__name__)
+
+
+@ajax
+@require_POST
+def update_toner(request):
+    """ Update toner drop-down choices based on the printer chosen.
+
+    :param printer_id: The id of the printer for which to display toner choices.
+    :type printer_id: int
+    :param toner_id_selection: The color_id selected before form submission.
+    :type toner_id_selection: int
+
+    """
+
+    # Pull post parameters
+    printer_id = request.POST.get("printer_id", None)
+    toner_id_selection = request.POST.get("toner_id_selection", None)
+
+    printer_choices = PrinterType.objects.all()
+    toner_options = {str(printer_type.id): [(str(toner_type.id), toner_type.color) for toner_type in Toner.objects.filter(printer__id=printer_type.id)] for printer_type in printer_choices}
+    choices = []
+
+    # Add options iff a printer is selected
+    if printer_id:
+        for value, label in toner_options[printer_id]:
+            if toner_id_selection and value == toner_id_selection:
+                choices.append("<option value='%s' selected='selected'>%s</option>" % (value, label))
+            else:
+                choices.append("<option value='%s'>%s</option>" % (value, label))
+    else:
+        logger.debug("A printer wasn't passed via POST.")
+        choices.append("<option value='%s'>%s</option>" % ("", "---------"))
+
+    data = {
+        'inner-fragments': {
+            '#id_toner': ''.join(choices),
+        },
+    }
+
+    return data
+
+
+@ajax
+@require_POST
+def update_part(request):
+    """ Update part drop-down choices based on the printer chosen.
+
+    :param printer_id: The id of the printer for which to display toner choices.
+    :type printer_id: int
+    :param part_id_selection: The color_id selected before form submission.
+    :type part_id_selection: int
+
+    """
+
+    # Pull post parameters
+    printer_id = request.POST.get("printer_id", None)
+    part_id_selection = request.POST.get("part_id_selection", None)
+
+    printer_choices = PrinterType.objects.all()
+    part_options = {str(printer_type.id): [(str(part_type.id), part_type.type) for part_type in Part.objects.filter(printer__id=printer_type.id)] for printer_type in printer_choices}
+    choices = []
+
+    # Add options iff a printer is selected
+    if printer_id:
+        for value, label in part_options[printer_id]:
+            if part_id_selection and value == part_id_selection:
+                choices.append("<option value='%s' selected='selected'>%s</option>" % (value, label))
+            else:
+                choices.append("<option value='%s'>%s</option>" % (value, label))
+    else:
+        logger.debug("A printer wasn't passed via POST.")
+        choices.append("<option value='%s'>%s</option>" % ("", "---------"))
+
+    data = {
+        'inner-fragments': {
+            '#id_part': ''.join(choices),
+        },
+    }
+
+    return data
 
 
 @ajax

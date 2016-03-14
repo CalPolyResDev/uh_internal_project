@@ -17,14 +17,11 @@ CSRF_COOKIE_SECURE = True
 # ======================================================================================================== #
 
 ALLOWED_HOSTS = [
-    'dev.resdev.calpoly.edu',
-    'prod.resdev.calpoly.edu',
     '.internal.resnet.calpoly.edu',
-    '.internal.reslife.calpoly.edu',
     '.internal.housing.calpoly.edu',
 ]
 
-DEFAULT_BASE_URL = 'https://internal.resnet.calpoly.edu'
+DEFAULT_BASE_URL = 'https://internal.housing.calpoly.edu'
 
 # ======================================================================================================== #
 #                                      Cache Configuration                                                 #
