@@ -14,20 +14,18 @@ if (!String.prototype.format) {
 }
 
 // Source: http://stackoverflow.com/a/14919494
-function humanFileSize(bytes, si) {
-    var thresh = si ? 1000 : 1024;
-    if(Math.abs(bytes) < thresh) {
-        return bytes + ' B';
+function humanTransferRate(bps) {
+    var thresh = 1000
+    if(Math.abs(bps) < thresh) {
+        return bps + ' bps';
     }
-    var units = si
-        ? ['kB','MB','GB','TB','PB','EB','ZB','YB']
-        : ['KiB','MiB','GiB','TiB','PiB','EiB','ZiB','YiB'];
+    var units = ['kbps','Mbps','Gbps','Tbps','Pbps','Ebps','Zbps','Ybps'];
     var u = -1;
     do {
-        bytes /= thresh;
+        bps /= thresh;
         ++u;
-    } while(Math.abs(bytes) >= thresh && u < units.length - 1);
-    return bytes.toFixed(1)+' '+units[u];
+    } while(Math.abs(bps) >= thresh && u < units.length - 1);
+    return bps.toFixed(1)+' '+units[u];
 }
 
 function displayAirwavesChart(jquerySelector, datasourceURL) {
@@ -68,7 +66,7 @@ function displayAirwavesChart(jquerySelector, datasourceURL) {
                     return '<span style="color:{pointColor}">\u25CF</span> {seriesName}: <b>{value}</b><br/>'.format({
                      pointColor: this.color,
                      seriesName: this.series.name,
-                     value: this.series.options.chart_type.indexOf('bps') > -1 ? humanFileSize(this.y, true) : this.y,
+                     value: this.series.options.chart_type.indexOf('bps') > -1 ? humanTransferRate(this.y) : this.y,
                 });},
             },
         });
