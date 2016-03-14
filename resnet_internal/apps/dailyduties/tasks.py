@@ -62,7 +62,7 @@ def update_slack_email(num):
     previous_email_messages = cache.get('previous_email_messages')
 
     with EmailManager() as email_manager:
-        current_emails, num_available_messages = email_manager.get_messages('INBOX', '')
+        current_emails, num_available_messages = email_manager.get_messages('INBOX', '')  # noqa
         cache.set('previous_email_messages', current_emails, 10 * 60)
 
         if previous_email_messages is not None:
