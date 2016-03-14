@@ -55,10 +55,54 @@ function change_to_editor() {
     $('#send_and_archive_button').attr('data-container', 'body');
     $('#send_and_archive_button').attr('data-toggle', 'popover');
     $('#send_and_archive_button').attr('data-placement', 'bottom');
-    $('#send_and_archive_button').attr('data-content', reply_and_archive_popover_content);
+    $('#send_and_archive_button').attr('data-content', $('#send_and_archive_popover_content').html());
     $('#send_and_archive_button').popover({
         html: true
-    })
+    });
+    
+    $('#id_community').attr('onchange', '$(this).loadAllChainedChoices();');
+
+    add_button('CC a CSD', '', 'cc_csd_button');
+    $('#cc_csd_button').attr('title', 'Select Building:');
+    $('#cc_csd_button').attr('data-container', 'body');
+    $('#cc_csd_button').attr('data-toggle', 'popover');
+    $('#cc_csd_button').attr('data-placement', 'bottom');
+    $('#cc_csd_button').attr('data-content', $('#cc_csd_popover_content').html());
+    var cc_csd_popover = $('#cc_csd_button').popover({
+        html: true
+    });
+
+    // Not so clever selects...
+
+    // Clever Selects has several issues within a popover:
+    //      1. It doesn't register the event handler. The workaround is to manually add on onchange attribute to the field
+    //         which is handled before the button is added above.
+    //      2. Even then, the child field is updated in the source DOM, not in the popover. Therefore, the below code
+    //         adds an observer for these changes then copies them to the popover.
+    //      3. Something causes the chained_ids attribute of the parent field to be appended to everytime the parent
+    //         value changes. Therefore, there is code to reset this attribute back to a singular 'id_building'. 
+
+    var ccCSDMutationObserver = new MutationObserver(function(mutations, observer) {
+        var selected_community = $('.popover-content > div > form > fieldset > div > div > #id_community').val();
+        $('#cc_csd_popover_content > div > form > fieldset > div > div > #id_community').attr('chained_ids', 'id_building');
+        
+        // Replacing popover content dynamically: https://github.com/twbs/bootstrap/issues/6014
+        var popover = $('#cc_csd_button').data('bs.popover');
+        popover.tip().find('.popover-content').html($('#cc_csd_popover_content').html());
+        
+        // Reselect correct community without triggering AJAX call.
+        var community_field = popover.tip().find('.popover-content > div > form > fieldset > div > div > #id_community');
+        var community_field_onchange = community_field.attr('onchange');
+        community_field.attr('onchange', '');
+        community_field.val(selected_community);
+        community_field.attr('onchange', community_field_onchange);
+    });
+    
+    ccCSDMutationObserver.observe(document.getElementById('cc_csd_popover_content'), {
+        subtree: true,
+        childList: true
+    });
+    
     
     $('#email_buttons').append('<button class="btn btn-default" type="button" id="attach_button">Attach</button>');
     $('#attach_button').popover({
@@ -66,6 +110,39 @@ function change_to_editor() {
         container: 'body',
         content: attach_button_content
     });
+}
+
+function submit_cc_csd_form() {
+    function csrfSafeMethod(method) {
+        // these HTTP methods do not require CSRF protection
+        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+            }
+        }
+    });
+
+    $.ajax({
+        data: { building_id: $('.popover-content > div > form > fieldset > div > div > #id_building').val() },
+        type: 'POST',
+        url: DjangoReverse['dailyduties:email_get_cc_csd'](),
+        success: function(response) {
+            var cc = $('#cc').val();
+            if (cc.length) {
+                cc = cc + ', ' + response.content.email_string;
+            }
+            else {
+                cc = response.content.email_string;
+            }
+            $('#cc').val(cc);
+        }
+    });
+    
+    $('#cc_csd_button').data('bs.popover').hide();
 }
 
 function reply() {
@@ -103,7 +180,7 @@ function forward() {
 function archive(destination_folder) {
     $.blockUI({message: '<h1>Archiving...</h1>'});
 
-    ajaxPost(email_archive_url, 
+    ajaxPost(DjangoReverse['dailyduties:email_archive'](), 
         {'message0': message_path, 
             'destination_folder': destination_folder}, 
         function(response_context) {
@@ -117,12 +194,25 @@ function create_ticket() {
     // Popup blocking workaround: opening new windows must be a direct
     // consequence of user action. Therefore, open the window before the ajax
     // request completes then navigate to the edit ticket url.
+    var requestorUsername = $('#ticket_requestor_username').val();
+
+    if (!requestorUsername.length) {
+        $('#ticket_creation_form_group').addClass('has-error');
+        if (!$('#ticket_creation_form_group > .help-block').length) {
+            $('#ticket_creation_form_group').append('<label class="text-danger help-block">Please enter a username!</label>');
+        }
+        return;
+    }
+    else {
+        $('#ticket_creation_form_group').removeClass('has-error');
+        $('#ticket_creation_form_group > .help-block').remove();
+    }
+
     var newTicketWindow = window.open('', 'newTicketWindow');
     newTicketWindow.document.body.innerHTML = '<h1>Creating Ticket...</h1>';
-    
-    var requestor_username = $('#ticket_requestor_username').val();
-    ajaxPost(create_ticket_url,
-        {'message_path': message_path, 'requestor_username': requestor_username},
+
+    ajaxPost(DjangoReverse['dailyduties:email_create_ticket'](),
+        {'message_path': message_path, 'requestor_username': requestorUsername},
         function(response) {
             if (response['redirect_url']) {
                 newTicketWindow.location.href = response['redirect_url'];
@@ -168,7 +258,7 @@ function send_email(archive_folder) {
     post_dict['is_html'] = is_html;
     post_dict['in_reply_to'] = in_reply_to;
 
-    ajaxPost(send_email_url, post_dict, 
+    ajaxPost(DjangoReverse['dailyduties:send_email'](), post_dict, 
         function(response_context) {
             $.unblockUI();
             

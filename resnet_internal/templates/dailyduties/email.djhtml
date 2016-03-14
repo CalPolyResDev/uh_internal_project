@@ -1,0 +1,95 @@
+{% extends "base.djhtml" %}
+{% load staticfiles %}
+
+{% block subtitle %} | ResNet Email{% endblock %}
+
+{% block extra_head %}
+    <link rel="stylesheet" href="https://cdn.rawgit.com/orangehill/jstree-bootstrap-theme/16bbc350e6a37b3cfedcb96aac9fa9926e2e3e46/dist/themes/proton/style.min.css" />       
+{% endblock %}
+
+{% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>ResNet Email</h2>
+        </div>
+    </div>
+    <div class="col-xs-12 col-md-4 col-lg-3" id="email_tree">
+        <div id="jstree_folder_structure"></div>
+    </div>
+    <div class="col-xs-12 col-md-8 col-lg-9">
+        <div id="toolbar" class="row">
+            <div id="email_buttons" class="col-xs-12 col-lg-7">
+                <div class="btn-toolbar">
+                    <div class="btn-group btn-group-md">
+                        <button class="btn btn-primary" onclick="openModalFrame('Compose Email', '{% url 'dailyduties:email_compose' %}');">New</button>
+                        <button class="btn btn-primary" onclick="$('input:checkbox').prop('checked', true);">Check All</button>
+                        <button class="btn btn-primary" onclick="$('input:checkbox').prop('checked', false);">Uncheck All</button>
+                        <button class="btn btn-primary" onclick="refresh_messages('INBOX');" id="refresh_button">Refresh</button>
+                        <div class="btn-group">
+                            <button class="btn btn-primary dropdown-toggle" id="archive_button" title="Archive To:" data-toggle="dropdown">
+                               Archive <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                {% for folder, display_name in archive_folders %}
+                                    <li> 
+                                        <a id='{{ folder }}' onclick='$(&quot;#archive_button&quot;).popover(&quot;hide&quot;);archive_selected(&quot;{{ folder }}&quot;);'>
+                                            {{ display_name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        <button class="btn btn-primary" onclick="mark_selected_unread();">Mark Unread</button>
+                        <button class="btn btn-primary" onclick="mark_selected_read();">Mark Read</button>
+                    </div>
+                </div>
+            </div>
+            <div id="email_search_wrapper" class="col-xs-12 col-lg-5">
+                <div class="input-group input-group-md">
+                    <div class="input-group-addon"><span class="glyphicon glyphicon-search"></span></div>
+                    <div class="input-group-addon" id="search_scope_select">
+                        <input type="radio" name="options" id="search_this_mailbox" autocomplete="off" checked> This Mailbox
+                        <input type="radio" name="options" id="search_all_mailboxes" autocomplete="off"> All
+                    </div>
+                    <input type="text" class="form-control" id="email_search" placeholder="Search...">
+                    <div class="input-group-addon">
+                        <span id="email_search_clear" class="glyphicon glyphicon-remove-circle"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="table-responsive">
+                    <table class="table table-hover" id='email_table'>
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th></th>
+                                <th>Date</th>
+                                <th>From</th>
+                                <th>Subject</th>
+                                <th id="mailbox_name_header">Mailbox</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr id="loading_email_record">
+                                <td colspan="6" class="text-center"><br /><strong>Loading...</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_script %}
+    {{ block.super }}
+    <script type="text/javascript">
+        // URLs for use in email.js
+        var spinner_url = "{% static 'images/spinner.gif' %}";
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+    <script src="{% static 'js/email.js' %}?version=1.1"></script>
+{% endblock %}

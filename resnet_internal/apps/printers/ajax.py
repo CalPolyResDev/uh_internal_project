@@ -8,13 +8,11 @@
 
 from collections import OrderedDict
 from datetime import datetime
-import shlex
 
 from dateutil.relativedelta import relativedelta
 from django.core.urlresolvers import reverse_lazy
-from django.db.models.query_utils import Q
 
-from ...settings.base import printers_modify_access_test
+from ...settings.base import PRINTERS_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
 from .forms import PrinterForm
 from .models import Printer
@@ -30,23 +28,26 @@ class PopulatePrinters(RNINDatatablesPopulateView):
 
     table_name = "printer_index"
 
-    data_source = reverse_lazy('populate_printers')
-    update_source = reverse_lazy('update_printer')
-    form_source = reverse_lazy('form_printer')
+    data_source = reverse_lazy('printers:populate')
+    update_source = reverse_lazy('printers:update')
+    form_source = reverse_lazy('printers:form')
 
     form_class = PrinterForm
     model = Printer
 
     item_name = 'printer'
-    remove_url_name = 'remove_printer'
+    remove_url_name = 'printers:remove'
 
     column_definitions = OrderedDict()
-    column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
-    column_definitions["sub_department"] = {"width": "200px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
-    column_definitions["printer_name"] = {"width": "200px", "type": "string", "title": "Printer Name"}
+    column_definitions["community"] = {"width": "100px", "type": "string", "editable": True, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
+    column_definitions["building"] = {"width": "100px", "type": "string", "editable": True, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
+    column_definitions["room"] = {"width": "80px", "type": "string", "editable": True, "title": "Room", "related": True, "lookup_field": "name"}
+    column_definitions["display_name"] = {"width": "200px", "type": "string", "title": "Printer Name"}
     column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
     column_definitions["model"] = {"width": "200px", "type": "string", "title": "Model"}
+    column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
+    column_definitions["sub_department"] = {"width": "200px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
     column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
     column_definitions["location"] = {"width": "150px", "type": "string", "title": "Location"}
@@ -67,7 +68,7 @@ class PopulatePrinters(RNINDatatablesPopulateView):
         return super(PopulatePrinters, self).get_options()
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = printers_modify_access_test(user)
+        self.write_permissions = user.has_access(PRINTERS_MODIFY_ACCESS)
 
     def get_row_class(self, row):
         if row.date_purchased:
@@ -91,44 +92,24 @@ class PopulatePrinters(RNINDatatablesPopulateView):
         else:
             return super(PopulatePrinters, self).get_display_block(row, column)
 
-    def filter_queryset(self, qs):
-        search_parameters = self.request.GET.get('search[value]', None)
-        searchable_columns = self.get_searchable_columns()
+    def check_params_for_flags(self, params, qs):
         flags = ["?dhcp", "?old", "?older", "?replace"]
 
-        if search_parameters:
-            try:
-                params = shlex.split(search_parameters)
-            except ValueError:
-                params = search_parameters.split(" ")
-            columnQ = Q()
-            paramQ = Q()
+        # Check for flags
+        for param in params:
+            if param[:1] == '?':
+                flag = param[1:]
 
-            # Check for flags
-            for param in params:
-                if param[:1] == '?':
-                    flag = param[1:]
+                if flag == "dhcp":
+                    qs = qs.filter(dhcp=True)
+                elif flag == "old":
+                    qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLD_YEARS))
+                elif flag == "older":
+                    qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLDER_YEARS))
+                elif flag == "replace":
+                    qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=REPLACE_YEARS))
 
-                    if flag == "dhcp":
-                        qs = qs.filter(dhcp=True)
-                    elif flag == "old":
-                        qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLD_YEARS))
-                    elif flag == "older":
-                        qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLDER_YEARS))
-                    elif flag == "replace":
-                        qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=REPLACE_YEARS))
-
-            for param in params:
-                if param != "" and param not in flags:
-                    for searchable_column in searchable_columns:
-                        columnQ |= Q(**{searchable_column + "__icontains": param})
-
-                    paramQ.add(columnQ, Q.AND)
-                    columnQ = Q()
-            if paramQ:
-                qs = qs.filter(paramQ)
-
-        return qs
+        return qs, flags
 
 
 class RetrievePrinterForm(RNINDatatablesFormView):

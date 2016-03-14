@@ -1,14 +1,14 @@
-{% extends "base.html" %}
+{% extends "base.djhtml" %}
 {% load datatables %}
 {% load crispy_forms_tags %}
 {% load staticfiles %}
 
-{% block subtitle %} | {% block page_title %}{% endblock %}{% endblock %}
+{% block subtitle %} | {% block page_title %}{{ item_name|title }}s{% endblock %}{% endblock %}
 
 {% block main %}
     <div class="col-xs-12">
         <div class="page-header">
-            <h2>{% block datatable_title %}{% endblock %}</h2>
+            <h2>{% block datatable_title %}{{ item_name|title }}s{% endblock %}</h2>
         </div>
     </div>
 
@@ -16,19 +16,21 @@
     <div class="col-xs-12">
         <div class="bs-callout bs-callout-danger">
             <h4>Form Error</h4>
-            The {% block object_name %}{% endblock %} could not be added. Refer to the form below for details.
+            The {% block object_name %}{{ datatables_class.item_name }}{% endblock %} could not be added. Refer to the form below for details.
         </div>
     </div>
     {% endif %}
 
     <div class="col-xs-12">
-        <table id="{% block datatable_table_id %}{% endblock %}" class="table table-striped table-bordered table-condensed" width="100%"></table>
+        <table id="{% block datatable_table_id %}{{ datatables_class.table_name }}{% endblock %}" class="table table-striped table-bordered table-condensed" width="100%"></table>
     </div>
 
     {% block datatable_form %}
-    <div class="col-xs-12">
-        {% crispy form %}
-    </div>
+        {% if write_permission %}
+            <div class="col-xs-12">
+                {% crispy form %}
+            </div>
+        {% endif %}
     {% endblock %}
 {% endblock %}
 

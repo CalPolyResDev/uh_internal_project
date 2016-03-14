@@ -34,12 +34,12 @@ class ComputersView(ChainedSelectFormViewMixin, DatatablesView):
     form_class = ComputerForm
     populate_class = PopulateComputers
     model = Computer
-    success_url = reverse_lazy('computers')
+    success_url = reverse_lazy('computers:home')
 
 
 class ComputerRecordsView(TemplateView):
 
-    template_name = "computers/computer_record.html"
+    template_name = "computers/computer_record.djhtml"
 
     def get_context_data(self, **kwargs):
         context = super(ComputerRecordsView, self).get_context_data(**kwargs)
@@ -100,7 +100,7 @@ class RDPRequestView(TemplateView):
 
 
 class PinholeRequestView(FormView):
-    template_name = "computers/pinhole_request.html"
+    template_name = "computers/pinhole_request.djhtml"
     form_class = RequestPinholeForm
 
     def form_valid(self, form):
@@ -146,11 +146,11 @@ Thanks,
         new_pinhole.sr_number = sr_number
         new_pinhole.save()
 
-        return HttpResponseRedirect(reverse('view_computer_record', kwargs={'ip_address': ip_address}))
+        return HttpResponseRedirect(reverse('computers:view_record', kwargs={'ip_address': ip_address}))
 
 
 class DomainNameRequestView(FormView):
-    template_name = "computers/domain_name_request.html"
+    template_name = "computers/domain_name_request.djhtml"
     form_class = RequestDomainNameForm
 
     def form_valid(self, form):
@@ -185,4 +185,4 @@ Thanks,
             new_domain_name.sr_number = sr_number
             new_domain_name.save()
 
-        return HttpResponseRedirect(reverse('view_computer_record', kwargs={'ip_address': ip_address}))
+        return HttpResponseRedirect(reverse('computers:view_record', kwargs={'ip_address': ip_address}))

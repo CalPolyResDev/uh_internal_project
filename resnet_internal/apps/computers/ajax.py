@@ -8,19 +8,16 @@
 
 from collections import OrderedDict
 from datetime import datetime
+from srsconnector.models import PinholeRequest, DomainNameRequest
 import logging
-import shlex
 
 from dateutil.relativedelta import relativedelta
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
-from django.db.models import Q
-from django.utils.decorators import classonlymethod
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
-from srsconnector.models import PinholeRequest, DomainNameRequest
 
-from ...settings.base import computers_modify_access_test
+from ...settings.base import COMPUTERS_MODIFY_ACCESS
 from ..core.models import StaffMapping
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
 from .forms import ComputerForm
@@ -39,23 +36,26 @@ class PopulateComputers(RNINDatatablesPopulateView):
 
     table_name = "computer_index"
 
-    data_source = reverse_lazy('populate_computers')
-    update_source = reverse_lazy('update_computer')
-    form_source = reverse_lazy('form_computer')
+    data_source = reverse_lazy('computers:populate')
+    update_source = reverse_lazy('computers:update')
+    form_source = reverse_lazy('computers:form')
 
     form_class = ComputerForm
     model = Computer
 
     item_name = 'computer'
-    remove_url_name = 'remove_computer'
+    remove_url_name = 'computers:remove'
 
     column_definitions = OrderedDict()
-    column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
-    column_definitions["sub_department"] = {"width": "200px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
-    column_definitions["computer_name"] = {"width": "200px", "type": "string", "title": "Computer Name"}
+    column_definitions["community"] = {"width": "100px", "type": "string", "editable": True, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
+    column_definitions["building"] = {"width": "100px", "type": "string", "editable": True, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
+    column_definitions["room"] = {"width": "80px", "type": "string", "editable": True, "title": "Room", "related": True, "lookup_field": "name"}
+    column_definitions["display_name"] = {"width": "200px", "type": "string", "title": "Computer Name"}
     column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
     column_definitions["RDP"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "RDP"}
+    column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
+    column_definitions["sub_department"] = {"width": "200px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
     column_definitions["model"] = {"width": "200px", "type": "string", "title": "Model"}
     column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
@@ -78,7 +78,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
         return super(PopulateComputers, self).get_options()
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = computers_modify_access_test(user)
+        self.write_permissions = user.has_access(COMPUTERS_MODIFY_ACCESS)
 
     def get_row_class(self, row):
         if row.date_purchased:
@@ -105,7 +105,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
             inline_images = ""
 
             try:
-                record_url = reverse('view_computer_record', kwargs={'ip_address': getattr(row, column)})
+                record_url = reverse('computers:view_record', kwargs={'ip_address': getattr(row, column)})
             except NoReverseMatch:
                 pass
             else:
@@ -134,7 +134,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
     def render_column(self, row, column):
         if column == 'RDP':
             try:
-                rdp_file_url = reverse('rdp_request', kwargs={'ip_address': row.ip_address})
+                rdp_file_url = reverse('computers:rdp_request', kwargs={'ip_address': row.ip_address})
             except NoReverseMatch:
                 link_block = ""
             else:
@@ -146,50 +146,30 @@ class PopulateComputers(RNINDatatablesPopulateView):
         else:
             return super(PopulateComputers, self).render_column(row, column)
 
-    def filter_queryset(self, qs):
-        search_parameters = self.request.GET.get('search[value]', None)
-        searchable_columns = self.get_searchable_columns()
+    def check_params_for_flags(self, params, qs):
         flags = ["?pinhole", "?domain", "?dhcp", "?old", "?older", "?replace"]
 
-        if search_parameters:
-            try:
-                params = shlex.split(search_parameters)
-            except ValueError:
-                params = search_parameters.split(" ")
-            columnQ = Q()
-            paramQ = Q()
+        # Check for flags
+        for param in params:
+            if param[:1] == '?':
+                flag = param[1:]
 
-            # Check for flags
-            for param in params:
-                if param[:1] == '?':
-                    flag = param[1:]
+                if flag == "pinhole":
+                    pinhole_ip_list = Pinhole.objects.values_list('ip_address', flat=True).distinct()
+                    qs = qs.filter(ip_address__in=pinhole_ip_list)
+                elif flag == "domain":
+                    domain_name_ip_list = DomainName.objects.values_list('ip_address', flat=True).distinct()
+                    qs = qs.filter(ip_address__in=domain_name_ip_list)
+                elif flag == "dhcp":
+                    qs = qs.filter(dhcp=True)
+                elif flag == "old":
+                    qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLD_YEARS))
+                elif flag == "older":
+                    qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLDER_YEARS))
+                elif flag == "replace":
+                    qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=REPLACE_YEARS))
 
-                    if flag == "pinhole":
-                        pinhole_ip_list = Pinhole.objects.values_list('ip_address', flat=True).distinct()
-                        qs = qs.filter(ip_address__in=pinhole_ip_list)
-                    elif flag == "domain":
-                        domain_name_ip_list = DomainName.objects.values_list('ip_address', flat=True).distinct()
-                        qs = qs.filter(ip_address__in=domain_name_ip_list)
-                    elif flag == "dhcp":
-                        qs = qs.filter(dhcp=True)
-                    elif flag == "old":
-                        qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLD_YEARS))
-                    elif flag == "older":
-                        qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=OLDER_YEARS))
-                    elif flag == "replace":
-                        qs = qs.filter(date_purchased__lte=datetime.now() - relativedelta(years=REPLACE_YEARS))
-
-            for param in params:
-                if param != "" and param not in flags:
-                    for searchable_column in searchable_columns:
-                        columnQ |= Q(**{searchable_column + "__icontains": param})
-
-                    paramQ.add(columnQ, Q.AND)
-                    columnQ = Q()
-            if paramQ:
-                qs = qs.filter(paramQ)
-
-        return qs
+        return qs, flags
 
 
 class RetrieveComputerForm(RNINDatatablesFormView):

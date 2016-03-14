@@ -6,7 +6,7 @@
 
 """
 
-from clever_selects.form_fields import ChainedModelChoiceField
+from clever_selects.form_fields import ChainedModelChoiceField, ModelChoiceField
 from clever_selects.forms import ChainedChoicesModelForm
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
@@ -15,7 +15,7 @@ from django.core.urlresolvers import reverse_lazy
 from django.forms import Form, BooleanField, CharField, ChoiceField, Textarea, ValidationError
 from srsconnector.models import PRIORITY_CHOICES
 
-from ..core.models import SubDepartment
+from ..core.models import SubDepartment, Community, Building, Room
 from .fields import PortListFormField, DomainNameListFormFiled
 from .models import Computer
 
@@ -26,10 +26,15 @@ IP_REQUEST_INFORMATION = """<p>When this form is submitted, a service request wi
 
 
 class ComputerForm(ChainedChoicesModelForm):
-    sub_department = ChainedModelChoiceField('department', reverse_lazy('core_chained_sub_department'), SubDepartment, label="Sub Department")
+    sub_department = ChainedModelChoiceField('department', reverse_lazy('core:chained_sub_department'), SubDepartment, label="Sub Department")
+    community = ModelChoiceField(queryset=Community.objects.all())
+    building = ChainedModelChoiceField('community', reverse_lazy('core:chained_building'), Building)
+    room = ChainedModelChoiceField('building', reverse_lazy('core:chained_room'), Room)
 
     def __init__(self, *args, **kwargs):
         super(ComputerForm, self).__init__(*args, **kwargs)
+
+        self.fields['display_name'].label = 'Computer Name'
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'
@@ -42,9 +47,12 @@ class ComputerForm(ChainedChoicesModelForm):
         self.helper.layout = Layout(
             Fieldset(
                 'Add a new computer',
+                Field('community', autocomplete='off'),
+                Field('building', autocomplete='off'),
+                Field('room', autocomplete='off'),
                 Field('department', autocomplete='off'),
                 Field('sub_department', autocomplete='off'),
-                Field('computer_name', placeholder=self.fields['computer_name'].label),
+                Field('display_name', placeholder=self.fields['display_name'].label),
                 Field('mac_address', placeholder=self.fields['mac_address'].label),
                 Field('ip_address', css_class="ip_address_field", placeholder=self.fields['ip_address'].label, title="Leave blank for DHCP."),
                 Field('model', placeholder=self.fields['model'].label),
@@ -82,9 +90,16 @@ class ComputerForm(ChainedChoicesModelForm):
 
         return ', '.join(stripped_dn_pieces)
 
+    def save(self, commit=True):
+        computer = super().save(commit=False)
+        computer.dns_name = computer.display_name.strip() + '.ad.calpoly.edu'
+        if commit:
+            computer.save()
+        return computer
+
     class Meta:
         model = Computer
-        fields = ['department', 'sub_department', 'computer_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'location', 'date_purchased', 'dn', 'description']
+        fields = ['community', 'building', 'room', 'department', 'sub_department', 'display_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'location', 'date_purchased', 'dn', 'description']
 
 
 class RequestPinholeForm(Form):

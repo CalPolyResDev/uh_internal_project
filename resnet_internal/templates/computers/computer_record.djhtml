@@ -1,0 +1,115 @@
+{% extends "base_frame.djhtml" %}
+{% load core_user_tests %}
+{% load staticfiles %}
+{% load srs_urls %}
+
+{% block subtitle %} | Computer Record{% endblock %}
+
+{% block main %}
+    <div class="col-xs-12">
+        <h4>Pinholes{% if request.user|computer_record_modify_access %}&nbsp;&nbsp;<small><a class="add_link" href="{% url 'computers:pinhole_request' ip_address=ip_address %}">+Add Pinhole</a></small>{% endif %}</h4>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Service Name</th>
+                    <th>Inner FW?</th>
+                    <th>Border FW?</th>
+                    <th>TCP Ports</th>
+                    <th>UDP Ports</th>
+                    <th>SR Status</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if pinholes %}
+                    {% for pinhole in pinholes %}
+                    <tr id="pinhole_{{ pinhole.id }}">
+                        <td>{{ pinhole.service_name }}</td>
+                        <td>{{ pinhole.inner_fw }}</td>
+                        <td>{{ pinhole.border_fw }}</td>
+                        <td>
+                            {% for port in pinhole.tcp_ports %}
+                                {{ port }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for port in pinhole.udp_ports %}
+                                {{ port }}{% if not forloop.last %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{% if pinhole.sr_number %}{{ pinhole.pinhole_request.status }} <a href="{% srs_edit_url pinhole.sr_number %}"><img src="{% static 'images/srs_edit_button.gif' %}"></a>{% else %}None{% endif %}</td> 
+                        <td>{% if request.user|computer_record_modify_access %}<a class="action_red" onclick="remove_pinhole('{{ pinhole.id }}')">Remove</a>{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="7">There are no pinholes associated with this IP address.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-xs-12">
+        <h4>DNS Record (A)</h4>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>DNS Record</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{ dns_record }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="col-xs-12">
+        <h4>Domain Names (CNAME){% if request.user|computer_record_modify_access %}&nbsp;&nbsp;<small><a class="add_link" href="{% url 'computers:domain_name_request' ip_address=ip_address %}">+Add Domain Name</a></small>{% endif %}</h4>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Domain Name</th>
+                    <th>SR Status</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if domain_names %}
+                    {% for domain_name in domain_names %}
+                    <tr id="domain_name_{{ domain_name.id }}">
+                        <td>{{ domain_name.domain_name }}</td>
+                        <td>{% if domain_name.sr_number %}{{ domain_name.domain_name_request.status }} <a href="{% srs_edit_url domain_name.sr_number %}"><img src="{% static 'images/srs_edit_button.gif' %}"></a>{% else %}None{% endif %}</td>
+                        <td>{% if request.user|computer_record_modify_access %}<a class="action_red" onclick="remove_domain_name('{{ domain_name.id }}')">Remove</a>{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="3">There are no domain names associated with this IP Address.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+    <script type="text/javascript">
+        function remove_pinhole(pinhole_id)  {
+            ajaxPost("{% url 'computers:remove_pinhole' %}", {"pinhole_id": pinhole_id}, function(response_context) {
+                alert("A pinhole removal request has been created in your name. Please use SR#" + response_context["sr_number"] + " as a reference.")
+                $("#pinhole_" + pinhole_id).remove();
+            });
+        }
+
+        function remove_domain_name(domain_name_id)  {
+            ajaxPost("{% url 'computers:remove_domain_name' %}", {"domain_name_id": domain_name_id}, function(response_context) {
+                alert("A domain name removal request has been created in your name. Please use SR#" + response_context["sr_number"] + " as a reference.")
+                $("#domain_name_" + domain_name_id).remove();
+            });
+        }
+    </script>
+{% endblock %}

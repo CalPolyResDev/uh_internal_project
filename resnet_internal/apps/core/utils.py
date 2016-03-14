@@ -7,45 +7,13 @@
 """
 
 from copy import deepcopy
-import logging
 from operator import itemgetter
-import os
-from sys import platform
+import logging
 
 from django.core.cache import cache
 from srsconnector.models import ServiceRequest
 
-from ...settings.base import technician_access_test
-from .models import NetworkDevice
-
-
 logger = logging.getLogger(__name__)
-
-
-class NetworkReachabilityTester(object):
-
-    @staticmethod
-    def _is_device_reachable(ip_address, timeout):
-        if platform == 'darwin':
-            response = os.system("ping -c 1 -t " + str(timeout) + " " + ip_address + ' > /dev/null 2>&1')
-        else:
-            response = os.system("ping -c 1 -w " + str(timeout) + " " + ip_address + ' > /dev/null 2>&1')
-
-        return True if response == 0 else False
-
-    @staticmethod
-    def get_network_device_reachability(timeout):
-        reachability_responses = []
-
-        network_devices = NetworkDevice.objects.all()
-
-        for network_device in network_devices:
-            reachability_responses.append({'display_name': network_device.display_name,
-                                           'dns_name': network_device.dns_name,
-                                           'ip_address': network_device.ip_address,
-                                           'status': NetworkReachabilityTester._is_device_reachable(network_device.ip_address, timeout),
-                                           })
-        return reachability_responses
 
 
 def dict_merge(base, merge):
@@ -73,9 +41,9 @@ def dict_merge(base, merge):
 
 def get_ticket_list(user):
     user_teams = []
-    if user.is_rn_staff:
+    if user.ad_groups.all().filter(display_name='UH TAG Member').exists():
         user_teams.append('SA University Housing')
-    if technician_access_test(user):
+    if user.ad_groups.all().filter(display_name='ResNet Technician').exists():
         user_teams.append('SA RESNET')
 
     cache_key = 'ticket_list:' + str(user_teams)

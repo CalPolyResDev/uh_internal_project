@@ -1,30 +1,15 @@
 {% extends "datatables/datatables_base.djhtml" %}
-{% load core_user_tests %}
 {% load crispy_forms_tags %}
-
-{% block page_title %}Ports{% endblock %}
-{% block datatable_title %}Ports{% endblock %}
-
-{% block object_name %}port{% endblock %}
-
-{% block datatable_form %}
-    {% if request.user|ports_modify_access %}
-    <div class="col-xs-12">
-        {% crispy form %}
-    </div>
-    {% endif %}
-{% endblock %}
-
-{% block datatable_table_id %}ports{% endblock %}
 
 {% block extra_script %}
     {{ block.super }}
-    {% if request.user|ports_modify_access %}
+
+    {% if write_permission %}
     <script type="text/javascript">
         function confirm_status_change(port_id) {
             var response = confirm('Are you sure you want to change the status of this port?');
             if (response) {
-                ajaxPost("{% url 'change_port_status' %}", {"port_id": port_id}, function(response_context) {
+                ajaxPost("{% url 'network:change_port_status' %}", {"port_id": port_id}, function(response_context) {
                     var rendered_row = response_context["rendered_row"];
                     redraw_datatables_row($("#" + port_id), rendered_row);
                 });

@@ -1,0 +1,42 @@
+{% extends "base.djhtml" %}
+{% load crispy_forms_tags %}
+
+{% block subtitle %} | Orientation - SRS Access{% endblock %}
+
+{% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>Orientation - SRS Access</h2>
+        </div>
+        <p>The SRS (Service Request System) is a tool we technicians use on a daily basis to log troubleshooting efforts and request service from other departments. More information on what the SRS is used for, along with how it is used, can be found in the wiki.<p><br />
+
+        <div class="panel panel-default">
+            <div class="panel-heading">RUP Download</div>
+            
+            <div class="panel-body">
+                <p>To gain access to the SRS Manager, you must first fill out the linked Responsible Use Policy, sign it, scan it, and then email it to <a href="mailto:jfporter@calpoly.edu">Jeff</a>. Once you email your signed RUP, an account request will be created in your name. It can take up to a week to process the request, so please be patient.</p>
+            </div>
+    
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a href="{{MEDIA_URL}}forms/RUP_Student_Agreement.pdf" target="_blank">Responsible Use Policy Agreement (RUP)</a>
+                </li>
+            </ul>
+        </div>
+        <br />
+    </div>
+
+    <div class="col-xs-12">
+        <br /><p>Once you gain access to the SRS, click the following button to take this item off the checklist:</p>
+        <br /><button class="btn btn-primary" onclick="complete_task('srs')">I am Able to Access the SRS</button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript">
+        function complete_task(task) {
+            ajaxPost("{% url 'orientation:complete_task' %}", {"task": task});
+        };
+    </script>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.djhtml" %}
+{% load crispy_forms_tags %}
+
+{% block subtitle %} | Resident Lookup{% endblock %}
+
+{% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>Resident Lookup</h2>
+        </div>
+        <p>This tool is used to perform resident lookups. Choose to look up by full name, email, or dorm address. The dorm address and full name searches can return multiple names - this is useful when searching by address, as inputting the apartment number will return all occupants. <span class="buckley">Buckley in Red</span>.</p>
+    </div>
+
+    <div class="col-lg-4 col-sm-6 col-xs-12">
+        {% crispy full_name_form %}
+    </div>
+    <div class="col-lg-4 col-sm-6 col-xs-12">
+        {% crispy principal_name_form %}
+    </div>
+    <div class="col-lg-4 col-sm-12 col-xs-12">
+        {% crispy address_form %}
+    </div>
+
+    {% if results_available %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>Results</h2>
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th width="25%">Name</th>
+                    <th width="10%">Email</th>
+                    <th width="15%">Cell Phone</th>
+                    <th width="15%">Dorm Phone</th>
+                    <th width="35%">Dorm Address</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if search_results %}
+                    {% for resident in search_results %}
+                    <tr {% if resident.is_buckley %}class="buckley"{% endif %}>
+                        <td>{{ resident.full_name }}</td>
+                        <td>{{ resident.email }}</td>
+                        <td>{{ resident.cell_phone }}</td>
+                        <td>{{ resident.dorm_phone }}</td>
+                        <td>{{ resident.address }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+{% endblock %}

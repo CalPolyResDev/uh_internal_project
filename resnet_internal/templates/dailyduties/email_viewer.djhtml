@@ -1,0 +1,146 @@
+{% extends "base_frame.djhtml" %}
+
+{% load staticfiles %}
+{% load jfu_escaped %}
+{% load crispy_forms_tags %}
+
+{% block subtitle %} | Email{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+    input[type='text'] {
+        min-width: 90% !important;
+        outline: none;
+        border: none;
+    }
+    textarea {
+        outline: none;
+        border: none;
+    }
+    hr {
+        margin-top: 5px !important;
+        margin-bottom: 5px !important;
+    }
+    .popover {
+        max-width: 800px;
+    }
+    .modal-dialog {
+        max-height: 80%;
+    }
+</style>
+{% endblock %}
+
+
+{% block main %}
+    {% if message %}
+    <div class="col-xs-12">
+        <div class="btn-group" role="group" id="email_buttons">
+            <button class="btn btn-default" type="button" id="create_ticket_button" title="Requestor Username:"
+                data-container="body" data-toggle="popover" data-placement="bottom"
+                data-content='  <div id="ticket_creation_form_group" class="form-group"><div class="input-group" style="width: 200px;">
+                                    <input type="text" class="form-control" size="10" id="ticket_requestor_username" required>
+                                    <span class="input-group-btn">
+                                        <button class="btn btn-primary" type="button" onclick="create_ticket()">Create</button>
+                                    </span>
+                                </div></div><!-- /input-group -->
+                '>Create Ticket</button>
+            <button class="btn btn-default" type="button" onclick="reply();">Reply</button>
+            <button class="btn btn-default" type="button" onclick="reply_all();">Reply All</button>
+            <button class="btn btn-default" type="button" onclick="forward();">Forward</button>
+            <button class="btn btn-default" type="button" id="archive_button" title="Archive To:" data-container="body" data-toggle="popover" data-placement="bottom" 
+                    data-content="<table class='table table-hover table-condensed'>
+                            <tbody>
+                                {% for folder, display_name in archive_folders %}
+                                    <tr id='{{ folder }}' style='cursor: pointer;' onclick='$(&quot;#archive_button&quot;).popover(&quot;hide&quot;);archive(&quot;{{ folder }}&quot;);'>
+                                        <td style='padding: 2px; border-top: 0px;'>{{ display_name }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>">
+                Archive
+            </button>
+        </div>
+        <br />
+    </div>
+    <div class="col-xs-12">
+        <h1 id="subject">{{ message.subject }}</h1>
+        <h3 id="from_header">{{ message.from }}</h3>
+        <p>
+            <hr id="to_hr" style="display: none;">
+            <strong>To:</strong>&nbsp;<span id="to">{{ message.to }}<br/></span>
+            <strong>CC:</strong>&nbsp;<span id="cc">{{ message.cc }}</span>
+            <span id="date"><br /><strong>Date:</strong>&nbsp;{{ message.date }}</span>
+            <span id="reply_to"><br /><strong>Reply To:</strong>&nbsp;{{ message.reply_to }}</span>
+            <span id="attachments">
+                {% if message.attachments %}<br /><strong>Attachments:</strong>
+                    {% for attachment in message.attachments %}
+                        <a href="{{ attachment.url }}" target="_blank">
+                            <img style="display: inline-block" src="{{ attachment.icon }}" />
+                            {{ attachment.filename }} ({{ attachment.size|filesizeformat }})
+                        </a>
+                    {% endfor %}
+                {% endif %}
+                <hr>
+            </span>
+        </p>
+        {% if message.is_html %}
+            <script language="javascript" type="text/javascript">
+                function resize_iframe(iframe) {
+                    iframe.height = iframe.contentWindow.document.body.scrollHeight + "px";
+                  }
+            </script>
+            <iframe id="email_body" frameborder="0" srcdoc="{{ message.body_html }}" width="100%" onload="resize_iframe(this)"></iframe>
+        {% else %}
+            <p id="email_body">{{ message.body_plain_text|linebreaksbr|urlize }}</p>
+        {% endif %}
+    </div>
+    
+    <div style="display: none;" id="send_and_archive_popover_content">
+        <div class="table-responsive">
+            <table class='table table-hover table-condensed'>
+                <tbody>
+                    {% for folder, display_name in archive_folders %}
+                        <tr id='{{ folder }}' style='cursor: pointer;' onclick='$("#archive_button").popover("hide");send_email("{{ folder }}");'>
+                            <td style='padding: 2px; border-top: 0px;'>{{ display_name }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% block cc_csd_content %}
+    <div style="display: none;" id="cc_csd_popover_content">
+        <div>
+            {% crispy form %}
+            <!-- Adding to the issues surrounding the clever selects, it seems impossible to
+                use a standard submit button to the form. jQuery was used to try and add submit
+                event listeners and onsubmit attributes neither of which resulted in the submit
+                function being called. Therefore the button is added below with the onclick
+                handler specified. -->
+            <button class="btn btn-primary" onclick="submit_cc_csd_form();">Add</button>
+        </div>
+    </div>
+    {% endblock %}
+    {% else %}
+    <div class="col-xs-12">
+        <h1>Could not retrieve email. It may have been deleted.</h1>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript" src="{% static 'js/jquery.blockUI.js' %}"></script>
+    <script src="//cdn.ckeditor.com/4.5.3/standard-all/ckeditor.js"></script>
+    <script language="javascript" type="text/javascript">
+        var message_is_html = {{ message.is_html|yesno:"true,false" }};
+        var message_reply_html = '{{ message.reply_html|escapejs }}';
+        var message_reply_plain_text = '{{ message.reply_plain_text|escapejs }}';
+        var message_subject = '{{ message.subject|escapejs }}';
+        var message_reply_to = '{{ message.reply_to|escapejs }}';
+        var message_to = '{{ message.to|escapejs }}';
+        var message_path = '{{ message.path|escapejs }}';
+        var attach_button_content = '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.djhtml' 'dailyduties:jfu_upload' %}</span>';
+    </script>
+    <script src="{% static 'js/email_message.js' %}?version=1.1"></script>
+{% endblock %}

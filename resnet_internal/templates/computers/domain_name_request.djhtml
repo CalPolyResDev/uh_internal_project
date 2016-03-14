@@ -1,0 +1,10 @@
+{% extends "base_frame.djhtml" %}
+{% load crispy_forms_tags %}
+
+{% block subtitle %} | Computer Index Domain Name Request{% endblock %}
+
+{% block main %}
+    <div class="col-xs-12">
+        {% crispy form %}
+    </div>
+{% endblock %}

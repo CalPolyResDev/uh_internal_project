@@ -1,0 +1,95 @@
+{% extends "base.djhtml" %}
+
+{% load crispy_forms_tags %}
+
+{% block subtitle %} | {{ subtitle }}{% endblock %}
+
+{% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>{{ subtitle }}</h2>
+        </div>
+    </div>
+
+    {% if valid_user %}
+        {% if form.errors %}
+        <div class="col-xs-12">
+            <div class="bs-callout bs-callout-danger">
+                <h4>Form Error</h4>
+                The technician could not be added. Refer to the form below for details.
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="col-xs-12">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Full Name</th>
+                            <th>Email Address</th>
+                            {% if request.user.is_developer %}
+                            <th>Distinguished Name</th>
+                            {% endif %}
+                            <th>&nbsp;</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% if group_members %}
+                        {% for member in group_members %}
+                        <tr {% if member.buckley %}class="buckley"{% endif %} id="member_{{ member.userPrincipalName }}">
+                            <td>{{ member.full_name }}</td>
+                            <td>{{ member.principal_name }}</td>
+                            {% if request.user.is_developer %}
+                            <td>{{ member.dn }}</td>
+                            {% endif %}
+                            <td><a class="action_red" onclick="remove_tech('{{ member.userPrincipalName }}')">Remove</a></td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            {% if request.user.is_developer %}
+                            <td></td>
+                            {% endif %}
+                            <td></td>
+                        </tr>
+                    {% endif %}
+                    </tbody>
+                </table>
+        </div>
+
+        <div class="col-xs-12">
+            {% crispy form %}
+        </div>
+    {% else %}
+        <div class="col-xs-12">
+            You do not have permission to modifiy this group.
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_script %}
+{{ block.super }}
+<script type="text/javascript">
+    function remove_tech(account_name) {
+        var response = confirm('Warning: This action will remove "' + account_name + '" from SRS and Active Directory. Do you wish to proceed?');
+        if (response) {
+            ajaxPost("{% url 'technicians:remove' %}", {'account_name': account_name, 'group_dn': '{{ group_dn }}'}, function(response_context) {
+                if (response_context["success"]) {
+                    alert("A request to remove " + account_name + " from the ResNet team has been created. Please use SR#" + response_context["sr_number"] + " as a reference.")
+                    $("#member_" + account_name).remove();
+                    return true;
+                }
+                else {
+                    alert(response_context["error_message"]);
+                    return false;
+                }
+            });
+        } else {
+            return false;
+        }
+    };
+</script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "base.djhtml" %}
+
+{% block subtitle %} | Orientation - Payroll Access{% endblock %}
+
+{% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>Orientation - Payroll Access</h2>
+        </div>
+        <p>A few forms must be filled out and processed before you can bill the hours you will work.</p><br />
+
+        <div class="panel panel-default">
+            <div class="panel-heading">Payroll Forms</div>
+
+            <div class="panel-body">
+                <p>Download the following forms, fill them out, and bring them to the Payroll office (Administration Building, Room 107). More information on the subject can be found on the <a href="https://afd.calpoly.edu/payroll/student_employment.asp" target="_blank">Payroll Services website</a>.</p>
+            </div>
+
+            <ul class="list-group">
+                <li class="list-group-item">
+                    <a href="https://afd.calpoly.edu/payroll/forms/2016%20Forms/SERF%20PDF_Eff%20010116.pdf" target="_blank">Student Employment Request Form (SERF)</a>
+                </li>
+                <li class="list-group-item">
+                    <a href="{{MEDIA_URL}}forms/CSU_Form_SSA-1945.pdf" target="_blank">Statement Concerning Your Employment in a Job Not Covered By Social Security (CSU SSA-1945)</a>
+                </li>
+                <li class="list-group-item">
+                    <a href="http://www.uscis.gov/files/form/i-9.pdf" target="_blank">DHS Employment Eligibility Verification (Form I-9)</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-xs-12">
+        <br /><p>Once you've submitted your paperwork, click the following button to take this item off the checklist:</p>
+        <br /><button class="btn btn-primary" onclick="complete_task('payroll')">I Have Submitted the Required Payroll Paperwork</button>
+    </div>
+{% endblock %}
+
+{% block extra_script %}
+    <script type="text/javascript">
+        function complete_task(task) {
+            ajaxPost("{% url 'orientation:complete_task' %}", {"task": task});
+        };
+    </script>
+{% endblock %}

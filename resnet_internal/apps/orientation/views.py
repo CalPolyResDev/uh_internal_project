@@ -19,15 +19,15 @@ from .forms import SRSUploadForm, OnityEmailForm
 
 
 class ChecklistView(TemplateView):
-    template_name = "orientation/checklist.html"
+    template_name = "orientation/checklist.djhtml"
 
 
 class OnityDoorAccessView(FormView):
     """Orientation Checklist Item: Onity Door Access."""
 
-    template_name = "orientation/onity_door_access.html"
+    template_name = "orientation/onity_door_access.djhtml"
     form_class = OnityEmailForm
-    success_url = reverse_lazy('orientation_checklist')
+    success_url = reverse_lazy('orientation:home')
 
     def get_initial(self):
         full_name = self.request.user.get_full_name()
@@ -59,9 +59,9 @@ class OnityDoorAccessView(FormView):
 class SRSAccessView(FormView):
     """Orientation Checklist Item: SRS Access."""
 
-    template_name = "orientation/srs_access.html"
+    template_name = "orientation/srs_access.djhtml"
     form_class = SRSUploadForm
-    success_url = reverse_lazy('orientation_checklist')
+    success_url = reverse_lazy('orientation:home')
 
     def form_valid(self, form):
         # Create a new account request
@@ -79,4 +79,4 @@ class SRSAccessView(FormView):
 
 
 class PayrollView(TemplateView):
-    template_name = "orientation/payroll_access.html"
+    template_name = "orientation/payroll_access.djhtml"

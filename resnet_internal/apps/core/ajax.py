@@ -18,11 +18,12 @@ from django.template import Template, RequestContext
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 
-from ...settings.base import technician_access_test
+from ...settings.base import ROOMS_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
+from ..portmap.utils import NetworkReachabilityTester
 from .forms import RoomCreateForm, RoomUpdateForm
 from .models import Building, Room, SubDepartment, CSDMapping
-from .utils import NetworkReachabilityTester, get_ticket_list
+from .utils import get_ticket_list
 
 
 logger = logging.getLogger(__name__)
@@ -34,7 +35,7 @@ def update_network_status(request):
     network_reachability.sort(key=itemgetter('status', 'display_name'))
 
     raw_response = """
-        <table class="table table-hover">
+        <table class="table table-hover table-condensed">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -79,7 +80,7 @@ def get_tickets(request):
         {% load staticfiles %}
         {% load core_filters %}
         {% load srs_urls %}
-        <table class="table">
+        <table class="table table-condensed">
             <thead>
                 <tr>
                     <th></th>
@@ -93,7 +94,7 @@ def get_tickets(request):
                 {% for ticket in tickets %}
                 <tr id="ticket_{{ ticket.ticket_id }}" class={{ ticket.display_class }}>
                     <td>
-                        <a onclick="openModalFrame('Ticket Summary', '{% url 'core_ticket_summary' ticket_id=ticket.ticket_id %}');" style="cursor:pointer;">
+                        <a onclick="openModalFrame('Ticket Summary', '{% url 'core:ticket_summary' ticket_id=ticket.ticket_id %}');" style="cursor:pointer;">
                             <img src="{% static 'images/srs_view_button.gif' %}">
                         </a>
                     </td>
@@ -208,15 +209,15 @@ class PopulateRooms(RNINDatatablesPopulateView):
 
     table_name = "rooms"
 
-    data_source = reverse_lazy('populate_rooms')
-    update_source = reverse_lazy('update_room')
-    form_source = reverse_lazy('form_room')
+    data_source = reverse_lazy('core:populate_rooms')
+    update_source = reverse_lazy('core:update_room')
+    form_source = reverse_lazy('core:form_room')
 
     form_class = RoomCreateForm
     model = Room
 
     item_name = 'room'
-    remove_url_name = 'remove_room'
+    remove_url_name = 'core:remove_room'
 
     column_definitions = OrderedDict()
     column_definitions["community"] = {"type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "building__community__name"}
@@ -235,7 +236,7 @@ class PopulateRooms(RNINDatatablesPopulateView):
         return super().get_options()
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = technician_access_test(user)
+        self.write_permissions = user.has_access(ROOMS_MODIFY_ACCESS)
 
 
 class RetrieveRoomForm(RNINDatatablesFormView):

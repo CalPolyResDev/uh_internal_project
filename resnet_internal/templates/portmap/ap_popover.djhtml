@@ -1,0 +1,8 @@
+<div>
+<strong>Name:</strong> {{ ap.display_name }}<br />
+<strong>Property ID:</strong> {{ ap.property_id }}<br />
+<strong>Serial Number:</strong> {{ ap.serial_number }}<br />
+<strong>MAC Address:</strong> {{ ap.mac_address }}<br />
+<strong>IP Address:</strong> {{ ap.ip_address }}<br />
+<strong>Type:</strong> {{ ap.get_ap_type_display }}<br />
+</div>

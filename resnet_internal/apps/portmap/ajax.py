@@ -9,7 +9,6 @@
 
 from collections import OrderedDict
 import logging
-import shlex
 import time
 
 from clever_selects.views import ChainedSelectChoicesView
@@ -17,17 +16,17 @@ from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy, reverse
-from django.db.models import Q
 from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
 from paramiko import SSHClient, AutoAddPolicy
 from rmsconnector.utils import Resident
 
-from ...settings.base import ports_modify_access_test
+from ...settings.base import NETWORK_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
-from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm
-from .models import Port, AccessPoint
+from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm, NetworkInfrastructureDeviceCreateForm, NetworkInfrastructureDeviceUpdateForm
+from .models import Port, AccessPoint, NetworkInfrastructureDevice
+from .utils import device_is_down
 
 
 logger = logging.getLogger(__name__)
@@ -38,26 +37,27 @@ class PopulatePorts(RNINDatatablesPopulateView):
 
     table_name = "ports"
 
-    data_source = reverse_lazy('populate_ports')
-    update_source = reverse_lazy('update_port')
-    form_source = reverse_lazy('form_port')
+    data_source = reverse_lazy('network:populate_ports')
+    update_source = reverse_lazy('network:update_port')
+    form_source = reverse_lazy('network:form_port')
+    extra_related = ['downstream_devices']
 
     form_class = PortCreateForm
     model = Port
 
     item_name = 'port'
-    remove_url_name = 'remove_port'
+    remove_url_name = 'network:remove_port'
 
     column_definitions = OrderedDict()
     column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
     column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
     column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "related": True, "lookup_field": "name"}
-    column_definitions["switch_ip"] = {"width": "150px", "type": "ip-address", "title": "Switch IP"}
-    column_definitions["switch_name"] = {"width": "100px", "type": "string", "title": "Switch Name"}
-    column_definitions["jack"] = {"width": "50px", "type": "string", "editable": False, "title": "Jack"}
-    column_definitions["blade"] = {"width": "50px", "type": "numeric", "title": "Blade"}
-    column_definitions["port"] = {"width": "50px", "type": "numeric", "title": "Port"}
-    column_definitions["access_point"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP", "related": True, "lookup_field": "id"}
+    column_definitions["switch_name"] = {"width": "100px", "type": "string", "title": "Switch Name", "custom_lookup": True, "lookup_field": "upstream_device__display_name"}
+    column_definitions["switch_ip"] = {"width": "150px", "type": "ip-address", "title": "Switch IP", "custom_lookup": True, "lookup_field": "upstream_device__ip_address"}
+    column_definitions["display_name"] = {"width": "50px", "type": "string", "editable": False, "title": "Jack"}
+    column_definitions["blade_number"] = {"width": "50px", "type": "numeric", "title": "Blade"}
+    column_definitions["port_number"] = {"width": "50px", "type": "numeric", "title": "Port"}
+    column_definitions["downstream_devices"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP", "related": True, "lookup_field": "id"}
     column_definitions["active"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
@@ -75,66 +75,52 @@ class PopulatePorts(RNINDatatablesPopulateView):
         return super().get_options()
 
     def _initialize_write_permissions(self, user):
-        self.write_permissions = ports_modify_access_test(user)
+        self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
 
     def get_row_class(self, row):
-        if not row.active:
+        if device_is_down(row.upstream_device):
+            return 'danger'
+        elif not row.active:
             return "disabled"
+        else:
+            return super().get_row_class(row)
 
     def render_column(self, row, column):
-        if column == 'access_point':
+        if column == 'downstream_devices':
             try:
-                access_point = row.access_point
-            except ObjectDoesNotExist:
+                access_point = row.downstream_devices.all()[0]
+            except (ObjectDoesNotExist, IndexError):
                 link_block = ""
             else:
-                ap_url = reverse('access_point_info_frame', kwargs={'pk': access_point.id})
+                ap_url = reverse('network:access_point_info_frame', kwargs={'pk': access_point.id})
                 ap_icon = self.icon_template.format(icon_url=static('images/icons/wifi-xxl.png'))
                 link_block = self.popover_link_block_template.format(popover_title='AP Info', content_url=ap_url, link_class_name="", link_display=ap_icon)
 
             display_block = self.display_block_template.format(value="", link_block=link_block, inline_images="")
             return self.base_column_template.format(column=column, display_block=display_block, form_field_block="")
         elif column == 'active':
-            return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="action_blue", link_display="Deactivate" if getattr(row, column) else "Activate")
+            if device_is_down(row.upstream_device):
+                return self.display_block_template.format(value="", link_block="", inline_images="")
+            else:
+                return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="action_blue", link_display="Deactivate" if getattr(row, column) else "Activate")
         else:
             return super().render_column(row, column)
 
-    def filter_queryset(self, qs):
-        search_parameters = self.request.GET.get('search[value]', None)
-        searchable_columns = self.get_searchable_columns()
+    def get_extra_params(self, params):
+        # Check for email lookup flag
+        for param in params:
+            if param[:1] == '?':
+                email = param[1:]
 
-        if search_parameters:
-            try:
-                params = shlex.split(search_parameters)
-            except ValueError:
-                params = search_parameters.split(" ")
-            columnQ = Q()
-            paramQ = Q()
+                if email:
+                    try:
+                        resident = Resident(principal_name=email)
+                        params = [resident.address_dict['community'], resident.address_dict['building'], resident.address_dict['room']]
+                    except (ObjectDoesNotExist, ImproperlyConfigured):
+                        params = ['Address', 'Not', 'Found']
+                break
 
-            # Check for email lookup flag
-            for param in params:
-                if param[:1] == '?':
-                    email = param[1:]
-
-                    if email:
-                        try:
-                            resident = Resident(principal_name=email)
-                            params = [resident.address_dict['community'], resident.address_dict['building'], resident.address_dict['room']]
-                        except (ObjectDoesNotExist, ImproperlyConfigured):
-                            params = ['Address', 'Not', 'Found']
-                    break
-
-            for param in params:
-                if param != "":
-                    for searchable_column in searchable_columns:
-                        columnQ |= Q(**{searchable_column + "__icontains": param})
-
-                    paramQ.add(columnQ, Q.AND)
-                    columnQ = Q()
-            if paramQ:
-                qs = qs.filter(paramQ)
-
-        return qs
+        return params
 
 
 class RetrievePortForm(RNINDatatablesFormView):
@@ -169,16 +155,16 @@ def change_port_status(request):
     # Set up paramiko ssh client
     ssh_client = SSHClient()
     ssh_client.set_missing_host_key_policy(AutoAddPolicy())
-    ssh_client.connect(str(port_instance.switch_ip), username=settings.RESNET_SWITCH_SSH_USER, password=settings.RESNET_SWITCH_SSH_PASSWORD, allow_agent=False, look_for_keys=False)
+    ssh_client.connect(str(port_instance.upstream_device.ip_address), username=settings.RESNET_SWITCH_SSH_USER, password=settings.RESNET_SWITCH_SSH_PASSWORD, allow_agent=False, look_for_keys=False)
     ssh_shell = ssh_client.invoke_shell()
 
     if ssh_shell.get_transport().is_active():
         ssh_shell.send('conf t\n')
         time.sleep(.5)
-        ssh_shell.send('interface Gi' + str(port_instance.blade) + '/' + str(port_instance.port) + '\n')
+        ssh_shell.send('interface Gi' + str(port_instance.blade_number) + '/' + str(port_instance.port_number) + '\n')
         time.sleep(.5)
     else:
-        raise IOError('Lost connection to switch {switch}.'.format(switch=port_instance.switch_ip))
+        raise IOError('Lost connection to switch {switch}.'.format(switch=port_instance.upstream_device.ip_address))
 
     if ssh_shell.get_transport().is_active():
         if port_instance.active:
@@ -203,7 +189,7 @@ def change_port_status(request):
             port_instance.active = not port_instance.active
             port_instance.save()
     else:
-        raise IOError('Lost connection to switch {switch}.'.format(switch=port_instance.switch_ip))
+        raise IOError('Lost connection to switch {switch}.'.format(switch=port_instance.upstream_device.ip_address))
 
     # Close ssh connection(s)
     ssh_shell.close()
@@ -217,27 +203,39 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
 
     table_name = "access_point_map"
 
-    data_source = reverse_lazy('populate_access_points')
-    update_source = reverse_lazy('update_access_point')
-    form_source = reverse_lazy('form_access_point')
+    data_source = reverse_lazy('network:populate_access_points')
+    update_source = reverse_lazy('network:update_access_point')
+    form_source = reverse_lazy('network:form_access_point')
 
     form_class = AccessPointCreateForm
     model = AccessPoint
 
     item_name = 'access point'
-    remove_url_name = 'remove_access_point'
+    remove_url_name = 'network:remove_access_point'
+
+    extra_options = {
+        "language": {
+            "search": "Filter records: (?email)",
+        },
+    }
+
+    extra_related = [
+        'upstream_device__port',
+        'upstream_device__upstream_device',
+    ]
 
     column_definitions = OrderedDict()
-    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "port__room__building__community__name"}
-    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "port__room__building__name"}
-    column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "custom_lookup": True, "lookup_field": "port__room__name"}
-    column_definitions["port"] = {"width": "80px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "jack"}
-    column_definitions["name"] = {"width": "80px", "type": "string", "title": "Name"}
+    column_definitions["community"] = {"width": "100px", "type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
+    column_definitions["building"] = {"width": "100px", "type": "string", "editable": False, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
+    column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "related": True, "lookup_field": "name"}
+    column_definitions["upstream_device"] = {"width": "40px", "type": "string", "editable": False, "title": "Jack", "related": True, "lookup_field": "id"}
+    column_definitions["dns_name"] = {"width": "80px", "type": "string", "title": "Name"}
     column_definitions["property_id"] = {"width": "100px", "type": "string", "title": "Property ID"}
     column_definitions["serial_number"] = {"width": "100px", "type": "string", "title": "Serial Number"}
-    column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
+    column_definitions["mac_address"] = {"width": "125px", "type": "string", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
     column_definitions["ap_type"] = {"width": "80px", "type": "string", "title": "Type"}
+    column_definitions["airwaves_id"] = {"width": "10px", "type": "string", "orderable": False}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     def get_options(self):
@@ -246,18 +244,49 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
 
         return super().get_options()
 
+    def get_row_class(self, row):
+        if device_is_down(row.upstream_device.upstream_device):
+            return 'danger'
+        else:
+            return super().get_row_class(row)
+
     def _initialize_write_permissions(self, user):
-        self.write_permissions = ports_modify_access_test(user)
+        self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
 
     def get_display_block(self, row, column):
-        if column == 'port':
-            port = row.port
-            port_url = reverse('port_info_frame', kwargs={'pk': port.id})
+        if column == 'upstream_device':
+            port = row.upstream_device.port
+            port_url = reverse('network:port_info_frame', kwargs={'pk': port.id})
             port_icon = self.icon_template.format(icon_url=static('images/icons/icon_ethernet.png'))
             port_block = self.popover_link_block_template.format(popover_title='Port Info', content_url=port_url, link_class_name="", link_display=port_icon)
             return self.display_block_template.format(value=port.jack, link_block=port_block, inline_images="")
+        elif column == 'airwaves_id':
+            if row.airwaves_id:
+                icon_block = self.icon_template.format(icon_url=static('images/icons/aruba.png'))
+                device_status_url = reverse('network:airwaves_device_status', kwargs={'id': row.airwaves_id})
+                onclick = """openModalFrame("AP Status: {name}", "{url}");""".format(name=row.display_name, url=device_status_url)
+                link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name="", link_display=icon_block)
+                return self.display_block_template.format(value='', link_block=link_block, inline_images='')
+            else:
+                return ''
         else:
             return super().get_display_block(row, column)
+
+    def get_extra_params(self, params):
+        # Check for email lookup flag
+        for param in params:
+            if param[:1] == '?':
+                email = param[1:]
+
+                if email:
+                    try:
+                        resident = Resident(principal_name=email)
+                        params = [resident.address_dict['community'], resident.address_dict['building'], resident.address_dict['room']]
+                    except (ObjectDoesNotExist, ImproperlyConfigured):
+                        params = ['Address', 'Not', 'Found']
+                break
+
+        return params
 
 
 class RetrieveAccessPointForm(RNINDatatablesFormView):
@@ -278,3 +307,63 @@ class PortChainedAjaxView(ChainedSelectChoicesView):
 
     def get_child_set(self):
         return Port.objects.filter(room__id=self.parent_value)
+
+
+class PopulateNetworkInfrastructureDevices(RNINDatatablesPopulateView):
+    table_name = 'network_infrastructure_device_map'
+
+    data_source = reverse_lazy('network:populate_network_infrastructure_devices')
+    update_source = reverse_lazy('network:update_network_infrastructure_device')
+    form_source = reverse_lazy('network:form_network_infrastructure_device')
+
+    form_class = NetworkInfrastructureDeviceCreateForm
+    model = NetworkInfrastructureDevice
+
+    item_name = 'network infrastructure device'
+    remove_url_name = 'network:remove_network_infrastructure_device'
+
+    column_definitions = OrderedDict()
+    column_definitions["community"] = {"width": "100px", "type": "string", "editable": True, "title": "Community", "custom_lookup": True, "lookup_field": "room__building__community__name"}
+    column_definitions["building"] = {"width": "100px", "type": "string", "editable": True, "title": "Building", "custom_lookup": True, "lookup_field": "room__building__name"}
+    column_definitions["room"] = {"width": "80px", "type": "string", "editable": True, "title": "Room", "related": True, "lookup_field": "name"}
+    column_definitions["display_name"] = {"width": "80px", "type": "string", "title": "Name"}
+    column_definitions["dns_name"] = {"width": "80px", "type": "string", "title": "DNS"}
+    column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
+    column_definitions["airwaves_id"] = {"width": "10px", "type": "string", "title": "", "orderable": False}
+    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+
+    def get_options(self):
+        if self.get_write_permissions():
+            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
+
+        return super().get_options()
+
+    def _initialize_write_permissions(self, user):
+        self.write_permissions = user.has_access(NETWORK_MODIFY_ACCESS)
+
+    def get_display_block(self, row, column):
+        if column == 'airwaves_id':
+            if row.airwaves_id:
+                icon_block = self.icon_template.format(icon_url=static('images/icons/aruba.png'))
+                device_status_url = reverse('network:airwaves_device_status', kwargs={'id': row.airwaves_id})
+                onclick = """openModalFrame("Network Infrastructure Device Status: {name}", "{url}");""".format(name=row.display_name, url=device_status_url)
+                link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name="", link_display=icon_block)
+                return self.display_block_template.format(value='', link_block=link_block, inline_images='')
+            else:
+                return ''
+        else:
+            return super().get_display_block(row, column)
+
+
+class RetrieveNetworkInfrastructureDeviceForm(RNINDatatablesFormView):
+    populate_class = PopulateNetworkInfrastructureDevices
+
+
+class UpdateNetworkInfrastructureDevice(BaseDatatablesUpdateView):
+    form_class = NetworkInfrastructureDeviceUpdateForm
+    model = NetworkInfrastructureDevice
+    populate_class = PopulateNetworkInfrastructureDevices
+
+
+class RemoveNetworkInfrastructureDevice(BaseDatatablesRemoveView):
+    model = NetworkInfrastructureDevice

@@ -10,11 +10,9 @@ from datetime import datetime
 
 from clever_selects.views import ChainedSelectFormViewMixin
 from django.core.urlresolvers import reverse_lazy
-from django.template.context import RequestContext
-from srsconnector.models import ServiceRequest
-
 from django.views.generic.base import TemplateView
 from ldap_groups import ADGroup as LDAPADGroup
+from srsconnector.models import ServiceRequest
 
 from ..datatables.views import DatatablesView
 from .ajax import PopulateRooms
@@ -23,7 +21,7 @@ from .models import SiteAnnouncements, Room, CSDMapping, ADGroup
 
 
 class IndexView(TemplateView):
-    template_name = "core/index.html"
+    template_name = "core/index.djhtml"
 
     def get_context_data(self, **kwargs):
 
@@ -34,7 +32,7 @@ class IndexView(TemplateView):
 
 
 class TicketSummaryView(TemplateView):
-    template_name = 'core/ticket_summary.html'
+    template_name = 'core/ticket_summary.djhtml'
 
     def get_context_data(self, **kwargs):
         context = super(TicketSummaryView, self).get_context_data(**kwargs)
@@ -56,7 +54,7 @@ class TicketSummaryView(TemplateView):
 
 
 class CSDDomainAssignmentEditView(TemplateView):
-    template_name = "core/csd_assign_domain.html"
+    template_name = "core/csd_assign_domain.djhtml"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -78,11 +76,11 @@ class CSDDomainAssignmentEditView(TemplateView):
 
 
 class RoomsView(ChainedSelectFormViewMixin, DatatablesView):
-    template_name = "core/rooms.djhtml"
+    template_name = "datatables/datatables_base.djhtml"
     form_class = RoomCreateForm
     populate_class = PopulateRooms
     model = Room
-    success_url = reverse_lazy('rooms')
+    success_url = reverse_lazy('core:rooms')
 
 
 def handler500(request):
@@ -91,6 +89,6 @@ def handler500(request):
     from django.template import loader
     from django.http import HttpResponseServerError
 
-    template = loader.get_template('500.html')
+    template = loader.get_template('500.djhtml')
 
     return HttpResponseServerError(template.render(request))

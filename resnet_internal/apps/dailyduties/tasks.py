@@ -36,11 +36,14 @@ def update_slack_voicemail(num):
     with EmailManager() as email_manager:
         current_voicemails = email_manager.get_all_voicemail_messages()
 
+    for voicemail in current_voicemails:
+        del voicemail['unread']
+
     if previous_voicemail_messages is not None:
         new_voicemails = [voicemail for voicemail in current_voicemails if voicemail not in previous_voicemail_messages]
 
         for voicemail in new_voicemails:
-            text = '<%s|New Voicemail> from %s at %s!' % (urljoin(settings.DEFAULT_BASE_URL, reverse('voicemail_list')),
+            text = '<%s|New Voicemail> from %s at %s!' % (urljoin(settings.DEFAULT_BASE_URL, reverse('dailyduties:voicemail_list')),
                                                           voicemail['sender'],
                                                           str(voicemail['date']))
 
@@ -59,7 +62,7 @@ def update_slack_email(num):
     previous_email_messages = cache.get('previous_email_messages')
 
     with EmailManager() as email_manager:
-        current_emails, num_available_messages = email_manager.get_messages('INBOX', '')
+        current_emails, num_available_messages = email_manager.get_messages('INBOX', '')  # noqa
         cache.set('previous_email_messages', current_emails, 10 * 60)
 
         if previous_email_messages is not None:
@@ -87,7 +90,7 @@ def update_slack_email(num):
                         'color': 'good',
                         'author_name': email['sender_name'] + ' (' + email['sender_address'] + ')',
                         'title': 'Subject: ' + email['subject'],
-                        'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('email_view_message', kwargs={'mailbox_name': 'INBOX', 'uid': email['uid']})),
+                        'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('dailyduties:email_view_message', kwargs={'mailbox_name': 'INBOX', 'uid': email['uid']})),
                         'text': email_message['body_plain_text'] if email_message['body_plain_text'] else html2text(email_message['body_html']),
 
                     }

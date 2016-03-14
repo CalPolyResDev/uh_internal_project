@@ -1,0 +1,61 @@
+{% extends "base_frame.djhtml" %}
+
+{% load core_filters %}
+{% load staticfiles %}
+{% load srs_urls %}
+
+{% block main %}
+<div class="col-xs-12">
+    <h1>Summary: {{ ticket.summary|clean_srs_escapes }}</h1>
+    {% if ticket %}
+        <h3>Details:</h3>
+        <div class="row">
+            <div class="col-xs-6">
+                <strong>Name:</strong> {{ ticket.requestor_full_name }}
+                <br /><strong>Username:</strong> {{ ticket.requestor_username }}
+                <br /><strong>Status:</strong>  {{ ticket.status }}
+                <br /><strong>Date Created:</strong> {{ ticket.date_created }}
+                <br /><strong>Last Updated:</strong> <span class="{{ date_display_class }}">{{ ticket.date_updated }}</span>
+                <br /><strong>Assigned Team:</strong> {{ ticket.assigned_team }}
+                <br /><strong>Assigned User:</strong> {{ ticket.assigned_person }}
+            </div>
+            <div class="col-xs-6">
+                <strong>Ticket #:</strong> {{ ticket.ticket_id }}  <a href="{% srs_edit_url ticket.ticket_id %}" target="_blank"><img src="{% static 'images/srs_edit_button.gif' %}"></a>
+                <br /><strong>Phone:</strong> {{ ticket.formatted_requestor_phone }}
+                <br /><strong>Dorm Address:</strong> {{ ticket.requestor_housing_address }}
+                <br /><strong>Department:</strong> {{ ticket.requestor_department }}
+                <br /><strong>Building:</strong> {{ ticket.requestor_building }}
+                <br /><strong>Room:</strong> {{ ticket.requestor_room }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                <p><h3>Description:</h3> {{ ticket.formatted_description|linebreaksbr }}</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                <p><h3>Requestor Notes:</h3>
+                    {% for note in ticket.requestor_notification_dict %}
+                            <strong>[{{ note.first_name }} {{ note.last_name }} on {{ note.timestamp }}]</strong>
+                            <br /><br />{{ note.message|linebreaksbr }}
+                            <br /><br />
+                    {% endfor %}
+                </p>
+            </div>
+            <div class="col-xs-6">
+                <p><h3>Work Log:</h3>
+                    {% for note in ticket.work_log_dict %}
+                            <strong>[{{ note.first_name }} {{ note.last_name }} on {{ note.timestamp }}]</strong>
+                            <br /><br />{{ note.message|linebreaksbr }}
+                            <br /><br />
+                    {% endfor %}
+                </p>
+            </div>
+        </div>
+        
+    {% else %}
+        <p>Could not retrieve ticket.</p>
+    {% endif %}
+</div>
+{% endblock %}

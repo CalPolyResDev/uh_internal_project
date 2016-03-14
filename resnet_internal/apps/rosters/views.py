@@ -1,6 +1,6 @@
 """
-.. module:: reslife_internal.apps.rosters.views
-   :synopsis: ResLife Internal Roster Generator Views.
+.. module:: resnet_internal.apps.rosters.views
+   :synopsis: University Housing Internal Roster Generator Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
@@ -23,8 +23,8 @@ class RosterGenerateView(FormView):
     """Generates an HTML table or CSV file containing student information based on form input."""
 
     form_class = GenerationForm
-    template_name = 'rosters/rosters.html'
-    report_template_name = 'rosters/rosters_report.html'
+    template_name = 'rosters/rosters.djhtml'
+    report_template_name = 'rosters/rosters_report.djhtml'
 
     attribute_list = ["full_name", "sex", "address", "cell_phone", "dorm_phone", "college", "major", "course_year", "email", "is_buckley"]
     empty_error_message_csv = "The buildings provided are currently vacant."
