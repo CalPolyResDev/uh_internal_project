@@ -21,7 +21,7 @@ from .models import SiteAnnouncements, Room, CSDMapping, ADGroup
 
 
 class IndexView(TemplateView):
-    template_name = "core/index.html"
+    template_name = "core/index.djhtml"
 
     def get_context_data(self, **kwargs):
 
@@ -32,7 +32,7 @@ class IndexView(TemplateView):
 
 
 class TicketSummaryView(TemplateView):
-    template_name = 'core/ticket_summary.html'
+    template_name = 'core/ticket_summary.djhtml'
 
     def get_context_data(self, **kwargs):
         context = super(TicketSummaryView, self).get_context_data(**kwargs)
@@ -54,7 +54,7 @@ class TicketSummaryView(TemplateView):
 
 
 class CSDDomainAssignmentEditView(TemplateView):
-    template_name = "core/csd_assign_domain.html"
+    template_name = "core/csd_assign_domain.djhtml"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -89,6 +89,6 @@ def handler500(request):
     from django.template import loader
     from django.http import HttpResponseServerError
 
-    template = loader.get_template('500.html')
+    template = loader.get_template('500.djhtml')
 
     return HttpResponseServerError(template.render(request))

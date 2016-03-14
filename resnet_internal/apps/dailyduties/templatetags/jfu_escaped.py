@@ -13,12 +13,12 @@ register = Library()
 
 
 @register.simple_tag(takes_context=True)
-def jfu_escaped_js(context, template_name='jfu/upload_form.html', upload_handler_name='jfu_upload', *args, **kwargs):
+def jfu_escaped_js(context, template_name='jfu/upload_form.djhtml', upload_handler_name='jfu_upload', *args, **kwargs):
     jfu_response = jfu(context, template_name, upload_handler_name, *args, **kwargs)
     return escapejs(jfu_response)
 
 
 @register.simple_tag(takes_context=True)
-def jfu_escaped(context, template_name='jfu/upload_form.html', upload_handler_name='jfu_upload', *args, **kwargs):
+def jfu_escaped(context, template_name='jfu/upload_form.djhtml', upload_handler_name='jfu_upload', *args, **kwargs):
     jfu_response = jfu(context, template_name, upload_handler_name, *args, **kwargs)
     return escape(jfu_response)

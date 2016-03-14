@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.djhtml" %}
 {% load core_filters %}
 
 {% block global_scope %}

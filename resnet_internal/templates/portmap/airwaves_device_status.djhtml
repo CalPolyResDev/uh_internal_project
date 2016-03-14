@@ -1,4 +1,4 @@
-{% extends "base_frame.html" %}
+{% extends "base_frame.djhtml" %}
 
 {% load staticfiles %}
 

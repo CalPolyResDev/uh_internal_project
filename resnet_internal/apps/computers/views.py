@@ -39,7 +39,7 @@ class ComputersView(ChainedSelectFormViewMixin, DatatablesView):
 
 class ComputerRecordsView(TemplateView):
 
-    template_name = "computers/computer_record.html"
+    template_name = "computers/computer_record.djhtml"
 
     def get_context_data(self, **kwargs):
         context = super(ComputerRecordsView, self).get_context_data(**kwargs)
@@ -100,7 +100,7 @@ class RDPRequestView(TemplateView):
 
 
 class PinholeRequestView(FormView):
-    template_name = "computers/pinhole_request.html"
+    template_name = "computers/pinhole_request.djhtml"
     form_class = RequestPinholeForm
 
     def form_valid(self, form):
@@ -150,7 +150,7 @@ Thanks,
 
 
 class DomainNameRequestView(FormView):
-    template_name = "computers/domain_name_request.html"
+    template_name = "computers/domain_name_request.djhtml"
     form_class = RequestDomainNameForm
 
     def form_valid(self, form):

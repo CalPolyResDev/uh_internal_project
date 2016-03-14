@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 class SearchView(FormView):
     """Performs resident lookups given either a full name, email, or dorm address and displays the results, if any."""
 
-    template_name = "residents/search.html"
+    template_name = "residents/search.djhtml"
     full_name_form_class = FullNameSearchForm
     principal_name_form_class = PrincipalNameSearchForm
     address_form_class = AddressSearchForm

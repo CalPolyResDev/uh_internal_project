@@ -1,4 +1,4 @@
-{% extends "dailyduties/email_viewer.html" %}
+{% extends "dailyduties/email_viewer.djhtml" %}
 {% load staticfiles %}
 {% load jfutags %}
 {% block subtitle %} | Email{% endblock %}

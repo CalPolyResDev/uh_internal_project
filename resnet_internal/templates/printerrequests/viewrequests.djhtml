@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.djhtml" %}
 {% load printer_filters %}
 {% block subtitle %} | View Printer Requests{% endblock %}
 

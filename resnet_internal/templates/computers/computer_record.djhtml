@@ -1,4 +1,4 @@
-{% extends "base_frame.html" %}
+{% extends "base_frame.djhtml" %}
 {% load core_user_tests %}
 {% load staticfiles %}
 {% load srs_urls %}
