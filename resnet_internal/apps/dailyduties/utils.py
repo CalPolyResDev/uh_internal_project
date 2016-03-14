@@ -104,12 +104,7 @@ class EmailConnectionMixin(object):
         attempt_number = 0
         while not connection and attempt_number < 10:
             try:
-                # TODO: Remove ssl_context when certificate comes in.
-                ssl_context = imapclient.create_default_context()
-                ssl_context.check_hostname = False
-                ssl_context.verify_mode = CERT_NONE
-
-                connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl, ssl_context=ssl_context)
+                connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
                 connection.login(username, password)
             except (OSError, IMAP4.error) as exc:
                 logger.error("Can't connect to IMAP server: %s, trying again." % str(exc), exc_info=True)
