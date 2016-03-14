@@ -22,7 +22,7 @@ from .utils import EmailManager, get_archive_folders, get_plaintext_signature
 
 
 class EmailListView(TemplateView):
-    template_name = "dailyduties/email.html"
+    template_name = "dailyduties/email.djhtml"
 
     def get_context_data(self, **kwargs):
         context = super(EmailListView, self).get_context_data(**kwargs)
@@ -33,7 +33,7 @@ class EmailListView(TemplateView):
 
 
 class EmailMessageView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
-    template_name = "dailyduties/email_viewer.html"
+    template_name = "dailyduties/email_viewer.djhtml"
     form_class = BuildingSelectForm
 
     def get_context_data(self, **kwargs):
@@ -114,7 +114,7 @@ class EmailMessageView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
 
 
 class EmailComposeView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
-    template_name = "dailyduties/email_compose.html"
+    template_name = "dailyduties/email_compose.djhtml"
     form_class = BuildingSelectForm
 
     def get_context_data(self, **kwargs):
@@ -164,7 +164,7 @@ class EmailAttachmentRequestView(TemplateView):
 
 
 class VoicemailListView(TemplateView):
-    template_name = "dailyduties/voicemail_list.html"
+    template_name = "dailyduties/voicemail_list.djhtml"
 
     def get_context_data(self, **kwargs):
         context = super(VoicemailListView, self).get_context_data(**kwargs)

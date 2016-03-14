@@ -46,13 +46,13 @@ class NetworkInfrastructureDevicesView(ChainedSelectFormViewMixin, DatatablesVie
 
 
 class AccessPointFrameView(DetailView):
-    template_name = "portmap/ap_popover.html"
+    template_name = "portmap/ap_popover.djhtml"
     model = AccessPoint
     context_object_name = 'ap'
 
 
 class PortFrameView(DetailView):
-    template_name = "portmap/port_popover.html"
+    template_name = "portmap/port_popover.djhtml"
     model = Port
     context_object_name = 'port'
 

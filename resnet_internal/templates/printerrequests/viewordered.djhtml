@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.djhtml" %}
 {% block subtitle %} | View Ordered Printer Items{% endblock %}
 
 {% block main %}

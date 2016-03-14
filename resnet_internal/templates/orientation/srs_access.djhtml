@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends "base.djhtml" %}
 {% load crispy_forms_tags %}
 
 {% block subtitle %} | Orientation - SRS Access{% endblock %}
