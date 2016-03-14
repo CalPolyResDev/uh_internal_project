@@ -20,7 +20,7 @@ def add_navbar_item(apps, schema_editor):
         my_printer_requests = NavbarLink.objects.create(
             display_name="My Printer Requests",
             sequence_index=3,
-            onclick="window.open(DjangoReverse['printerrequests:home']())",
+            url_name="printerrequests:home",
             icon="images/icons/printer.png",
             parent_group=reslife_resources
         )
