@@ -25,9 +25,7 @@
             <h2>ResNet Printer Toner Request</h2>
         </div>
         <p>This tool is used to request toner replacements. Simply select your printer and the color of toner that needs replacing. A service request will be created in your name.</p>
-    </div>
 
-    <div classs="col-xs-12">
         <form method="post" action="{% url 'printerrequests:toner_request' %}" id="toner_form">
             <fieldset>
                 <legend>

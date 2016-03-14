@@ -20,9 +20,6 @@
             <h2>ResNet Printer Part Request</h2>
         </div>
         <p>This tool is used to request part replacements. Simply select your printer and the part that needs replacing. A service request will be created in your name.</p>
-    </div>
-    
-    <div class="col-xs-12">
         <form method="post" action="{% url 'printerrequests:parts_request' %}" id="part_form">
             <fieldset>
                 <legend>
