@@ -62,7 +62,7 @@ class DeviceInfo(AirwavesAPIConnector):
     def __init__(self, ap_id, **kwargs):
         super().__init__()
 
-        with ThreadPoolExecutor() as pool:
+        with ThreadPoolExecutor(max_workers=10) as pool:
             if kwargs.get('extra_client_detail', False):
                 ap_client_info_future = pool.submit(lambda: APClientInfo(ap_id))
             else:
