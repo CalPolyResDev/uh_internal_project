@@ -1,6 +1,6 @@
 """
-.. module:: reslife_internal.printerrequests.views
-   :synopsis: ResLife Internal Printer Request Views.
+.. module:: resnet_internal.apps.printerrequests.views
+   :synopsis: University Housing Internal Printer Request Views.
 
 .. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
 
