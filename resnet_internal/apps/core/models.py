@@ -134,6 +134,9 @@ class PermissionClass(Model):
     name = CharField(max_length=50, verbose_name='Class Name', unique=True)
     groups = ManyToManyField(ADGroup, related_name='permissionclasses', verbose_name='AD Groups')
 
+    def __str__(self):
+        return self.name
+
     class Meta:
         verbose_name_plural = 'permission classes'
 
