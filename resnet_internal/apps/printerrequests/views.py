@@ -30,7 +30,7 @@ SERVICE_REQUEST_TYPE_MAP = {
 
 
 class PrinterRequestMixin(object):
-    success_url = reverse_lazy('printerrequests')
+    success_url = reverse_lazy('printerrequests:home')
 
     def create_requests(self, priority, request_type, for_front_desk, printer, request_list, user):
         # Create the service request
