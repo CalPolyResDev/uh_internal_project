@@ -19,7 +19,6 @@ CSRF_COOKIE_SECURE = True
 ALLOWED_HOSTS = [
     '.internal.resnet.calpoly.edu',
     '.internal.housing.calpoly.edu',
-    '.internal.reslife.calpoly.edu',
 ]
 
 DEFAULT_BASE_URL = 'https://internal.housing.calpoly.edu'
