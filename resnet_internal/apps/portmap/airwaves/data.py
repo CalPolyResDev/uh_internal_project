@@ -202,7 +202,7 @@ class ClientInfo(AirwavesAPIConnector):
                 self.associations.append(association_info)
 
 
-class BandwidthReport(AirwavesAPIConnector):
+class ChartReport(AirwavesAPIConnector):
 
     def get_data(self, **kwargs):
         if 'start' not in kwargs:
@@ -212,14 +212,12 @@ class BandwidthReport(AirwavesAPIConnector):
         if 'group_by' not in kwargs:
             kwargs['group_by'] = 'Avg' if kwargs.pop('average', True) else 'Max'
 
-        response = self.get_JSON('/api/rrd_xport.json?' + urlencode(kwargs))
-
-        print(response)
+        response = self.get_JSON('/api/rrd_xport.json?' + urlencode(kwargs, doseq=True))
 
         return response['series']
 
 
-class DeviceBandwidthReport(BandwidthReport):
+class DeviceBandwidthReport(ChartReport):
 
     def __init__(self, device_id, device_type, **kwargs):
         super().__init__()
@@ -232,15 +230,27 @@ class DeviceBandwidthReport(BandwidthReport):
         self.data = super().get_data(**report_options)
 
 
-class OverallBandwidthReport(BandwidthReport):
+class OverallBandwidthReport(ChartReport):
 
     def __init__(self, **kwargs):
         super().__init__()
 
         report_options = {
             'type': 'amp_bandwidth',
-            'ds': 'in_bps',
-            'ds': 'out_bps',
+            'ds': ['in_bps', 'out_bps'],
+        }
+
+        self.data = super().get_data(**report_options)
+
+
+class OverallClientReport(ChartReport):
+
+    def __init__(self, **kwargs):
+        super().__init__()
+
+        report_options = {
+            'type': 'amp_client_count',
+            'ds': 'cc',
         }
 
         self.data = super().get_data(**report_options)

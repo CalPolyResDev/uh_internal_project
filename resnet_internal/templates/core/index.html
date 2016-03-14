@@ -3,33 +3,56 @@
 
 {% block global_scope %}
     {% user_has_permission "ticket" as ticket_access %}
+    {% user_has_permission "network" as network_access %}
     {{ block.super }}
 {% endblock %}
 
 {% block main %}
-    <div class="col-xs-12 col-md-12 col-lg-3">
-        <h2>General Site Announcements</h2>
-        {% for announcement in announcements %}
-            <h3>{{ announcement.title }}&nbsp&nbsp<wbr /><small>{{ announcement.created|date }}</small></h3>
-            <p>{% autoescape off %}{{ announcement.description }}{% endautoescape %}</p>
-        {% endfor %}
-    </div>
-    <div class="col-xs-12 col-md-6 col-lg-4">
-        <h2>Network Status</h2>
-        <div id="network-status-response" class="table-responsive table-wrapper-cutoff">
-            <p>Loading...</p>
-        </div>
-    </div>
-    <div class="col-xs-12 col-md-6 col-lg-5">
-        <h2>Ticket Summary</h2>
-        <div id="tickets-response" class="table-responsive table-wrapper-cutoff">
-        {% if request.user.is_authenticated and ticket_access %}
-            <p>Loading...</p>
-        {% elif request.user.is_authenticated %}
-            <p>The Ticket Summary is only currently available to ResNet Technicians.</p>
-        {% else %}
-            <p>Please log in to view tickets.</p>
+    <div class="col-xs-12">
+        {% if network_access %}
+            <div class="row">
+                <div class="col-xs-12">
+                    <h2>Network Status</h2>
+                </div>
+                <div class="col-xs-12 col-md-12 col-lg-6">
+                    <h4>Bandwidth</h4>
+                    <span id="network-bandwidth-usage" style="height: 200px; display: block;"><p>Loading...</p></span>
+                </div>
+                <div class="col-xs-12 col-md-12 col-lg-6">
+                    <h4>Clients</h4>
+                    <span id="network-clients" style="height: 200px; display: block;"><p>Loading...</p></span>
+                </div>
+                <div class="col-xs-12">
+                    <hr>
+                </div>
+            </div>
         {% endif %}
+        <div class="row">
+            <div class="col-xs-12 col-md-12 col-lg-3">
+                <h2>General Site Announcements</h2>
+                {% for announcement in announcements %}
+                    <h3>{{ announcement.title }}&nbsp&nbsp<wbr /><small>{{ announcement.created|date }}</small></h3>
+                    <p>{% autoescape off %}{{ announcement.description }}{% endautoescape %}</p>
+                {% endfor %}
+            </div>
+            <div class="col-xs-12 col-md-6 col-lg-4">
+                <h2>Infrastructure Devices</h2>
+                <div id="network-status-response" class="table-responsive table-wrapper-cutoff">
+                    <p>Loading...</p>
+                </div>
+            </div>
+            <div class="col-xs-12 col-md-6 col-lg-5">
+                <h2>Ticket Summary</h2>
+                <div id="tickets-response" class="table-responsive table-wrapper-cutoff">
+                {% if request.user.is_authenticated and ticket_access %}
+                    <p>Loading...</p>
+                {% elif request.user.is_authenticated %}
+                    <p>The Ticket Summary is only currently available to ResNet Technicians.</p>
+                {% else %}
+                    <p>Please log in to view tickets.</p>
+                {% endif %}
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -40,6 +63,10 @@
         ajaxGet("{% url 'core:update_network_status' %}");
         {% if request.user.is_authenticated and ticket_access %}
             ajaxGet("{% url 'core:get_tickets' %}");
+        {% endif %}
+        {% if network_access %}
+            displayAirwavesChart('#network-bandwidth-usage', DjangoReverse['network:airwaves_overall_bandwidth']());
+            displayAirwavesChart('#network-clients', DjangoReverse['network:airwaves_overall_clients']());
         {% endif %}
     });
 </script>

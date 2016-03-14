@@ -114,10 +114,9 @@
 {% endblock %}
 
 {% block extra_script %}
-    <script src="{% static "js/bandwidth_chart.js" %}?1.0"></script>
     <script>
         $(document).ready(function() {
-            displayBandwidthChart('#bandwidth_usage_chart', DjangoReverse['network:airwaves_device_bandwidth']({'id': '{{ ap.airwaves_id }}', 'device_type': '{{ ap.device_type }}'}));
+            displayAirwavesChart('#bandwidth_usage_chart', DjangoReverse['network:airwaves_device_bandwidth']({'id': '{{ ap.airwaves_id }}', 'device_type': '{{ ap.device_type }}'}));
         });
     </script>
 {% endblock %}

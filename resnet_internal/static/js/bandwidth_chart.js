@@ -1,4 +1,4 @@
-function displayBandwidthChart(jquerySelector, datasourceURL) {
+function displayAirwavesChart(jquerySelector, datasourceURL) {
     var date = new Date();
     Highcharts.setOptions({
         global: {
@@ -29,7 +29,7 @@ function displayBandwidthChart(jquerySelector, datasourceURL) {
             credits: {
                 enabled: false
             },
-            series: response.bandwidthData,  
+            series: response.data,  
         });
     });
 }

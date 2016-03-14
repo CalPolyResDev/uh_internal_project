@@ -15,7 +15,7 @@ from django.views.generic.detail import DetailView
 from django_datatables_view.mixins import JSONResponseView
 
 from ..datatables.views import DatatablesView
-from .airwaves.data import DeviceInfo, OverallBandwidthReport, DeviceBandwidthReport
+from .airwaves.data import DeviceInfo, OverallBandwidthReport, DeviceBandwidthReport, OverallClientReport
 from .ajax import PopulatePorts, PopulateAccessPoints, PopulateNetworkInfrastructureDevices
 from .forms import PortCreateForm, AccessPointCreateForm, NetworkInfrastructureDeviceCreateForm
 from .models import Port, AccessPoint, NetworkInfrastructureDevice
@@ -75,7 +75,7 @@ class DeviceBandwidthReportView(JSONResponseView):
 
         report = DeviceBandwidthReport(kwargs['id'], kwargs['device_type'])
 
-        context['bandwidthData'] = report.data
+        context['data'] = report.data
 
         return context
 
@@ -87,6 +87,18 @@ class OverallBandwidthReportView(JSONResponseView):
 
         report = OverallBandwidthReport()
 
-        context['bandwidthData'] = report.data
+        context['data'] = report.data
+
+        return context
+
+
+class OverallClientReportView(JSONResponseView):
+
+    def get_context_data(self, **kwargs):
+        context = {}
+
+        report = OverallClientReport()
+
+        context['data'] = report.data
 
         return context
