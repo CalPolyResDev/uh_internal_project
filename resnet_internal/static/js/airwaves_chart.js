@@ -11,6 +11,7 @@ function displayAirwavesChart(jquerySelector, datasourceURL) {
         $(jquerySelector).highcharts({
             chart: {
                 type: 'spline',
+                backgroundColor: null,
             },
             title: {
                 text: null
