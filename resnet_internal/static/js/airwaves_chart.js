@@ -13,6 +13,7 @@ if (!String.prototype.format) {
     }
 }
 
+// Source: http://stackoverflow.com/a/14919494
 function humanFileSize(bytes, si) {
     var thresh = si ? 1000 : 1024;
     if(Math.abs(bytes) < thresh) {
