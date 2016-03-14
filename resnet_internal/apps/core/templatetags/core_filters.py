@@ -16,7 +16,7 @@ register = template.Library()
 @register.simple_tag(takes_context=True)
 def user_has_permission(context, permission_class):
     if permission_class in ACCESS_PERMISSIONS:
-        return context['request'].user.is_authenticated() and context['request'].user.has_access(permission_class)
+        return 'request' in context and hasattr(context['request'], 'user') and context['request'].user.is_authenticated() and context['request'].user.has_access(permission_class)
 
     raise KeyError('Invalid Permission Class')
 
