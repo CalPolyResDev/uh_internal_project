@@ -20,7 +20,7 @@ class TonerRequestForm(Form):
     priority = ChoiceField(label='Request Priority', error_messages={'required': 'Please select a priority'})
 
     # Request info
-    printer = ModelChoiceField(queryset=PrinterType.objects.all(), empty_label="-------------", label='Printer', error_messages={'required': 'Please select a printer'})
+    # printer = ModelChoiceField(queryset=PrinterType.objects.all(), empty_label="-------------", label='Printer', error_messages={'required': 'Please select a printer'})
     toner = ChoiceField(label='Color', error_messages={'required': 'Please select a color'})
     for_front_desk = BooleanField(label='For front desk?', initial=False, required=False)
 
@@ -37,8 +37,8 @@ class PartsRequestForm(Form):
     priority = ChoiceField(label='Request Priority', error_messages={'required': 'Please select a priority'})
 
     # Request info
-    queryset = PrinterType.objects.filter(id__in=set(Part.objects.values_list('printer', flat=True)))
-    printer = ModelChoiceField(queryset=queryset, empty_label="-------------", label='Printer', error_messages={'required': 'Please select a printer'})
+    # queryset = PrinterType.objects.filter(id__in=set(Part.objects.values_list('printer', flat=True)))
+    # printer = ModelChoiceField(queryset=queryset, empty_label="-------------", label='Printer', error_messages={'required': 'Please select a printer'})
     part = ChoiceField(label='Part', error_messages={'required': 'Please select a part'})
 
     def __init__(self, *args, **kwargs):
