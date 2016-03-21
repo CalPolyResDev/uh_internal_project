@@ -11,6 +11,7 @@ import re
 
 from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser, UserManager, PermissionsMixin
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse, NoReverseMatch
@@ -235,7 +236,14 @@ class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
         send_mail(subject, message, from_email, [self.email])
 
     def has_access(self, class_name):
-        return self.ad_groups.all().filter(permissionclasses__name=class_name).exists()
+        cache_key = 'has_access:' + self.username + ':' + class_name
+        result = cache.get(cache_key, None)
+
+        if result is None:
+            result = self.ad_groups.all().filter(permissionclasses__name=class_name).exists()
+            cache.set(cache_key, result, 4 * 60 * 60)
+
+        return result
 
 
 class TechFlair(Model):
