@@ -22,9 +22,6 @@
                     <h4>Clients</h4>
                     <span id="network-clients" style="height: 200px; display: block;"><p>Loading...</p></span>
                 </div>
-                <div class="col-xs-12">
-                    <hr>
-                </div>
             </div>
         {% endif %}
         <div class="row">
@@ -35,36 +32,37 @@
                     <p>{% autoescape off %}{{ announcement.description }}{% endautoescape %}</p>
                 {% endfor %}
             </div>
-            <div class="col-xs-12 col-md-6 col-lg-4">
-                <h2>Infrastructure Devices</h2>
-                <div id="network-status-response" class="table-responsive table-wrapper-cutoff">
-                    <p>Loading...</p>
+            
+            {% if network_access %}
+                <div class="col-xs-12 col-md-6 col-lg-4">
+                    <h2>Infrastructure Devices</h2>
+                    <div id="network-status-response" class="table-responsive table-wrapper-cutoff">
+                        <p>Loading...</p>
+                    </div>
                 </div>
-            </div>
-            <div class="col-xs-12 col-md-6 col-lg-5">
-                <h2>Ticket Summary</h2>
-                <div id="tickets-response" class="table-responsive table-wrapper-cutoff">
-                {% if request.user.is_authenticated and ticket_access %}
-                    <p>Loading...</p>
-                {% elif request.user.is_authenticated %}
-                    <p>The Ticket Summary is only currently available to ResNet Technicians.</p>
-                {% else %}
-                    <p>Please log in to view tickets.</p>
-                {% endif %}
+            {% endif %}
+            
+            {% if ticket_access %}
+                <div class="col-xs-12 col-md-6 col-lg-5">
+                    <h2>Ticket Summary</h2>
+                    <div id="tickets-response" class="table-responsive table-wrapper-cutoff">
+                        <p>Loading...</p>
+                    </div>
                 </div>
-            </div>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
 
 {% block extra_script %}
 <script type="text/javascript">
-    $(document).ready(function() {
-        ajaxGet("{% url 'core:update_network_status' %}");
+    $(document).ready(function() {       
         {% if request.user.is_authenticated and ticket_access %}
             ajaxGet("{% url 'core:get_tickets' %}");
         {% endif %}
+        
         {% if network_access %}
+            ajaxGet("{% url 'core:update_network_status' %}");
             displayAirwavesChart('#network-bandwidth-usage', DjangoReverse['network:airwaves_overall_bandwidth']());
             displayAirwavesChart('#network-clients', DjangoReverse['network:airwaves_overall_clients']());
         {% endif %}
