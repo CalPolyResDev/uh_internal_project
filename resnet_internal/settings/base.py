@@ -91,6 +91,7 @@ DATABASES = {
         'NAME': 'mercprd.db.calpoly.edu:1521/mercprd',
         'USER': get_env_variable('RESNET_INTERNAL_DB_RMS_USERNAME'),
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_RMS_PASSWORD'),
+        'OPTIONS': {'threaded': True},
     },
     'srs': {
         'ENGINE': 'django_ewiz',
