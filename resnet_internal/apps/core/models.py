@@ -108,6 +108,7 @@ class SiteAnnouncements(Model):
     title = CharField(max_length=150, verbose_name='Title')
     description = TextField(verbose_name='Description')
     created = DateTimeField(verbose_name='Entry Creation Date')
+    permission_classes = ManyToManyField('PermissionClass', related_name='site_announcements', blank=True)
 
     class Meta:
         get_latest_by = "created"

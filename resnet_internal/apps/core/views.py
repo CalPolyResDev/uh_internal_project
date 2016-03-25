@@ -10,6 +10,7 @@ from datetime import datetime
 
 from clever_selects.views import ChainedSelectFormViewMixin
 from django.core.urlresolvers import reverse_lazy
+from django.db.models import Q
 from django.views.generic.base import TemplateView
 from ldap_groups import ADGroup as LDAPADGroup
 from srsconnector.models import ServiceRequest
@@ -26,7 +27,7 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
 
         context = super(TemplateView, self).get_context_data(**kwargs)
-        context['announcements'] = SiteAnnouncements.objects.all().order_by('-created')[:3]
+        context['announcements'] = SiteAnnouncements.objects.filter(Q(permission_classes__groups__users__id=self.request.user.id) | Q(permission_classes=None)).order_by('-created')[:3]
 
         return context
 
