@@ -114,14 +114,15 @@ def update_slack_email(num):
                         'title': 'Subject: ' + email['subject'],
                         'title_link': email_url,
                         'text': email_message['body_plain_text'] if email_message['body_plain_text'] else html2text(email_message['body_html']),
-
                     }
                     slack_attachments.append(attachment)
 
-                payload = {'text': 'New Email Messages!' if len(new_emails) > 1 else 'New Email Message!',
-                           'icon_url': urljoin(settings.DEFAULT_BASE_URL, static('images/icons/email.png')),
-                           'channel': settings.SLACK_EMAIL_CHANNEL,
-                           'attachments': slack_attachments}
+                payload = {
+                    'text': 'New Email Messages!' if len(new_emails) > 1 else 'New Email Message!',
+                    'icon_url': urljoin(settings.DEFAULT_BASE_URL, static('images/icons/email.png')),
+                    'channel': settings.SLACK_EMAIL_CHANNEL,
+                    'attachments': slack_attachments,
+                }
 
                 url = settings.SLACK_WEBHOOK_URL
                 headers = {'content-type': 'application/json'}

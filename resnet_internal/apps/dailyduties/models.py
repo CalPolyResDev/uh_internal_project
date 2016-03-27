@@ -54,4 +54,4 @@ class EmailPermalink(Model):
         if not self.slug:
             self._generate_slug()
 
-        return urljoin(settings.DEFAULT_BASE_URL, reverse('dailyduties:email_permalink_view_message', {'slug': self.slug}))
+        return urljoin(settings.DEFAULT_BASE_URL, reverse('dailyduties:email_permalink_view_message', kwargs={'slug': self.slug}))
