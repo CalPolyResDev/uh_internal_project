@@ -42,8 +42,9 @@ class EmailPermalink(Model):
     slug = SlugField(unique=True, blank=True)
 
     def _generate_slug(self):
-        slug_str = self.sender_email + ' ' + self.subject
-        unique_slugify(self, slug_str)
+        if not self.slug:
+            slug_str = self.sender_email + ' ' + self.subject
+            unique_slugify(self, slug_str)
 
     def save(self, **kwargs):
         self._generate_slug()
@@ -51,7 +52,6 @@ class EmailPermalink(Model):
 
     @cached_property
     def absolute_uri(self):
-        if not self.slug:
-            self._generate_slug()
+        self._generate_slug()
 
         return urljoin(settings.DEFAULT_BASE_URL, reverse('dailyduties:email_permalink_view_message', kwargs={'slug': self.slug}))
