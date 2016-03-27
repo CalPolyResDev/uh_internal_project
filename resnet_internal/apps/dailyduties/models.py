@@ -6,10 +6,16 @@
 
 """
 
+from urllib.parse import urljoin
+
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db.models import Model, ForeignKey
 from django.db.models.deletion import SET_NULL
-from django.db.models.fields import CharField, DateTimeField
+from django.db.models.fields import CharField, DateTimeField, TextField, EmailField, SlugField, IntegerField
+from django.utils.functional import cached_property
+
+from ..core.utils import unique_slugify
 
 
 class DailyDuties(Model):
@@ -22,3 +28,30 @@ class DailyDuties(Model):
     class Meta(object):
         verbose_name_plural = 'Daily Duties'
         verbose_name = 'Daily Duty'
+
+
+class EmailPermalink(Model):
+    current_mailbox = CharField(max_length=100)
+    current_uid = IntegerField()
+
+    date = DateTimeField()
+    subject = TextField()
+    sender_name = CharField(max_length=255)
+    sender_email = EmailField()
+
+    slug = SlugField(unique=True, blank=True)
+
+    def _generate_slug(self):
+        slug_str = self.sender_email + ' ' + self.subject
+        unique_slugify(self, slug_str)
+
+    def save(self, **kwargs):
+        self._generate_slug()
+        super().save(**kwargs)
+
+    @cached_property
+    def absolute_uri(self):
+        if not self.slug:
+            self._generate_slug()
+
+        return urljoin(settings.DEFAULT_BASE_URL, reverse('dailyduties:email_permalink_view_message', {'slug': self.slug}))

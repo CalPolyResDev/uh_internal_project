@@ -12,6 +12,7 @@ import re
 from clever_selects.views import ChainedSelectFormViewMixin
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.http.response import HttpResponse
 from django.templatetags.static import static
 from django.views.generic.base import TemplateView
@@ -19,6 +20,7 @@ from django.views.generic.edit import FormMixin
 
 from .forms import BuildingSelectForm
 from .utils import EmailManager, get_archive_folders, get_plaintext_signature
+from .models import EmailPermalink
 
 
 class EmailListView(TemplateView):
@@ -111,6 +113,20 @@ class EmailMessageView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
             context['archive_folders'] = get_archive_folders()
 
         return context
+
+
+class EmailMessagePermalinkView(EmailMessageView):
+
+    def get_context_data(self, **kwargs):
+        try:
+            permalink = EmailPermalink.objects.get(slug=kwargs['slug'])
+        except EmailPermalink.DoesNotExist:
+            raise Http404('message not found')
+
+        kwargs['uid'] = permalink.current_uid
+        kwargs['mailbox_name'] = permalink.current_mailbox
+
+        return super().get_context_data(self, **kwargs)
 
 
 class EmailComposeView(TemplateView, ChainedSelectFormViewMixin, FormMixin):

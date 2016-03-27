@@ -15,6 +15,8 @@ from django.core.urlresolvers import reverse
 from html2text import html2text
 import requests
 
+from .models import EmailPermalink
+
 
 try:
     from uwsgidecorators import timer
@@ -59,6 +61,24 @@ def update_slack_voicemail(num):
 
 @timer(60)
 def update_slack_email(num):
+    def _permalink_for_email(email):
+        try:
+            permalink = EmailPermalink.objects.get(date=email['date'],
+                                                   subject=email['subject'],
+                                                   sender_name=email['sender_name'],
+                                                   sender_email=email['sender_email'])
+
+        except EmailPermalink.DoesNotExist:
+            permalink = EmailPermalink(current_mailbox=email['mailbox'],
+                                       current_uid=email['uid'],
+                                       date=email['date'],
+                                       subject=email['subject'],
+                                       sender_name=email['sender_name'],
+                                       sender_email=email['sender_email'])
+            permalink.save()
+
+        return permalink.absolute_uri
+
     previous_email_messages = cache.get('previous_email_messages')
 
     with EmailManager() as email_manager:
@@ -85,12 +105,14 @@ def update_slack_email(num):
                 for email in new_emails:
                     email_message = email_manager.get_email_message('INBOX', email['uid'])
 
+                    email_url = _permalink_for_email(email)
+
                     attachment = {
                         'fallback': 'New email message from %s' % email['sender_name'],
                         'color': 'good',
                         'author_name': email['sender_name'] + ' (' + email['sender_address'] + ')',
                         'title': 'Subject: ' + email['subject'],
-                        'title_link': urljoin(settings.DEFAULT_BASE_URL, reverse('dailyduties:email_view_message', kwargs={'mailbox_name': 'INBOX', 'uid': email['uid']})),
+                        'title_link': email_url,
                         'text': email_message['body_plain_text'] if email_message['body_plain_text'] else html2text(email_message['body_html']),
 
                     }
