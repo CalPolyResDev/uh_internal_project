@@ -9,8 +9,6 @@ ALLOWED_HOSTS = [
     "localhost",
 ]
 
-DEFAULT_BASE_URL = 'http://localhost:1500'
-
 
 # ======================================================================================================== #
 #                                        Authentication Configuration                                      #
