@@ -66,7 +66,7 @@ def update_slack_email(num):
             permalink = EmailPermalink.objects.get(date=email['date'],
                                                    subject=email['subject'],
                                                    sender_name=email['sender_name'],
-                                                   sender_email=email['sender_email'])
+                                                   sender_email=email['sender_address'])
 
         except EmailPermalink.DoesNotExist:
             permalink = EmailPermalink(current_mailbox=email['mailbox'],
@@ -74,7 +74,7 @@ def update_slack_email(num):
                                        date=email['date'],
                                        subject=email['subject'],
                                        sender_name=email['sender_name'],
-                                       sender_email=email['sender_email'])
+                                       sender_email=email['sender_address'])
             permalink.save()
 
         return permalink.absolute_uri
