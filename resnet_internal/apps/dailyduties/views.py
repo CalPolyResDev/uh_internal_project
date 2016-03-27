@@ -126,7 +126,7 @@ class EmailMessagePermalinkView(EmailMessageView):
         kwargs['uid'] = permalink.current_uid
         kwargs['mailbox_name'] = permalink.current_mailbox
 
-        return super().get_context_data(self, **kwargs)
+        return super().get_context_data(**kwargs)
 
 
 class EmailComposeView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
