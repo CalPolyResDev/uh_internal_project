@@ -22,7 +22,7 @@ from .models import Port, AccessPoint, NetworkInfrastructureDevice
 
 
 class PortsView(ChainedSelectFormViewMixin, DatatablesView):
-    template_name = "portmap/ports.djhtml"
+    template_name = "network/ports.djhtml"
     form_class = PortCreateForm
     populate_class = PopulatePorts
     model = Port
@@ -46,19 +46,19 @@ class NetworkInfrastructureDevicesView(ChainedSelectFormViewMixin, DatatablesVie
 
 
 class AccessPointFrameView(DetailView):
-    template_name = "portmap/ap_popover.djhtml"
+    template_name = "network/ap_popover.djhtml"
     model = AccessPoint
     context_object_name = 'ap'
 
 
 class PortFrameView(DetailView):
-    template_name = "portmap/port_popover.djhtml"
+    template_name = "network/port_popover.djhtml"
     model = Port
     context_object_name = 'port'
 
 
 class DeviceStatusView(TemplateView):
-    template_name = "portmap/airwaves_device_status.djhtml"
+    template_name = "network/airwaves_device_status.djhtml"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

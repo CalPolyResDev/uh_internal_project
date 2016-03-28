@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^computers/', include(MAIN_APP_NAME + '.apps.computers.urls')),
     url(r'^dailyduties/', include(MAIN_APP_NAME + '.apps.dailyduties.urls')),
     url(r'^orientation/', include(MAIN_APP_NAME + '.apps.orientation.urls')),
-    url(r'^network/', include(MAIN_APP_NAME + '.apps.portmap.urls')),
+    url(r'^network/', include(MAIN_APP_NAME + '.apps.network.urls')),
     url(r'^printerrequests/', include(MAIN_APP_NAME + '.apps.printerrequests.urls')),
     url(r'^printers/', include(MAIN_APP_NAME + '.apps.printers.urls')),
     url(r'^residents/', include(MAIN_APP_NAME + '.apps.residents.urls')),

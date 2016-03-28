@@ -20,7 +20,7 @@ from django_ajax.decorators import ajax
 
 from ...settings.base import ROOMS_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
-from ..portmap.utils import NetworkReachabilityTester
+from ..network.utils import NetworkReachabilityTester
 from .forms import RoomCreateForm, RoomUpdateForm
 from .models import Building, Room, SubDepartment, CSDMapping
 from .utils import get_ticket_list

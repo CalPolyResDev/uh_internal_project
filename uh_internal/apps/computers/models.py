@@ -12,7 +12,7 @@ from django.db.models.fields.related import ForeignKey
 from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ..core.models import Department, SubDepartment
-from ..portmap.models import NetworkDevice
+from ..network.models import NetworkDevice
 from .fields import ListField
 
 
