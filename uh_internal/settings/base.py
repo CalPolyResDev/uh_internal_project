@@ -78,11 +78,13 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 # This is because non-in-memory file objects can't be serialized for the cache.
 FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MiB
 
+MAIN_APP_NAME = 'uh_internal'
+
 # ======================================================================================================== #
 #                                      URL Configuration                                                   #
 # ======================================================================================================== #
 
-ROOT_URLCONF = 'resnet_internal.urls'
+ROOT_URLCONF = MAIN_APP_NAME + '.urls'
 DEFAULT_BASE_URL = get_env_variable('RESNET_INTERNAL_DEFAULT_BASE_URL')
 
 # ======================================================================================================== #
@@ -218,7 +220,7 @@ LOGIN_REDIRECT_URL = '/login/'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'resnet_internal.apps.core.backends.CASLDAPBackend',
+    MAIN_APP_NAME + '.apps.core.backends.CASLDAPBackend',
 )
 
 AUTH_USER_MODEL = 'core.ResNetInternalUser'
@@ -302,7 +304,7 @@ STATIC_PRECOMPILER_PREPEND_STATIC_URL = True
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    str(PROJECT_DIR.joinpath("resnet_internal", "static").resolve()),
+    str(PROJECT_DIR.joinpath(MAIN_APP_NAME, "static").resolve()),
 )
 
 # List of finder classes that know how to find static files in various locations.
@@ -322,7 +324,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            str(PROJECT_DIR.joinpath("resnet_internal", "templates").resolve()),
+            str(PROJECT_DIR.joinpath(MAIN_APP_NAME, "templates").resolve()),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -334,8 +336,8 @@ TEMPLATES = [
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.template.context_processors.request',
-                'resnet_internal.apps.core.context_processors.specializations',
-                'resnet_internal.apps.core.context_processors.navbar',
+                MAIN_APP_NAME + '.apps.core.context_processors.specializations',
+                MAIN_APP_NAME + '.apps.core.context_processors.navbar',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
@@ -349,7 +351,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'resnet_internal.apps.orientation.middleware.OrientationRedirectMiddleware',
+    MAIN_APP_NAME + '.apps.orientation.middleware.OrientationRedirectMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
 )
@@ -374,20 +376,20 @@ INSTALLED_APPS = (
     'clever_selects',
     'crispy_forms',
     'django_js_reverse',
-    'resnet_internal.apps.core',
-    'resnet_internal.apps.core.templatetags.__init__.default_app_config',
-    'resnet_internal.apps.dailyduties',
-    'resnet_internal.apps.datatables',
-    'resnet_internal.apps.datatables.templatetags.__init__.default_app_config',
-    'resnet_internal.apps.technicians',
-    'resnet_internal.apps.orientation',
-    'resnet_internal.apps.computers',
-    'resnet_internal.apps.portmap',
-    'resnet_internal.apps.printers',
-    'resnet_internal.apps.printerrequests',
-    'resnet_internal.apps.printerrequests.templatetags.__init__.default_app_config',
-    'resnet_internal.apps.residents',
-    'resnet_internal.apps.rosters',
+    MAIN_APP_NAME + '.apps.core',
+    MAIN_APP_NAME + '.apps.core.templatetags.__init__.default_app_config',
+    MAIN_APP_NAME + '.apps.dailyduties',
+    MAIN_APP_NAME + '.apps.datatables',
+    MAIN_APP_NAME + '.apps.datatables.templatetags.__init__.default_app_config',
+    MAIN_APP_NAME + '.apps.technicians',
+    MAIN_APP_NAME + '.apps.orientation',
+    MAIN_APP_NAME + '.apps.computers',
+    MAIN_APP_NAME + '.apps.portmap',
+    MAIN_APP_NAME + '.apps.printers',
+    MAIN_APP_NAME + '.apps.printerrequests',
+    MAIN_APP_NAME + '.apps.printerrequests.templatetags.__init__.default_app_config',
+    MAIN_APP_NAME + '.apps.residents',
+    MAIN_APP_NAME + '.apps.rosters',
 )
 
 # ======================================================================================================== #
@@ -452,7 +454,7 @@ LOGGING = {
             'handlers': ['sentry'],
             'propagate': True,
         },
-        'resnet_internal': {
+        MAIN_APP_NAME: {
             'level': 'WARNING',
             'handlers': ['sentry'],
             'propagate': True,
