@@ -189,7 +189,7 @@ class InternalUserManager(UserManager):
         return user
 
 
-class ResNetInternalUser(AbstractBaseUser, PermissionsMixin):
+class UHInternalUser(AbstractBaseUser, PermissionsMixin):
     """University Housing Internal User Model"""
 
     username = CharField(max_length=30, unique=True, verbose_name='Username')

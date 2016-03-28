@@ -223,7 +223,7 @@ AUTHENTICATION_BACKENDS = (
     MAIN_APP_NAME + '.apps.core.backends.CASLDAPBackend',
 )
 
-AUTH_USER_MODEL = 'core.ResNetInternalUser'
+AUTH_USER_MODEL = 'core.UHInternalUser'
 
 CAS_ADMIN_PREFIX = "flugzeug/"
 CAS_LOGOUT_COMPLETELY = False
