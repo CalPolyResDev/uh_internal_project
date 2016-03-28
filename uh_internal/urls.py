@@ -16,6 +16,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.defaults import permission_denied, page_not_found
 
+from .settings.base import MAIN_APP_NAME
 from .apps.core.views import handler500
 
 
@@ -25,16 +26,16 @@ logger = logging.getLogger(__name__)
 
 urlpatterns = [
     url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
-    url(r'^technicians/', include('resnet_internal.apps.technicians.urls')),
-    url(r'^computers/', include('resnet_internal.apps.computers.urls')),
-    url(r'^dailyduties/', include('resnet_internal.apps.dailyduties.urls')),
-    url(r'^orientation/', include('resnet_internal.apps.orientation.urls')),
-    url(r'^network/', include('resnet_internal.apps.portmap.urls')),
-    url(r'^printerrequests/', include('resnet_internal.apps.printerrequests.urls')),
-    url(r'^printers/', include('resnet_internal.apps.printers.urls')),
-    url(r'^residents/', include('resnet_internal.apps.residents.urls')),
-    url(r'^rosters/', include('resnet_internal.apps.rosters.urls')),
-    url(r'^', include('resnet_internal.apps.core.urls')),
+    url(r'^technicians/', include(MAIN_APP_NAME + '.apps.technicians.urls')),
+    url(r'^computers/', include(MAIN_APP_NAME + '.apps.computers.urls')),
+    url(r'^dailyduties/', include(MAIN_APP_NAME + '.apps.dailyduties.urls')),
+    url(r'^orientation/', include(MAIN_APP_NAME + '.apps.orientation.urls')),
+    url(r'^network/', include(MAIN_APP_NAME + '.apps.portmap.urls')),
+    url(r'^printerrequests/', include(MAIN_APP_NAME + '.apps.printerrequests.urls')),
+    url(r'^printers/', include(MAIN_APP_NAME + '.apps.printers.urls')),
+    url(r'^residents/', include(MAIN_APP_NAME + '.apps.residents.urls')),
+    url(r'^rosters/', include(MAIN_APP_NAME + '.apps.rosters.urls')),
+    url(r'^', include(MAIN_APP_NAME + '.apps.core.urls')),
 ]
 
 

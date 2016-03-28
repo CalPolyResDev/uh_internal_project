@@ -1,6 +1,8 @@
 from django.apps import AppConfig
 
+from ....settings.base import MAIN_APP_NAME
+
 
 class DatatablesTemplatetagsConfig(AppConfig):
-    label = 'resnet_internal.apps.datatables.templatetags'
+    label = MAIN_APP_NAME + '.apps.datatables.templatetags'
     name = 'apps.datatables.templatetags'

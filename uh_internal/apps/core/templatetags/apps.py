@@ -1,6 +1,8 @@
 from django.apps import AppConfig
 
+from ....settings.base import MAIN_APP_NAME
+
 
 class CoreTemplatetagsConfig(AppConfig):
-    label = 'resnet_internal.apps.core.templatetags'
+    label = MAIN_APP_NAME + '.apps.core.templatetags'
     name = 'apps.core.templatetags'
