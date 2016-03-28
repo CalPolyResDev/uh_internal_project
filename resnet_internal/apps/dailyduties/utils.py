@@ -12,7 +12,7 @@ from email import header
 from imaplib import IMAP4
 from itertools import zip_longest
 from operator import itemgetter
-from ssl import SSLError, SSLEOFError, CERT_NONE
+from ssl import SSLError, SSLEOFError
 from threading import Lock
 import email
 import itertools
@@ -31,7 +31,7 @@ from srsconnector.models import ServiceRequest
 import imapclient
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
-from .models import DailyDuties
+from .models import DailyDuties, EmailPermalink
 
 
 imapclient.imapclient.imaplib._MAXLINE = 1000000
@@ -231,12 +231,25 @@ class EmailManager(EmailConnectionMixin):
         raise ValueError('Not a Valid Voicemail Message: No attachment.')
 
     def move_message(self, mailbox, uid, destination_folder):
-        self.server.select_folder(mailbox)
+        email = self._get_message_summaries(mailbox, [uid])[0]
 
         try:
-            self.server.copy(int(uid), destination_folder)
-        except:
-            return
+            permalink = EmailPermalink.objects.get(date=email['date'],
+                                                   subject=email['subject'],
+                                                   sender_name=email['sender_name'],
+                                                   sender_email=email['sender_address'])
+        except EmailPermalink.DoesNotExist:
+            permalink = None
+
+        self.server.select_folder(mailbox)
+
+        (response_string, uids) = self.server.copy(int(uid), destination_folder, return_uids=True)  # noqa
+        new_uid = uids['destination_uids'][0]
+
+        if permalink:
+            permalink.current_uid = new_uid
+            permalink.current_mailbox = destination_folder
+            permalink.save()
 
         self.server.delete_messages(int(uid))
         self.server.expunge()

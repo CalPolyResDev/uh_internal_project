@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from ..core.permissions import daily_duties_access
 from .ajax import (email_archive, email_mark_read, email_mark_unread, get_csd_email, get_email_folders, get_mailbox_summary,
                    send_email, attachment_delete, attachment_upload, remove_voicemail, ticket_from_email, refresh_duties, update_duty)
-from .views import EmailAttachmentRequestView, EmailComposeView, EmailListView, EmailMessageView, VoicemailListView, VoicemailAttachmentRequestView
+from .views import EmailAttachmentRequestView, EmailComposeView, EmailListView, EmailMessageView, VoicemailListView, VoicemailAttachmentRequestView, EmailMessagePermalinkView
 
 
 app_name = 'dailyduties'
@@ -20,6 +20,7 @@ app_name = 'dailyduties'
 urlpatterns = [
     url(r'^email/list/$', login_required(daily_duties_access(EmailListView.as_view())), name='email_list'),
     url(r'^email/view/(?P<mailbox_name>.+)/(?P<uid>[0-9]+)/$', login_required(daily_duties_access(EmailMessageView.as_view())), name='email_view_message'),
+    url(r'^email/permalink/view/(?P<slug>.+)/$', login_required(daily_duties_access(EmailMessagePermalinkView.as_view())), name='email_permalink_view_message'),
     url(r'^email/compose/$', login_required(daily_duties_access(EmailComposeView.as_view())), name='email_compose'),
     url(r'^email/mark_unread/$', login_required(daily_duties_access(email_mark_unread)), name='email_mark_unread'),
     url(r'^email/mark_read/$', login_required(daily_duties_access(email_mark_read)), name='email_mark_read'),
