@@ -10,7 +10,7 @@ from django.db.models.fields import BooleanField, CharField, DateField
 from django.db.models.fields.related import ForeignKey
 
 from ..core.models import Department, SubDepartment
-from ..portmap.models import NetworkDevice
+from ..network.models import NetworkDevice
 
 
 class Printer(NetworkDevice):

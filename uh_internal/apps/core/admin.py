@@ -3,7 +3,7 @@ from django.contrib import admin
 
 from .forms import RoomCreateForm
 from .models import (Community, Building, Room, Department, SubDepartment, SiteAnnouncements,
-                     StaffMapping, CSDMapping, TechFlair, UHtInternalUser as InternalUser,
+                     StaffMapping, CSDMapping, TechFlair, UHInternalUser as InternalUser,
                      ADGroup, NavbarLink, PermissionClass)
 
 
