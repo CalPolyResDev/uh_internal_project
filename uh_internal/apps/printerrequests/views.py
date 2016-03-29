@@ -41,7 +41,7 @@ class PrinterRequestMixin(object):
         service_request.printer_manufacturer = printer.make
         service_request.request_type = SERVICE_REQUEST_TYPE_MAP[request_type]
         service_request.request_list = request_list
-        service_request.work_log = 'Created Ticket for {full_name} ({email})'.format(user.get_full_name(), user.username)
+        service_request.work_log = 'Created Ticket for {full_name} ({email})'.format(full_name=user.get_full_name(), email=user.username)
         service_request.save()
 
         # Create the printer request.
