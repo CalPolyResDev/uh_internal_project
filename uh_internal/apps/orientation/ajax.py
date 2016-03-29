@@ -49,4 +49,4 @@ def complete_orientation(request):
     user.is_new_tech = False
     user.save()
 
-    return HttpResponseRedirect(reverse('orientation:home'))
+    return HttpResponseRedirect(reverse('core:home'))
