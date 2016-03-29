@@ -15,8 +15,8 @@ if [ ! -f .update_lock ]; then
 	echo $GITOUTPUT
 	pip3 install -U pip wheel setuptools
 	pip3 install -U -r requirements.txt 
-	python3 resnet_internal/manage.py migrate --noinput
-	python3 resnet_internal/manage.py collectstatic --noinput
+	python3 uh_internal/manage.py migrate --noinput
+	python3 uh_internal/manage.py collectstatic --noinput
 	touch conf/uwsgi.ini
     fi
     rm .update_lock
