@@ -232,7 +232,7 @@ def remove_pinhole(request):
     # Get the Pinhole record
     pinhole = Pinhole.objects.get(id=int(pinhole_id))
 
-    if request.user.is_developer:
+    if request.user.is_staff:
         requestor_username = StaffMapping.objects.get(title="ResNet: Assistant Resident Coordinator").email
     else:
         requestor_username = request.user.username
@@ -290,7 +290,7 @@ def remove_domain_name(request):
     # Get the Domain Name record
     domain_name_record = DomainName.objects.get(id=int(domain_name_id))
 
-    if request.user.is_developer:
+    if request.user.is_staff:
         requestor_username = StaffMapping.objects.get(title="ResNet: Assistant Resident Coordinator").email
     else:
         requestor_username = request.user.username
