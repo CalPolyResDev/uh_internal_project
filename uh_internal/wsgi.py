@@ -39,7 +39,7 @@ def activate_env():
 
     filepath = Path(__file__).resolve()
     repo_name = filepath.parents[1].name
-    project_name = repo_name.split("_project")[0]
+    project_name = filepath.parents[0].name
     repo_parent = filepath.parents[2]
 
     # Add the site-packages of the chosen virtualenv to work with
