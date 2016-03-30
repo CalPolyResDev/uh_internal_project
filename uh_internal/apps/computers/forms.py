@@ -27,9 +27,9 @@ IP_REQUEST_INFORMATION = """<p>When this form is submitted, a service request wi
 
 class ComputerForm(ChainedChoicesModelForm):
     sub_department = ChainedModelChoiceField('department', reverse_lazy('core:chained_sub_department'), SubDepartment, label="Sub Department")
-    community = ModelChoiceField(queryset=Community.objects.all())
-    building = ChainedModelChoiceField('community', reverse_lazy('core:chained_building'), Building)
-    room = ChainedModelChoiceField('building', reverse_lazy('core:chained_room'), Room)
+    community = ModelChoiceField(queryset=Community.objects.all(), required=False)
+    building = ChainedModelChoiceField('community', reverse_lazy('core:chained_building'), Building, required=False)
+    room = ChainedModelChoiceField('building', reverse_lazy('core:chained_room'), Room, required=False)
 
     def __init__(self, *args, **kwargs):
         super(ComputerForm, self).__init__(*args, **kwargs)
