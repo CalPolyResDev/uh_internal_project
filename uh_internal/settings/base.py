@@ -272,8 +272,8 @@ LDAP_DEVELOPER_GROUP = 'CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,' +
 #                                            SSH Configuration                                             #
 # ======================================================================================================== #
 
-RESNET_SWITCH_SSH_USER = get_env_variable('RESNET_INTERNAL_LDAP_USER_DN')
-RESNET_SWITCH_SSH_PASSWORD = get_env_variable('RESNET_INTERNAL_LDAP_PASSWORD')
+RESNET_SWITCH_SSH_USER = get_env_variable('RESNET_INTERNAL_SWITCH_USER_DN')
+RESNET_SWITCH_SSH_PASSWORD = get_env_variable('RESNET_INTERNAL_SWITCH_USER_PASSWORD')
 
 # ======================================================================================================== #
 #                                      Session/Security Configuration                                      #
