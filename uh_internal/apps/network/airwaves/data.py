@@ -14,6 +14,8 @@ from urllib.parse import urlencode
 from pytz import timezone
 
 from .connector import AirwavesAPIConnector
+from ..utils import mac_address_with_colons
+from uh_internal.apps.network.utils import validate_mac
 
 
 class OverallStatistics(AirwavesAPIConnector):
@@ -169,7 +171,10 @@ class ClientInfo(AirwavesAPIConnector):
     def __init__(self, client_mac):
         super().__init__()
 
-        response = self.get_XML('client_detail.xml?' + urlencode({'mac': client_mac}))
+        if not validate_mac(client_mac):
+            raise ValueError('Invalid MAC Address: ' + client_mac)
+
+        response = self.get_XML('client_detail.xml?' + urlencode({'mac': mac_address_with_colons(client_mac)}))
 
         client = response['amp:amp_client_detail']['client']
 
@@ -225,6 +230,19 @@ class DeviceBandwidthReport(ChartReport):
         report_options = {
             'id': device_id,
             'type': 'ap_bandwidth' if device_type == 'Access Points' else 'aggregate_interface_bandwidth',
+        }
+
+        self.data = super().get_data(**report_options)
+
+
+class ClientBandwidthReport(ChartReport):
+
+    def __init__(self, mac_address, **kwargs):
+        super().__init__()
+
+        report_options = {
+            'type': 'client_bandwidth',
+            'mac_address': mac_address_with_colons(mac_address),
         }
 
         self.data = super().get_data(**report_options)

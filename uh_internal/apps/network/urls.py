@@ -13,11 +13,14 @@ from ..core.permissions import network_access, network_modify_access
 from .ajax import (PopulatePorts, UpdatePort, RetrievePortForm, change_port_status, RemovePort, PortChainedAjaxView,
                    PopulateAccessPoints, UpdateAccessPoint, RetrieveAccessPointForm, RemoveAccessPoint,
                    PopulateNetworkInfrastructureDevices, UpdateNetworkInfrastructureDevice, RetrieveNetworkInfrastructureDeviceForm, RemoveNetworkInfrastructureDevice)
-from .views import PortsView, PortFrameView, AccessPointsView, AccessPointFrameView, NetworkInfrastructureDevicesView, DeviceStatusView, OverallBandwidthReportView, DeviceBandwidthReportView, OverallClientReportView
+from .views import PortsView, PortFrameView, AccessPointsView, AccessPointFrameView, NetworkInfrastructureDevicesView, DeviceStatusView, OverallBandwidthReportView, DeviceBandwidthReportView, OverallClientReportView, LoginAttemptInfoFrameView, ClientBandwidthReportView, TroubleshooterView
+
 
 app_name = 'network'
 
 urlpatterns = [
+    url(r'^troubleshooter/$', login_required(network_access(TroubleshooterView.as_view())), name='troubleshooter'),
+
     url(r'^ports/$', login_required(network_access(PortsView.as_view())), name='ports'),
     url(r'^ports/populate/$', login_required(network_access(PopulatePorts.as_view())), name='populate_ports'),
     url(r'^ports/update/$', login_required(network_modify_access(UpdatePort.as_view())), name='update_port'),
@@ -36,8 +39,11 @@ urlpatterns = [
 
     url(r'^airwaves/device_status_frame/(?P<id>\b[0-9]+\b)/$', login_required(network_access(DeviceStatusView.as_view())), name='airwaves_device_status'),
     url(r'^airwaves/device_bandwidth/(?P<id>\b[0-9]+\b)/(?P<device_type>\b[A-Za-z ]+\b)/$', login_required(network_access(DeviceBandwidthReportView.as_view())), name='airwaves_device_bandwidth'),
+    url(r'^airwaves/client_bandwidth/(?P<mac_address>\b[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\1[0-9a-f]{2}){4}\b)/$', login_required(network_access(ClientBandwidthReportView.as_view())), name='airwaves_client_bandwidth'),
     url(r'^airwaves/overall_bandwidth/$', login_required(network_access(OverallBandwidthReportView.as_view())), name='airwaves_overall_bandwidth'),
     url(r'^airwaves/overall_clients/$', login_required(network_access(OverallClientReportView.as_view())), name='airwaves_overall_clients'),
+
+    url(r'^clearpass/attempt_info_frame/(?P<id>\b[0-9]+\b)/$', login_required(network_access(LoginAttemptInfoFrameView.as_view())), name='login_attempt_info_frame'),
 
     url(r'^network-infrastructure-devices/$', login_required(network_access(NetworkInfrastructureDevicesView.as_view())), name='network_infrastructure_devices'),
     url(r'^network-infrastructure-devices/populate/$', login_required(network_access(PopulateNetworkInfrastructureDevices.as_view())), name='populate_network_infrastructure_devices'),

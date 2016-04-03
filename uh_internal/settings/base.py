@@ -165,6 +165,13 @@ AIRWAVES = {
     'verify_ssl': string_to_bool(get_env_variable('RESNET_INTERNAL_AIRWAVES_VERIFY_SSL')),
 }
 
+CLEARPASS = {
+    'url': get_env_variable('RESNET_INTERNAL_CLEARPASS_URL'),
+    'username': get_env_variable('RESNET_INTERNAL_CLEARPASS_USERNAME'),
+    'password': get_env_variable('RESNET_INTERNAL_CLEARPASS_PASSWORD'),
+    'verify_ssl': string_to_bool(get_env_variable('RESNET_INTERNAL_CLEARPASS_VERIFY_SSL')),
+}
+
 CLEARPASS_SERVERS = [
     '207.62.169.213',  # ResNet ClearPass
     '129.65.1.151',  # Backup ClearPass
