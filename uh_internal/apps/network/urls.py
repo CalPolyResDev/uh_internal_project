@@ -39,7 +39,7 @@ urlpatterns = [
 
     url(r'^airwaves/device_status_frame/(?P<id>\b[0-9]+\b)/$', login_required(network_access(DeviceStatusView.as_view())), name='airwaves_device_status'),
     url(r'^airwaves/device_bandwidth/(?P<id>\b[0-9]+\b)/(?P<device_type>\b[A-Za-z ]+\b)/$', login_required(network_access(DeviceBandwidthReportView.as_view())), name='airwaves_device_bandwidth'),
-    url(r'^airwaves/client_bandwidth/(?P<mac_address>\b[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\1[0-9a-f]{2}){4}\b)/$', login_required(network_access(ClientBandwidthReportView.as_view())), name='airwaves_client_bandwidth'),
+    url(r'^airwaves/client_bandwidth/(?P<mac_address>\b[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\2[0-9a-f]{2}){4}\b)/$', login_required(network_access(ClientBandwidthReportView.as_view())), name='airwaves_client_bandwidth'),
     url(r'^airwaves/overall_bandwidth/$', login_required(network_access(OverallBandwidthReportView.as_view())), name='airwaves_overall_bandwidth'),
     url(r'^airwaves/overall_clients/$', login_required(network_access(OverallClientReportView.as_view())), name='airwaves_overall_clients'),
 
