@@ -71,7 +71,7 @@ class Request(Model):
     ticket_id = IntegerField(unique=True)
     date_requested = DateTimeField()
     priority = CharField(max_length=25)
-    requestor = CharField(max_length=14)
+    requestor = CharField(max_length=50)
     toner = ManyToManyField(Toner)
     parts = ManyToManyField(Part)
     address = CharField(max_length=50)
