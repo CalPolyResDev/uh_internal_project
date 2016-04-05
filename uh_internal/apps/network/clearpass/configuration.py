@@ -55,12 +55,10 @@ class _APIConnectorMixin(object):
         if response.status_code != 200:
             raise Exception(response)
 
-        return smart_text(response.content)
+        return response.text
 
     def get_XML(self, relative_url):
         response = self.get(relative_url)
-
-        print(response)
 
         return xmltodict.parse(response)
 

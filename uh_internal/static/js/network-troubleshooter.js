@@ -10,16 +10,16 @@ function performLookup() {
         deviceList = response.device_list;
         
         for (var i=0; i < deviceList.length; ++i) {
-            var newRow = '<tr device_index="' + i.toString() + '" onclick="showReport(this);"><td><strong>' + deviceList[i].mac_address + '</strong><br />' + deviceList[i].type + '</td></tr>';
+            var newRow = '<tr device-index="' + i.toString() + '" onclick="showReport(this);"><td><strong>' + deviceList[i].mac_address + '</strong><br />' + deviceList[i].type + '</td></tr>';
             $('#deviceList').append(newRow);
         }
     });
 }
 
 function showReport(element) {
-    $('[device_index]').removeClass('info');
+    $('[device-index]').removeClass('info');
     $(element).addClass('info');
     
-    var device = deviceList[$(element).attr('device_index')];
+    var device = deviceList[$(element).attr('device-index')];
     $('#deviceReport').html(device.report);
 }

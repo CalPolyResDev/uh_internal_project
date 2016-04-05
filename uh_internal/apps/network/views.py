@@ -151,9 +151,12 @@ class TroubleshooterReportView(JSONResponseView):
         device_template = loader.get_template('network/troubleshooter_device_report.djhtml')
 
         for mac_address, device_info in devices.items():
+            profiled = bool(device_info['clearpass'].profile)
+
             device = {
-                'mac_address': mac_address_with_colons(mac_address),
-                'type': device_info['clearpass'].profile['device_name'],
+                'mac_address': mac_address_with_colons(mac_address).upper(),
+                'type': device_info['clearpass'].profile['device_name'] if profiled else 'Unprofiled',
+                'hostname': device_info['clearpass'].profile['hostname'] if profiled else 'Unprofiled',
                 'report': device_template.render(Context({'device': device_info})),
             }
 
