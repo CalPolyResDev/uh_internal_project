@@ -12,6 +12,7 @@ from urllib.parse import urljoin, urlencode
 from django.conf import settings
 import requests
 import xmltodict
+from django.utils.encoding import smart_text
 
 
 class Error(Exception):
@@ -54,12 +55,12 @@ class _APIConnectorMixin(object):
         if response.status_code != 200:
             raise Exception(response)
 
-        return response.text
+        return smart_text(response.content)
 
     def get_XML(self, relative_url):
         response = self.get(relative_url)
 
-        response = ''.join(response.splitlines(True)[1:])  # Delete first line
+        print(response)
 
         return xmltodict.parse(response)
 
@@ -93,6 +94,8 @@ class Endpoint(_APIConnectorMixin):
 
         endpoint_info = xml_response['TipsApiResponse']['Endpoints']['Endpoint']
 
+        print(endpoint_info)
+
         self.mac_vendor = endpoint_info['@macVendor']
         self.mac_address = mac_address
         self.status = endpoint_info['@status']
@@ -103,14 +106,15 @@ class Endpoint(_APIConnectorMixin):
             endpoint_profile = endpoint_info['EndpointProfile']
             self.profile = {}
 
-            self.profile['date_updated'] = self.date_from_string(endpoint_profile['@updateAt'])
+            self.profile['date_updated'] = self.date_from_string(endpoint_profile['@updatedAt'])
             self.profile['date_added'] = self.date_from_string(endpoint_profile['@addedAt'])
             self.profile['fingerprint'] = endpoint_profile['@fingerprint']
             self.profile['conflict'] = False if endpoint_profile['@conflict'] == 'false' else True
-            self.profile['hostname'] = endpoint_profile['@name']
+            self.profile['device_name'] = endpoint_profile['@name']
             self.profile['family'] = endpoint_profile['@family']
             self.profile['category'] = endpoint_profile['@category']
             self.profile['ip_address'] = endpoint_profile['@ipAddress']
+            self.profile['hostname'] = endpoint_profile['@hostname']
 
         self.attributes = None
 

@@ -14,12 +14,14 @@ from .ajax import (PopulatePorts, UpdatePort, RetrievePortForm, change_port_stat
                    PopulateAccessPoints, UpdateAccessPoint, RetrieveAccessPointForm, RemoveAccessPoint,
                    PopulateNetworkInfrastructureDevices, UpdateNetworkInfrastructureDevice, RetrieveNetworkInfrastructureDeviceForm, RemoveNetworkInfrastructureDevice)
 from .views import PortsView, PortFrameView, AccessPointsView, AccessPointFrameView, NetworkInfrastructureDevicesView, DeviceStatusView, OverallBandwidthReportView, DeviceBandwidthReportView, OverallClientReportView, LoginAttemptInfoFrameView, ClientBandwidthReportView, TroubleshooterView
+from uh_internal.apps.network.views import TroubleshooterReportView
 
 
 app_name = 'network'
 
 urlpatterns = [
     url(r'^troubleshooter/$', login_required(network_access(TroubleshooterView.as_view())), name='troubleshooter'),
+    url(r'^troubleshooter/report/(?P<user_query>.*?)/$', login_required(network_access(TroubleshooterReportView.as_view())), name='troubleshooter_report'),
 
     url(r'^ports/$', login_required(network_access(PortsView.as_view())), name='ports'),
     url(r'^ports/populate/$', login_required(network_access(PopulatePorts.as_view())), name='populate_ports'),
@@ -43,7 +45,7 @@ urlpatterns = [
     url(r'^airwaves/overall_bandwidth/$', login_required(network_access(OverallBandwidthReportView.as_view())), name='airwaves_overall_bandwidth'),
     url(r'^airwaves/overall_clients/$', login_required(network_access(OverallClientReportView.as_view())), name='airwaves_overall_clients'),
 
-    url(r'^clearpass/attempt_info_frame/(?P<id>\b[0-9]+\b)/$', login_required(network_access(LoginAttemptInfoFrameView.as_view())), name='login_attempt_info_frame'),
+    url(r'^clearpass/attempt_info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(network_access(LoginAttemptInfoFrameView.as_view())), name='login_attempt_info_frame'),
 
     url(r'^network-infrastructure-devices/$', login_required(network_access(NetworkInfrastructureDevicesView.as_view())), name='network_infrastructure_devices'),
     url(r'^network-infrastructure-devices/populate/$', login_required(network_access(PopulateNetworkInfrastructureDevices.as_view())), name='populate_network_infrastructure_devices'),

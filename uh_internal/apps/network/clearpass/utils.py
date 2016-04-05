@@ -18,11 +18,11 @@ def get_user_login_attempts(email_address):
 
 
 def get_user_device_list(email_address):
-    return list(get_user_login_attempts(email_address).order_by('mac_address').distinct('mac_address').values_list('mac_address', flat=True))
+    return list(get_user_login_attempts(email_address).order_by('client_mac_address').distinct('client_mac_address').values_list('client_mac_address', flat=True))
 
 
 def get_device_login_attempts(mac_address):
-    return ClearPassLoginAttempt.objects.filter(mac_address=mac_address)
+    return ClearPassLoginAttempt.objects.filter(client_mac_address=mac_address)
 
 
 def get_user_devices_info(email_address):
@@ -39,10 +39,10 @@ def get_user_devices_info(email_address):
             airwaves_device_futures[user_device] = pool.submit(lambda: ClientInfo(user_device))
             clearpass_devices_futures[user_device] = pool.submit(lambda: Endpoint(user_device))
 
-        for user_device, user_device_future in airwaves_device_futures:
+        for user_device, user_device_future in airwaves_device_futures.items():
             airwaves_devices_info[user_device] = user_device_future.result()
 
-        for user_device, user_device_future in clearpass_devices_futures:
+        for user_device, user_device_future in clearpass_devices_futures.items():
             clearpass_devices_info[user_device] = user_device_future.result()
 
     user_devices_info = {}
@@ -51,6 +51,7 @@ def get_user_devices_info(email_address):
         user_devices_info[user_device] = {
             'clearpass': clearpass_devices_info[user_device],
             'airwaves': airwaves_devices_info[user_device],
+            'login_attempts': ClearPassLoginAttempt.objects.filter(client_mac_address=user_device),
         }
 
     return user_devices_info

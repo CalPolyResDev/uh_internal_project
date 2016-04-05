@@ -2,15 +2,16 @@
 
 <div class="row">
     <div class="col-xs-12 col-md-6">
-        <strong>IP Address:</strong> {{ device.airwaves.ip_address }}<br />
-        <strong>MAC Address:</strong> {{ device.mac_address }}<br />
+        <strong>IP Address:</strong> {{ device.clearpass.profile.ip_address }}<br />
+        <strong>MAC Address:</strong> {{ device.clearpass.mac_address }}<br />
         <strong>Hostname:</strong> {{ device.clearpass.profile.hostname }}<br />
-        <strong>MAC Vendor:</strong> {{ device.clearpass.mac_vendor }}<br />
+        <strong>Current AP:</strong> {{ device.airwaves.ap_name }}<br />        
     </div>
     <div class="col-xs-12 col-md-6">
         <strong>Family:</strong> {{ device.clearpass.profile.family }}<br />
+        <strong>Device Name:</strong> {{device.clearpass.profile.device_name }}<br />
         <strong>Category:</strong> {{ device.clearpass.profile.category }}<br />
-        <strong>Current AP:</strong> {{ device.airwaves.ap_name }}<br />
+        <strong>MAC Vendor:</strong> {{ device.clearpass.mac_vendor }}<br />
     </div>
     <div class="col-xs-12"><hr></div>
     <div class="col-xs-12 col-lg-6">
@@ -23,16 +24,14 @@
                 </tr>
             </thead>
             <tbody>
-                {% if device.clearpass.attributes %}
-                    {% for attribute in device.clearpass.attributes %}
-                        <tr>
-                            <td>{{ attribute.name }}</td>
-                            <td>{{ attribute.value }}</td>
-                        </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr colspan="2" class="text-center">No attributes</tr>
-                {% endif %}
+                {% for attribute in device.clearpass.attributes %}
+                    <tr>
+                        <td>{{ attribute.name }}</td>
+                        <td>{{ attribute.value }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="2" class="text-center">No attributes</td></tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -48,31 +47,29 @@
                 </tr>
             </thead>
             <tbody>
-                {% if device.login_attempts %}
-                    {% for attempt in device.login_attempts %}
-                        <tr>
-                            <td>{{ attempt.time }}</td>
-                            <td>{{ attempt.username }}</td>
-                            <td>{{ attempt.get_result_display }}</td>
-                            <td>
-                                <a title='Login Attempt' popover-data-url='{% url "login_attempt_info_frame" id=attempt.id %}'>
-                                    <span class="glpyhicon glyphicon-info-sign"></span>  
-                                </a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr colspan="4" class="text-center">No attempts</tr>
-                {% endif %}
+                {% for attempt in device.login_attempts %}
+                    <tr>
+                        <td>{{ attempt.time }}</td>
+                        <td>{{ attempt.username }}</td>
+                        <td>{{ attempt.get_result_display }}</td>
+                        <td>
+                            <a aria-hidden="true" title='Login Attempt' popover-data-url='{% url "network:login_attempt_info_frame" pk=attempt.id %}'>
+                                <img src="{% static 'images/icons/info.png' %}" style="width: 16px; height: 16px">
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4" class="text-center">No attempts</td></tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
     <div class="col-xs-12"><hr></div>
     <div class="col-xs-12">
         <h4>Bandwidth Usage</h3>
-        <span id="bandwidth_usage_chart" style="width: 100%; height: 200px;">
+        <div class="col-xs-12" id="bandwidth_usage_chart" style="height: 200px;">
             <p><strong style="text-align: center;">Loading... <img style="height: 10px; width: 10px;" src="{% static "images/spinner.gif" %}"></img></strong></p>
-        </span>
+        </div>
     </div>
     <div class="col-xs-12"><hr></div>
     <div class="col-xs-12">
@@ -89,22 +86,20 @@
                 </tr>
             </thead>
             <tbody>
-                {% if device.airwaves.associations %}
-                    {% for association in device.airwaves.assocations %}
-                        <tr>
-                            <td>{{ assocation.rssi }}</td>
-                            <td>{{ association.connect_time }}</td>
-                            <td>{{ association.disconnect_time }}</td>
-                            <td>{{ association.ip_addresses|join:", " }}</td>
-                            <td>{{ association.bytes_used|filesizeformat }}</td>
-                            <td style="cursor: pointer;" onclick="openModalFrame('AP Summary', '{% url 'network:access_point_info_frame' pk=association.ap_id %}');">
-                                <img style='padding-left:5px;' align='top' width='16' height='16' border='0' src="{% static 'images/icons/wifi-xxl.png' %}">
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr colspan="4" class="text-center">No attempts</tr>
-                {% endif %}
+                {% for association in device.airwaves.assocations %}
+                    <tr>
+                        <td>{{ assocation.rssi }}</td>
+                        <td>{{ association.connect_time }}</td>
+                        <td>{{ association.disconnect_time }}</td>
+                        <td>{{ association.ip_addresses|join:", " }}</td>
+                        <td>{{ association.bytes_used|filesizeformat }}</td>
+                        <td style="cursor: pointer;" onclick="openModalFrame('AP Summary', '{% url 'network:access_point_info_frame' pk=association.ap_id %}');">
+                            <img style='padding-left:5px;' align='top' width='16' height='16' border='0' src="{% static 'images/icons/wifi-xxl.png' %}">
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" class="text-center">No associations</td></tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -112,7 +107,7 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        displayAirwavesChart('#bandwidth_usage_chart', DjangoReverse['network:airwaves_client_bandwidth']({'mac_address': '{{ device.mac_address }}'}));
+        displayAirwavesChart('#bandwidth_usage_chart', DjangoReverse['network:airwaves_client_bandwidth']({'mac_address': '{{ device.clearpass.mac_address }}'}));
         
         $('[popover-data-url]').hover(
             function() {

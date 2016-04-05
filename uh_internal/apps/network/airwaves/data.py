@@ -176,6 +176,9 @@ class ClientInfo(AirwavesAPIConnector):
 
         response = self.get_XML('client_detail.xml?' + urlencode({'mac': mac_address_with_colons(client_mac)}))
 
+        if 'client' not in response['amp:amp_client_detail']:
+            return None
+
         client = response['amp:amp_client_detail']['client']
 
         if 'ap' in client:

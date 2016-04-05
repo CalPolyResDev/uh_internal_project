@@ -127,9 +127,9 @@ class TroubleshooterView(TemplateView):
 class TroubleshooterReportView(JSONResponseView):
 
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+        context = {}
 
-        user_query = self.request.POST['user_query'].strip()
+        user_query = kwargs['user_query'].strip()
 
         devices = {}
 
@@ -137,7 +137,7 @@ class TroubleshooterReportView(JSONResponseView):
             user_device = {
                 'clearpass': Endpoint(user_query),
                 'airwaves': ClientInfo(user_query),
-                'login_attempts': ClearPassLoginAttempt.objects.filter(mac_address=mac_address_no_separator(user_query)),
+                'login_attempts': ClearPassLoginAttempt.objects.filter(client_mac_address=mac_address_no_separator(user_query)),
             }
 
             devices[user_query] = user_device
@@ -150,10 +150,10 @@ class TroubleshooterReportView(JSONResponseView):
 
         device_template = loader.get_template('network/troubleshooter_device_report.djhtml')
 
-        for mac_address, device_info in devices:
+        for mac_address, device_info in devices.items():
             device = {
                 'mac_address': mac_address_with_colons(mac_address),
-                'type': device_info['clearpass'].profile['family'],
+                'type': device_info['clearpass'].profile['device_name'],
                 'report': device_template.render(Context({'device': device_info})),
             }
 
