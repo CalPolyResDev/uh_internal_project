@@ -7,8 +7,9 @@
 .. moduleauthor:: Thomas Willson <thomas.willson@icloud.com>
 
 """
-from django.core.management.base import BaseCommand
 import socketserver
+
+from django.core.management.base import BaseCommand
 
 
 class Command(BaseCommand):

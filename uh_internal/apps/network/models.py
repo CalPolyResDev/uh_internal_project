@@ -122,3 +122,11 @@ class ClearPassLoginAttempt(Model):
 
     def __str__(self):
         return 'Username: ' + str(self.username) + ', Service: ' + str(self.service) + ', Roles: ' + str(self.roles) + '\n'
+
+    @cached_property
+    def client_mac_address_formatted(self):
+        from .utils import mac_address_with_colons  # noqa
+        return mac_address_with_colons(self.client_mac_address)
+
+    class Meta:
+        verbose_name = 'ClearPass Login Attempt'

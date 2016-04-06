@@ -82,19 +82,21 @@
                     <th>Disconnect Time</th>
                     <th>IP Addresses</th>
                     <th>Bytes Used</th>
+                    <th>AP Name</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                {% for association in device.airwaves.assocations %}
+                {% for association in device.airwaves.associations %}
                     <tr>
-                        <td>{{ assocation.rssi }}</td>
-                        <td>{{ association.connect_time }}</td>
-                        <td>{{ association.disconnect_time }}</td>
+                        <td>{{ association.rssi }}</td>
+                        <td>{{ association.connect_time|date:"m/d/y H:i:s" }}</td>
+                        <td>{{ association.disconnect_time|date:"m/d/y H:i:s" }}</td>
                         <td>{{ association.ip_addresses|join:", " }}</td>
                         <td>{{ association.bytes_used|filesizeformat }}</td>
-                        <td style="cursor: pointer;" onclick="openModalFrame('AP Summary', '{% url 'network:access_point_info_frame' pk=association.ap_id %}');">
-                            <img style='padding-left:5px;' align='top' width='16' height='16' border='0' src="{% static 'images/icons/wifi-xxl.png' %}">
+                        <td>{{ association.ap_name}}</td>
+                        <td style="cursor: pointer;" onclick="openModalFrame('AP Summary', '{% url 'network:airwaves_device_status' id=association.ap_id %}');">
+                            <img style='padding-left:5px;' align='top' width='16' height='16' border='0' src="{% static 'images/icons/aruba.png' %}">
                         </td>
                     </tr>
                 {% empty %}

@@ -12,7 +12,7 @@ from urllib.parse import urljoin, urlencode
 from django.conf import settings
 import requests
 import xmltodict
-from django.utils.encoding import smart_text
+from uh_internal.apps.network.utils import mac_address_no_separator
 
 
 class Error(Exception):
@@ -77,6 +77,10 @@ class Endpoint(_APIConnectorMixin):
 
     def __init__(self, mac_address, **kwargs):
         super().__init__(**kwargs)
+
+        mac_address = mac_address_no_separator(mac_address).lower()
+
+        print(mac_address)
 
         xml_response = self.get_XML('tipsapi/config/read/Endpoint/equals?' + urlencode({'macAddress': mac_address}))
 

@@ -12,9 +12,11 @@ from django.contrib.auth.decorators import login_required
 from ..core.permissions import network_access, network_modify_access
 from .ajax import (PopulatePorts, UpdatePort, RetrievePortForm, change_port_status, RemovePort, PortChainedAjaxView,
                    PopulateAccessPoints, UpdateAccessPoint, RetrieveAccessPointForm, RemoveAccessPoint,
-                   PopulateNetworkInfrastructureDevices, UpdateNetworkInfrastructureDevice, RetrieveNetworkInfrastructureDeviceForm, RemoveNetworkInfrastructureDevice)
-from .views import PortsView, PortFrameView, AccessPointsView, AccessPointFrameView, NetworkInfrastructureDevicesView, DeviceStatusView, OverallBandwidthReportView, DeviceBandwidthReportView, OverallClientReportView, LoginAttemptInfoFrameView, ClientBandwidthReportView, TroubleshooterView
-from uh_internal.apps.network.views import TroubleshooterReportView
+                   PopulateNetworkInfrastructureDevices, UpdateNetworkInfrastructureDevice, RetrieveNetworkInfrastructureDeviceForm,
+                   RemoveNetworkInfrastructureDevice)
+from .views import (PortsView, PortFrameView, AccessPointsView, AccessPointFrameView, NetworkInfrastructureDevicesView,
+                    DeviceStatusView, OverallBandwidthReportView, DeviceBandwidthReportView, OverallClientReportView,
+                    LoginAttemptInfoFrameView, ClientBandwidthReportView, TroubleshooterView, TroubleshooterReportView)
 
 
 app_name = 'network'
@@ -41,7 +43,7 @@ urlpatterns = [
 
     url(r'^airwaves/device_status_frame/(?P<id>\b[0-9]+\b)/$', login_required(network_access(DeviceStatusView.as_view())), name='airwaves_device_status'),
     url(r'^airwaves/device_bandwidth/(?P<id>\b[0-9]+\b)/(?P<device_type>\b[A-Za-z ]+\b)/$', login_required(network_access(DeviceBandwidthReportView.as_view())), name='airwaves_device_bandwidth'),
-    url(r'^airwaves/client_bandwidth/(?P<mac_address>\b[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\2[0-9a-f]{2}){4}\b)/$', login_required(network_access(ClientBandwidthReportView.as_view())), name='airwaves_client_bandwidth'),
+    url(r'^airwaves/client_bandwidth/(?P<mac_address>\b[0-9a-fA-F]{2}([-:]?)[0-9a-fA-F]{2}(\2[0-9a-fA-F]{2}){4}\b)/$', login_required(network_access(ClientBandwidthReportView.as_view())), name='airwaves_client_bandwidth'),
     url(r'^airwaves/overall_bandwidth/$', login_required(network_access(OverallBandwidthReportView.as_view())), name='airwaves_overall_bandwidth'),
     url(r'^airwaves/overall_clients/$', login_required(network_access(OverallClientReportView.as_view())), name='airwaves_overall_clients'),
 

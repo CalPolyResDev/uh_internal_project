@@ -11,12 +11,11 @@ import logging
 import re
 
 from django.conf import settings
-
-from ..models import ClearPassLoginAttempt
-from uh_internal.apps.core.utils import static_vars
-from django.db.utils import DataError
-from uh_internal.apps.network.utils import validate_mac
 from django.core.exceptions import ValidationError
+
+from ...core.utils import static_vars
+from ..models import ClearPassLoginAttempt
+from ..utils import validate_mac
 
 
 SYSLOG_ENTRY_REGEX = re.compile(r'<[0-9]+>[^,]+,[0-9]+ (?P<clearpass_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) UH User Troubleshooting [0-9]+ [0-9] [0-9] Common\.Username=(?P<username>[^,]+),Common\.Service=(?P<service>[^,]+),Common\.Roles=(?P<roles>.*?),Common\.Host-MAC-Address=(?P<client_mac_address>[0-9a-f]+),(RADIUS\.Acct-Framed-IP-Address=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3},)?Common\.NAS-IP-Address=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3},Common\.Request-Timestamp=(?P<timestamp>[^,]+),Common\.Enforcement-Profiles=(?P<enforcement_profiles>.*?),(Common\.Alerts=(?P<alerts>.*?),)*Common\.Login-Status=(?P<login_status>[A-Z]+)')

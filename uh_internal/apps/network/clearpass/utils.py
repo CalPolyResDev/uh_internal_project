@@ -9,8 +9,8 @@
 from concurrent.futures import ThreadPoolExecutor
 
 from ..models import ClearPassLoginAttempt
-from ..airwaves.data import ClientInfo
-from ..clearpass.configuration import Endpoint
+from ..airwaves.data import ClientInfo, ClientLookupError
+from ..clearpass.configuration import Endpoint, EndpointLookupError
 
 
 def get_user_login_attempts(email_address):
@@ -28,6 +28,18 @@ def get_device_login_attempts(mac_address):
 def get_user_devices_info(email_address):
     user_devices = get_user_device_list(email_address)
 
+    def get_client_info(user_device):
+        try:
+            return ClientInfo(user_device)
+        except ClientLookupError:
+            return None
+
+    def get_endpoint(user_device):
+        try:
+            return Endpoint(user_device)
+        except EndpointLookupError:
+            return None
+
     airwaves_device_futures = {}
     airwaves_devices_info = {}
 
@@ -36,8 +48,8 @@ def get_user_devices_info(email_address):
 
     with ThreadPoolExecutor(max_workers=50) as pool:
         for user_device in user_devices:
-            airwaves_device_futures[user_device] = pool.submit(lambda: ClientInfo(user_device))
-            clearpass_devices_futures[user_device] = pool.submit(lambda: Endpoint(user_device))
+            airwaves_device_futures[user_device] = pool.submit(lambda: get_client_info(user_device))
+            clearpass_devices_futures[user_device] = pool.submit(lambda: get_endpoint(user_device))
 
         for user_device, user_device_future in airwaves_device_futures.items():
             airwaves_devices_info[user_device] = user_device_future.result()

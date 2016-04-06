@@ -48,6 +48,8 @@ def mac_address_with_colons(mac_address):
     if not validate_mac(mac_address):
         raise ValueError('Invalid MAC Address: ' + mac_address)
 
+    mac_address = mac_address.upper()
+
     if ':' in mac_address:
         return mac_address
     elif '-' in mac_address:

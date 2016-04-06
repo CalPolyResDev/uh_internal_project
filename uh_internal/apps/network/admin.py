@@ -2,7 +2,7 @@ from clever_selects.admin import ChainedSelectAdminMixin
 from django.contrib import admin
 
 from .forms import AccessPointCreateForm, PortCreateForm
-from .models import Port, AccessPoint, NetworkDevice, NetworkInfrastructureDevice
+from .models import Port, AccessPoint, NetworkDevice, NetworkInfrastructureDevice, ClearPassLoginAttempt
 
 
 class PortAdmin(ChainedSelectAdminMixin, admin.ModelAdmin):
@@ -30,3 +30,9 @@ class NetworkInfrastructureDeviceAdmin(admin.ModelAdmin):
     list_display = ['display_name', 'dns_name', 'ip_address']
 
 admin.site.register(NetworkInfrastructureDevice, NetworkInfrastructureDeviceAdmin)
+
+
+class ClearPassLoginAttemptAdmin(admin.ModelAdmin):
+    list_display = ['username', 'time', 'client_mac_address', 'service', 'result', 'roles', 'enforcement_profiles']
+
+admin.site.register(ClearPassLoginAttempt, ClearPassLoginAttemptAdmin)

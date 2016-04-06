@@ -45,8 +45,6 @@ class AirwavesAPIConnector(object):
         self.login()
 
     def get(self, relative_url):
-        print(relative_url)
-
         def perform_request():
             return AirwavesAPIConnector.session.get(urljoin(self.url, relative_url))
 

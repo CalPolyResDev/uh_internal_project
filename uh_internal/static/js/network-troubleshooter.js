@@ -1,10 +1,13 @@
 var deviceList;
 
 function performLookup() {
-    var url = DjangoReverse['network:troubleshooter_report'](
-                {user_query: $('#deviceOrUsername').val()});
+    $('#lookupSpinner').css('display', 'initial');
     $('#deviceList').html('');
-    $('#deviceReport').html('No device selected.');
+    $('#deviceReport').html('');
+    
+    var url = DjangoReverse['network:troubleshooter_report']({
+        user_query: $('#deviceOrUsername').val(),
+    });
     
     $.get(url, function(response) {
         deviceList = response.device_list;
@@ -18,6 +21,7 @@ function performLookup() {
         else {
             $('#deviceList').append('<tr><td>No matching devices.</td></tr>');
         }
+        $('#lookupSpinner').css('display', 'none');
     });
 }
 
@@ -28,3 +32,15 @@ function showReport(element) {
     var device = deviceList[$(element).attr('device-index')];
     $('#deviceReport').html(device.report);
 }
+
+
+// Prevent submit on enter and instead perform lookup.
+$(document).ready(function() {
+  $(window).keydown(function(event){
+    if(event.keyCode == 13) {
+      event.preventDefault();
+      performLookup();
+      return false;
+    }
+  });
+});
