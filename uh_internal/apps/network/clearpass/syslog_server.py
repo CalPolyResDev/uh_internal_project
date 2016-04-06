@@ -6,12 +6,15 @@
 
 """
 
+import logging
 import socketserver
 
 from django.conf import settings
 from raven.contrib.django.raven_compat.models import client
 
 from .parser import parse_login_attempts
+
+logger = logging.getLogger(__name__)
 
 
 class SyslogUDPHandler(socketserver.BaseRequestHandler):
@@ -23,7 +26,7 @@ class SyslogUDPHandler(socketserver.BaseRequestHandler):
                 data = bytes.decode(self.request[0].strip())
                 parse_login_attempts(data)
             else:
-                print('Throwing away packet from ' + str(self.client_address[0]))
+                logger.warning('Throwing away packet from ' + str(self.client_address[0]))
         except KeyboardInterrupt:
             print('Exiting...')
             exit(0)

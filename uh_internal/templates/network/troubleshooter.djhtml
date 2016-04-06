@@ -11,13 +11,13 @@
     </div>
     <div class="col-xs-12">
         <form class="form form-inline">
-            <input type="text" class="form-control" id="deviceOrUsername" style="width: 300px;" placeholder="User Email or MAC Address">
+            <input type="text" class="form-control" id="deviceOrUsername" placeholder="User Email or MAC Address">
             <button type="button" class="btn btn-primary" onclick="performLookup();">Lookup</button>
-            <img id="lookupSpinner" src="{% static 'images/spinner.gif' %}" style="width: 20px; height: 20px; margin-left: 5px; display: none;">
+            <img id="lookupSpinner" src="{% static 'images/spinner.gif' %}" style="display: none;">
         <form>
     </div>
     <div class="col-xs-12">
-        <div id="resultsContainer" class="row full-height">
+        <div id="resultsContainer" class="row">
             <div class="col-xs-12 col-md-6 col-lg-3">
                 <table class="table table-hover table-striped">
                     <thead>

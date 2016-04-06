@@ -124,10 +124,7 @@ class TroubleshooterView(TemplateView):
 class TroubleshooterReportView(JSONResponseView):
 
     def get_context_data(self, **kwargs):
-        context = {}
-
         user_query = kwargs['user_query'].strip()
-
         devices = {}
 
         if validate_mac(user_query):
@@ -155,8 +152,8 @@ class TroubleshooterReportView(JSONResponseView):
         else:
             email_address = user_query if '@' in user_query else user_query + '@calpoly.edu'
             devices = get_user_devices_info(email_address)
-            print(devices)
 
+        context = {}
         context['user_query'] = user_query
         context['device_list'] = []
 
@@ -164,8 +161,6 @@ class TroubleshooterReportView(JSONResponseView):
 
         for mac_address, device_info in devices.items():
             profile = getattr(device_info['clearpass'], 'profile', None)
-
-            print(profile)
 
             device = {
                 'mac_address': mac_address_with_colons(mac_address).upper(),

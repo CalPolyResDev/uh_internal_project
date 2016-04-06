@@ -12,7 +12,8 @@ from urllib.parse import urljoin, urlencode
 from django.conf import settings
 import requests
 import xmltodict
-from uh_internal.apps.network.utils import mac_address_no_separator
+
+from ..utils import mac_address_no_separator
 
 
 class Error(Exception):
@@ -80,8 +81,6 @@ class Endpoint(_APIConnectorMixin):
 
         mac_address = mac_address_no_separator(mac_address).lower()
 
-        print(mac_address)
-
         xml_response = self.get_XML('tipsapi/config/read/Endpoint/equals?' + urlencode({'macAddress': mac_address}))
 
         if xml_response['TipsApiResponse']['StatusCode'] != 'Success':
@@ -95,8 +94,6 @@ class Endpoint(_APIConnectorMixin):
             raise MultipleEndpointError('MAC Address is not Unique: ' + str(xml_response))
 
         endpoint_info = xml_response['TipsApiResponse']['Endpoints']['Endpoint']
-
-        print(endpoint_info)
 
         self.mac_vendor = endpoint_info['@macVendor']
         self.mac_address = mac_address

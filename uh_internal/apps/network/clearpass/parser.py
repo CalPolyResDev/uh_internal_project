@@ -59,7 +59,7 @@ def parse_login_attempts(attempts_string):
                 loginAttempt.clean_fields()
                 parse_login_attempts.loginAttempts.append(loginAttempt)
             except ValidationError:
-                print('Invalid Attempt: ' + str(loginAttempt))
+                logger.warning('Invalid Attempt: ' + str(loginAttempt))
 
     if len(parse_login_attempts.loginAttempts) > 50:
         print('Sending')
