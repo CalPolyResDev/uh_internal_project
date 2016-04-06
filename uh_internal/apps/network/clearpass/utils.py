@@ -63,7 +63,7 @@ def get_user_devices_info(email_address):
         user_devices_info[user_device] = {
             'clearpass': clearpass_devices_info[user_device],
             'airwaves': airwaves_devices_info[user_device],
-            'login_attempts': ClearPassLoginAttempt.objects.filter(client_mac_address=user_device),
+            'login_attempts': ClearPassLoginAttempt.objects.filter(client_mac_address=user_device).order_by('-time'),
         }
 
     return user_devices_info

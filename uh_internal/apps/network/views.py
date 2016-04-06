@@ -141,7 +141,7 @@ class TroubleshooterReportView(JSONResponseView):
             user_device = {
                 'clearpass': endpoint,
                 'airwaves': airwaves_client,
-                'login_attempts': ClearPassLoginAttempt.objects.filter(client_mac_address=mac_address_no_separator(user_query)),
+                'login_attempts': ClearPassLoginAttempt.objects.filter(client_mac_address=mac_address_no_separator(user_query)).order_by('-time'),
             }
 
             # Make sure the device was found in at least one of our systems.
