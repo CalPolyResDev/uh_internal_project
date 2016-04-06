@@ -14,6 +14,9 @@ from django.conf import settings
 
 from ..models import ClearPassLoginAttempt
 from uh_internal.apps.core.utils import static_vars
+from django.db.utils import DataError
+from uh_internal.apps.network.utils import validate_mac
+from django.core.exceptions import ValidationError
 
 
 SYSLOG_ENTRY_REGEX = re.compile(r'<[0-9]+>[^,]+,[0-9]+ (?P<clearpass_ip>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}) UH User Troubleshooting [0-9]+ [0-9] [0-9] Common\.Username=(?P<username>[^,]+),Common\.Service=(?P<service>[^,]+),Common\.Roles=(?P<roles>.*?),Common\.Host-MAC-Address=(?P<client_mac_address>[0-9a-f]+),(RADIUS\.Acct-Framed-IP-Address=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3},)?Common\.NAS-IP-Address=\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3},Common\.Request-Timestamp=(?P<timestamp>[^,]+),Common\.Enforcement-Profiles=(?P<enforcement_profiles>.*?),(Common\.Alerts=(?P<alerts>.*?),)*Common\.Login-Status=(?P<login_status>[A-Z]+)')
@@ -43,7 +46,7 @@ def parse_login_attempts(attempts_string):
 
         if attempt_info['service'] not in settings.CLEARPASS_SERVICE_IGNORE:
             loginAttempt = ClearPassLoginAttempt()
-            loginAttempt.username = _ensure_email(attempt_info['username'])
+            loginAttempt.username = _ensure_email(attempt_info['username']) if not validate_mac(attempt_info['username']) else None
             loginAttempt.time = datetime.strptime(attempt_info['timestamp'].rsplit('-', 1)[0], CLEARPASS_TIMESTAMP_PATTERN)
             loginAttempt.service = attempt_info['service']
             loginAttempt.roles = attempt_info['roles'].split(', ')
@@ -53,8 +56,15 @@ def parse_login_attempts(attempts_string):
             loginAttempt.clearpass_ip = attempt_info['clearpass_ip']
             loginAttempt.alerts = attempt_info['alerts']
 
-            parse_login_attempts.loginAttempts.append(loginAttempt)
+            try:
+                loginAttempt.clean_fields()
+                parse_login_attempts.loginAttempts.append(loginAttempt)
+            except ValidationError:
+                print('Invalid Attempt: ' + str(loginAttempt))
 
     if len(parse_login_attempts.loginAttempts) > 50:
-        ClearPassLoginAttempt.objects.bulk_create(parse_login_attempts.loginAttempts)
-        parse_login_attempts.loginAttempts = []
+        print('Sending')
+        try:
+            ClearPassLoginAttempt.objects.bulk_create(parse_login_attempts.loginAttempts)
+        finally:
+            parse_login_attempts.loginAttempts = []

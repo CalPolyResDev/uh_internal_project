@@ -217,7 +217,7 @@ class ChartReport(AirwavesAPIConnector):
             kwargs['start'] = -1 * int(kwargs.pop('duration', 86400))
             kwargs['end'] = 0
 
-        if 'group_by' not in kwargs:
+        if 'group_by' not in kwargs and kwargs['type'] != 'client_bandwidth':
             kwargs['group_by'] = 'Avg' if kwargs.pop('average', True) else 'Max'
 
         response = self.get_JSON('/api/rrd_xport.json?' + urlencode(kwargs, doseq=True))
@@ -245,10 +245,12 @@ class ClientBandwidthReport(ChartReport):
 
         report_options = {
             'type': 'client_bandwidth',
-            'mac_address': mac_address_with_colons(mac_address),
+            'mac': mac_address_with_colons(mac_address),
         }
 
         self.data = super().get_data(**report_options)
+
+        print(self.data)
 
 
 class OverallBandwidthReport(ChartReport):

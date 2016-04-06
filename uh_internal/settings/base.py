@@ -177,7 +177,7 @@ CLEARPASS_SERVERS = [
     '129.65.1.151',  # Backup ClearPass
     '207.62.169.214',  # Backup ClearPass 2
     '207.62.169.215',  # Backup ClearPass 3
-    '129.65.1.250',  # Campus ClearPass
+    '129.65.1.150',  # Campus ClearPass
 ]
 
 CLEARPASS_SERVICE_IGNORE = [

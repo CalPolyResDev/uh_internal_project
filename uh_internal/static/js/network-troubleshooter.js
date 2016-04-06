@@ -9,9 +9,14 @@ function performLookup() {
     $.get(url, function(response) {
         deviceList = response.device_list;
         
-        for (var i=0; i < deviceList.length; ++i) {
-            var newRow = '<tr device-index="' + i.toString() + '" onclick="showReport(this);"><td><strong>' + deviceList[i].mac_address + '</strong><br />' + deviceList[i].type + '</td></tr>';
-            $('#deviceList').append(newRow);
+        if (deviceList.length) {
+            for (var i=0; i < deviceList.length; ++i) {
+                var newRow = '<tr device-index="' + i.toString() + '" onclick="showReport(this);"><td><strong>' + deviceList[i].mac_address + '</strong><br />' + deviceList[i].type + '</td></tr>';
+                $('#deviceList').append(newRow);
+            }
+        }
+        else {
+            $('#deviceList').append('<tr><td>No matching devices.</td></tr>');
         }
     });
 }

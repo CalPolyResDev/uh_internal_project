@@ -22,6 +22,8 @@ class SyslogUDPHandler(socketserver.BaseRequestHandler):
             if self.client_address[0] in settings.CLEARPASS_SERVERS:
                 data = bytes.decode(self.request[0].strip())
                 parse_login_attempts(data)
+            else:
+                print('Throwing away packet from ' + str(self.client_address[0]))
         except KeyboardInterrupt:
             print('Exiting...')
             exit(0)
