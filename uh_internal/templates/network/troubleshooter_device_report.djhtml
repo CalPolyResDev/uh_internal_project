@@ -1,0 +1,135 @@
+{% load staticfiles %}
+
+<div class="row">
+    <div class="col-xs-12 col-md-6">
+        <strong>IP Address:</strong> {{ device.clearpass.profile.ip_address }}<br />
+        <strong>MAC Address:</strong> {{ device.clearpass.mac_address }}<br />
+        <strong>Hostname:</strong> {{ device.clearpass.profile.hostname }}<br />
+        <strong>Current AP:</strong> {{ device.airwaves.ap_name }}<br />        
+    </div>
+    <div class="col-xs-12 col-md-6">
+        <strong>Family:</strong> {{ device.clearpass.profile.family }}<br />
+        <strong>Device Name:</strong> {{device.clearpass.profile.device_name }}<br />
+        <strong>Category:</strong> {{ device.clearpass.profile.category }}<br />
+        <strong>MAC Vendor:</strong> {{ device.clearpass.mac_vendor }}<br />
+    </div>
+    <div class="col-xs-12"><hr></div>
+    <div class="col-xs-12 col-lg-6">
+        <h4>Endpoint Attributes</h4>
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attribute in device.clearpass.attributes %}
+                    <tr>
+                        <td>{{ attribute.name }}</td>
+                        <td>{{ attribute.value }}</td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="2" class="text-center">No attributes for this endpoint.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-xs-12 col-lg-6">
+        <h4>Login Attempts</h4>
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Username</th>
+                    <th>Result</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for attempt in device.login_attempts %}
+                    <tr>
+                        <td>{{ attempt.time }}</td>
+                        <td>{{ attempt.username }}</td>
+                        <td>{{ attempt.get_result_display }}</td>
+                        <td>
+                            <a aria-hidden="true" title='Login Attempt' popover-data-url='{% url "network:login_attempt_info_frame" pk=attempt.id %}'>
+                                <img src="{% static 'images/icons/info.png' %}" style="width: 16px; height: 16px">
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="4" class="text-center">No login attempts found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="col-xs-12"><hr></div>
+    <div class="col-xs-12">
+        <h4>Bandwidth Usage</h3>
+        <div class="col-xs-12" id="bandwidth_usage_chart" style="height: 200px;">
+            <p><strong style="text-align: center;">Loading... <img style="height: 10px; width: 10px;" src="{% static "images/spinner.gif" %}"></img></strong></p>
+        </div>
+    </div>
+    <div class="col-xs-12"><hr></div>
+    <div class="col-xs-12">
+        <h4>AP Associations</h4>
+        <table class="table table-hover table-striped">
+            <thead>
+                <tr>
+                    <th>RSSI</th>
+                    <th>Connect Time</th>
+                    <th>Disconnect Time</th>
+                    <th>IP Addresses</th>
+                    <th>Bytes Used</th>
+                    <th>AP Name</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for association in device.airwaves.associations %}
+                    <tr>
+                        <td>{{ association.rssi }}</td>
+                        <td>{{ association.connect_time|date:"m/d/y H:i:s" }}</td>
+                        <td>{{ association.disconnect_time|date:"m/d/y H:i:s" }}</td>
+                        <td>{{ association.ip_addresses|join:", " }}</td>
+                        <td>{{ association.bytes_used|filesizeformat }}</td>
+                        <td>{{ association.ap_name}}</td>
+                        <td style="cursor: pointer;" onclick="openModalFrame('AP Summary', '{% url 'network:airwaves_device_status' id=association.ap_id %}');">
+                            <img style='padding-left:5px;' align='top' width='16' height='16' border='0' src="{% static 'images/icons/aruba.png' %}">
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5" class="text-center">No associations recorded in Airwaves</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        displayAirwavesChart('#bandwidth_usage_chart', DjangoReverse['network:airwaves_client_bandwidth']({'mac_address': '{{ device.clearpass.mac_address }}'}));
+        
+        $('[popover-data-url]').hover(
+            function() {
+                var element = $(this);
+                element.off('hover');
+    
+                $.get(element.attr('popover-data-url'), function(content) {
+                    if (element.filter(":hover").length) {
+                        element.popover({content: content,
+                                    placement: 'left',
+                                    html: true,
+                                    container: 'body'
+                        }).popover('show');
+                    }
+                });
+            },
+            function() {
+                var element = $(this);
+                element.popover('hide');
+            }
+        );
+    });
+</script>

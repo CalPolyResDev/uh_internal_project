@@ -9,10 +9,12 @@
 from sys import platform
 import logging
 import os
+import re
 
 from django.core.cache import cache
 
 from .models import NetworkInfrastructureDevice, NetworkDevice
+
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +36,33 @@ def down_device_cache_key(device):
 
 def up_device_cache_key(device):
     return 'up_device::' + get_dns_name(device)
+
+
+def validate_mac(mac_address):
+    PATTERN = r'^[0-9a-f]{2}([-:]?)[0-9a-f]{2}(\1[0-9a-f]{2}){4}$'
+
+    return bool(re.match(PATTERN, mac_address.lower()))
+
+
+def mac_address_with_colons(mac_address):
+    if not validate_mac(mac_address):
+        raise ValueError('Invalid MAC Address: ' + mac_address)
+
+    mac_address = mac_address.upper()
+
+    if ':' in mac_address:
+        return mac_address
+    elif '-' in mac_address:
+        return mac_address.replace('-', ':')
+    else:
+        return ':'.join(re.findall('..', mac_address))
+
+
+def mac_address_no_separator(mac_address):
+    if not validate_mac(mac_address):
+        raise ValueError('Invalid MAC Address: ' + mac_address)
+
+    return mac_address.replace('-', '').replace(':', '')
 
 
 class NetworkReachabilityTester(object):

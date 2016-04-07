@@ -1,0 +1,42 @@
+{% extends "base.djhtml" %}
+{% load staticfiles %}
+
+{% block subtitle %} | Troubleshooter{% endblock %}
+
+{% block main %}
+    <div class="col-xs-12">
+        <div class="page-header">
+            <h2>Aruba Troubleshooter</h2>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <form class="form form-inline">
+            <div class="form-group" id="deviceOrUsernameGroup">
+                <input type="text" class="form-control" id="deviceOrUsername" placeholder="User Email or MAC Address">
+                <button type="button" class="btn btn-primary" onclick="performLookup();">Lookup</button>
+            </div>
+            <img id="lookupSpinner" src="{% static 'images/spinner.gif' %}" style="display: none;">
+        <form>
+    </div>
+    <div class="col-xs-12">
+        <div id="resultsContainer" class="row" style="display: none;">
+            <div class="col-xs-12 col-md-6 col-lg-3">
+                <h4>Results:</h4>
+                <table class="table table-hover table-striped">
+                    <tbody id="deviceList">
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-xs-12 col-md-6 col-lg-9">
+                <div id="deviceReport" class="table-responsive table-wrapper-cutoff">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block extra_script %}
+    {{ block.super }}
+    <script src="{% static 'js/network-troubleshooter.js' %}?1.0"></script>
+{% endblock %}

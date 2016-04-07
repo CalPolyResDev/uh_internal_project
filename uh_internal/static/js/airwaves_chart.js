@@ -36,8 +36,8 @@ function displayAirwavesChart(jquerySelector, datasourceURL) {
         },
     });
     
-    $.get(datasourceURL, function(response) {        
-        $(jquerySelector).html();
+    $.get(datasourceURL, function(response) {   
+        $(jquerySelector).html('');
         $(jquerySelector).highcharts({
             chart: {
                 type: 'spline',

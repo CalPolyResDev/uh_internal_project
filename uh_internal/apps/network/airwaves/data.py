@@ -8,12 +8,15 @@
 
 from concurrent.futures.thread import ThreadPoolExecutor
 from datetime import datetime, timedelta
+from math import isnan
 from operator import itemgetter
 from urllib.parse import urlencode
 
 from pytz import timezone
 
+from ..utils import mac_address_with_colons, validate_mac
 from .connector import AirwavesAPIConnector
+from .exceptions import ClientLookupError
 
 
 class OverallStatistics(AirwavesAPIConnector):
@@ -169,7 +172,13 @@ class ClientInfo(AirwavesAPIConnector):
     def __init__(self, client_mac):
         super().__init__()
 
-        response = self.get_XML('client_detail.xml?' + urlencode({'mac': client_mac}))
+        if not validate_mac(client_mac):
+            raise ValueError('Invalid MAC Address: ' + client_mac)
+
+        response = self.get_XML('client_detail.xml?' + urlencode({'mac': mac_address_with_colons(client_mac).upper()}))
+
+        if 'client' not in response['amp:amp_client_detail']:
+            raise ClientLookupError('Client MAC not found: ' + client_mac)
 
         client = response['amp:amp_client_detail']['client']
 
@@ -188,11 +197,12 @@ class ClientInfo(AirwavesAPIConnector):
             for association in self._ensure_list(client['association']):
                 association_info = {
                     'ap_id': association['ap']['@id'],
+                    'ap_name': association['ap']['#text'],
                     'bytes_used': association['bytes_used'],
                     'connect_time': self.datetime_from_xml_date(association['connect_time']),
                     'disconnect_time': self.datetime_from_xml_date(association['disconnect_time']),
                     'ip_addresses': [],
-                    'rssi': int(association.get('rssi', None))
+                    'rssi': int(association['rssi']) if 'rssi' in association else None,
                 }
 
                 if 'lan_elements' in association:
@@ -204,10 +214,15 @@ class ClientInfo(AirwavesAPIConnector):
 
 class ChartReport(AirwavesAPIConnector):
 
-    def get_data(self, **kwargs):
+    def get_kwargs(self, **kwargs):
         if 'start' not in kwargs:
             kwargs['start'] = -1 * int(kwargs.pop('duration', 86400))
             kwargs['end'] = 0
+
+        return kwargs
+
+    def get_data(self, **kwargs):
+        kwargs = self.get_kwargs(**kwargs)
 
         if 'group_by' not in kwargs:
             kwargs['group_by'] = 'Avg' if kwargs.pop('average', True) else 'Max'
@@ -215,6 +230,41 @@ class ChartReport(AirwavesAPIConnector):
         response = self.get_JSON('/api/rrd_xport.json?' + urlencode(kwargs, doseq=True))
 
         return response['series']
+
+    def get_data_XML(self, **kwargs):
+        def json_float(obj):
+            x = float(obj)
+
+            # Python incorrectly encodes NaN as NaN instead of null
+            if isnan(x):
+                x = None
+
+            return x
+
+        kwargs = self.get_kwargs(**kwargs)
+
+        response = self.get_XML('/nf/rrd_xport?' + urlencode(kwargs))
+
+        series_list = []
+
+        for series in response['xport']['data_source']:
+            series_json = {
+                'avg': json_float(series['meta']['avg']),
+                'min': json_float(series['meta']['minpoint']),
+                'max': json_float(series['meta']['max']),
+                'name': series['meta']['label'],
+                'data': [],
+                'color': series['meta']['color'].replace('0x', '#'),
+                'type': series['meta']['type'].lower(),
+            }
+
+            for point in series['data_points']['data']:
+                series_json['data'].append([json_float(point['@time']),
+                                            json_float(point['#text'])])
+
+            series_list.append(series_json)
+
+        return series_list
 
 
 class DeviceBandwidthReport(ChartReport):
@@ -228,6 +278,24 @@ class DeviceBandwidthReport(ChartReport):
         }
 
         self.data = super().get_data(**report_options)
+
+
+class ClientBandwidthReport(ChartReport):
+
+    def __init__(self, mac_address, **kwargs):
+        super().__init__()
+
+        report_options = {
+            'type': 'client_bandwidth',
+            'mac': mac_address_with_colons(mac_address).upper(),
+        }
+
+        self.data = super().get_data_XML(**report_options)
+
+        self.data = [series for series in self.data if series['type'] != 'line']
+
+        for series in self.data:
+            series['chart_type'] = 'x_bps'
 
 
 class OverallBandwidthReport(ChartReport):

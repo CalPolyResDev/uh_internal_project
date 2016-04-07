@@ -1,0 +1,11 @@
+<div>
+<strong>Username:</strong> {{ login_attempt.username }}<br />
+<strong>Time:</strong> {{ login_attempt.time }}<br />
+<strong>Service:</strong> {{ login_attempt.service }}<br />
+<strong>Roles:</strong> {{ login_attempt.roles|join:", " }}<br />
+<strong>Client MAC Address:</strong> {{ login_attempt.client_mac_address_formatted }}<br />
+<strong>Enforcement Profiles:</strong> {{ login_attempt.enforcement_profiles|join:", " }}<br />
+<strong>Result:</strong> {{ login_attempt.get_result_display }}<br />
+<strong>ClearPass Server IP:</strong> {{ login_attempt.clearpass_ip }}<br />
+<strong>Alerts:</strong> {{ login_attempt.alerts }}<br />
+</div>

@@ -108,6 +108,10 @@ nav {
     }
 }
 
+#content {
+    height: 100%;
+}
+
 #checklist {
     list-style-image: url('/static/images/checkbox_unchecked.png')
 }
@@ -366,10 +370,6 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 
 /* bootstrap overrides */
 
-.btn {
-    border-radius: 0;
-}
-
 .btn-primary {
     background-color: @polydarkgreen;
     border-color: darken(@polydarkgreen, 10%);
@@ -380,40 +380,13 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
     border-color: darken(darken(@polydarkgreen, 5%), 10%) !important;
 }
 
-.btn-group .btn {
-    border-radius: 5px;
-}
-
-.btn-group > .btn:first-child {
-    margin-left: -1px;
-}
-
-.form-horizontal .control-label {
-    padding-top: 0;
-}
-
-.form-horizontal .control-label.text-left {
-    text-align: left !important;
-}
-
-.form-control {
-    border-radius: 0;
-    height: 26px;
-    padding: 3px 8px;
-}
-
-.input-group-addon {
-    font-size: 13px;
-}
-
-.input-group .form-control {
-    height: 32px;
-    font-size: 13px;
-}
-
 .form-control:focus {
     border-color: @polylightgreen;
     box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(69, 144, 44, 0.6);
+}
+
+.popover-content {
+    word-wrap: break-word;
 }
 
 .page-header {
@@ -492,4 +465,24 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 }
 .bs-callout-info h4 {
     color: #5bc0de;
+}
+
+/* Aruba Troubleshooter Styles */
+#resultsContainer {
+    height: 100%;
+    padding-top: 30px;
+}
+
+#deviceOrUsername {
+    width: 300px;
+}
+
+#lookupSpinner {
+    width: 20px;
+    height: 20px;
+    margin-left: 5px;
+}
+
+#deviceReport {
+    padding-top: 30px;
 }

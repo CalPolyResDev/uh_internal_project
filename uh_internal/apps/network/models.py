@@ -10,8 +10,9 @@
 
 """
 
+from django.contrib.postgres.fields.array import ArrayField
 from django.db.models.base import Model
-from django.db.models.fields import CharField, GenericIPAddressField, BooleanField, PositiveSmallIntegerField, IntegerField
+from django.db.models.fields import CharField, GenericIPAddressField, BooleanField, PositiveSmallIntegerField, IntegerField, DateTimeField, TextField
 from django.db.models.fields.related import ForeignKey
 from django.utils.functional import cached_property
 
@@ -95,3 +96,36 @@ class NetworkInfrastructureDevice(NetworkDevice):
     """Network Infrastructure Device."""
 
     pass
+
+
+class ClearPassLoginAttempt(Model):
+    ACCEPT_RESULT = 0
+    REJECT_RESULT = 1
+    TIMEOUT_RESULT = 2
+
+    RESULT_CHOICES = (
+        (ACCEPT_RESULT, 'ACCEPT'),
+        (REJECT_RESULT, 'REJECT'),
+        (TIMEOUT_RESULT, 'TIMEOUT'),
+    )
+
+    username = CharField(max_length=50, blank=True, null=True)
+    time = DateTimeField()
+    service = CharField(max_length=100)
+    roles = ArrayField(CharField(max_length=50))
+    client_mac_address = MACAddressField()
+    enforcement_profiles = ArrayField(CharField(max_length=100))
+    result = PositiveSmallIntegerField(choices=RESULT_CHOICES)
+    clearpass_ip = GenericIPAddressField()
+    alerts = TextField(null=True, blank=True)
+
+    def __str__(self):
+        return 'Username: ' + str(self.username) + ', Service: ' + str(self.service) + ', Roles: ' + str(self.roles) + '\n'
+
+    @cached_property
+    def client_mac_address_formatted(self):
+        from .utils import mac_address_with_colons  # noqa
+        return mac_address_with_colons(self.client_mac_address)
+
+    class Meta:
+        verbose_name = 'ClearPass Login Attempt'
