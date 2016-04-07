@@ -11,22 +11,19 @@
     </div>
     <div class="col-xs-12">
         <form class="form form-inline">
-            <input type="text" class="form-control" id="deviceOrUsername" placeholder="User Email or MAC Address">
-            <button type="button" class="btn btn-primary" onclick="performLookup();">Lookup</button>
+            <div class="form-group" id="deviceOrUsernameGroup">
+                <input type="text" class="form-control" id="deviceOrUsername" placeholder="User Email or MAC Address">
+                <button type="button" class="btn btn-primary" onclick="performLookup();">Lookup</button>
+            </div>
             <img id="lookupSpinner" src="{% static 'images/spinner.gif' %}" style="display: none;">
         <form>
     </div>
     <div class="col-xs-12">
-        <div id="resultsContainer" class="row">
+        <div id="resultsContainer" class="row" style="display: none;">
             <div class="col-xs-12 col-md-6 col-lg-3">
+                <h4>Results:</h4>
                 <table class="table table-hover table-striped">
-                    <thead>
-                        <tr>
-                            <th>Devices:</th>
-                        </tr>
-                    </thead>
                     <tbody id="deviceList">
-                        <tr><td>No devices</td></tr>
                     </tbody>
                 </table>
             </div>

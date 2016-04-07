@@ -30,7 +30,7 @@
                         <td>{{ attribute.value }}</td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="2" class="text-center">No attributes</td></tr>
+                    <tr><td colspan="2" class="text-center">No attributes for this endpoint.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -59,7 +59,7 @@
                         </td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="4" class="text-center">No attempts</td></tr>
+                    <tr><td colspan="4" class="text-center">No login attempts found.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -100,7 +100,7 @@
                         </td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="5" class="text-center">No associations</td></tr>
+                    <tr><td colspan="5" class="text-center">No associations recorded in Airwaves</td></tr>
                 {% endfor %}
             </tbody>
         </table>

@@ -8,9 +8,11 @@
 
 from concurrent.futures import ThreadPoolExecutor
 
+from ..airwaves.data import ClientInfo
+from ..airwaves.exceptions import ClientLookupError
+from ..clearpass.configuration import Endpoint
+from ..clearpass.exceptions import EndpointLookupError
 from ..models import ClearPassLoginAttempt
-from ..airwaves.data import ClientInfo, ClientLookupError
-from ..clearpass.configuration import Endpoint, EndpointLookupError
 
 
 def get_user_login_attempts(email_address):

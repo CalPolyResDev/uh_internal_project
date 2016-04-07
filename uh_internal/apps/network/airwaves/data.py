@@ -16,15 +16,7 @@ from pytz import timezone
 
 from ..utils import mac_address_with_colons, validate_mac
 from .connector import AirwavesAPIConnector
-
-
-class Error(Exception):
-    pass
-
-
-class ClientLookupError(Error):
-    """Exception raised when a client can't be found."""
-    pass
+from .exceptions import ClientLookupError
 
 
 class OverallStatistics(AirwavesAPIConnector):

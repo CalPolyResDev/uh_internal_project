@@ -1,15 +1,28 @@
 var deviceList;
 
-function performLookup() {
+function performLookup() {    
+    var userQuery = $('#deviceOrUsername').val();
+    
+    if (!userQuery.length) {
+        $('#deviceOrUsernameGroup').addClass('has-error');
+        $('#deviceOrUsernameGroup').append('<span class="help-block">Please enter a MAC Address or email address.</span>');
+        return;
+    }
+    else {
+        $('#deviceOrUsernameGroup').removeClass('has-error');
+        $('#deviceOrUsernameGroup > .help-block').remove();
+    }
+    
     $('#lookupSpinner').css('display', 'initial');
     $('#deviceList').html('');
     $('#deviceReport').html('');
     
     var url = DjangoReverse['network:troubleshooter_report']({
-        user_query: $('#deviceOrUsername').val(),
+        user_query: userQuery,
     });
     
     $.get(url, function(response) {
+        $('#resultsContainer').css('display', 'initial');
         deviceList = response.device_list;
         
         if (deviceList.length) {
@@ -19,7 +32,7 @@ function performLookup() {
             }
         }
         else {
-            $('#deviceList').append('<tr><td>No matching devices.</td></tr>');
+            $('#deviceList').append('<tr><td>No devices found for ' + userQuery + '</td></tr>');
         }
         $('#lookupSpinner').css('display', 'none');
     });
