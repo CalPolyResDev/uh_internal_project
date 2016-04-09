@@ -5,13 +5,15 @@
         <strong>IP Address:</strong> {{ device.clearpass.profile.ip_address }}<br />
         <strong>MAC Address:</strong> {{ device.clearpass.mac_address }}<br />
         <strong>Hostname:</strong> {{ device.clearpass.profile.hostname }}<br />
-        <strong>Current AP:</strong> {{ device.airwaves.ap_name }}<br />        
+        <strong>Current AP:</strong> {{ device.airwaves.ap_name }}<br />
+        <strong>Endpoint Status:</strong> {{ device.clearpass.status }}<br />
     </div>
     <div class="col-xs-12 col-md-6">
         <strong>Family:</strong> {{ device.clearpass.profile.family }}<br />
         <strong>Device Name:</strong> {{device.clearpass.profile.device_name }}<br />
         <strong>Category:</strong> {{ device.clearpass.profile.category }}<br />
         <strong>MAC Vendor:</strong> {{ device.clearpass.mac_vendor }}<br />
+        <strong>Date Profiled:</strong> {{ device.clearpass.profile.date_added }}<br />
     </div>
     <div class="col-xs-12"><hr></div>
     <div class="col-xs-12 col-lg-6">
