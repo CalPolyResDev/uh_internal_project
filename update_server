@@ -3,7 +3,7 @@
 source /etc/environment
 source /usr/local/bin/virtualenvwrapper.sh
 
-workon resnet_internal_project
+workon uh_internal_project
 if [ ! -f .update_lock ]; then
     touch .update_lock
     GITOUTPUT=$(git pull 2> /dev/null)
