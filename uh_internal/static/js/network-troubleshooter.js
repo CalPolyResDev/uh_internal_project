@@ -13,7 +13,7 @@ function performLookup() {
         $('#deviceOrUsernameGroup > .help-block').remove();
     }
     
-    $('#lookupSpinner').css('display', 'initial');
+    $('#lookupSpinner').css('display', '');
     $('#deviceList').html('');
     $('#deviceReport').html('');
     
@@ -22,7 +22,7 @@ function performLookup() {
     });
     
     $.get(url, function(response) {
-        $('#resultsContainer').css('display', 'initial');
+        $('#resultsContainer').css('display', '');
         deviceList = response.device_list;
         
         if (deviceList.length) {
