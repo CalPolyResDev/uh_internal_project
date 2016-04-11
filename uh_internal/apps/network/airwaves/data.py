@@ -259,7 +259,7 @@ class ChartReport(AirwavesAPIConnector):
             }
 
             for point in series['data_points']['data']:
-                series_json['data'].append([json_float(point['@time']),
+                series_json['data'].append([json_float(float(point['@time']) * 1000),
                                             json_float(point['#text'])])
 
             series_list.append(series_json)
