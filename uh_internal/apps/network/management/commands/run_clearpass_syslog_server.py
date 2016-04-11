@@ -9,6 +9,7 @@
 """
 from multiprocessing import Queue, Process
 import socketserver
+import socket
 
 from django.core.management.base import BaseCommand
 from django.db import connection
@@ -20,6 +21,7 @@ class LargePacketUDPServer(socketserver.UDPServer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args)
+        self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024 * 1024 * 10)  # 10 MB
         self.queue = kwargs['queue']
 
     def finish_request(self, request, client_address):
@@ -31,10 +33,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         from ...clearpass.syslog_server import SyslogUDPHandler, worker  # noqa
-        queue = Queue(2000)
+        queue = Queue(10000)
         worker_process = Process(target=worker, args=(queue,))
         connection.close()
         worker_process.start()
 
         server = LargePacketUDPServer(('0.0.0.0', 5140), SyslogUDPHandler, queue=queue)
-        server.serve_forever()
+        server.serve_forever(poll_interval=0.05)

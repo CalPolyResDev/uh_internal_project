@@ -35,7 +35,7 @@ class SyslogUDPHandler(socketserver.BaseRequestHandler):
 
     def __init__(self, request, client_address, server, queue):
         self.queue = queue
-        return super().__init__(request, client_address, server)
+        super().__init__(request, client_address, server)
 
     def handle(self):
         try:
