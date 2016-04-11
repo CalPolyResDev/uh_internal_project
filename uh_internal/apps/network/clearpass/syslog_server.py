@@ -8,6 +8,7 @@
 
 import logging
 import socketserver
+import queue as ThreadQueue
 
 from django.conf import settings
 from raven.contrib.django.raven_compat.models import client
@@ -21,7 +22,7 @@ def worker(packet_queue):
     while True:
         try:
             packet = packet_queue.get(True, 60)
-        except packet_queue.Empty:
+        except ThreadQueue.Empty:
             pass
 
         if packet.get('shutdown', False):
