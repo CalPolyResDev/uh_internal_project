@@ -1,7 +1,9 @@
 var deviceList;
+var currentDevice;
+var userQuery;
 
-function performLookup() {    
-    var userQuery = $('#deviceOrUsername').val();
+function performLookup(userQueryArg) {    
+    userQuery =  (typeof userQueryArg === 'undefined') ? $('#deviceOrUsername').val() : userQueryArg;
     
     if (!userQuery.length) {
         $('#deviceOrUsernameGroup').addClass('has-error');
@@ -42,10 +44,9 @@ function showReport(element) {
     $('[device-index]').removeClass('info');
     $(element).addClass('info');
     
-    var device = deviceList[$(element).attr('device-index')];
-    $('#deviceReport').html(device.report);
+    currentDevice = deviceList[$(element).attr('device-index')];
+    $('#deviceReport').html(currentDevice.report);
 }
-
 
 // Prevent submit on enter and instead perform lookup.
 $(document).ready(function() {
@@ -57,3 +58,42 @@ $(document).ready(function() {
     }
   });
 });
+
+function initializeReport(mac_address) {
+    displayAirwavesChart('#bandwidth_usage_chart', DjangoReverse['network:airwaves_client_bandwidth']({'mac_address': '{{ device.clearpass.mac_address }}'}));
+        
+    $('[popover-data-url]').hover(
+        function() {
+            var element = $(this);
+            element.off('hover');
+
+            $.get(element.attr('popover-data-url'), function(content) {
+                if (element.filter(":hover").length) {
+                    element.popover({content: content,
+                                placement: 'left',
+                                html: true,
+                                container: 'body'
+                    }).popover('show');
+                }
+            });
+        },
+        function() {
+            var element = $(this);
+            element.popover('hide');
+        }
+    );
+}
+
+function changeEndpointInfo(actionURLName) {
+    var url = DjangoReverse[actionURLName]({ mac_address: currentDevice.mac_address });
+    
+    $.get(url, function(response) {
+        if (response.success === 'true') {
+            alert("Endpoint successfully updated.");
+            performLookup(userQuery);
+        }
+        else {
+            alert("Could not change endpoint. \n\nPlease report the error.");
+        }
+    });
+}
