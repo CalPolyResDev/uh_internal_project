@@ -7,16 +7,23 @@
 .. moduleauthor:: Thomas Willson <thomas.willson@icloud.com>
 
 """
-import socketserver
+from multiprocessing import Queue, Process
 
 from django.core.management.base import BaseCommand
+from django.db import connection
 
 
 class Command(BaseCommand):
     can_import_settings = True
 
     def handle(self, *args, **options):
-        from ...clearpass.syslog_server import SyslogUDPHandler  # noqa
+        from ...clearpass.syslog_server import QueuingSyslogUDPHandler, QueuingUDPServer, packet_processing_worker  # noqa
 
-        server = socketserver.UDPServer(('0.0.0.0', 5140), SyslogUDPHandler)
-        server.serve_forever()
+        queue = Queue(10000)
+
+        worker_process = Process(target=packet_processing_worker, args=(queue,))
+        connection.close()  # Close Django DB connection before forking
+        worker_process.start()
+
+        server = QueuingUDPServer(('0.0.0.0', 5140), QueuingSyslogUDPHandler, queue)
+        server.serve_forever(poll_interval=0.05)

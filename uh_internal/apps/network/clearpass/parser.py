@@ -62,7 +62,6 @@ def parse_login_attempts(attempts_string):
                 logger.warning('Invalid Attempt: ' + str(loginAttempt))
 
     if len(parse_login_attempts.loginAttempts) > 50:
-        print('Sending')
         try:
             ClearPassLoginAttempt.objects.bulk_create(parse_login_attempts.loginAttempts)
         finally:
