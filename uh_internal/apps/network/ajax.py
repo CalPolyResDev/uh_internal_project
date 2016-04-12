@@ -19,6 +19,7 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
+from django_datatables_view.mixins import JSONResponseView
 from paramiko import SSHClient, AutoAddPolicy
 from rmsconnector.utils import Resident
 
@@ -28,7 +29,6 @@ from .clearpass.configuration import Endpoint
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm, NetworkInfrastructureDeviceCreateForm, NetworkInfrastructureDeviceUpdateForm
 from .models import Port, AccessPoint, NetworkInfrastructureDevice
 from .utils import device_is_down
-from django_datatables_view.mixins import JSONResponseView
 
 
 logger = logging.getLogger(__name__)

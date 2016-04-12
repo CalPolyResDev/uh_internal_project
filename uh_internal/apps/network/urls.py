@@ -13,13 +13,11 @@ from ..core.permissions import network_access, network_modify_access
 from .ajax import (PopulatePorts, UpdatePort, RetrievePortForm, change_port_status, RemovePort, PortChainedAjaxView,
                    PopulateAccessPoints, UpdateAccessPoint, RetrieveAccessPointForm, RemoveAccessPoint,
                    PopulateNetworkInfrastructureDevices, UpdateNetworkInfrastructureDevice, RetrieveNetworkInfrastructureDeviceForm,
-                   RemoveNetworkInfrastructureDevice)
+                   RemoveNetworkInfrastructureDevice, EndpointChangeToKnown, EndpointSetAsGamingDevice, EndpointSetAsGamingPC, EndpointSetAsMediaDevice,
+                   EndpointRemoveAttribute)
 from .views import (PortsView, PortFrameView, AccessPointsView, AccessPointFrameView, NetworkInfrastructureDevicesView,
                     DeviceStatusView, OverallBandwidthReportView, DeviceBandwidthReportView, OverallClientReportView,
                     LoginAttemptInfoFrameView, ClientBandwidthReportView, TroubleshooterView, TroubleshooterReportView)
-from uh_internal.apps.network.ajax import EndpointChangeToKnown,\
-    EndpointSetAsGamingDevice, EndpointSetAsGamingPC, EndpointSetAsMediaDevice,\
-    EndpointRemoveAttribute
 
 
 app_name = 'network'
