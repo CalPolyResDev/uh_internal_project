@@ -103,7 +103,7 @@ function changeEndpointInfo(actionURLName, urlArguments, callback) {
             }
         }
         else {
-            alert("Could not change endpoint.\n\nPlease report the error.");
+            alert("Could not change endpoint.\n\nError: " + response.error);
         }
     });
 }

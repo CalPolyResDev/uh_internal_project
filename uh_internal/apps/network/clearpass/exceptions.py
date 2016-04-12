@@ -31,6 +31,11 @@ class EndpointUnknownOwnerError(Error):
     pass
 
 
+class EndpointInvalidOperationError(Error):
+    """Exception raised when a user attemts to perform an operation that is not
+    allowed by ResNet policy."""
+
+
 class MultipleEndpointError(Error):
     """Exception raised when multiple endpoints are returned
     and 1 was expected."""

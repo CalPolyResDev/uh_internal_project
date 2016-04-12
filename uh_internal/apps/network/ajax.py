@@ -380,9 +380,10 @@ class EndpointBaseUpdateView(JSONResponseView):
             self.endpoint = Endpoint(kwargs['mac_address'])
             self.performChange(**kwargs)
             context['success'] = True
-        except Exception:
+        except Exception as exc:
             logger.exception('Could not perform endpoint change')
             context['success'] = False
+            context['error'] = str(exc)
 
         return context
 

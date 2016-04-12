@@ -10,7 +10,7 @@ from urllib.parse import urlencode
 
 from ..models import ClearPassLoginAttempt
 from ..utils import mac_address_no_separator
-from .exceptions import EndpointLookupError, APIError, MultipleEndpointError, EndpointUpdateError, EndpointUnknownOwnerError
+from .exceptions import EndpointLookupError, APIError, MultipleEndpointError, EndpointUpdateError, EndpointUnknownOwnerError, EndpointInvalidOperationError
 from .connector import _APIConnector
 
 
@@ -91,7 +91,10 @@ class Endpoint(_APIConnector):
         </Endpoints>
         </TipsApiRequest>""".format(mac_address=mac_address_no_separator(self.mac_address).lower())
 
-        self.update_endpoint(xml, 'Could not set endpoint to known')
+        if self.status != "Known":
+            self.update_endpoint(xml, 'Could not set endpoint to known')
+        else:
+            raise EndpointInvalidOperationError('Device is already known.')
 
     def add_tags(self, **kwargs):
         tag_xml = ''
@@ -120,13 +123,19 @@ class Endpoint(_APIConnector):
         self.add_tags(**tags)
 
     def set_as_gaming_device(self):
-        self.add_os_type_override('GAME')
+        if not (self.profile and self.profile.get('category') == 'Game Console'):
+            self.add_os_type_override('GAME')
+        else:
+            raise EndpointInvalidOperationError('Device is already profiled as a game console.')
 
     def set_as_gaming_pc(self):
         self.add_os_type_override('GAMING-PC')
 
     def set_as_media_device(self):
-        self.add_os_type_override('MEDIA')
+        if not (self.profile and self.profile.get('catgeory') == 'Home Audio/Video Equipment'):
+            self.add_os_type_override('MEDIA')
+        else:
+            raise EndpointInvalidOperationError('Device is already profiled as a media device.')
 
     def remove_attribute(self, attribute_name):
         tags = {}
