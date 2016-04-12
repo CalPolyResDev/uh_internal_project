@@ -7,9 +7,11 @@
 """
 
 import logging
+import re
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.views.generic.edit import FormView
+from rmsconnector.exceptions import UnsupportedCommunityException
 from rmsconnector.models import ResidentProfile, StudentAddress
 from rmsconnector.utils import reverse_address_lookup, Resident
 
@@ -127,6 +129,10 @@ class SearchView(FormView):
                 form.add_error(field=None, error="{principal_name} does not currently reside in University Housing.".format(principal_name=principal_name))
             else:
                 form.add_error(field=None, error="The email address provided does not match University Housing records.")
+            return self.principal_name_form_invalid(form)
+        except UnsupportedCommunityException as exc:
+            community_name = re.search('\((?P<community_name>[^)*]+)\)', str(exc)).groupdict()['community_name']
+            form.add_error(field=None, error="This resident lives in {community_name}, an unsupported community.".format(community_name=community_name))
             return self.principal_name_form_invalid(form)
         else:
             return self.render_to_response(self.get_context_data(full_name_form=self.full_name_form_class(),
