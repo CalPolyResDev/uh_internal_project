@@ -25,7 +25,7 @@ def packet_processing_worker(packet_queue):
         try:
             packet = packet_queue.get(True, 60)
         except ThreadQueue.Empty:
-            pass
+            continue
 
         if packet.get('shutdown', False):
             return
