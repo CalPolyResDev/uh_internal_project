@@ -24,9 +24,11 @@ from rmsconnector.utils import Resident
 
 from ...settings.base import NETWORK_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
+from .clearpass.configuration import Endpoint
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm, NetworkInfrastructureDeviceCreateForm, NetworkInfrastructureDeviceUpdateForm
 from .models import Port, AccessPoint, NetworkInfrastructureDevice
 from .utils import device_is_down
+from django_datatables_view.mixins import JSONResponseView
 
 
 logger = logging.getLogger(__name__)
@@ -367,3 +369,52 @@ class UpdateNetworkInfrastructureDevice(BaseDatatablesUpdateView):
 
 class RemoveNetworkInfrastructureDevice(BaseDatatablesRemoveView):
     model = NetworkInfrastructureDevice
+
+
+class EndpointBaseUpdateView(JSONResponseView):
+
+    def get_context_data(self, **kwargs):
+        context = {}
+
+        try:
+            self.endpoint = Endpoint(kwargs['mac_address'])
+            self.performChange(**kwargs)
+            context['success'] = True
+        except Exception:
+            logger.exception('Could not perform endpoint change')
+            context['success'] = False
+
+        return context
+
+    def performChange(self, **kwargs):
+        pass
+
+
+class EndpointChangeToKnown(EndpointBaseUpdateView):
+
+    def performChange(self, **kwargs):
+        self.endpoint.set_to_known()
+
+
+class EndpointSetAsGamingDevice(EndpointBaseUpdateView):
+
+    def performChange(self, **kwargs):
+        self.endpoint.set_as_gaming_device()
+
+
+class EndpointSetAsGamingPC(EndpointBaseUpdateView):
+
+    def performChange(self, **kwargs):
+        self.endpoint.set_as_gaming_pc()
+
+
+class EndpointSetAsMediaDevice(EndpointBaseUpdateView):
+
+    def performChange(self, **kwargs):
+        self.endpoint.set_as_media_device()
+
+
+class EndpointRemoveAttribute(EndpointBaseUpdateView):
+
+    def performChange(self, **kwargs):
+        self.endpoint.remove_attribute(kwargs['attribute'])

@@ -60,7 +60,7 @@ $(document).ready(function() {
 });
 
 function initializeReport(mac_address) {
-    displayAirwavesChart('#bandwidth_usage_chart', DjangoReverse['network:airwaves_client_bandwidth']({'mac_address': '{{ device.clearpass.mac_address }}'}));
+    displayAirwavesChart('#bandwidth_usage_chart', DjangoReverse['network:airwaves_client_bandwidth']({'mac_address': currentDevice.mac_address }));
         
     $('[popover-data-url]').hover(
         function() {
@@ -84,16 +84,30 @@ function initializeReport(mac_address) {
     );
 }
 
-function changeEndpointInfo(actionURLName) {
-    var url = DjangoReverse[actionURLName]({ mac_address: currentDevice.mac_address });
+function changeEndpointInfo(actionURLName, urlArguments, callback) {
+    if (typeof urlArguments === 'undefined') {
+        urlArguments = {};
+    }
+    urlArguments.mac_address = currentDevice.mac_address;
+    
+    var url = DjangoReverse[actionURLName](urlArguments);
     
     $.get(url, function(response) {
-        if (response.success === 'true') {
+        if (response.success === true) {
             alert("Endpoint successfully updated.");
-            performLookup(userQuery);
+            if (typeof callback === 'undefined') {
+                performLookup(userQuery);
+            }
+            else {
+                callback(urlArguments);
+            }
         }
         else {
-            alert("Could not change endpoint. \n\nPlease report the error.");
+            alert("Could not change endpoint.\n\nPlease report the error.");
         }
     });
+}
+
+function removeAttributeCallback(urlArguments) {
+    $('[name="' + urlArguments.attribute + '"]').remove();
 }

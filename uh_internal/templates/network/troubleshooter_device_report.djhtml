@@ -23,13 +23,19 @@
                 <tr>
                     <th>Name</th>
                     <th>Value</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for attribute in device.clearpass.attributes %}
-                    <tr>
+                    <tr name="{{ attribute.name }}">
                         <td>{{ attribute.name }}</td>
                         <td>{{ attribute.value }}</td>
+                        <td>
+                            <a href="#" onclick="changeEndpointInfo('network:endpoint_remove_attribute', {attribute: '{{ attribute.name }}'}, removeAttributeCallback);">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+                        </td>
                     </tr>
                 {% empty %}
                     <tr><td colspan="2" class="text-center">No attributes for this endpoint.</td></tr>
@@ -51,7 +57,7 @@
             <tbody>
                 {% for attempt in device.login_attempts %}
                     <tr>
-                        <td>{{ attempt.time }}</td>
+                        <td>{{ attempt.time|date:"m/d/y H:i:s" }}</td>
                         <td>{{ attempt.username }}</td>
                         <td>{{ attempt.get_result_display }}</td>
                         <td>
@@ -67,9 +73,20 @@
         </table>
     </div>
     <div class="col-xs-12">
-        <button class="btn btn-primary">Add Game Console Exemption</button>
-        <button class="btn btn-primary">Add Media Device Exemption</button>
-        <button class="btn btn-primary">Set Status to Known</button>
+        <div class="row clearpass-action-buttons">
+            <div class="col-xs-12 col-md-6 col-lg-3">
+                <button class="btn btn-primary btn-sm" onclick="changeEndpointInfo('network:endpoint_gaming_device');">Add Game Console Exemption</button>
+            </div>
+            <div class="col-xs-12 col-md-6 col-lg-3">
+                <button class="btn btn-primary btn-sm" onclick="changeEndpointInfo('network:endpoint_media_device');">Add Media Device Exemption</button>
+            </div>
+            <div class="col-xs-12 col-md-6 col-lg-3">
+                <button class="btn btn-primary btn-sm" onclick="changeEndpointInfo('network:endpoint_gaming_pc');">Add Gaming PC Exemption</button>
+            </div>
+            <div class="col-xs-12 col-md-6 col-lg-3">
+                <button class="btn btn-primary btn-sm" onclick="changeEndpointInfo('network:endpoint_known');">Set Status to Known</button>
+            </div>
+        </div>
     </div>
     <div class="col-xs-12"><hr></div>
     <div class="col-xs-12">
