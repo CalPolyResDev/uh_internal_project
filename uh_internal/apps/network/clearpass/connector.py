@@ -26,26 +26,24 @@ class _APIConnector(object):
         for k, v in kwargs:
             setattr(self, k, v)
 
-    def process_response(self):
-        print(self.response.text)
+    def process_response(self, response):
+        if response.status_code != 200:
+            raise Exception(response)
 
-        if self.response.status_code != 200:
-            raise Exception(self.response)
-
-        return self.response.text
+        return response.text
 
     def get(self, relative_url):
         url = urljoin(self.url, relative_url)
-        self.response = requests.get(url, auth=(self.username, self.password))
+        response = requests.get(url, auth=(self.username, self.password))
 
-        return self.process_response()
+        return self.process_response(response)
 
     def post(self, relative_url, headers, data):
         url = urljoin(self.url, relative_url)
 
-        self.response = requests.post(url, headers=headers, data=data, auth=(self.username, self.password))
+        response = requests.post(url, headers=headers, data=data, auth=(self.username, self.password))
 
-        return self.process_response()
+        return self.process_response(response)
 
     def get_XML(self, relative_url):
         response = self.get(relative_url)
