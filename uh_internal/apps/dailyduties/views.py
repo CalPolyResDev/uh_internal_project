@@ -9,6 +9,7 @@
 from os import path
 import re
 
+from bs4 import BeautifulSoup
 from clever_selects.views import ChainedSelectFormViewMixin
 from django.core.cache import cache
 from django.core.urlresolvers import reverse
@@ -37,6 +38,14 @@ class EmailListView(TemplateView):
 class EmailMessageView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
     template_name = "dailyduties/email_viewer.djhtml"
     form_class = BuildingSelectForm
+
+    def process_message_html(self, message_html):
+        document = BeautifulSoup(message_html, 'html5lib')
+
+        for link in document('a'):
+            link['target'] = '_blank'
+
+        return document.prettify(formatter="html")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -86,7 +95,7 @@ class EmailMessageView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
             quote_string = "On " + message['date'].strftime('%b %d, %Y at %I:%M%p') + ", " + message['from'] + " wrote:"
 
             if message['is_html']:
-                reply_html = message['body_html']
+                reply_html = message['body_html'] = self.process_message_html(message['body_html'])
 
                 if reply_html.find('<body>') >= 0 and not (reply_html.find('<p>') >= 0 and reply_html.find('<p') < reply_html.find('<body>')):
                     reply_html = reply_html.replace('<body>', '<body><p id="new_body"><br /><br />Best regards,<br />' + self.request.user.get_full_name() + '<br />ResNet Technician</p><div><div>' + quote_string + '<div><div><blockquote>').replace('</body>', '</blockquote></body>')
