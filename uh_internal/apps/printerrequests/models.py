@@ -72,8 +72,8 @@ class Request(Model):
     date_requested = DateTimeField()
     priority = CharField(max_length=25)
     requestor = CharField(max_length=50)
-    toner = ManyToManyField(Toner)
-    parts = ManyToManyField(Part)
+    toner = ManyToManyField(Toner, blank=True)
+    parts = ManyToManyField(Part, blank=True)
     address = CharField(max_length=50)
     status = IntegerField(choices=REQUEST_STATUS_CHOICES, blank=False)
 
