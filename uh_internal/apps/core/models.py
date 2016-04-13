@@ -260,7 +260,7 @@ class TechFlair(Model):
 
 class NavbarLink(Model):
     display_name = CharField(max_length=50, verbose_name='Display Name')
-    permission_classes = ManyToManyField(PermissionClass, verbose_name='Permission Classes')
+    permission_classes = ManyToManyField(PermissionClass, verbose_name='Permission Classes', blank=True)
     show_to_all = BooleanField(verbose_name='Show To All Users', default=False)
     icon = CharField(max_length=100, verbose_name='Icon Static File Location', blank=True, null=True)
     sequence_index = SmallIntegerField(verbose_name='Sequence Index')
