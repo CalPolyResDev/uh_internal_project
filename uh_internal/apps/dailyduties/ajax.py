@@ -176,9 +176,10 @@ def get_mailbox_summary(request, **kwargs):
         with EmailManager() as email_manager:
             (messages, num_available_messages) = email_manager.get_messages(mailbox_name, search_string, range=message_range)
 
-    for email in messages:
-        email['full_id'] = email['mailbox'] + '/' + str(email['uid'])
-        email['modal_title'] = 'Email'
+    if messages:
+        for email in messages:
+            email['full_id'] = email['mailbox'] + '/' + str(email['uid'])
+            email['modal_title'] = 'Email'
 
     if message_range and num_available_messages > 0:
         if message_range[1] + 2 > num_available_messages:
