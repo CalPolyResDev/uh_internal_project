@@ -23,16 +23,22 @@
                 <tr>
                     <th>Name</th>
                     <th>Value</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 {% for attribute in device.clearpass.attributes %}
-                    <tr>
+                    <tr name="{{ attribute.name }}">
                         <td>{{ attribute.name }}</td>
                         <td>{{ attribute.value }}</td>
+                        <td>
+                            <a href="#" onclick="changeEndpointInfo('network:endpoint_remove_attribute', {attribute: '{{ attribute.name }}'}, removeAttributeCallback);">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+                        </td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="2" class="text-center">No attributes for this endpoint.</td></tr>
+                    <tr><td colspan="3" class="text-center">No attributes for this endpoint.</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -51,7 +57,7 @@
             <tbody>
                 {% for attempt in device.login_attempts %}
                     <tr>
-                        <td>{{ attempt.time }}</td>
+                        <td>{{ attempt.time|date:"m/d/y H:i:s" }}</td>
                         <td>{{ attempt.username }}</td>
                         <td>{{ attempt.get_result_display }}</td>
                         <td>
@@ -65,6 +71,22 @@
                 {% endfor %}
             </tbody>
         </table>
+    </div>
+    <div class="col-xs-12">
+        <div class="row clearpass-action-buttons">
+            <div class="col-xs-12 col-md-6 col-lg-3">
+                <button class="btn btn-primary btn-sm" onclick="changeEndpointInfo('network:endpoint_gaming_device');">Add Game Console Exemption</button>
+            </div>
+            <div class="col-xs-12 col-md-6 col-lg-3">
+                <button class="btn btn-primary btn-sm" onclick="changeEndpointInfo('network:endpoint_media_device');">Add Media Device Exemption</button>
+            </div>
+            <div class="col-xs-12 col-md-6 col-lg-3">
+                <button class="btn btn-primary btn-sm" onclick="changeEndpointInfo('network:endpoint_gaming_pc');">Add Gaming PC Exemption</button>
+            </div>
+            <div class="col-xs-12 col-md-6 col-lg-3">
+                <button class="btn btn-primary btn-sm" onclick="changeEndpointInfo('network:endpoint_known');">Set Status to Known</button>
+            </div>
+        </div>
     </div>
     <div class="col-xs-12"><hr></div>
     <div class="col-xs-12">
@@ -102,7 +124,7 @@
                         </td>
                     </tr>
                 {% empty %}
-                    <tr><td colspan="5" class="text-center">No associations recorded in Airwaves</td></tr>
+                    <tr><td colspan="7" class="text-center">No associations recorded in Airwaves</td></tr>
                 {% endfor %}
             </tbody>
         </table>
@@ -111,27 +133,6 @@
 
 <script type="text/javascript">
     $(document).ready(function() {
-        displayAirwavesChart('#bandwidth_usage_chart', DjangoReverse['network:airwaves_client_bandwidth']({'mac_address': '{{ device.clearpass.mac_address }}'}));
-        
-        $('[popover-data-url]').hover(
-            function() {
-                var element = $(this);
-                element.off('hover');
-    
-                $.get(element.attr('popover-data-url'), function(content) {
-                    if (element.filter(":hover").length) {
-                        element.popover({content: content,
-                                    placement: 'left',
-                                    html: true,
-                                    container: 'body'
-                        }).popover('show');
-                    }
-                });
-            },
-            function() {
-                var element = $(this);
-                element.popover('hide');
-            }
-        );
+        initializeReport();
     });
 </script>

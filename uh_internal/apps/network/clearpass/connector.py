@@ -26,17 +26,33 @@ class _APIConnector(object):
         for k, v in kwargs:
             setattr(self, k, v)
 
-    def get(self, relative_url):
-        url = urljoin(self.url, relative_url)
-        response = requests.get(url, auth=(self.username, self.password))
-
+    def process_response(self, response):
         if response.status_code != 200:
             raise Exception(response)
 
         return response.text
 
+    def get(self, relative_url):
+        url = urljoin(self.url, relative_url)
+        response = requests.get(url, auth=(self.username, self.password))
+
+        return self.process_response(response)
+
+    def post(self, relative_url, headers, data):
+        url = urljoin(self.url, relative_url)
+
+        response = requests.post(url, headers=headers, data=data, auth=(self.username, self.password))
+
+        return self.process_response(response)
+
     def get_XML(self, relative_url):
         response = self.get(relative_url)
+
+        return xmltodict.parse(response)
+
+    def post_XML(self, relative_url, xml):
+        headers = {'Content-Type': 'application/xml'}
+        response = self.post(relative_url, headers, xml)
 
         return xmltodict.parse(response)
 

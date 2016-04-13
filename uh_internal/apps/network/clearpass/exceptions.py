@@ -21,6 +21,21 @@ class EndpointLookupError(Error):
     pass
 
 
+class EndpointUpdateError(Error):
+    """Exception raised when an endpoint can't be updated."""
+    pass
+
+
+class EndpointUnknownOwnerError(Error):
+    """Exception raised when an endpoint's owner can't be found."""
+    pass
+
+
+class EndpointInvalidOperationError(Error):
+    """Exception raised when a user attemts to perform an operation that is not
+    allowed by ResNet policy."""
+
+
 class MultipleEndpointError(Error):
     """Exception raised when multiple endpoints are returned
     and 1 was expected."""

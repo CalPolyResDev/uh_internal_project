@@ -19,11 +19,13 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
+from django_datatables_view.mixins import JSONResponseView
 from paramiko import SSHClient, AutoAddPolicy
 from rmsconnector.utils import Resident
 
 from ...settings.base import NETWORK_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
+from .clearpass.configuration import Endpoint
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm, NetworkInfrastructureDeviceCreateForm, NetworkInfrastructureDeviceUpdateForm
 from .models import Port, AccessPoint, NetworkInfrastructureDevice
 from .utils import device_is_down
@@ -367,3 +369,53 @@ class UpdateNetworkInfrastructureDevice(BaseDatatablesUpdateView):
 
 class RemoveNetworkInfrastructureDevice(BaseDatatablesRemoveView):
     model = NetworkInfrastructureDevice
+
+
+class EndpointBaseUpdateView(JSONResponseView):
+
+    def get_context_data(self, **kwargs):
+        context = {}
+
+        try:
+            self.endpoint = Endpoint(kwargs['mac_address'])
+            self.performChange(**kwargs)
+            context['success'] = True
+        except Exception as exc:
+            logger.exception('Could not perform endpoint change')
+            context['success'] = False
+            context['error'] = str(exc)
+
+        return context
+
+    def perform_change(self, **kwargs):
+        pass
+
+
+class EndpointChangeToKnown(EndpointBaseUpdateView):
+
+    def perform_change(self, **kwargs):
+        self.endpoint.set_to_known()
+
+
+class EndpointSetAsGamingDevice(EndpointBaseUpdateView):
+
+    def perform_change(self, **kwargs):
+        self.endpoint.set_as_gaming_device()
+
+
+class EndpointSetAsGamingPC(EndpointBaseUpdateView):
+
+    def perform_change(self, **kwargs):
+        self.endpoint.set_as_gaming_pc()
+
+
+class EndpointSetAsMediaDevice(EndpointBaseUpdateView):
+
+    def perform_change(self, **kwargs):
+        self.endpoint.set_as_media_device()
+
+
+class EndpointRemoveAttribute(EndpointBaseUpdateView):
+
+    def perform_change(self, **kwargs):
+        self.endpoint.remove_attribute(kwargs['attribute'])
