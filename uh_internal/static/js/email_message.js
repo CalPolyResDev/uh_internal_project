@@ -263,7 +263,7 @@ function send_email(archive_folder) {
             $.unblockUI();
             
             if (response_context['success']) {
-                if (message_path) {
+                if (message_path && parent.refresh_messages) {
                     parent.refresh_messages(message_path.rsplit('/', 1)[0]);
                 }
                 if (!archive_folder) {

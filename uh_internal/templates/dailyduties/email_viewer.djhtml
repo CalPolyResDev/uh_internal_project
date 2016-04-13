@@ -142,5 +142,5 @@
         var message_path = '{{ message.path|escapejs }}';
         var attach_button_content = '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.djhtml' 'dailyduties:jfu_upload' %}</span>';
     </script>
-    <script src="{% static 'js/email_message.js' %}?version=1.1"></script>
+    <script src="{% static 'js/email_message.js' %}?version=1.2"></script>
 {% endblock %}
