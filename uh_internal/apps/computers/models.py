@@ -31,9 +31,6 @@ class Computer(NetworkDevice):
 
     dhcp = BooleanField(default=False)
 
-    def __str__(self):
-        return self.computer_name
-
     def save(self, *args, **kwargs):
         """Uppercase field names on save."""
 
