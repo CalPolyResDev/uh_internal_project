@@ -38,5 +38,5 @@
 
 {% block extra_script %}
     {{ block.super }}
-    <script src="{% static 'js/network-troubleshooter.js' %}?1.0"></script>
+    <script src="{% static 'js/network-troubleshooter.js' %}?1.1"></script>
 {% endblock %}
