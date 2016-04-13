@@ -387,35 +387,35 @@ class EndpointBaseUpdateView(JSONResponseView):
 
         return context
 
-    def performChange(self, **kwargs):
+    def perform_change(self, **kwargs):
         pass
 
 
 class EndpointChangeToKnown(EndpointBaseUpdateView):
 
-    def performChange(self, **kwargs):
+    def perform_change(self, **kwargs):
         self.endpoint.set_to_known()
 
 
 class EndpointSetAsGamingDevice(EndpointBaseUpdateView):
 
-    def performChange(self, **kwargs):
+    def perform_change(self, **kwargs):
         self.endpoint.set_as_gaming_device()
 
 
 class EndpointSetAsGamingPC(EndpointBaseUpdateView):
 
-    def performChange(self, **kwargs):
+    def perform_change(self, **kwargs):
         self.endpoint.set_as_gaming_pc()
 
 
 class EndpointSetAsMediaDevice(EndpointBaseUpdateView):
 
-    def performChange(self, **kwargs):
+    def perform_change(self, **kwargs):
         self.endpoint.set_as_media_device()
 
 
 class EndpointRemoveAttribute(EndpointBaseUpdateView):
 
-    def performChange(self, **kwargs):
+    def perform_change(self, **kwargs):
         self.endpoint.remove_attribute(kwargs['attribute'])
