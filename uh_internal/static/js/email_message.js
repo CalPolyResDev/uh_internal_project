@@ -5,6 +5,14 @@ var resnet_email_regex = /[,a-zA-Z0-9 <]*resnet@calpoly\.edu[>]*/i;
 
 $.ajaxSetup({ cache: true });
 
+function sendAmViewing() {
+    
+}
+
+function sendStopViewing() {
+    
+}
+
 function array_to_ajax(array, prefix) {
     var ajax_dict = {};
     for (var index = 0; index < array.length; ++index) {

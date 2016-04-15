@@ -6,6 +6,7 @@
 
 """
 
+from datetime import datetime, timedelta
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -15,6 +16,7 @@ from django.db.models.deletion import SET_NULL
 from django.db.models.fields import CharField, DateTimeField, TextField, EmailField, SlugField, IntegerField
 from django.utils.functional import cached_property
 
+from ..core.models import UHInternalUser
 from ..core.utils import unique_slugify
 
 
@@ -55,3 +57,14 @@ class EmailPermalink(Model):
         self._generate_slug()
 
         return urljoin(settings.DEFAULT_BASE_URL, reverse('dailyduties:email_permalink_view_message', kwargs={'slug': self.slug}))
+
+
+class EmailViewingRecord(Model):
+    mailbox = CharField(max_length=100)
+    uid = IntegerField()
+
+    expiry_time = DateTimeField()
+    user = ForeignKey(UHInternalUser)
+
+    def save(self, **kwargs):
+        self.expiry_time = datetime.now() + timedelta(seconds=30)

@@ -6,6 +6,7 @@
 """
 
 import json
+from datetime import datetime
 from urllib.parse import urljoin
 
 from django.conf import settings
@@ -15,7 +16,7 @@ from django.core.urlresolvers import reverse
 from html2text import html2text
 import requests
 
-from .models import EmailPermalink
+from .models import EmailPermalink, EmailViewingRecord
 
 
 try:
@@ -133,3 +134,8 @@ def update_slack_email(num):
 @timer(60, target='workers')
 def keep_imap_alive(num):
     EmailConnectionMixin.send_noop_to_all_connections()
+
+
+@timer(3600)
+def prune_expired_email_viewer_records(num):
+    EmailViewingRecord.objects.filter(expiry_time__lt=datetime.now()).delete()
