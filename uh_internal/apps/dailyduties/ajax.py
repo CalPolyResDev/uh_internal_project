@@ -424,3 +424,17 @@ class EmailWhoIsViewing(JSONResponseView):
                 viewer_dict[path]['users'].append(user_string(record))
 
         return {'email_viewer_dict': viewer_dict}
+
+
+class EmailWhoIsViewingMessage(JSONResponseView):
+
+    def get_context_data(self, **kwargs):
+        [mailbox_name, uid] = kwargs['message_path'].rsplit('/', 1)
+        records = EmailViewingRecord.objects.filter(expiry_time__gt=datetime.now(), mailbox=mailbox_name, uid=uid)  # .exclude(user=self.request.user)
+
+        def user_string(record):
+            return record.user.get_full_name() + (' (Replying)' if record.replying else '')
+
+        users = [user_string(record) for record in records]
+
+        return {'users': users}

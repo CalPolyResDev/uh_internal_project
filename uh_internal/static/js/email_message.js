@@ -2,6 +2,7 @@ var editor = '';
 var attachments = [];
 var attachment_details = [];
 var resnet_email_regex = /[,a-zA-Z0-9 <]*resnet@calpoly\.edu[>]*/i;
+var in_editor = false;
 
 $.ajaxSetup({ cache: true });
 
@@ -20,12 +21,14 @@ String.prototype.rsplit = function(sep, maxsplit) { // Missing Python
 };
 
 function sendAmViewing(replying) {
-    if ($('#timer').text()) {
-        $('#timer').timer('remove');
+    if ($('#sendAmViewingTimer').text()) {
+        $('#sendAmViewingTimer').timer('remove');
     }
-    $('#timer').timer({
+    $('#sendAmViewingTimer').timer({
         duration: '20s',
-        callback: function() {sendAmViewing(replying);},
+        callback: function() {
+            sendAmViewing(replying);
+        },
         repeat: false, 
     });
 
@@ -37,11 +40,35 @@ function sendAmViewing(replying) {
     $.ajax(url);
 }
 
+function retrieveViewers() {
+    if ($('#retrieveViewersTimer').text()) {
+        $('#retrieveViewersTimer').timer('remove');
+    }
+    $('#retrieveViewersTimer').timer({
+        duration: '10s',
+        callback: function() {
+            retrieveViewers();
+        },
+        repeat: false,
+    });
+
+    var url = DjangoReverse['dailyduties:email_who_is_viewing_message']({message_path: message_path});
+    $.get(url, function(response) {
+        $('#viewers_list').remove();
+        if (response.users && response.users.length) {
+             $('#message_headers').append('<span id="viewers_list">' + (in_editor ? '' : '<br />') + '<strong class="text-warning">Other Viewers:</strong> ' + response.users.join(', ') + '</span>');
+        }
+    });
+}
+
 function add_button(button_text, onclick_text, id) {
     $('#email_buttons').append('<button id="' + id + '" class="btn btn-default" type="button" onclick="' + onclick_text +'">' + button_text + '</button>');
 }
 
 function change_to_editor() {
+    in_editor = true;
+    retrieveViewers();
+    
     if (message_is_html) {
         editor = CKEDITOR.replace('email_body', {
             fullPage: true,
