@@ -24,8 +24,9 @@ from jfu.http import upload_receive, UploadResponse, JFUResponse
 
 from ..core.models import Building
 from ..core.templatetags.srs_urls import srs_edit_url
-from .models import DailyDuties
+from .models import DailyDuties, EmailViewingRecord
 from .utils import GetDutyData, EmailManager
+from django_datatables_view.mixins import JSONResponseView
 
 
 logger = logging.getLogger(__name__)
@@ -191,6 +192,7 @@ def get_mailbox_summary(request, **kwargs):
 
     raw_response = """
         {% load staticfiles %}
+        {% load email %}
         {% if emails %}
             {% for email in emails %}
             <tr id="{{ email.full_id }}" {% if email.unread %}class="bg-info"{% endif %}>
@@ -205,11 +207,11 @@ def get_mailbox_summary(request, **kwargs):
                         <img src="{% static 'images/mail_reply.png' %}"></img>
                     {% endif %}
                 </td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'dailyduties:email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.date }}</td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'dailyduties:email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.sender_name }} &lt;{{email.sender_address }}&gt;</td>
-                <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'dailyduties:email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.subject }}</td>
+                <td style="cursor: pointer;" onclick="{% email_record_onclick %}">{{ email.date }}</td>
+                <td style="cursor: pointer;" onclick="{% email_record_onclick %}">{{ email.sender_name }} &lt;{{email.sender_address }}&gt;</td>
+                <td style="cursor: pointer;" onclick="{% email_record_onclick %}">{{ email.subject }}</td>
                 {% if mailbox_name|length == 0 %}
-                    <td style="cursor: pointer;" onclick="$(document.getElementById('{{ email.full_id }}')).removeClass('bg-info');openModalFrame('{{ email.modal_title|escapejs }}', '{% url 'dailyduties:email_view_message' mailbox_name=email.mailbox uid=email.uid %}');">{{ email.mailbox }}</td>
+                    <td style="cursor: pointer;" onclick="{% email_record_onclick %}">{{ email.mailbox }}</td>
                 {% endif %}
             </tr>
             {% endfor %}
@@ -372,3 +374,53 @@ def get_csd_email(request):
     }
 
     return response
+
+
+class EmailAmViewing(JSONResponseView):
+
+    def get_context_data(self, **kwargs):
+        [message_mailbox, uid] = kwargs['message_path'].rsplit('/', 1)
+        replying = bool(int(kwargs['replying']))
+
+        try:
+            viewing_record = EmailViewingRecord.objects.get(mailbox=message_mailbox, uid=uid, user=self.request.user)
+            EmailViewingRecord.objects.all().exclude(id=viewing_record.id).delete()
+        except EmailViewingRecord.DoesNotExist:
+            viewing_record = EmailViewingRecord(mailbox=message_mailbox, uid=uid, user=self.request.user)
+
+        viewing_record.replying = replying
+        viewing_record.save()
+
+        return {}
+
+
+class EmailStoppedViewing(JSONResponseView):
+
+    def get_context_data(self, **kwargs):
+        EmailViewingRecord.objects.filter(user=self.request.user).delete()
+
+        return {}
+
+
+class EmailWhoIsViewing(JSONResponseView):
+
+    def get_context_data(self, **kwargs):
+        records = EmailViewingRecord.objects.filter(expiry_time__gt=datetime.now())
+
+        viewer_dict = {}
+
+        def user_string(record):
+            return record.user.get_full_name() + (' (Replying)' if record.replying else '')
+
+        for record in records:
+            path = record.mailbox + '/' + str(record.uid)
+            if path not in viewer_dict:
+                viewer_dict[path] = {
+                    'path': path,
+                    'users': [user_string(record)],
+                    'replying': record.replying,
+                }
+            else:
+                viewer_dict[path]['users'].append(user_string(record))
+
+        return {'email_viewer_dict': viewer_dict}

@@ -1,6 +1,11 @@
 var current_mailbox = 'INBOX';
 var num_search_queries_running = 0;
 var next_group_url = '';
+var currentMessagePath = '';
+
+function escapeID( myid ) {
+    return "#" + myid.replace( /(:|\.|\[|\]|,)/g, "\\$1" );
+}
 
 $(document).ready(function() {
         $('#jstree_folder_structure')
@@ -29,7 +34,26 @@ $(document).ready(function() {
             search_messages();
         });
         refresh_messages('INBOX');
+        
+        $('#timer').timer({
+        duration: '10s',
+        callback: function() {
+            retrieve_viewers();
+        },
+        repeat: true, 
+    });
 });
+
+function email_closed() {
+    var url = DjangoReverse['dailyduties:email_stopped_viewing']({message_path: currentMessagePath});
+    $.ajax(url);
+}
+
+function open_email(mailbox_name, uid, full_id, modal_title) {
+    $(document.getElementById(full_id)).removeClass('bg-info');
+    openModalFrame(modal_title, DjangoReverse['dailyduties:email_view_message']({mailbox_name: mailbox_name, uid: uid}), email_closed);
+    currentMessagePath = mailbox_name + '/' + uid;
+}
 
 function get_selected_emails() {
     var rows = [];
@@ -75,6 +99,28 @@ function retrieve_messages(mailbox, search_string) {
             next_group_url = response.content.next_group_url;
             $(document).scroll(infiniteScrollHandler);
         }
+        retrieve_viewers();
+    });
+}
+
+function retrieve_viewers() {    
+    $.get(DjangoReverse['dailyduties:email_who_is_viewing'](), function(response){
+        $('#email_table > tbody > tr > td:nth-child(2) > span').remove();
+        
+        for (var messagePath in response.email_viewer_dict) {
+            var column = $(document.getElementById(messagePath)).find('td:nth-child(2)');
+            column.find('span').popover('hide')
+            column.find('span').remove();
+            column.append('<span class="glyphicon glyphicon-eye-open"></span>');
+            
+            var viewer_string = response.email_viewer_dict[messagePath].users.join(',<br />');
+            column.find('span').popover({
+                title: 'Viewers',
+                html: true,
+                content: viewer_string,
+                trigger: 'hover',
+            });
+         }
     });
 }
 

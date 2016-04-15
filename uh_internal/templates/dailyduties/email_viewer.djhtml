@@ -35,6 +35,7 @@
 {% block main %}
     {% if message %}
     <div class="col-xs-12">
+        <div style="display: none;" id="timer"></div>
         <div class="btn-group" role="group" id="email_buttons">
             <button class="btn btn-default" type="button" id="create_ticket_button" title="Requestor Username:"
                 data-container="body" data-toggle="popover" data-placement="bottom"

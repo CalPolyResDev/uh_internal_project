@@ -5,14 +5,6 @@ var resnet_email_regex = /[,a-zA-Z0-9 <]*resnet@calpoly\.edu[>]*/i;
 
 $.ajaxSetup({ cache: true });
 
-function sendAmViewing() {
-    
-}
-
-function sendStopViewing() {
-    
-}
-
 function array_to_ajax(array, prefix) {
     var ajax_dict = {};
     for (var index = 0; index < array.length; ++index) {
@@ -26,6 +18,24 @@ String.prototype.rsplit = function(sep, maxsplit) { // Missing Python
     var split = this.split(sep);
     return maxsplit ? [ split.slice(0, -maxsplit).join(sep) ].concat(split.slice(-maxsplit)) : split;
 };
+
+function sendAmViewing(replying) {
+    if ($('#timer').text()) {
+        $('#timer').timer('remove');
+    }
+    $('#timer').timer({
+        duration: '20s',
+        callback: function() {sendAmViewing(replying);},
+        repeat: false, 
+    });
+
+    var url = DjangoReverse['dailyduties:email_am_viewing']({
+        message_path: message_path,
+        replying: replying === true ? '1' : '0',
+    });
+    
+    $.ajax(url);
+}
 
 function add_button(button_text, onclick_text, id) {
     $('#email_buttons').append('<button id="' + id + '" class="btn btn-default" type="button" onclick="' + onclick_text +'">' + button_text + '</button>');
@@ -118,6 +128,8 @@ function change_to_editor() {
         container: 'body',
         content: attach_button_content
     });
+    
+    sendAmViewing(true);
 }
 
 function submit_cc_csd_form() {

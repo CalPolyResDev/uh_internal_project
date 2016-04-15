@@ -11,7 +11,8 @@ from django.contrib.auth.decorators import login_required
 
 from ..core.permissions import daily_duties_access
 from .ajax import (email_archive, email_mark_read, email_mark_unread, get_csd_email, get_email_folders, get_mailbox_summary,
-                   send_email, attachment_delete, attachment_upload, remove_voicemail, ticket_from_email, refresh_duties, update_duty)
+                   send_email, attachment_delete, attachment_upload, remove_voicemail, ticket_from_email, refresh_duties, update_duty,
+                   EmailAmViewing, EmailStoppedViewing, EmailWhoIsViewing)
 from .views import EmailAttachmentRequestView, EmailComposeView, EmailListView, EmailMessageView, VoicemailListView, VoicemailAttachmentRequestView, EmailMessagePermalinkView
 
 
@@ -34,7 +35,10 @@ urlpatterns = [
     url(r'^email/upload_attachment/$', daily_duties_access(attachment_upload), name='jfu_upload'),
     url(r'^email/delete_attachment/(?P<pk>.+)$', daily_duties_access(attachment_delete), name='jfu_delete'),
     url(r'^email/cc_csd/$', daily_duties_access(get_csd_email), name='email_get_cc_csd'),
-    url(r"^email/create_ticket/$", login_required(daily_duties_access(ticket_from_email)), name='email_create_ticket'),
+    url(r'^email/create_ticket/$', login_required(daily_duties_access(ticket_from_email)), name='email_create_ticket'),
+    url(r'^email/am_viewing/(?P<message_path>.+)/(?P<replying>0|1)/$', login_required(daily_duties_access(EmailAmViewing.as_view())), name='email_am_viewing'),
+    url(r'^email/stopped_viewing/(?P<message_path>.+)/$', login_required(daily_duties_access(EmailStoppedViewing.as_view())), name='email_stopped_viewing'),
+    url(r'^email/viewer_list/$', login_required(daily_duties_access(EmailWhoIsViewing.as_view())), name="email_who_is_viewing"),
 
     url(r'^voicemail_list/$', login_required(daily_duties_access(VoicemailListView.as_view())), name='voicemail_list'),
     url(r'^refresh_duties/$', login_required(daily_duties_access(refresh_duties)), name='refresh_duties'),
