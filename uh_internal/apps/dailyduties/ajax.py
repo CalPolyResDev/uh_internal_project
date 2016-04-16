@@ -302,7 +302,7 @@ def send_email(request):
     }
 
     with EmailManager() as email_manager:
-        email_manager.send_message(message)
+        email_manager.send_message(message, user=request.user)
 
     return {'success': True}
 

@@ -92,6 +92,7 @@ function change_to_editor() {
     $('#date').remove();
     $('#attachments').remove();
     $('#from_header').remove();
+    $('#uhin-sender').remove();
     $('#email_buttons').html('');
     add_button('Send', 'send_email(false);', 'send_button');
     

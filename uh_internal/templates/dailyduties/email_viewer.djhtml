@@ -74,6 +74,9 @@
             <strong>CC:</strong>&nbsp;<span id="cc">{{ message.cc }}</span>
             <span id="date"><br /><strong>Date:</strong>&nbsp;{{ message.date }}</span>
             <span id="reply_to"><br /><strong>Reply To:</strong>&nbsp;{{ message.reply_to }}</span>
+            {% if message.sender %}
+                <span id="uhin-sender"><br /><strong>Sent By:</strong>&nbsp;{{ message.sender }}</span>
+            {% endif %}
             <span id="attachments">
                 {% if message.attachments %}<br /><strong>Attachments:</strong>
                     {% for attachment in message.attachments %}
