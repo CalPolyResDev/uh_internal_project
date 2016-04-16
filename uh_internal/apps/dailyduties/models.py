@@ -13,8 +13,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db.models import Model, ForeignKey
 from django.db.models.deletion import SET_NULL
-from django.db.models.fields import CharField, DateTimeField, TextField, EmailField, SlugField, IntegerField,\
-    BooleanField
+from django.db.models.fields import CharField, DateTimeField, TextField, EmailField, SlugField, IntegerField, BooleanField
 from django.utils.functional import cached_property
 
 from ..core.models import UHInternalUser

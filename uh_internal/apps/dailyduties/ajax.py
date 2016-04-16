@@ -20,13 +20,13 @@ from django.utils.encoding import smart_text
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
+from django_datatables_view.mixins import JSONResponseView
 from jfu.http import upload_receive, UploadResponse, JFUResponse
 
 from ..core.models import Building
 from ..core.templatetags.srs_urls import srs_edit_url
 from .models import DailyDuties, EmailViewingRecord
 from .utils import GetDutyData, EmailManager
-from django_datatables_view.mixins import JSONResponseView
 
 
 logger = logging.getLogger(__name__)
