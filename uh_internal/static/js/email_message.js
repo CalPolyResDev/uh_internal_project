@@ -45,7 +45,7 @@ function retrieveViewers() {
         $('#retrieveViewersTimer').timer('remove');
     }
     $('#retrieveViewersTimer').timer({
-        duration: '10s',
+        duration: '5s',
         callback: function() {
             retrieveViewers();
         },
@@ -194,6 +194,11 @@ function submit_cc_csd_form() {
 }
 
 function reply() {
+    if ($('#viewers_list').length && $('#viewers_list').text().indexOf('Replying') !== -1) {
+        alert("Can't reply: another user is already replying to this message.");
+        return false;
+    }
+
     change_to_editor();
     var subject = message_subject;
     if (subject.search(/^RE:/i) == -1) {
@@ -207,12 +212,14 @@ function reply() {
         $('#to').val(message_reply_to + ', ' + message_to);
         $('#to').val($('#to').val().replace(resnet_email_regex, ''));
     }
+    return true;
 }
 
 function reply_all() {
-    reply();
-    $('#cc').val(message_to);
-    $('#cc').val($('#cc').val().replace(resnet_email_regex, ''));
+    if (reply()) {
+        $('#cc').val(message_to);
+        $('#cc').val($('#cc').val().replace(resnet_email_regex, ''));
+    }
 }
 
 function forward() {
