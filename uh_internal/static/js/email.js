@@ -36,12 +36,12 @@ $(document).ready(function() {
         refresh_messages('INBOX');
         
         $('#timer').timer({
-        duration: '10s',
-        callback: function() {
-            retrieve_viewers();
-        },
-        repeat: true, 
-    });
+            duration: '10s',
+            callback: function() {
+                retrieve_viewers();
+            },
+            repeat: true, 
+        });
 });
 
 function email_closed() {
