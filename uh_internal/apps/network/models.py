@@ -109,11 +109,11 @@ class ClearPassLoginAttempt(Model):
         (TIMEOUT_RESULT, 'TIMEOUT'),
     )
 
-    username = CharField(max_length=50, blank=True, null=True)
+    username = CharField(max_length=50, blank=True, null=True, db_index=True)
     time = DateTimeField()
     service = CharField(max_length=100)
     roles = ArrayField(CharField(max_length=50))
-    client_mac_address = MACAddressField()
+    client_mac_address = MACAddressField(db_index=True)
     enforcement_profiles = ArrayField(CharField(max_length=100))
     result = PositiveSmallIntegerField(choices=RESULT_CHOICES)
     clearpass_ip = GenericIPAddressField()
