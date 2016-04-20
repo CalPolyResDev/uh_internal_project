@@ -27,7 +27,7 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
 
         context = super(TemplateView, self).get_context_data(**kwargs)
-        context['announcements'] = SiteAnnouncements.objects.filter(Q(permission_classes__groups__users__id=self.request.user.id) | Q(permission_classes=None)).order_by('-created')[:3]
+        context['announcements'] = SiteAnnouncements.objects.filter(Q(permission_classes__groups__users__id=self.request.user.id) | Q(permission_classes=None)).order_by('-created').distinct()[:3]
 
         return context
 
