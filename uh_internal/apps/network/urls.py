@@ -18,6 +18,7 @@ from .ajax import (PopulatePorts, UpdatePort, RetrievePortForm, change_port_stat
 from .views import (PortsView, PortFrameView, AccessPointsView, AccessPointFrameView, NetworkInfrastructureDevicesView,
                     DeviceStatusView, OverallBandwidthReportView, DeviceBandwidthReportView, OverallClientReportView,
                     LoginAttemptInfoFrameView, ClientBandwidthReportView, TroubleshooterView, TroubleshooterReportView)
+from uh_internal.apps.network.ajax import RetrieveLoginAttempts
 
 
 app_name = 'network'
@@ -49,6 +50,7 @@ urlpatterns = [
     url(r'^airwaves/overall_clients/$', login_required(network_access(OverallClientReportView.as_view())), name='airwaves_overall_clients'),
 
     url(r'^clearpass/login_attempt/info_frame/(?P<pk>\b[0-9]+\b)/$', login_required(network_access(LoginAttemptInfoFrameView.as_view())), name='login_attempt_info_frame'),
+    url(r'^clearpass/login_attempts/(?P<mac_address>\b[0-9a-fA-F]{2}([-:]?)[0-9a-fA-F]{2}(\2[0-9a-fA-F]{2}){4}\b)/$', login_required(network_access(RetrieveLoginAttempts.as_view())), name='retrieve_login_attempts'),
     url(r'^clearpass/endpoint/update/set-known/(?P<mac_address>\b[0-9a-fA-F]{2}([-:]?)[0-9a-fA-F]{2}(\2[0-9a-fA-F]{2}){4}\b)/$', login_required(network_modify_access(EndpointChangeToKnown.as_view())), name='endpoint_known'),
     url(r'^clearpass/endpoint/update/set-gaming-device/(?P<mac_address>\b[0-9a-fA-F]{2}([-:]?)[0-9a-fA-F]{2}(\2[0-9a-fA-F]{2}){4}\b)/$', login_required(network_modify_access(EndpointSetAsGamingDevice.as_view())), name='endpoint_gaming_device'),
     url(r'^clearpass/endpoint/update/set-gaming-pc/(?P<mac_address>\b[0-9a-fA-F]{2}([-:]?)[0-9a-fA-F]{2}(\2[0-9a-fA-F]{2}){4}\b)/$', login_required(network_modify_access(EndpointSetAsGamingPC.as_view())), name='endpoint_gaming_pc'),

@@ -13,6 +13,7 @@ from ..airwaves.exceptions import ClientLookupError
 from ..clearpass.configuration import Endpoint
 from ..clearpass.exceptions import EndpointLookupError
 from ..models import ClearPassLoginAttempt
+from ..utils import mac_address_no_separator
 
 
 def get_user_login_attempts(email_address):
@@ -24,7 +25,7 @@ def get_user_device_list(email_address):
 
 
 def get_device_login_attempts(mac_address):
-    return ClearPassLoginAttempt.objects.filter(client_mac_address=mac_address)
+    return ClearPassLoginAttempt.objects.filter(client_mac_address=mac_address_no_separator(mac_address).lower())
 
 
 def get_user_devices_info(email_address):
