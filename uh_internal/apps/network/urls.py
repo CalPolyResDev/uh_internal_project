@@ -14,11 +14,10 @@ from .ajax import (PopulatePorts, UpdatePort, RetrievePortForm, change_port_stat
                    PopulateAccessPoints, UpdateAccessPoint, RetrieveAccessPointForm, RemoveAccessPoint,
                    PopulateNetworkInfrastructureDevices, UpdateNetworkInfrastructureDevice, RetrieveNetworkInfrastructureDeviceForm,
                    RemoveNetworkInfrastructureDevice, EndpointChangeToKnown, EndpointSetAsGamingDevice, EndpointSetAsGamingPC, EndpointSetAsMediaDevice,
-                   EndpointRemoveAttribute)
+                   EndpointRemoveAttribute, RetrieveLoginAttempts)
 from .views import (PortsView, PortFrameView, AccessPointsView, AccessPointFrameView, NetworkInfrastructureDevicesView,
                     DeviceStatusView, OverallBandwidthReportView, DeviceBandwidthReportView, OverallClientReportView,
                     LoginAttemptInfoFrameView, ClientBandwidthReportView, TroubleshooterView, TroubleshooterReportView)
-from uh_internal.apps.network.ajax import RetrieveLoginAttempts
 
 
 app_name = 'network'
