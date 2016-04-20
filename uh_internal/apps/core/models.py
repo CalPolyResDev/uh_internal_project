@@ -222,9 +222,9 @@ class UHInternalUser(AbstractBaseUser, PermissionsMixin):
         return full_name.strip()
 
     def get_alias(self):
-        """Returns the username with the possible '-admin' removed."""
+        """Returns the username with the possible '-admin' and '@calpoly.edu' removed."""
 
-        return re.sub(r'-admin', '', self.username)
+        return self.username.replace('-admin', '').replace('@calpoly.edu', '')
 
     def get_short_name(self):
         "Returns the short name for the user."

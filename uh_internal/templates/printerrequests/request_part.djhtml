@@ -1,4 +1,7 @@
 {% extends "base.djhtml" %}
+
+{% load crispy_forms_tags %}
+
 {% block subtitle %} | Part Request{% endblock %}
 
 {% block extra_head %}
@@ -20,72 +23,6 @@
             <h2>ResNet Printer Part Request</h2>
         </div>
         <p>This tool is used to request part replacements. Simply select your printer and the part that needs replacing. A service request will be created in your name.</p>
-        <form method="post" action="{% url 'printerrequests:parts_request' %}" id="part_form">
-            <fieldset>
-                <legend>
-                    Request Part
-                </legend>
-                <p>
-                {{ form.non_field_errors }}
-                {% for field in form %}
-                {{ field.errors }}
-                {% endfor %}
-                </p>
-                {% comment %}
-                <p class="floated_input"><label for="id_priority">Request Priority:</label>
-                    <select id="id_priority" name="priority">
-                        {% for value, label in form.priority.field.choices %}
-                        <option value="{{ value }}">{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </p>
-                <p class="floated_input_after"><label for="id_printer">Printer:</label>
-                    <select id="id_printer" name="printer">
-                        {% for value, label in form.printer.field.choices %}
-                        <option value="{{ value }}">{{ label }}</option>
-                        {% endfor %}
-                    </select>
-                </p>
-                {% endcomment %}
-
-                <p class="floated_input">
-                    <label for="id_priority">{{ form.priority.label }}</label>
-                    {{ form.priority }}
-                </p>
-                <p class="floated_input_after">
-                    <label for="id_printer">{{ form.printer.label }}</label>
-                    {{ form.printer }}
-                </p>
-                <p class="floated_input_after">
-                    <label for="id_part">{{ form.part.label }}</label>
-                    <select id="id_part" name="part">
-                    {% if form.part.value %}
-                        <option value="{{ form.part.value }}" selected="selected">{{ form.part.label }}</option>
-                    {% else %}
-                        <option value="" selected="selected">---------</option>
-                    {% endif %}
-                    </select>
-                </p>
-            </fieldset>
-            <p>
-                <input type="submit" value="Submit" />
-            </p>
-            {% csrf_token %}
-        </form>
+        {% crispy form %}
     </div>
-{% endblock %}
-
-{% block extra_script %}
-{{ block.super }}
-    <script type="text/javascript">
-        $("#id_printer").change(function () {
-            ajaxPost("{% url 'printerrequests:ajax_update_printer_part' %}", {'printer_id': $(this).val()});
-        });
-
-        {% if form.part.value %}
-        $(document).ready(function () {
-            ajaxPost("{% url 'printerrequests:ajax_update_printer_part' %}", {'printer_id': '{{ form.printer.value }}', 'part_id_selection': '{{ form.part.value }}'});
-        });
-        {% endif %}
-    </script>
 {% endblock %}
