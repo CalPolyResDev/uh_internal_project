@@ -15,4 +15,4 @@ from ...models import ClearPassLoginAttempt
 class Command(BaseCommand):
 
     def handle(self, *args, **options):
-        ClearPassLoginAttempt.objects.filter(time__lt=datetime.datetime.now() - datetime.timedelta(days=14)).delete()
+        ClearPassLoginAttempt.objects.filter(time__lt=datetime.datetime.now() - datetime.timedelta(days=7)).delete()
