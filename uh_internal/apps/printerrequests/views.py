@@ -16,7 +16,6 @@ from django.views.generic.list import ListView
 from srsconnector.models import PrinterRequest
 
 from ...settings.base import DAILY_DUTIES_ACCESS
-from ..core.models import CSDMapping
 from .forms import TonerCountForm, PartCountForm, TonerRequestForm, PartsRequestForm
 from .models import Request, Toner, Part
 
@@ -32,11 +31,11 @@ SERVICE_REQUEST_TYPE_MAP = {
 class PrinterRequestMixin(object):
     success_url = reverse_lazy('printerrequests:home')
 
-    def create_requests(self, priority, request_type, for_front_desk, printer, request_list, user):
+    def create_requests(self, priority, request_type, for_front_desk, printer, request_list, user, address):
         # Create the service request
         service_request = PrinterRequest()
         service_request.priority = priority
-        service_request.requestor_username = user.username
+        service_request.requestor_username = user.get_alias()
         service_request.printer_model = printer.model
         service_request.printer_manufacturer = printer.make
         service_request.request_type = SERVICE_REQUEST_TYPE_MAP[request_type]
@@ -50,13 +49,6 @@ class PrinterRequestMixin(object):
         printer_request.date_requested = datetime.now()
         printer_request.priority = priority
         printer_request.requestor = user.username
-
-        # Determine where to send it
-        try:
-            address = CSDMapping.objects.get(email=user.username).domain + " " + ("Front Desk" if for_front_desk else "CSD Office")
-        except CSDMapping.DoesNotExist:
-            updated_toner_service_request = PrinterRequest.objects.get(ticket_id=service_request.ticket_id)
-            address = "Building " + updated_toner_service_request.requestor_building + " Room " + updated_toner_service_request.requestor_room
 
         printer_request.address = address
         printer_request.status = Request.STATUSES.index("Open")
@@ -74,14 +66,13 @@ class RequestTonerView(PrinterRequestMixin, FormView):
 
     def form_valid(self, form):
         priority = form.cleaned_data['priority']
-        printer = form.cleaned_data['printer']  # Returns a printer object, since ModelChoiceField was used
-        toner_id = form.cleaned_data['toner']
-        for_front_desk = form.cleaned_data['for_front_desk']
+        printer = form.cleaned_data['printer']
+        toner = form.cleaned_data['toner']
+        address = form.cleaned_data['address']
 
-        toner = Toner.objects.get(id=toner_id)
         request_list = [toner]
 
-        self.create_requests(priority=priority, request_type='toner', for_front_desk=for_front_desk, printer=printer, request_list=request_list, user=self.request.user)
+        self.create_requests(priority=priority, request_type='toner', for_front_desk=False, printer=printer, request_list=request_list, user=self.request.user, address=address)
 
         return super().form_valid(form)
 
@@ -94,13 +85,13 @@ class RequestPartsView(PrinterRequestMixin, FormView):
 
     def form_valid(self, form):
         priority = form.cleaned_data['priority']
-        printer = form.cleaned_data['printer']  # Returns a printer object, since ModelChoiceField was used
-        part_id = form.cleaned_data['part']
+        printer = form.cleaned_data['printer']
+        part = form.cleaned_data['part']
+        address = form.cleaned_data['address']
 
-        part = Part.objects.get(id=part_id)
         request_list = [part]
 
-        self.create_requests(priority=priority, request_type='parts', for_front_desk=False, printer=printer, request_list=request_list, user=self.request.user)
+        self.create_requests(priority=priority, request_type='parts', for_front_desk=False, printer=printer, request_list=request_list, user=self.request.user, address=address)
 
         return super().form_valid(form)
 

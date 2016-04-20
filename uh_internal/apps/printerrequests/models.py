@@ -36,7 +36,7 @@ class Toner(Model):
     ordered = PositiveIntegerField(default=0)
 
     def __str__(self):
-        return str(self.printer) + " " + str(self.color)
+        return str(self.color)
 
     class Meta:
         unique_together = ['color', 'printer']
@@ -52,7 +52,7 @@ class Part(Model):
     ordered = PositiveIntegerField(default=0)
 
     def __str__(self):
-        return str(self.printer) + " " + str(self.type)
+        return str(self.type)
 
     class Meta:
         unique_together = ['type', 'printer']
