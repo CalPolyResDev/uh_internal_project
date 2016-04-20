@@ -515,12 +515,13 @@ class EmailManager(EmailConnectionMixin):
             'mailbox': mailbox_name,
             'uid': uid,
             'in_reply_to': envelope.in_reply_to,
-            'references': message.get('References')
+            'references': message.get('References'),
+            'sender': message.get('X-RNIN-Sender'),
         }
 
         return message
 
-    def send_message(self, message_dict):
+    def send_message(self, message_dict, user=None):
         with mail.get_connection() as connection:
             email_message = EmailMessage()
             email_message.connection = connection
@@ -532,6 +533,9 @@ class EmailManager(EmailConnectionMixin):
             email_message.subject = message_dict['subject']
             email_message.body = message_dict['body']
             email_message.extra_headers['message-id'] = '<' + datetime.strftime(datetime.utcnow(), '%d-%m-%Y-%H-%m-%S-%f') + '.' + str(os.getpid()) + '@' + socket.gethostname() + '>'
+
+            if user:
+                email_message.extra_headers['X-RNIN-Sender'] = '{name} <{email}>'.format(name=user.get_full_name(), email=user.username)
 
             for attachment in message_dict['attachments']:
                 email_message.attach(attachment.name, attachment.read(), attachment.content_type)

@@ -81,6 +81,7 @@
                 </div>
             </div>
         </div>
+        <div style="display: none;" id="timer"></div>
     </div>
 {% endblock %}
 
@@ -91,5 +92,5 @@
         var spinner_url = "{% static 'images/spinner.gif' %}";
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
-    <script src="{% static 'js/email.js' %}?version=1.1"></script>
+    <script src="{% static 'js/email.js' %}?version=1.2"></script>
 {% endblock %}
