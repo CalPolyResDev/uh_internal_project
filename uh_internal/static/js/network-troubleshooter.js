@@ -61,27 +61,31 @@ $(document).ready(function() {
 
 function initializeReport(mac_address) {
     displayAirwavesChart('#bandwidth_usage_chart', DjangoReverse['network:airwaves_client_bandwidth']({'mac_address': currentDevice.mac_address }));
-        
-    $('[popover-data-url]').hover(
-        function() {
-            var element = $(this);
-            element.off('hover');
-
-            $.get(element.attr('popover-data-url'), function(content) {
-                if (element.filter(":hover").length) {
-                    element.popover({content: content,
-                                placement: 'left',
-                                html: true,
-                                container: 'body'
-                    }).popover('show');
-                }
-            });
-        },
-        function() {
-            var element = $(this);
-            element.popover('hide');
+    initializePopovers();
+    
+    var addRefreshTimer = function() {
+        if ($('#login-attempt-timer').text()) {
+            $('#login-attempt-timer').timer('remove');
         }
-    );
+        $('#login-attempt-timer').timer({
+            duration: '10s',
+            callback: refreshLoginAttempts,
+            repeat: true,
+        });
+    };
+    
+    addRefreshTimer();
+    
+    $('#auto-refresh-checkbox').change(function() {
+        if (this.checked) {
+            addRefreshTimer();
+        }
+        else {
+            if ($('#login-attempt-timer').text()) {
+                $('#login-attempt-timer').timer('remove');
+            }
+        }
+    });
 }
 
 function changeEndpointInfo(actionURLName, urlArguments, callback) {
@@ -110,4 +114,43 @@ function changeEndpointInfo(actionURLName, urlArguments, callback) {
 
 function removeAttributeCallback(urlArguments) {
     $('[name="' + urlArguments.attribute + '"]').remove();
+}
+
+function refreshLoginAttempts() {
+    var url = DjangoReverse['network:retrieve_login_attempts']({mac_address: currentDevice.mac_address});
+    $('#auto-refresh-spinner').css('display', 'inline-block');
+    
+    $('[popover-data-url]').popover('hide');
+    
+    $.get(url, function(response) {
+        if (response.result === "ok") {
+            var tableBody = $('#login-attempt-table-body');
+            tableBody.html(response.login_attempts_table_body);
+            initializePopovers();
+            $('#auto-refresh-spinner').css('display', 'none');
+        }
+    });
+}
+
+function initializePopovers() {
+    $('[popover-data-url]').hover(
+        function() {
+            var element = $(this);
+            element.off('hover');
+
+            $.get(element.attr('popover-data-url'), function(content) {
+                if (element.filter(":hover").length) {
+                    element.popover({content: content,
+                                placement: 'left',
+                                html: true,
+                                container: 'body'
+                    }).popover('show');
+                }
+            });
+        },
+        function() {
+            var element = $(this);
+            element.popover('hide');
+        }
+    );
 }
