@@ -2,6 +2,7 @@ var editor = '';
 var attachments = [];
 var attachment_details = [];
 var resnet_email_regex = /[,a-zA-Z0-9 <]*resnet@calpoly\.edu[>]*/i;
+var in_editor = false;
 
 $.ajaxSetup({ cache: true });
 
@@ -19,11 +20,55 @@ String.prototype.rsplit = function(sep, maxsplit) { // Missing Python
     return maxsplit ? [ split.slice(0, -maxsplit).join(sep) ].concat(split.slice(-maxsplit)) : split;
 };
 
+function sendAmViewing(replying) {
+    if ($('#sendAmViewingTimer').text()) {
+        $('#sendAmViewingTimer').timer('remove');
+    }
+    $('#sendAmViewingTimer').timer({
+        duration: '20s',
+        callback: function() {
+            sendAmViewing(replying);
+        },
+        repeat: false, 
+    });
+
+    var url = DjangoReverse['dailyduties:email_am_viewing']({
+        message_path: message_path,
+        replying: replying === true ? '1' : '0',
+    });
+    
+    $.ajax(url);
+}
+
+function retrieveViewers() {
+    if ($('#retrieveViewersTimer').text()) {
+        $('#retrieveViewersTimer').timer('remove');
+    }
+    $('#retrieveViewersTimer').timer({
+        duration: '5s',
+        callback: function() {
+            retrieveViewers();
+        },
+        repeat: false,
+    });
+
+    var url = DjangoReverse['dailyduties:email_who_is_viewing_message']({message_path: message_path});
+    $.get(url, function(response) {
+        $('#viewers_list').remove();
+        if (response.users && response.users.length) {
+             $('#message_headers').append('<span id="viewers_list">' + (in_editor ? '' : '<br />') + '<strong class="text-warning">Other Viewers:</strong> ' + response.users.join(', ') + '</span>');
+        }
+    });
+}
+
 function add_button(button_text, onclick_text, id) {
     $('#email_buttons').append('<button id="' + id + '" class="btn btn-default" type="button" onclick="' + onclick_text +'">' + button_text + '</button>');
 }
 
 function change_to_editor() {
+    in_editor = true;
+    retrieveViewers();
+    
     if (message_is_html) {
         editor = CKEDITOR.replace('email_body', {
             fullPage: true,
@@ -47,6 +92,7 @@ function change_to_editor() {
     $('#date').remove();
     $('#attachments').remove();
     $('#from_header').remove();
+    $('#uhin-sender').remove();
     $('#email_buttons').html('');
     add_button('Send', 'send_email(false);', 'send_button');
     
@@ -110,6 +156,8 @@ function change_to_editor() {
         container: 'body',
         content: attach_button_content
     });
+    
+    sendAmViewing(true);
 }
 
 function submit_cc_csd_form() {
@@ -146,6 +194,11 @@ function submit_cc_csd_form() {
 }
 
 function reply() {
+    if ($('#viewers_list').length && $('#viewers_list').text().indexOf('Replying') !== -1) {
+        alert("Can't reply: another user is already replying to this message.");
+        return false;
+    }
+
     change_to_editor();
     var subject = message_subject;
     if (subject.search(/^RE:/i) == -1) {
@@ -159,12 +212,14 @@ function reply() {
         $('#to').val(message_reply_to + ', ' + message_to);
         $('#to').val($('#to').val().replace(resnet_email_regex, ''));
     }
+    return true;
 }
 
 function reply_all() {
-    reply();
-    $('#cc').val(message_to);
-    $('#cc').val($('#cc').val().replace(resnet_email_regex, ''));
+    if (reply()) {
+        $('#cc').val(message_to);
+        $('#cc').val($('#cc').val().replace(resnet_email_regex, ''));
+    }
 }
 
 function forward() {
@@ -263,7 +318,7 @@ function send_email(archive_folder) {
             $.unblockUI();
             
             if (response_context['success']) {
-                if (message_path) {
+                if (message_path && parent.refresh_messages) {
                     parent.refresh_messages(message_path.rsplit('/', 1)[0]);
                 }
                 if (!archive_folder) {

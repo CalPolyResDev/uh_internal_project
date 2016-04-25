@@ -25,6 +25,8 @@ django-dbbackup~=2.3.2
 django-js-reverse~=0.6.0
 xmltodict~=0.10.1
 sqlparse~=0.1.19
+html5lib~=0.9999999
+beautifulsoup4~=4.4.1
 
 git+https://github.com/CalPolyResDev/django-ewiz.git
 git+ssh://git@code.its.calpoly.edu:7999/rmsc/rmsconnector.git

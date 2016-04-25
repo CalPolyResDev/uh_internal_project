@@ -35,6 +35,8 @@
 {% block main %}
     {% if message %}
     <div class="col-xs-12">
+        <div style="display: none;" id="sendAmViewingTimer"></div>
+        <div style="display: none;" id="retrieveViewersTimer"></div>
         <div class="btn-group" role="group" id="email_buttons">
             <button class="btn btn-default" type="button" id="create_ticket_button" title="Requestor Username:"
                 data-container="body" data-toggle="popover" data-placement="bottom"
@@ -66,12 +68,15 @@
     <div class="col-xs-12">
         <h1 id="subject">{{ message.subject }}</h1>
         <h3 id="from_header">{{ message.from }}</h3>
-        <p>
+        <span id="message_headers">
             <hr id="to_hr" style="display: none;">
             <strong>To:</strong>&nbsp;<span id="to">{{ message.to }}<br/></span>
             <strong>CC:</strong>&nbsp;<span id="cc">{{ message.cc }}</span>
             <span id="date"><br /><strong>Date:</strong>&nbsp;{{ message.date }}</span>
             <span id="reply_to"><br /><strong>Reply To:</strong>&nbsp;{{ message.reply_to }}</span>
+            {% if message.sender %}
+                <span id="uhin-sender"><br /><strong>Sent By:</strong>&nbsp;{{ message.sender }}</span>
+            {% endif %}
             <span id="attachments">
                 {% if message.attachments %}<br /><strong>Attachments:</strong>
                     {% for attachment in message.attachments %}
@@ -81,9 +86,9 @@
                         </a>
                     {% endfor %}
                 {% endif %}
-                <hr>
             </span>
-        </p>
+        </span>
+        <hr>
         {% if message.is_html %}
             <script language="javascript" type="text/javascript">
                 function resize_iframe(iframe) {
@@ -142,5 +147,11 @@
         var message_path = '{{ message.path|escapejs }}';
         var attach_button_content = '<span>{% jfu_escaped_js 'dailyduties/email_attachment_uploader.djhtml' 'dailyduties:jfu_upload' %}</span>';
     </script>
-    <script src="{% static 'js/email_message.js' %}?version=1.1"></script>
+    <script src="{% static 'js/email_message.js' %}?version=1.3"></script>
+    <script language="javascript" type="text/javascript">
+        $(document).ready(function () {
+             sendAmViewing();
+             retrieveViewers();
+        });
+    </script>
 {% endblock %}

@@ -14,7 +14,8 @@ import time
 from clever_selects.views import ChainedSelectChoicesView
 from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
-from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist
+from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist, ValidationError
+from django.template import Template, Context
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
@@ -26,9 +27,10 @@ from rmsconnector.utils import Resident
 from ...settings.base import NETWORK_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
 from .clearpass.configuration import Endpoint
+from .clearpass.utils import get_device_login_attempts
 from .forms import PortCreateForm, PortUpdateForm, AccessPointCreateForm, AccessPointUpdateForm, NetworkInfrastructureDeviceCreateForm, NetworkInfrastructureDeviceUpdateForm
 from .models import Port, AccessPoint, NetworkInfrastructureDevice
-from .utils import device_is_down
+from .utils import device_is_down, validate_mac
 
 
 logger = logging.getLogger(__name__)
@@ -419,3 +421,27 @@ class EndpointRemoveAttribute(EndpointBaseUpdateView):
 
     def perform_change(self, **kwargs):
         self.endpoint.remove_attribute(kwargs['attribute'])
+
+
+class RetrieveLoginAttempts(JSONResponseView):
+
+    def get_context_data(self, **kwargs):
+        context = {}
+
+        mac_address = kwargs['mac_address']
+
+        if not validate_mac(mac_address):
+            raise ValidationError('Bad MAC Address: ' + mac_address)
+
+        login_attempts = get_device_login_attempts(mac_address).order_by('-time')
+
+        template = """
+        {% load network_tags %}
+        {% for attempt in login_attempts %}
+            {% login_attempt_tr attempt %}
+        {% endfor %}
+        """
+
+        context['login_attempts_table_body'] = Template(template).render(Context({'login_attempts': login_attempts}))
+
+        return context

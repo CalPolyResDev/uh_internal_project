@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load network_tags %}
 
 <div class="row">
     <div class="col-xs-12 col-md-6">
@@ -44,8 +45,11 @@
         </table>
     </div>
     <div class="col-xs-12 col-lg-6">
-        <h4>Login Attempts</h4>
-        <table class="table table-hover table-striped">
+        <h4 style="display: inline-block;">Login Attempts</h4>
+        <div class="checkbox" style="display: inline-block; padding-left: 20px;">
+            <label><input type="checkbox" id="auto-refresh-checkbox" checked> Auto Refresh <img id="auto-refresh-spinner" src="{% static "images/spinner.gif" %}" style="display: none; width: 16px; height: 16px;"></label>
+        </div>
+        <table class="table table-hover table-striped" id="login-attempt-table">
             <thead>
                 <tr>
                     <th>Timestamp</th>
@@ -54,18 +58,9 @@
                     <th></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="login-attempt-table-body">
                 {% for attempt in device.login_attempts %}
-                    <tr>
-                        <td>{{ attempt.time|date:"m/d/y H:i:s" }}</td>
-                        <td>{{ attempt.username }}</td>
-                        <td>{{ attempt.get_result_display }}</td>
-                        <td>
-                            <a aria-hidden="true" title='Login Attempt' popover-data-url='{% url "network:login_attempt_info_frame" pk=attempt.id %}'>
-                                <img src="{% static 'images/icons/info.png' %}" style="width: 16px; height: 16px">
-                            </a>
-                        </td>
-                    </tr>
+                    {% login_attempt_tr attempt %}
                 {% empty %}
                     <tr><td colspan="4" class="text-center">No login attempts found.</td></tr>
                 {% endfor %}
@@ -129,6 +124,7 @@
             </tbody>
         </table>
     </div>
+    <div id="login-attempt-timer" style="display: none;"></div>
 </div>
 
 <script type="text/javascript">
