@@ -24,11 +24,16 @@ class GenerationForm(Form):
         # Set selected
         if user:
             try:
-                csd_mapping = CSDMapping.objects.get(email=user.email)
+                csd_mappings = CSDMapping.objects.filter(email=user.email)
             except CSDMapping.DoesNotExist:
                 pass
             else:
-                self.initial['buildings'] = csd_mapping.buildings.all()
+                buildings = []
+
+                for csd_mapping in csd_mappings:
+                    buildings.extend(csd_mapping.buildings.all())
+
+                self.initial['buildings'] = buildings
 
         self.helper = FormHelper()
         self.helper.form_method = 'post'

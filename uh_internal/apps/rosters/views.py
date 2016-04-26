@@ -49,8 +49,6 @@ class RosterGenerateView(FormView):
         buildings = form.cleaned_data['buildings']
         resident_list = []
 
-        print(buildings)
-
         for building in buildings:
             try:
                 resident_list.extend(reverse_address_lookup(community=building.community.name, building=building.name))
