@@ -20,5 +20,5 @@ urlpatterns = [
     url(r'^onity/$', login_required(orientation_access(OnityDoorAccessView.as_view())), name='onity'),
     url(r'^srs/$', login_required(orientation_access(SRSAccessView.as_view())), name='srs'),
     url(r'^complete_task/$', login_required(orientation_access(complete_task)), name='complete_task'),
-    url(r'^complete$', login_required(orientation_access(complete_orientation)), name='complete'),
+    url(r'^complete/$', login_required(orientation_access(complete_orientation)), name='complete'),
 ]
