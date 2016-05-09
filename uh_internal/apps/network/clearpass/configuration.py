@@ -37,7 +37,7 @@ class Endpoint(_APIConnector):
 
         self.mac_vendor = endpoint_info.get('@macVendor', None)
         self.mac_address = mac_address
-        self.status = endpoint_info['@status']
+        self.status = endpoint_info.get('@status')
 
         self.profile = None
 
@@ -47,13 +47,13 @@ class Endpoint(_APIConnector):
 
             self.profile['date_updated'] = self.date_from_string(endpoint_profile['@updatedAt'])
             self.profile['date_added'] = self.date_from_string(endpoint_profile['@addedAt'])
-            self.profile['fingerprint'] = endpoint_profile['@fingerprint']
+            self.profile['fingerprint'] = endpoint_profile.get('@fingerprint')
             self.profile['conflict'] = False if endpoint_profile['@conflict'] == 'false' else True
-            self.profile['device_name'] = endpoint_profile['@name']
-            self.profile['family'] = endpoint_profile['@family']
-            self.profile['category'] = endpoint_profile['@category']
-            self.profile['ip_address'] = endpoint_profile['@ipAddress']
-            self.profile['hostname'] = endpoint_profile['@hostname']
+            self.profile['device_name'] = endpoint_profile.get('@name')
+            self.profile['family'] = endpoint_profile.get('@family')
+            self.profile['category'] = endpoint_profile.get('@category')
+            self.profile['ip_address'] = endpoint_profile.get('@ipAddress')
+            self.profile['hostname'] = endpoint_profile.get('@hostname')
 
         self.attributes = None
 
