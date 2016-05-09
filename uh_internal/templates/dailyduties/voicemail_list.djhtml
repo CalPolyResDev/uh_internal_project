@@ -30,7 +30,7 @@
                             <td>{{ voicemail.sender }}</td>
                             <td>
                                 <audio controls autobuffer preload='none' onplay="$(document.getElementById('voicemail_{{ voicemail.message_uid }}')).removeClass('bg-info');">
-                                    <source src="{% url 'voicemail_attachment_request' voicemail.message_uid %}" type='audio/wav'/>
+                                    <source src="{% url 'dailyduties:voicemail_attachment_request' voicemail.message_uid %}" type='audio/wav'/>
                                     <p>Please use any browser other than IE.</p>
                                 </audio>
                             </td>
