@@ -5,6 +5,8 @@
 <script src='https://cdn.datatables.net/scroller/1.4.0/js/dataTables.scroller.min.js'></script>
 
 <script type="text/javascript">
+    var datatableEditMode = false;
+
     function objectEquals(x, y) {
         'use strict';
     
@@ -116,118 +118,123 @@
                 });
             
                 $.post("{{ datatable_form_url }}", {'item_id': row_id}, function( response ) {
-                    // Copy form to DOM
-                    for (var column in response.editable_row_columns) {
-                        var query = $('#' + row_id + ' > td > [column="' + column + '"]')
-                        query.append(response.editable_row_columns[column]);
-                    }
-                                 
-                    // Initialize any date inputs
-                    $("#" + row_id + " .dateinput").datepicker({
-                        dateFormat: 'yy-mm-dd',
-                    });
-    
-                    // Switch to write mode
-                    $("#" + row_id + " .value-display").hide();
-                    $("#" + row_id + " .editbox").show();
-    
-                    var editable_columns = $("#" + row_id + " .editbox:not([readonly])");
-    
-                    // Construct initial data array
-                    var initial_data = {};
-    
-                    editable_columns.each(function () {
-                        column_name = $(this).parent().attr("column");
-                        value = $(this).val();
-                        initial_data[column_name] = value;
-                    });
-    
-                    // Set focus to first editable input
-                    editable_columns.first().focus()
-                    
-                    // http://stackoverflow.com/a/16886052
-                    var delayed_function, blurred_from;
-    
-                    $(row_object).one('blur', ':input', function(event) {
-                        blurred_from = event.delegateTarget;
-                        delayed_function = setTimeout(function() {
-                            handle_edit();
-                        }, 0);
-                    });
-    
-                    $(row_object).one('focus', ':input', function(event) {
-                        if (blurred_from === event.delegateTarget) {
-                            clearTimeout(delayed_function);
+                    if (!datatableEditMode) {
+                        // Copy form to DOM
+                        for (var column in response.editable_row_columns) {
+                            var query = $('#' + row_id + ' > td > [column="' + column + '"]')
+                            query.append(response.editable_row_columns[column]);
                         }
-                    });
-                    
-                    // Keypress actions
-                    // http://stackoverflow.com/a/1160109
-                    $(row_object).on('keyup', function(e) {
-                        if (e.keyCode == 13 || e.keyCode == 27) {
-                            $(row_object).off('blur', ':input');
-                            $(row_object).off('focus', ':input');
-                            handle_edit();
-                        }
-                    });
-    
-                    // User focused out of the row
-                    function handle_edit() {
-                        var changed_data = {};
-
-                        $(row_object).off('keyup');
-    
-                        // Get data post edit
-                        editable_columns.each(function() {
+                                     
+                        // Initialize any date inputs
+                        $("#" + row_id + " .dateinput").datepicker({
+                            dateFormat: 'yy-mm-dd',
+                        });
+        
+                        // Switch to write mode
+                        $("#" + row_id + " .value-display").hide();
+                        $("#" + row_id + " .editbox").show();
+                        datatableEditMode = true;
+        
+                        var editable_columns = $("#" + row_id + " .editbox:not([readonly])");
+        
+                        // Construct initial data array
+                        var initial_data = {};
+        
+                        editable_columns.each(function () {
                             column_name = $(this).parent().attr("column");
                             value = $(this).val();
-                            changed_data[column_name] = value;
+                            initial_data[column_name] = value;
                         });
+        
+                        // Set focus to first editable input
+                        editable_columns.first().focus()
+                        
+                        // http://stackoverflow.com/a/16886052
+                        var delayed_function, blurred_from;
+        
+                        $(row_object).one('blur', ':input', function(event) {
+                            blurred_from = event.delegateTarget;
+                            delayed_function = setTimeout(function() {
+                                handle_edit();
+                            }, 0);
+                        });
+        
+                        $(row_object).one('focus', ':input', function(event) {
+                            if (blurred_from === event.delegateTarget) {
+                                clearTimeout(delayed_function);
+                            }
+                        });
+                        
+                        // Keypress actions
+                        // http://stackoverflow.com/a/1160109
+                        $(row_object).on('keyup', function(e) {
+                            if (e.keyCode == 13 || e.keyCode == 27) {
+                                $(row_object).off('blur', ':input');
+                                $(row_object).off('focus', ':input');
+                                handle_edit();
+                            }
+                        });
+        
+                        // User focused out of the row
+                        function handle_edit() {
+                            datatableEditMode = false;
+
+                            var changed_data = {};
     
-                        // Only send a change request if the data actually changed
-                        if (!objectEquals(initial_data, changed_data)) {
-                            // Attempt to send the data
-                            var row_data = changed_data;
-                            row_data["csrfmiddlewaretoken"] = getCookie('csrftoken');
-                            row_data["id"] = row_id;
-    
-                            ajaxPost("{{ datatable_update_url }}", row_data, function(response_context) {
-                                if (response_context["form_valid"]) {
-                                    // Replace the edited row with updated html
-                                    var rendered_row = response_context["rendered_row"];
-    
-                                    redraw_datatables_row(row_object, rendered_row);
-    
-                                    switch_to_read_mode();
-    
-                                    editable_columns.each(function() {
-                                        $(this).parent().removeClass("has-error");
-                                    });
-                                }
-                                else {
-                                    alert("The update was unsuccessful:\n" + response_context["form_errors"].join("\n") + response_context["field_errors"].join("\n"));
-    
-                                    editable_columns.each(function() {
-                                        column_name = $(this).parent().attr("column");
-                                        
-                                        if ($.inArray(column_name, response_context["fields_with_errors"]) != -1) {
-                                            $(this).parent().addClass("has-error");
-                                        }
-                                    });
-    
-                                    return false;
-                                }
+                            $(row_object).off('keyup');
+        
+                            // Get data post edit
+                            editable_columns.each(function() {
+                                column_name = $(this).parent().attr("column");
+                                value = $(this).val();
+                                changed_data[column_name] = value;
                             });
+        
+                            // Only send a change request if the data actually changed
+                            if (!objectEquals(initial_data, changed_data)) {
+                                // Attempt to send the data
+                                var row_data = changed_data;
+                                row_data["csrfmiddlewaretoken"] = getCookie('csrftoken');
+                                row_data["id"] = row_id;
+        
+                                ajaxPost("{{ datatable_update_url }}", row_data, function(response_context) {
+                                    if (response_context["form_valid"]) {
+                                        // Replace the edited row with updated html
+                                        var rendered_row = response_context["rendered_row"];
+        
+                                        redraw_datatables_row(row_object, rendered_row);
+        
+                                        switch_to_read_mode();
+        
+                                        editable_columns.each(function() {
+                                            $(this).parent().removeClass("has-error");
+                                        });
+                                    }
+                                    else {
+                                        alert("The update was unsuccessful:\n" + response_context["form_errors"].join("\n") + response_context["field_errors"].join("\n"));
+        
+                                        editable_columns.each(function() {
+                                            column_name = $(this).parent().attr("column");
+                                            
+                                            if ($.inArray(column_name, response_context["fields_with_errors"]) != -1) {
+                                                $(this).parent().addClass("has-error");
+                                            }
+                                        });
+        
+                                        return false;
+                                    }
+                                });
+                            }
+                            else {
+                                switch_to_read_mode();
+                            }
+                        };
+                        
+                        function switch_to_read_mode() {
+                            // Switch back to read mode
+                            $("#" + row_id + " .editbox").remove();
+                            $("#" + row_id + " .value-display").show();
                         }
-                        else {
-                            switch_to_read_mode();
-                        }
-                    };
-                    
-                    function switch_to_read_mode() {
-                        // Switch back to read mode
-                        $("#" + row_id + " .editbox").remove();
-                        $("#" + row_id + " .value-display").show();
                     }
                 });
             });
