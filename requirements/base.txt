@@ -8,7 +8,6 @@ djangoajax~=2.3.4
 django-datatables-view==1.13.0
 django-cas-ng==3.5.4
 django-crispy-forms~=1.6.0
-django-dbbackup~=2.5.0
 django-ewiz~=1.5.4
 django-js-reverse~=0.7.1
 django-static-precompiler~=1.3.1
@@ -33,5 +32,6 @@ git+ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git
 git+https://github.com/kavdev/djangotoolbox
 git+https://github.com/CalPolyResDev/django-clever-selects.git
 git+https://github.com/CalPolyResDev/django-jfu.git
+git+https://github.com/CalPolyResDev/django-dbbackup.git
 hg+https://bitbucket.org/calpolyresdev/imapclient  # Will hopefully be merged into master but needs some more work first
 
