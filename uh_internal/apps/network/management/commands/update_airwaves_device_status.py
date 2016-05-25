@@ -1,6 +1,6 @@
 """
-.. module:: resnet_internal.apps.portmap.management.commands.update_airwaves_ids
-   :synopsis: University Housing Internal Network Airwaves ID Update
+.. module:: uh_internal.apps.portmap.management.commands.update_airwaves_device_status
+   :synopsis: University Housing Internal Network Airwaves Device Status Update
 
 .. moduleauthor:: Thomas Willson <thomas.willson@icloud.com>
 
