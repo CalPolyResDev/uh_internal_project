@@ -219,7 +219,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
 
     extra_options = {
         "language": {
-            "search": "Filter records: (?email)",
+            "search": "Filter records: (?user@calpoly.edu, ?down)",
         },
     }
 
@@ -289,7 +289,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     def get_extra_params(self, params):
         # Check for email lookup flag
         for param in params:
-            if param[:1] == '?':
+            if param[:1] == '?' and '@' in param:
                 email = param[1:]
 
                 if email:
@@ -301,6 +301,18 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
                 break
 
         return params
+
+    def check_params_for_flags(self, params, qs):
+        flags = ['?down']
+
+        for param in params:
+            if param[:1] == '?':
+                flag = param[1:]
+
+                if flag == 'down':
+                    qs = qs.filter(airwaves_is_up=False)
+
+        return qs, flags
 
 
 class RetrieveAccessPointForm(RNINDatatablesFormView):
