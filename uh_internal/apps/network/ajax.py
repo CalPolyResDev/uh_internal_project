@@ -249,7 +249,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
         return super().get_options()
 
     def get_row_class(self, row):
-        if device_is_down(row.upstream_device.upstream_device):
+        if device_is_down(row.upstream_device.upstream_device) or row.airwaves_is_up is False:
             return 'danger'
         else:
             return super().get_row_class(row)
