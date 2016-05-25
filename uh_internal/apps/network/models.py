@@ -12,7 +12,7 @@
 
 from django.contrib.postgres.fields.array import ArrayField
 from django.db.models.base import Model
-from django.db.models.fields import CharField, GenericIPAddressField, BooleanField, PositiveSmallIntegerField, IntegerField, DateTimeField, TextField
+from django.db.models.fields import CharField, GenericIPAddressField, NullBooleanField, BooleanField, PositiveSmallIntegerField, IntegerField, DateTimeField, TextField
 from django.db.models.fields.related import ForeignKey
 from django.utils.functional import cached_property
 
@@ -30,6 +30,7 @@ class NetworkDevice(Model):
     upstream_device = ForeignKey('NetworkDevice', related_name='downstream_devices', null=True, blank=True)
     room = ForeignKey(Room, verbose_name='Room', null=True, blank=True)
     airwaves_id = IntegerField(null=True, blank=True)
+    airwaves_is_up = NullBooleanField(null=True, blank=True)
 
     def __str__(self):
         return self.display_name
