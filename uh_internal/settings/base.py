@@ -118,7 +118,7 @@ DATABASE_ROUTERS = (
 
 DBBACKUP_DATABASES = ['default']
 
-DATABASES['default']['DBBACKUP_COMMAND_EXTRA_ARGS'] = ['--exclude-table-data=network_clearpassloginattempt']
+DATABASES['default']['DBBACKUP_BACKUP_COMMAND_EXTRA_ARGS'] = ['--exclude-table-data=network_clearpassloginattempt']
 
 # ======================================================================================================== #
 #                                            E-Mail Configuration                                          #
