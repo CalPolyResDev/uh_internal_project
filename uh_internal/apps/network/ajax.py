@@ -270,7 +270,17 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
                 device_status_url = reverse('network:airwaves_device_status', kwargs={'id': row.airwaves_id})
                 onclick = """openModalFrame("AP Status: {name}", "{url}");""".format(name=row.display_name, url=device_status_url)
                 link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name="", link_display=icon_block)
-                return self.display_block_template.format(value='', link_block=link_block, inline_images='')
+
+                if row.airwaves_is_up is True:
+                    glyphicon = '<span class="network-up glyphicon glyphicon-arrow-up"></span>'
+                elif row.airwaves_is_up is False:
+                    glyphicon = '<span class="network-down glyphicon glyphicon-arrow-down"></span>'
+                else:
+                    glyphicon = ''
+
+                return self.display_block_template.format(value=glyphicon,
+                                                          link_block=link_block,
+                                                          inline_images='')
             else:
                 return ''
         else:
