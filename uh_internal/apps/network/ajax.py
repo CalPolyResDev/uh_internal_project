@@ -219,7 +219,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
 
     extra_options = {
         "language": {
-            "search": "Filter records: (?email)",
+            "search": "Filter records: (?user@calpoly.edu, ?down)",
         },
     }
 
@@ -249,7 +249,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
         return super().get_options()
 
     def get_row_class(self, row):
-        if device_is_down(row.upstream_device.upstream_device):
+        if device_is_down(row.upstream_device.upstream_device) or row.airwaves_is_up is False:
             return 'danger'
         else:
             return super().get_row_class(row)
@@ -270,7 +270,17 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
                 device_status_url = reverse('network:airwaves_device_status', kwargs={'id': row.airwaves_id})
                 onclick = """openModalFrame("AP Status: {name}", "{url}");""".format(name=row.display_name, url=device_status_url)
                 link_block = self.onclick_link_block_template.format(onclick_action=onclick, link_class_name="", link_display=icon_block)
-                return self.display_block_template.format(value='', link_block=link_block, inline_images='')
+
+                if row.airwaves_is_up is True:
+                    glyphicon = '<span class="network-up glyphicon glyphicon-arrow-up"></span>'
+                elif row.airwaves_is_up is False:
+                    glyphicon = '<span class="network-down glyphicon glyphicon-arrow-down"></span>'
+                else:
+                    glyphicon = ''
+
+                return self.display_block_template.format(value=glyphicon,
+                                                          link_block=link_block,
+                                                          inline_images='')
             else:
                 return ''
         else:
@@ -279,7 +289,7 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     def get_extra_params(self, params):
         # Check for email lookup flag
         for param in params:
-            if param[:1] == '?':
+            if param[:1] == '?' and '@' in param:
                 email = param[1:]
 
                 if email:
@@ -291,6 +301,18 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
                 break
 
         return params
+
+    def check_params_for_flags(self, params, qs):
+        flags = ['?down']
+
+        for param in params:
+            if param[:1] == '?':
+                flag = param[1:]
+
+                if flag == 'down':
+                    qs = qs.filter(airwaves_is_up=False)
+
+        return qs, flags
 
 
 class RetrieveAccessPointForm(RNINDatatablesFormView):
