@@ -30,7 +30,7 @@ class NetworkDevice(Model):
     upstream_device = ForeignKey('NetworkDevice', related_name='downstream_devices', null=True, blank=True)
     room = ForeignKey(Room, verbose_name='Room', null=True, blank=True)
     airwaves_id = IntegerField(null=True, blank=True)
-    airwaves_is_up = NullBooleanField(null=True, blank=True)
+    airwaves_is_up = NullBooleanField()
 
     def __str__(self):
         return self.display_name
