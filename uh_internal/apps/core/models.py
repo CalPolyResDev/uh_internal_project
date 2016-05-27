@@ -291,7 +291,7 @@ class NavbarLink(Model):
             try:
                 url = reverse(self.url_name)
             except NoReverseMatch:
-                logger.warning('Could not resolve ``' + self.url_name + '`` for navbar link ' + self.display_name)
+                logger.warning('Could not resolve ``' + self.url_name + '`` for navbar link ' + self.display_name, exc_info=True)
                 pass
         else:
             url = self.external_url

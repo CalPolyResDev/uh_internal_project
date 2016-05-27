@@ -370,12 +370,17 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 
 /* bootstrap overrides */
 
-.btn-primary {
-    background-color: @polydarkgreen;
-    border-color: darken(@polydarkgreen, 10%);
+.btn-primary, .sentry-error-embed .form-submit .btn {
+    background-color: @polydarkgreen !important;
+    border-color: darken(@polydarkgreen, 10%) !important;
 }
 
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active {
+.sentry-error-embed .form-submit .btn {
+    padding: 5px 10px !important;
+}
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active,
+.sentry-error-embed .form-submit .btn:hover, .sentry-error-embed .form-submit .btn:focus, .sentry-error-embed .form-submit .btn:active {
     background-color: darken(@polydarkgreen, 5%) !important;
     border-color: darken(darken(@polydarkgreen, 5%), 10%) !important;
 }

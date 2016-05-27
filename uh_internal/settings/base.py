@@ -79,6 +79,7 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MiB
 
 MAIN_APP_NAME = 'uh_internal'
+RELEASE_VERSION = 'Email_and_Troubleshooter_Improvements'
 
 # ======================================================================================================== #
 #                                      URL Configuration                                                   #
@@ -419,11 +420,12 @@ INSTALLED_APPS = (
 
 RAVEN_CONFIG = {
     'dsn': get_env_variable('RESNET_INTERNAL_SENTRY_DSN'),
+    'release': RELEASE_VERSION,
 }
 
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
     'root': {
         'level': 'INFO',
         'handlers': ['sentry'],
@@ -447,7 +449,7 @@ LOGGING = {
     'loggers': {
         'django.db.backends': {
             'level': 'ERROR',
-            'handlers': ['sentry'],
+            'handlers': ['console'],
             'propagate': False,
         },
         'raven': {
@@ -460,40 +462,5 @@ LOGGING = {
             'handlers': ['console'],
             'propagate': False,
         },
-        'django_ajax': {
-            'level': 'WARNING',
-            'handlers': ['sentry'],
-            'propagate': True,
-        },
-        'django_datatables_view': {
-            'level': 'WARNING',
-            'handlers': ['sentry'],
-            'propagate': True,
-        },
-        'paramiko': {
-            'level': 'WARNING',
-            'handlers': ['sentry'],
-            'propagate': True,
-        },
-        MAIN_APP_NAME: {
-            'level': 'WARNING',
-            'handlers': ['sentry'],
-            'propagate': True,
-        },
-        'dbbackup.command': {
-            'level': 'WARNING',
-            'handlers': ['sentry'],
-            'propagate': True,
-        },
-        'dbbackup.dbbcommands': {
-            'level': 'WARNING',
-            'handlers': ['sentry'],
-            'propagate': True,
-        },
-        'requests.packages.urllib3.connectionpool': {
-            'level': 'WARNING',
-            'handlers': ['sentry'],
-            'propagate': True,
-        }
-    }
+    },
 }

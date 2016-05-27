@@ -28,7 +28,6 @@ class IndexView(TemplateView):
 
         context = super(TemplateView, self).get_context_data(**kwargs)
         context['announcements'] = SiteAnnouncements.objects.filter(Q(permission_classes__groups__users__id=self.request.user.id) | Q(permission_classes=None)).order_by('-created').distinct()[:3]
-
         return context
 
 
@@ -92,4 +91,4 @@ def handler500(request):
 
     template = loader.get_template('500.djhtml')
 
-    return HttpResponseServerError(template.render(request))
+    return HttpResponseServerError(template.render(request=request))

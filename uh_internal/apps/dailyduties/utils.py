@@ -9,16 +9,16 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from email import header
+import email
 from imaplib import IMAP4
 from itertools import zip_longest
-from operator import itemgetter
-from ssl import SSLError, SSLEOFError
-from threading import Lock
-import email
 import itertools
 import logging
+from operator import itemgetter
 import os
 import socket
+from ssl import SSLError, SSLEOFError
+from threading import Lock
 
 from django.conf import settings
 from django.core import mail
@@ -27,8 +27,8 @@ from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
 from html2text import html2text
-from srsconnector.models import ServiceRequest
 import imapclient
+from srsconnector.models import ServiceRequest
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties, EmailPermalink
@@ -714,7 +714,7 @@ class GetDutyData(EmailConnectionMixin):
             tickets["last_checked"] = datetime.strftime(data.last_checked, "%Y-%m-%d %H:%M")
             tickets["last_user"] = data.last_user.get_full_name()
         except DatabaseError as message:
-            logger.exception(message)
+            logger.exception(message, exc_info=True)
             tickets["count"] = 0
             tickets["status_color"] = RED
             tickets["last_checked"] = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")

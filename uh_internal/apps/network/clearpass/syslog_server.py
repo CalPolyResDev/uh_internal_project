@@ -7,12 +7,13 @@
 """
 
 import logging
-import queue as ThreadQueue
 import socket
 import socketserver
 
 from django.conf import settings
 from raven.contrib.django.raven_compat.models import client
+
+import queue as ThreadQueue
 
 from .parser import parse_login_attempts
 
@@ -50,7 +51,7 @@ class QueuingSyslogUDPHandler(socketserver.BaseRequestHandler):
                 data = bytes.decode(self.request[0].strip())
                 self.queue.put({'data': data})
             else:
-                logger.warning('Throwing away packet from ' + str(self.client_address[0]))
+                logger.warning('Throwing away packet from ' + str(self.client_address[0]), exc_info=True)
         except KeyboardInterrupt:
             print('Exiting...')
             self.queue.put({'shutdown': True})

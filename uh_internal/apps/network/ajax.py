@@ -15,8 +15,8 @@ from clever_selects.views import ChainedSelectChoicesView
 from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist, ValidationError
-from django.template import Template, Context
 from django.core.urlresolvers import reverse_lazy, reverse
+from django.template import Template, Context
 from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
 from django_ajax.decorators import ajax
@@ -405,7 +405,7 @@ class EndpointBaseUpdateView(JSONResponseView):
             self.perform_change(**kwargs)
             context['success'] = True
         except Exception as exc:
-            logger.exception('Could not perform endpoint change')
+            logger.exception('Could not perform endpoint change', exc_info=True, extra={'request': self.request})
             context['success'] = False
             context['error'] = str(exc)
 

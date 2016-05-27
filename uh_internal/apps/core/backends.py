@@ -50,7 +50,7 @@ class CASLDAPBackend(CASBackend):
 
                 user_info = account_reader.entries[0]
             except Exception as msg:
-                logger.exception(msg)
+                logger.exception(msg, exc_info=True, extra={'request': request})
             else:
                 principal_name = str(user_info["userPrincipalName"])
 
@@ -62,7 +62,7 @@ class CASLDAPBackend(CASBackend):
                         try:
                             group_members = LDAPADGroup(group).get_tree_members()
                         except InvalidGroupDN:
-                            logger.exception('Could not retrieve group members for DN: ' + group)
+                            logger.exception('Could not retrieve group members for DN: ' + group, exc_info=True, extra={'request': request})
                             return []
 
                         group_members = [member["userPrincipalName"] for member in group_members]
