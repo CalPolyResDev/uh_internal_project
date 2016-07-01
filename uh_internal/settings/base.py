@@ -3,6 +3,7 @@ from pathlib import Path
 
 import dj_database_url
 from django.core.exceptions import ImproperlyConfigured
+import raven
 
 
 def get_env_variable(name):
@@ -79,7 +80,6 @@ TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MiB
 
 MAIN_APP_NAME = 'uh_internal'
-RELEASE_VERSION = 'Email_and_Troubleshooter_Improvements'
 
 # ======================================================================================================== #
 #                                      URL Configuration                                                   #
@@ -420,7 +420,7 @@ INSTALLED_APPS = (
 
 RAVEN_CONFIG = {
     'dsn': get_env_variable('RESNET_INTERNAL_SENTRY_DSN'),
-    'release': RELEASE_VERSION,
+    'release': raven.fetch_git_sha(str(PROJECT_DIR.resolve())),
 }
 
 LOGGING = {
