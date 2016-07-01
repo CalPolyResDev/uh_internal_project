@@ -1,7 +1,7 @@
 from .base import *  # noqa @PydevCodeAnalysisIgnore
 
 
-DEBUG = False
+DEBUG = True
 
 SESSION_COOKIE_NAME = 'RNINDevSessionID'
 
