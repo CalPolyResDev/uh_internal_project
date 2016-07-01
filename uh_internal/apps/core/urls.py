@@ -26,6 +26,7 @@ app_name = 'core'
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='home'),
     url(r'^favicon\.ico$', RedirectView.as_view(url=static('images/icons/favicon.ico'), permanent=True), name='favicon'),
+    url(r'^robots\.txt$', RedirectView.as_view(url=static('robots.txt'), permanent=True), name='robots'),
     url(r'^login/$', auth_login, name='login'),
     url(r'^logout/$', auth_logout, name='logout', kwargs={'next_page': settings.CAS_LOGOUT_URL}),
 
