@@ -11,6 +11,7 @@
 """
 
 from django.contrib.postgres.fields.array import ArrayField
+from django.core.exceptions import ValidationError
 from django.db.models.base import Model
 from django.db.models.fields import CharField, GenericIPAddressField, NullBooleanField, BooleanField, PositiveSmallIntegerField, IntegerField, DateTimeField, TextField
 from django.db.models.fields.related import ForeignKey
@@ -71,6 +72,11 @@ class Port(NetworkDevice):
     def switch_name(self):
         return self.upstream_device.display_name
 
+    def clean(self):
+        if not self.upstream_device:
+            raise ValidationError('An upstream device is required for ports.')
+        super().clean()
+
     def save(self, *args, **kwargs):
         # Upper jack letters
         for field_name in ['jack']:
@@ -91,6 +97,11 @@ class AccessPoint(NetworkDevice):
     property_id = CharField(max_length=7, unique=True, verbose_name='Property ID')
     serial_number = CharField(max_length=9, unique=True, verbose_name='Serial Number')
     ap_type = PositiveSmallIntegerField(choices=AP_TYPE_CHOICES, verbose_name='Type')
+
+    def clean(self):
+        if not self.upstream_device:
+            raise ValidationError('An upstream device is required for access points.')
+        super().clean()
 
 
 class NetworkInfrastructureDevice(NetworkDevice):
