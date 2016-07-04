@@ -217,7 +217,7 @@ class VoicemailAttachmentRequestView(TemplateView):
             filedata = cached_file_data
 
         # Safari Media Player does not like its range requests ignored so handle this.
-        if self.request.META['HTTP_RANGE']:
+        if self.request.META.get('HTTP_RANGE', None):
             http_range_regex = re.compile('bytes=(\d*)-(\d*)$')
             regex_match = http_range_regex.match(self.request.META['HTTP_RANGE'])
             response_start = int(regex_match.groups()[0])
