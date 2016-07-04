@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.core.views
    :synopsis: University Housing Internal Core Views.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

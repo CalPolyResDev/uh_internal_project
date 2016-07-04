@@ -4,7 +4,7 @@
 
    Major credit to Kyle Fast for saving a couple months' worth of work entering database info.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 .. moduleauthor:: Thomas Willson <thomas.willson@me.com>
 
 

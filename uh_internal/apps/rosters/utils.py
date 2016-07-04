@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.rosters.utils
    :synopsis: University Housing Internal Roster Generator Utilities.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

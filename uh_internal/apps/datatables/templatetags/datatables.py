@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.datatables.templatetags
    :synopsis: University Housing Internal Datatables Template Tags and Filters.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 """
 
 import logging

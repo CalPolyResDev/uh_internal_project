@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.network.ajax
    :synopsis: University Housing Internal Network AJAX Methods.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
 
 """

@@ -2,7 +2,7 @@
 .. module:: resnet_internal.technicians.ajax
    :synopsis: University Housing Internal Technicians AJAX Methods.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

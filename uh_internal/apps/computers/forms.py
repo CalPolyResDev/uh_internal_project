@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.computers.forms
    :synopsis: University Housing Internal Computer Index Forms.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

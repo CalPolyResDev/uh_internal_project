@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.residents.views
    :synopsis: University Housing Internal Resident Lookup Views.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

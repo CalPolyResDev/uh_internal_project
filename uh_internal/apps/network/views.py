@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.network.views
    :synopsis: University Housing Internal Network Views.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
 
 
