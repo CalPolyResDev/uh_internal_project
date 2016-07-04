@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.rosters.views
    :synopsis: University Housing Internal Roster Generator Views.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

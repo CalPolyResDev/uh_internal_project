@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.core.templatetags
    :synopsis: University Housing Internal Core Template Tags and Filters.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 """
 
 from django import template

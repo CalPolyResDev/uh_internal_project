@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.computers.ajax
    :synopsis: University Housing Internal Computer Index AJAX Methods.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

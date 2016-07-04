@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.printerrequests.models
    :synopsis: University Housing Internal Printer Request Models.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

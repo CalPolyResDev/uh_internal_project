@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.datatables.ajax
    :synopsis: University Housing Internal Datatable Ajax Views.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

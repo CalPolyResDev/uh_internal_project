@@ -2,7 +2,7 @@
 .. module:: resnet_internal.urls
    :synopsis: University Housing Internal URLs.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
 .. moduleauthor:: Thomas Willson <thomas.willson@icloud.com>
 

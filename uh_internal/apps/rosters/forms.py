@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.rosters.forms
    :synopsis: University Housing Internal Roster Generator Forms.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

@@ -2,7 +2,7 @@
 .. module:: resnet_internal.technicians.validators
    :synopsis: University Housing Internal Technicians Form Field Validators.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

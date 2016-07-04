@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.core.context_processors
    :synopsis: University Housing Internal Core Context Processors.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 
