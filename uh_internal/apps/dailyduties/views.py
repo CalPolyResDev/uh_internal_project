@@ -80,9 +80,9 @@ class EmailMessageView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
             attachment_metadata = []
 
             for attachment in message['attachments']:
-                extension = path.splitext(attachment['filename'])[1][1:]
+                extension = path.splitext(attachment['filename'])[1][1:] if attachment['filename'] else None
                 metadata = {
-                    'filename': attachment['filename'],
+                    'filename': attachment['filename'] if attachment['filename'] else 'No Name',
                     'size': len(attachment['filedata']),
                     'icon': static('images/attachment_icons/' + extension + '-icon.png') if extension in attachment_icons else static('images/attachment_icons/default.png'),
                     'url': reverse('dailyduties:email_get_attachment', kwargs={'uid': message_uid,
@@ -217,7 +217,7 @@ class VoicemailAttachmentRequestView(TemplateView):
             filedata = cached_file_data
 
         # Safari Media Player does not like its range requests ignored so handle this.
-        if self.request.META['HTTP_RANGE']:
+        if self.request.META.get('HTTP_RANGE', None):
             http_range_regex = re.compile('bytes=(\d*)-(\d*)$')
             regex_match = http_range_regex.match(self.request.META['HTTP_RANGE'])
             response_start = int(regex_match.groups()[0])
