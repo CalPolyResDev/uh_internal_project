@@ -62,7 +62,7 @@ class PrinterForm(ChainedChoicesModelForm):
 
         # Make error messages a bit more readable
         for field_name in self.fields:
-            self.fields[field_name].error_messages = {'required': 'A ' + field_name + ' is required.'}
+            self.fields[field_name].error_messages['required'] = 'A ' + field_name + ' is required.'
 
     class Meta:
         model = Printer
