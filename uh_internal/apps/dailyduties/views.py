@@ -80,9 +80,9 @@ class EmailMessageView(TemplateView, ChainedSelectFormViewMixin, FormMixin):
             attachment_metadata = []
 
             for attachment in message['attachments']:
-                extension = path.splitext(attachment['filename'])[1][1:]
+                extension = path.splitext(attachment['filename'])[1][1:] if attachment['filename'] else None
                 metadata = {
-                    'filename': attachment['filename'],
+                    'filename': attachment['filename'] if attachment['filename'] else 'No Name',
                     'size': len(attachment['filedata']),
                     'icon': static('images/attachment_icons/' + extension + '-icon.png') if extension in attachment_icons else static('images/attachment_icons/default.png'),
                     'url': reverse('dailyduties:email_get_attachment', kwargs={'uid': message_uid,
