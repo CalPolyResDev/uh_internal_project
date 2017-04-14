@@ -23,10 +23,10 @@ function refreshDuties() {
     });
 }
 function updateEmail() {
-    updateDuty('email', DjangoReverse['dailyduties:email_list'](), '_self');
+    updateDuty('email', 'https://outlook.office.com/owa/resnet@calpoly.edu/?offline=disabled', '_blank');
 }
 function updateVoicemail() {
-    updateDuty('voicemail', DjangoReverse['dailyduties:voicemail_list'](), '_self');
+    updateDuty('voicemail', 'https://outlook.office.com/owa/resnet@calpoly.edu/?offline=disabled', '_blank');
 }
 function updatePrinterRequests() {
     updateDuty('printerrequests', DjangoReverse['printerrequests:home'](), '_self');
