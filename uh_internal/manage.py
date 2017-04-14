@@ -62,6 +62,8 @@ def activate_env():
 
 
 if __name__ == "__main__":
+    if "test" in sys.argv:
+        os.environ['DJANGO_SETTINGS_MODULE'] = "uh_internal.settings.test"
     color_init()
     activate_env()
 
