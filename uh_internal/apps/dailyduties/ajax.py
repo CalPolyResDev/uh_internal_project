@@ -26,7 +26,7 @@ from jfu.http import upload_receive, UploadResponse, JFUResponse
 from ..core.models import Building
 from ..core.templatetags.srs_urls import srs_edit_url
 from .models import DailyDuties, EmailViewingRecord
-from .utils import GetDutyData, EmailManager
+from .utils import GetDutyData
 
 
 logger = logging.getLogger(__name__)
@@ -225,8 +225,8 @@ def get_mailbox_summary(request, **kwargs):
                 {% endif %}
             </td>
         </tr>
-        {% endif %}
-    """
+        {% endif %}"""
+
 
     template = Template(raw_response)
     context = RequestContext(request, {'emails': messages,

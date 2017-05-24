@@ -10,7 +10,7 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from email import header
 import email
-from imaplib import IMAP4
+#from imaplib import IMAP4
 from itertools import zip_longest
 import itertools
 import logging
@@ -27,14 +27,10 @@ from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
 from html2text import html2text
-import imapclient
 from srsconnector.models import ServiceRequest
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties, EmailPermalink
-
-
-imapclient.imapclient.imaplib._MAXLINE = 1000000
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +38,6 @@ GREEN = "#060"
 RED = "#900"
 
 ACCEPTABLE_LAST_CHECKED = timedelta(days=1)
-
 
 def get_archive_folders():
     archive_folders = [
@@ -75,105 +70,7 @@ def get_plaintext_signature(technician_name):
     return '\n\n\nBest regards,\n' + technician_name + '\nResNet Technician\n\nFor office hours and locations, please visit http://resnet.calpoly.edu.'
 
 
-class EmailConnectionMixin(object):
-    connection_list = None
-    lock = Lock()
-
-    def __init__(self, *args, **kwargs):
-        super(EmailConnectionMixin, self).__init__(*args, **kwargs)
-        if self.server is None:
-            self._init_mail_connection()
-
-    def __enter__(self):
-        if self.server is None:
-            self._init_mail_connection()
-        return self
-
-    def __exit__(self, exc_type, exc_value, traceback):
-        EmailConnectionMixin._release_connection(self.server)
-
-    @staticmethod
-    def _new_connection():
-        host = settings.INCOMING_EMAIL['IMAP4']['HOST']
-        port = settings.INCOMING_EMAIL['IMAP4']['PORT']
-        username = settings.INCOMING_EMAIL['IMAP4']['USER']
-        password = settings.INCOMING_EMAIL['IMAP4']['PASSWORD']
-        ssl = settings.INCOMING_EMAIL['IMAP4']['USE_SSL']
-
-        connection = None
-        attempt_number = 0
-        while not connection and attempt_number < 10:
-            try:
-                connection = imapclient.IMAPClient(host, port=port, use_uid=True, ssl=ssl)
-                connection.login(username, password)
-            except (OSError, IMAP4.error) as exc:
-                logger.error("Can't connect to IMAP server: %s, trying again." % str(exc), exc_info=True)
-                connection = None
-            attempt_number += 1
-
-        return connection
-
-    @classmethod
-    def _get_connection(cls):
-        with cls.lock:
-            if not cls.connection_list:
-                cls.connection_list = [(cls._new_connection(), True)]
-                return cls.connection_list[0][0]
-
-            for index in range(0, len(cls.connection_list)):
-                if cls.connection_list[index][1] is False:
-                    cls.connection_list[index] = (cls.connection_list[index][0], True)
-                    return cls.connection_list[index][0]
-
-            return_connection = cls._new_connection()
-            cls.connection_list.append((return_connection, True))
-            return return_connection
-
-    @classmethod
-    def _release_connection(cls, connection):
-        with cls.lock:
-            for index in range(0, len(cls.connection_list)):
-                if cls.connection_list[index][0] is connection:
-                    cls.connection_list[index] = (connection, False)
-                    return
-            Exception('Could not find connection.')
-
-    @classmethod
-    def _reinitialize_connection(cls, connection):
-        with cls.lock:
-            for index in range(0, len(cls.connection_list)):
-                if cls.connection_list[index][0] is connection:
-                    cls.connection_list[index] = (cls._new_connection(), True)
-                    return cls.connection_list[index][0]
-            Exception('Could not find connection to reinitialize it.')
-
-    @classmethod
-    def _get_tested_connection(cls):
-        connection = cls._get_connection()
-
-        try:
-            connection.noop()
-        except:
-            connection = cls._reinitialize_connection(connection)
-
-        return connection
-
-    @classmethod
-    def send_noop_to_all_connections(cls):
-        with cls.lock:
-            if cls.connection_list:
-                for index in range(0, len(cls.connection_list)):
-                    if cls.connection_list[index][1] is False:
-                        try:
-                            cls.connection_list[index][0].noop()
-                        except:
-                            cls.connection_list[index] = (cls._new_connection(), False)
-
-    def _init_mail_connection(self):
-        self.server = EmailConnectionMixin._get_tested_connection()
-
-
-class EmailManager(EmailConnectionMixin):
+class EmailManager(object):
     server = None
 
     SEARCH_MAILBOXES = [
@@ -200,8 +97,6 @@ class EmailManager(EmailConnectionMixin):
     ]
 
     def decode_header(self, header_bytes):
-        """ From https://github.com/maxiimou/imapclient/blob/decode_imap_bytes/imapclient/response_types.py
-        Will hopefully be merged into IMAPClient in the future."""
 
         bytes_output, encoding = header.decode_header(smart_text((header_bytes)))[0]
         if encoding:
@@ -259,7 +154,6 @@ class EmailManager(EmailConnectionMixin):
         self.move_message('Voicemails', uid, 'Archives/Voicemails')
 
     def get_all_voicemail_messages(self):
-        """Get the voicemail messages."""
         voicemails = []
 
         self.server.select_folder('Voicemails', readonly=True)
@@ -591,7 +485,7 @@ class EmailManager(EmailConnectionMixin):
         return service_request.ticket_id
 
 
-class GetDutyData(EmailConnectionMixin):
+class GetDutyData(object):
     """ Utility for gathering daily duty data."""
 
     server = None
