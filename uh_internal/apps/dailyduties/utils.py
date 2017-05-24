@@ -10,7 +10,6 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
 from email import header
 import email
-#from imaplib import IMAP4
 from itertools import zip_longest
 import itertools
 import logging
@@ -97,6 +96,8 @@ class EmailManager(object):
     ]
 
     def decode_header(self, header_bytes):
+        """ From https://github.com/maxiimou/imapclient/blob/decode_imap_bytes/imapclient/response_types.py
+        Will hopefully be merged into IMAPClient in the future."""
 
         bytes_output, encoding = header.decode_header(smart_text((header_bytes)))[0]
         if encoding:
@@ -154,6 +155,8 @@ class EmailManager(object):
         self.move_message('Voicemails', uid, 'Archives/Voicemails')
 
     def get_all_voicemail_messages(self):
+        """Get the voicemail messages."""
+
         voicemails = []
 
         self.server.select_folder('Voicemails', readonly=True)

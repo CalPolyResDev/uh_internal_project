@@ -26,7 +26,7 @@ from jfu.http import upload_receive, UploadResponse, JFUResponse
 from ..core.models import Building
 from ..core.templatetags.srs_urls import srs_edit_url
 from .models import DailyDuties, EmailViewingRecord
-from .utils import GetDutyData
+from .utils import GetDutyData, EmailManager
 
 
 logger = logging.getLogger(__name__)
