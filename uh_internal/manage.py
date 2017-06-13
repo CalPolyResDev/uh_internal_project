@@ -44,14 +44,14 @@ def activate_env():
 
     filepath = Path(__file__).resolve()
     repo_name = filepath.parents[1].name
-    repo_parent = filepath.parents[0]
+    project_name = filepath.parents[0].name
 
     # Add the site-packages of the chosen virtualenv to work with
     site.addsitedir(str(virtualenv_home.joinpath(repo_name, "Lib", "site-packages")))
 
     # Add the app's directory to the PYTHONPATH
     sys.path.append(str(filepath.parents[1]))
-    sys.path.append(str(filepath.parents[1].joinpath(repo_parent.name)))
+    sys.path.append(str(filepath.parents[1].joinpath(project_name)))
 
     # Activate the virtual env
     # Check for Windows directory, otherwise use Linux directory
