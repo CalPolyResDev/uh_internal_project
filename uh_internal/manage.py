@@ -39,7 +39,8 @@ def get_env_variable(name, console=False):
 def activate_env():
     """ Activates the virtual environment for this project."""
 
-    virtualenv_home = Path(get_env_variable("WORKON_HOME", console=True))
+    virtualenv_home = Path(get_env_variable("WORKON_HOME"))
+    project_home = Path(get_env_variable("PROJECT_HOME"))
 
     filepath = Path(__file__).resolve()
     repo_name = filepath.parents[1].name
@@ -52,11 +53,50 @@ def activate_env():
     sys.path.append(str(filepath.parents[1]))
     sys.path.append(str(filepath.parents[1].joinpath(project_name)))
 
+    # Activate the virtual env
+    # Check for Windows directory, otherwise use Linux directory
+    activate_env = virtualenv_home.joinpath(repo_name, "bin", "activate_this.py")
+
     # Load .env file
     load_dotenv(find_dotenv())
 
-    # Activate the virtual env
-    activate_env = virtualenv_home.joinpath(repo_name, "bin", "activate_this.py")
+    # Grab .env lines
+    try:
+        if repo_parent == project_home:
+            env_path = str(Path(project_home, repo_name, '.env').resolve())
+        else:
+            env_path = str(Path(project_home, repo_parent.name, repo_name, '.env').resolve())
+        with open(env_path) as f:
+            content = f.read()
+    except IOError:
+        content = ''
+
+    # Add UWSGI environment variables if in production
+    if get_env_variable('DJANGO_SETTINGS_MODULE') == 'settings.production':
+        try:
+            if repo_parent == project_home:
+                env_path = str(Path(project_home, repo_name, 'conf/uwsgi.ini').resolve())
+            else:
+                env_path = str(Path(project_home, repo_parent.name, repo_name, 'conf/uwsgi.ini').resolve())
+            with open(env_path) as f:
+                uwsgi_content = f.read()
+                for line in uwsgi_content.splitlines():
+                    if line.startswith('env = '):
+                        content += '\n' + line.split('env = ', 1)[1]
+        except IOError:
+            pass
+
+    for line in content.splitlines():
+        m1 = re.match(r'\A([A-Za-z_0-9]+)=(.*)\Z', line)
+        if m1:
+            key, val = m1.group(1), m1.group(2)
+            m2 = re.match(r"\A'(.*)'\Z", val)
+            if m2:
+                val = m2.group(1)
+            m3 = re.match(r'\A"(.*)"\Z', val)
+            if m3:
+                val = re.sub(r'\\(.)', r'\1', m3.group(1))
+            os.environ.setdefault(key, val)
 
     exec(compile(open(str(activate_env)).read(), str(activate_env), 'exec'), dict(__file__=str(activate_env)))
 
