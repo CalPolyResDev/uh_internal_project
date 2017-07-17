@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.core.models
    :synopsis: University Housing Internal Core Models.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

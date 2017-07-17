@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.printers.ajax
    :synopsis: University Housing Internal Printer Index AJAX Methods.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

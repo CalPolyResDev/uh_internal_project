@@ -2,7 +2,7 @@
 .. module:: resnet_internal.technicians.views
    :synopsis: University Housing Internal Technicians Views.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

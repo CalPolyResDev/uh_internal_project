@@ -3,7 +3,7 @@
    :synopsis: University Housing Internal Computer Index Models.
 
 .. moduleauthor:: Thomas Willson <tewillso@calpoly.edu>
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

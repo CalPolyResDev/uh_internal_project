@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.dailyduties.utils
    :synopsis: University Housing Internal Daily Duty Utilities.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 from collections import defaultdict

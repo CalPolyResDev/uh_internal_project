@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.computers.views
    :synopsis: University Housing Internal Computer Index Views.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
 
 """

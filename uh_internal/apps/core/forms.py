@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.core.forms
    :synopsis: University Housing Internal Core Forms.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 

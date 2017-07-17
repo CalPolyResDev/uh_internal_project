@@ -2,7 +2,7 @@
 .. module:: resnet_internal.apps.residents.forms
    :synopsis: University Housing Internal Resident Lookup Forms.
 
-.. moduleauthor:: Alex Kavanaugh <kavanaugh.development@outlook.com>
+.. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
 
