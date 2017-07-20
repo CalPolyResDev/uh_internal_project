@@ -419,7 +419,7 @@ INSTALLED_APPS = (
 # ======================================================================================================== #
 
 RAVEN_CONFIG = {
-    'dsn': get_env_variable('RESNET_INTERNAL_SENTRY_DSN'),
+    'dsn': get_env_variable('RESNET_INTERNAL_SENTRY_DSN_STAGING'),
     'release': raven.fetch_git_sha(str(PROJECT_DIR.resolve())),
 }
 
