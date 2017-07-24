@@ -275,8 +275,8 @@ LDAP_GROUPS_USER_LOOKUP_ATTRIBUTE = 'userPrincipalName'
 LDAP_GROUPS_GROUP_LOOKUP_ATTRIBUTE = 'name'
 LDAP_GROUPS_ATTRIBUTE_LIST = ['displayName', LDAP_GROUPS_USER_LOOKUP_ATTRIBUTE, 'distinguishedName']
 
-LDAP_ADMIN_GROUP = 'CN=UH-RN-Staff,OU=ResNet,OU=UH,OU=Manual,OU=Groups,' + LDAP_GROUPS_BASE_DN
-LDAP_DEVELOPER_GROUP = 'CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,' + LDAP_GROUPS_BASE_DN
+LDAP_ADMIN_GROUP = 'CN=UH-RN-Staff,OU=Technology,OU=UH,OU=Manual,OU=Groups,' + LDAP_GROUPS_BASE_DN
+LDAP_DEVELOPER_GROUP = 'CN=UH-RN-DevTeam,OU=Technology,OU=UH,OU=Manual,OU=Groups,' + LDAP_GROUPS_BASE_DN
 
 # ======================================================================================================== #
 #                                            SSH Configuration                                             #

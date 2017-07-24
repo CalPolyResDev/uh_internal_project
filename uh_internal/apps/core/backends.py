@@ -83,11 +83,11 @@ class CASLDAPBackend(CASBackend):
                 if not user.ad_groups.exists():
                     raise PermissionDenied('User %s is not in any of the allowed groups.' % principal_name)
 
-                if not user.ad_groups.all().filter(distinguished_name='CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu').exists() and settings.RESTRICT_LOGIN_TO_DEVELOPERS:
+                if not user.ad_groups.all().filter(distinguished_name='CN=UH-RN-DevTeam,OU=Technology,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu').exists() and settings.RESTRICT_LOGIN_TO_DEVELOPERS:
                     raise PermissionDenied('Only developers can access the site on this server. Please use the primary site.')
 
                 # Django Flags
-                developer_list = get_group_members('CN=UH-RN-DevTeam,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
+                developer_list = get_group_members('CN=UH-RN-DevTeam,OU=Technology,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
                 user.is_developer = principal_name in developer_list
                 user.is_staff = principal_name in developer_list
                 user.is_superuser = principal_name in developer_list
