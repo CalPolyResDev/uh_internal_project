@@ -129,13 +129,3 @@ def update_slack_email(num):
                 headers = {'content-type': 'application/json'}
 
                 requests.post(url, data=json.dumps(payload), headers=headers)
-
-
-@timer(60, target='workers')
-def keep_imap_alive(num):
-    EmailConnectionMixin.send_noop_to_all_connections()
-
-
-@timer(3600)
-def prune_expired_email_viewer_records(num):
-    EmailViewingRecord.objects.filter(expiry_time__lt=datetime.now()).delete()
