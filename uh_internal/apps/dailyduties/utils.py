@@ -18,6 +18,7 @@ import os
 import socket
 from ssl import SSLError, SSLEOFError
 from threading import Lock
+import requests
 
 from django.conf import settings
 from django.core import mail
@@ -38,6 +39,7 @@ RED = "#900"
 
 ACCEPTABLE_LAST_CHECKED = timedelta(days=1)
 
+ms_api_url = "https://graph.microsoft.com/v1.0/users"
 
 class GetDutyData(object):
     """ Utility for gathering daily duty data."""
@@ -66,7 +68,7 @@ class GetDutyData(object):
 
         return printer_requests
 
-    def get_voicemail(self):
+    def get_voicemail(self, token):
         """Checks the current number of voicemail messages."""
 
         voicemail = {
@@ -76,32 +78,21 @@ class GetDutyData(object):
             "last_user": None
         }
 
-        try:
-            if not self.server:
-                self._init_mail_connection()
-        except (SSLError, SSLEOFError):
-            voicemail["count"] = 0
-            voicemail["status_color"] = RED
-            voicemail["last_checked"] = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
-            voicemail["last_user"] = "Connection Error!"
+        data = DailyDuties.objects.get(name='voicemail')
+
+        count = 5
+        # Select the Inbox, get the message count
+        voicemail["count"] = count
+        if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
+            voicemail["status_color"] = GREEN
         else:
-            data = DailyDuties.objects.get(name='voicemail')
-
-            count = self.server.select_folder('Voicemails', readonly=True)[b'EXISTS']
-            self.server.close_folder()
-
-            # Select the Inbox, get the message count
-            voicemail["count"] = count
-            if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
-                voicemail["status_color"] = GREEN
-            else:
-                voicemail["status_color"] = RED
-            voicemail["last_checked"] = datetime.strftime(data.last_checked, "%Y-%m-%d %H:%M")
-            voicemail["last_user"] = data.last_user.get_full_name()
+            voicemail["status_color"] = RED
+        voicemail["last_checked"] = datetime.strftime(data.last_checked, "%Y-%m-%d %H:%M")
+        voicemail["last_user"] = data.last_user.get_full_name()
 
         return voicemail
 
-    def get_email(self):
+    def get_email(self,token):
         """Checks the current number of unread email messages."""
 
         email = {
@@ -111,28 +102,21 @@ class GetDutyData(object):
             "last_user": None
         }
 
-        try:
-            if not self.server:
-                self._init_mail_connection()
-        except (SSLError, SSLEOFError):
-            email["count"] = 0
-            email["status_color"] = RED
-            email["last_checked"] = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
-            email["last_user"] = "Connection Error!"
+        data = DailyDuties.objects.get(name='email')
+
+        # Make API call to get this
+        # Select the Inbox, get the message count
+        #mail = get_mail_api(token)
+
+        count = 5
+
+        email["count"] = count
+        if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
+            email["status_color"] = GREEN
         else:
-            data = DailyDuties.objects.get(name='email')
-
-            # Select the Inbox, get the message count
-            count = self.server.select_folder('Inbox', readonly=True)[b'EXISTS']
-            self.server.close_folder()
-
-            email["count"] = count
-            if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
-                email["status_color"] = GREEN
-            else:
-                email["status_color"] = RED
-            email["last_checked"] = datetime.strftime(data.last_checked, "%Y-%m-%d %H:%M")
-            email["last_user"] = data.last_user.get_full_name() if data.last_user else '[Deleted User]'
+            email["status_color"] = RED
+        email["last_checked"] = datetime.strftime(data.last_checked, "%Y-%m-%d %H:%M")
+        email["last_user"] = data.last_user.get_full_name() if data.last_user else '[Deleted User]'
 
         return email
 
@@ -169,3 +153,15 @@ class GetDutyData(object):
             tickets["last_user"] = "Connection Error!"
 
         return tickets
+
+    def send_api_request(self, token):
+        api_data = {
+            'Authorization' : 'Bearer ' + token
+        }
+
+        r = requests.get(ms_api_url, data=api_data)
+        try:
+            print(r.text)
+            return r.json()
+        except:
+            'Error sending API request: {0} - {1}'.format(r.status_code, r.text)
