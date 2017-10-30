@@ -12,7 +12,7 @@ django-ewiz~=1.5.4
 django-js-reverse~=0.7.2
 django-static-precompiler~=1.4
 django-uwsgi-cache~=1.0.1
-dj_database_url~=0.4.1
+dj_database_url==0.4.2
 html2text==2016.4.2
 html5lib~=0.9999999
 ldap-groups==4.2.1
