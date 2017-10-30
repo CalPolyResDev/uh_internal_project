@@ -2,7 +2,7 @@
 git+https://github.com/CalPolyResDev/django.git@1.9.6-with-Cookie-Patch
 
 beautifulsoup4~=4.6.0
-colorama==0.3.7
+colorama==0.3.9
 cx_Oracle==5.2.1
 djangoajax~=2.3.6
 django-datatables-view==1.13.0
