@@ -7,7 +7,7 @@ cx_Oracle==6.0.2
 djangoajax==2.4
 django-datatables-view==1.14.0
 django-cas-ng==3.5.8
-django-crispy-forms~=1.6.0
+django-crispy-forms==1.7.0
 django-ewiz~=1.5.4
 django-js-reverse~=0.7.2
 django-static-precompiler~=1.4
