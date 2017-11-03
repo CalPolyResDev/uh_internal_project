@@ -62,7 +62,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
     column_definitions["blade_number"] = {"width": "50px", "type": "numeric", "title": "Blade"}
     column_definitions["port_number"] = {"width": "50px", "type": "numeric", "title": "Port"}
     column_definitions["downstream_devices"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP", "related": True, "lookup_field": "id"}
-    column_definitions["active"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+    column_definitions["active"] = {"width": "0px", "searchable": False, "orderable": True, "visible": False, "editable": False, "title": "&nbsp;"}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {

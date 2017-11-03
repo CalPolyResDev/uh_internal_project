@@ -80,7 +80,7 @@ class GetDutyData(object):
 
         data = DailyDuties.objects.get(name='voicemail')
 
-        count = 5
+        count = ""
         # Select the Inbox, get the message count
         voicemail["count"] = count
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
@@ -108,7 +108,7 @@ class GetDutyData(object):
         # Select the Inbox, get the message count
         #mail = get_mail_api(token)
 
-        count = 5
+        count = ""
 
         email["count"] = count
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
