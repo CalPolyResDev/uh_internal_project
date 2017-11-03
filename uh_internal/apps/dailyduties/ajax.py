@@ -54,7 +54,9 @@ def refresh_duties(request):
     def duty_dict_to_link_text(daily_duty_dict, name):
         return_string = name
         print(daily_duty_dict['count'])
-        if daily_duty_dict['count'] > 10:
+        if daily_duty_dict['count'] == "":
+            return_string += ' <strong>' + str(daily_duty_dict['count']) + '</strong>'
+        elif daily_duty_dict['count'] > 10:
             return_string += ' <strong class="text-danger">(' + str(daily_duty_dict['count']) + ')</strong>'
         elif daily_duty_dict['count'] > 0:
             return_string += ' <strong>(' + str(daily_duty_dict['count']) + ')</strong>'
