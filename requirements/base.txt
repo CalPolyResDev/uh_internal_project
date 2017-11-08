@@ -1,6 +1,5 @@
 # Django must be first to avoid dependencies installing their own version.
-git+https://github.com/CalPolyResDev/django.git@1.9.6-with-Cookie-Patch
-
+django~=1.9.6
 beautifulsoup4~=4.6.0
 colorama==0.3.9
 cx_Oracle==5.2.1
