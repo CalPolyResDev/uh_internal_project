@@ -32,6 +32,6 @@ git+ssh://git@code.its.calpoly.edu:7999/rmsc/rmsconnector.git@4.0.4
 git+ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git
 
 git+https://github.com/kavdev/djangotoolbox
-git+https://github.com/CalPolyResDev/django-clever-selects.git
+git+https://github.com/sudo-smith/django-clever-selects.git
 git+https://github.com/CalPolyResDev/django-jfu.git
 git+https://github.com/CalPolyResDev/django-dbbackup.git
