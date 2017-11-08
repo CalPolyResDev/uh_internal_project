@@ -26,7 +26,7 @@ sqlparse~=0.1.19
 termcolor==1.1.0
 uwsgidecorators~=1.1.0
 xmltodict~=0.10.1
-python-dotenv~=0.5.1
+python-dotenv==0.7.1
 
 git+ssh://git@code.its.calpoly.edu:7999/rmsc/rmsconnector.git@4.0.4
 git+ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git
