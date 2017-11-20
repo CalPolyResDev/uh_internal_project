@@ -4,7 +4,7 @@ beautifulsoup4~=4.6.0
 colorama==0.3.9
 cx_Oracle==5.2.1
 djangoajax~=2.3.6
-django-datatables-view==1.13.0
+django-datatables-view==1.14.0
 django-cas-ng==3.5.8
 django-crispy-forms~=1.6.0
 django-ewiz~=1.5.4
