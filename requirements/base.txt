@@ -21,7 +21,7 @@ paramiko==2.4.0
 psycopg2==2.7.3.2
 python-dateutil==2.6.1
 raven==6.3.0
-sqlparse==0.1.19
+sqlparse==0.2.4
 termcolor==1.1.0
 uwsgidecorators~=1.1.0
 xmltodict==0.11.0
