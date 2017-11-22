@@ -29,7 +29,7 @@ class CASLDAPBackend(CASBackend):
     def authenticate(self, ticket, service, request):
         """Verifies CAS ticket and gets or creates User object"""
 
-        user = super(CASLDAPBackend, self).authenticate(ticket, service, request)
+        user = super(CASLDAPBackend, self).authenticate(request, ticket, service)
 
         # Populate user attributes
         if user:
