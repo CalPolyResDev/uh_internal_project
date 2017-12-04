@@ -427,7 +427,7 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'root': {
-        'level': 'INFO',
+        'level': 'DEBUG',
         'handlers': ['sentry'],
     },
     'formatters': {
@@ -437,7 +437,7 @@ LOGGING = {
     },
     'handlers': {
         'sentry': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
         },
         'console': {
