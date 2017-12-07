@@ -50,7 +50,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
             "zeroRecords": "No records to display.",
             "loadingRecords": "Loading...",
         },
-        "dom": "<'row'<'col-sm-12'f>>" +
+        "dom": "<'row'<'col-sm-12 text-right'f<'filter-hover-help'>>>" +
                "<'row'<'col-sm-12'tr>>" +
                "<'row'<'col-sm-12'i>>",
         "processing": False,
