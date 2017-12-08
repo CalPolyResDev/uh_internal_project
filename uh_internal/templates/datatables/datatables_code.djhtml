@@ -73,7 +73,22 @@
                 $('[type="search"]').removeClass('loading-spinner');
             }
         });
-
+        
+        // Adding the filter help popover via JS...adding it in the middle of datatables constructor is even messier
+        $('div.filter-hover-help').html(`
+            <a href="#" data-toggle="popover">
+                <span class="glyphicon glyphicon-question-sign"></span>
+            </a>
+        `);
+        $('div.filter-hover-help [data-toggle="popover"]').popover({
+            html: true,
+            container: '.dataTables_wrapper',
+            placement: 'auto',
+            trigger : 'hover',
+            title: 'Filtering and Sorting',
+            content: $('div.filter-hover-help-content').html()  // this element is at the end of this file
+        }); 
+        
         // Add the popover to hoverable items
         {{ datatable_name }}.on('draw.dt', function() {
             $('[popover-data-url]').hover(
@@ -241,3 +256,20 @@
         {% endif %}
     });
 </script>
+
+
+<div class="filter-hover-help-content hidden">
+    <b>Searching</b>
+    <ul>
+        <li>If you need to look up a room by resident, simply add the resident's cal poly alias as a search parameter and prepend it with a question mark (e.g. ?) . Note that until the rms term is updated, this will yield no results.</li>
+        <li>Multiple search terms must be separated by a space.</li>
+        <li>The search feature uses an OR join across the table columns, so if you search for "2", any column that has a 2 in it will come up.</li>
+        <li>The search feature uses an AND join with multiple search terms, so if you search for "Apple Pie", both "Apple" and "Pie" must be present in a column for the record to show up.</li>
+    </ul>
+    
+    <b>Sorting</b>
+    <ul>
+        <li>Click on a column heading to sort the column - the black arrows to the right indicate the direction (ascending, descending, none).</li>
+        <li>Sort by multiple columns in multiple directions by holding down shift while you click.</li>
+    </ul>
+</div>
