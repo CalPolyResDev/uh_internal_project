@@ -507,26 +507,27 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 }
 
 
-.dataTables_filter {
-    display: inline-block;
-}
-
-.filter-hover-help {
-    display: inline-block;
-    font-size: large;
-
-    a {
-        padding: 10px 0 10px 10px;
-        span.glyphicon {
-            top: 5px;
-            font-size: large;
+// Datatables filter help
+.dataTables_wrapper {
+    .dataTables_filter {
+        display: inline-block;
+    }
+    .filter-hover-help {
+        display: inline-block;
+        font-size: large;
+        a {
+            padding: 10px 0 10px 10px;
+            span.glyphicon {
+                top: 5px;
+                font-size: large;
+            }
         }
+    }
+    // Increase bootstrap popover max width
+    .popover {
+        max-width: 800px;
+        width: 100%;
     }
 }
 
 
-// Increase bootstrap popover max width (for datatables filter hover help)
-.popover {
-	max-width: 800px;
-	width: 100%;
-}

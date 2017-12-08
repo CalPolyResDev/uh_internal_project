@@ -82,7 +82,7 @@
         `);
         $('div.filter-hover-help [data-toggle="popover"]').popover({
             html: true,
-            container: '#ports_wrapper',
+            container: '.dataTables_wrapper',
             placement: 'auto',
             trigger : 'hover',
             title: 'Filtering and Sorting',
@@ -101,8 +101,7 @@
                             element.popover({content: content,
                                         placement: 'left',
                                         html: true,
-                                        container: 'body',
-                                        trigger: 'hover'
+                                        container: 'body'
                             }).popover('show');
                         }
                     });
