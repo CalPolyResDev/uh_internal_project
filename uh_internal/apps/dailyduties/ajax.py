@@ -19,7 +19,8 @@ from django.template import Template, RequestContext
 from django.utils.encoding import smart_text
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
-from django_ajax.decorators import ajax
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from django_datatables_view.mixins import JSONResponseView
 from jfu.http import upload_receive, UploadResponse, JFUResponse
 
@@ -31,17 +32,17 @@ from .authhelper import get_token, get_admin_consent
 
 logger = logging.getLogger(__name__)
 
-@ajax
+
+@api_view(['GET'])
 def refresh_duties(request):
     duty_data = cache.get('duty_data')
     admin_consent = get_admin_consent()
-    #token = get_token()
+    # token = get_token()
     token = 1
-
 
     if not duty_data:
         duty_data_manager = GetDutyData()
-        #api_request = duty_data_manager.send_api_request(token)
+        # api_request = duty_data_manager.send_api_request(token)
 
         duty_data = {
             'printer_requests': duty_data_manager.get_printer_requests(),
@@ -83,11 +84,10 @@ def refresh_duties(request):
         'tickets_content': duty_dict_to_popover_html(duty_data['tickets']),
     }
 
-    return data
+    return Response(data)
 
 
-@ajax
-@require_POST
+@api_view(['POST'])
 def update_duty(request):
     """ Update a particular duty.
 
@@ -97,9 +97,11 @@ def update_duty(request):
     """
 
     # Pull post parameters
-    duty = request.POST["duty"]
+    duty = request.data["duty"]
 
     data = DailyDuties.objects.get(name=duty)
     data.last_checked = datetime.now()
     data.last_user = get_user_model().objects.get(username=request.user.username)
     data.save()
+
+    return Response()

@@ -58,11 +58,19 @@
 <script type="text/javascript">
     $(document).ready(function() {       
         {% if request.user.is_authenticated and ticket_access %}
-            ajaxGet("{% url 'core:get_tickets' %}");
+            fetch("{% url 'core:get_tickets' %}", {credentials: 'include'})
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    $("#tickets-response").html(data["inner-fragments"]["#tickets-response"]);
+                });
         {% endif %}
         
         {% if network_access %}
-            ajaxGet("{% url 'core:update_network_status' %}");
+            fetch("{% url 'core:update_network_status' %}", {credentials: 'include'})
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    $("#network-status-response").html(data["inner-fragments"]["#network-status-response"]);
+                });
             displayAirwavesChart('#network-bandwidth-usage', DjangoReverse['network:airwaves_overall_bandwidth']());
             displayAirwavesChart('#network-clients', DjangoReverse['network:airwaves_overall_clients']());
         {% endif %}

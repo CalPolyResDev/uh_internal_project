@@ -76,17 +76,31 @@
     function remove_tech(account_name) {
         var response = confirm('Warning: This action will remove "' + account_name + '" from SRS and Active Directory. Do you wish to proceed?');
         if (response) {
-            ajaxPost("{% url 'technicians:remove' %}", {'account_name': account_name, 'group_dn': '{{ group_dn }}'}, function(response_context) {
-                if (response_context["success"]) {
-                    alert("A request to remove " + account_name + " from the ResNet team has been created. Please use SR#" + response_context["sr_number"] + " as a reference.")
-                    $("#member_" + account_name).remove();
-                    return true;
-                }
-                else {
-                    alert(response_context["error_message"]);
-                    return false;
-                }
-            });
+            var request = {};
+            var request_header = {};
+            var request_body = {};
+            request_header["X-CSRFToken"] = getCookie('csrftoken');
+            request_header["Content-Type"] = 'application/json'
+            request_body["account_name"] = account_name;
+            request_body["group_dn"] = '{{ group_dn }}';
+            request["method"] = 'POST';
+            request["headers"] = request_header;
+            request["credentials"] = 'include';
+            request["body"] = JSON.stringify(request_body);
+
+            fetch("{% url 'technicians:remove' %}", request)
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    if (data["success"]) {
+                        alert("A request to remove " + account_name + " from the ResNet team has been created. Please use SR#" + data["sr_number"] + " as a reference.")
+                        $("#member_" + account_name).remove();
+                        return true;
+                    }
+                    else {
+                        alert(data["error_message"]);
+                        return false;
+                    }
+                });
         } else {
             return false;
         }

@@ -5,7 +5,6 @@ import json
 import uuid
 import time
 import requests
-from django_ajax.decorators import ajax
 
 
 graph_endpoint = 'https://graph.microsoft.com/v1.0{0}'

@@ -16,7 +16,8 @@ from clever_selects.views import ChainedSelectChoicesView
 from django.core.urlresolvers import reverse_lazy
 from django.template import Template, RequestContext
 from django.views.decorators.http import require_POST
-from django_ajax.decorators import ajax
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from ...settings.base import ROOMS_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
@@ -29,7 +30,7 @@ from .utils import get_ticket_list
 logger = logging.getLogger(__name__)
 
 
-@ajax
+@api_view(['GET'])
 def update_network_status(request):
     network_reachability = NetworkReachabilityTester.get_network_device_reachability(2)
     network_reachability.sort(key=itemgetter('status', 'display_name'))
@@ -71,10 +72,10 @@ def update_network_status(request):
         },
     }
 
-    return data
+    return Response(data)
 
 
-@ajax
+@api_view(['GET'])
 def get_tickets(request):
     raw_response = """
         {% load staticfiles %}
@@ -150,11 +151,10 @@ def get_tickets(request):
         }
     }
 
-    return data
+    return Response(data)
 
 
-@ajax
-@require_POST
+@api_view(['POST'])
 def update_csd_domain(request):
     """Updates a csd domain mapping.
 
@@ -166,8 +166,8 @@ def update_csd_domain(request):
     """
 
     # Pull post parameters
-    mapping_id = request.POST["mapping_id"]
-    csd_info_dict = ast.literal_eval(request.POST["csd_info"])
+    mapping_id = request.data["mapping_id"]
+    csd_info_dict = ast.literal_eval(request.data["csd_info"])
     csd_name = csd_info_dict['name']
     csd_email = csd_info_dict['email']
 
@@ -183,7 +183,7 @@ def update_csd_domain(request):
         },
     }
 
-    return data
+    return Response(data)
 
 
 class BuildingChainedAjaxView(ChainedSelectChoicesView):

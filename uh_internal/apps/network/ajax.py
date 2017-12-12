@@ -19,7 +19,8 @@ from django.core.urlresolvers import reverse_lazy, reverse
 from django.template import Template, Context
 from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
-from django_ajax.decorators import ajax
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from django_datatables_view.mixins import JSONResponseView
 from paramiko import SSHClient, AutoAddPolicy
 from rmsconnector.utils import Resident
@@ -141,8 +142,7 @@ class RemovePort(BaseDatatablesRemoveView):
     model = Port
 
 
-@ajax
-@require_POST
+@api_view(['POST'])
 def change_port_status(request):
     """ Activates or Deactivates a port.
 
@@ -152,7 +152,7 @@ def change_port_status(request):
     """
 
     # Pull post parameters
-    port_id = request.POST["port_id"]
+    port_id = request.data["port_id"]
 
     port_instance = Port.objects.get(id=port_id)
 
