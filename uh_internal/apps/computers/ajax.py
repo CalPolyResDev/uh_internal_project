@@ -15,7 +15,8 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
 from django.views.decorators.http import require_POST
-from django_ajax.decorators import ajax
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from ...settings.base import COMPUTERS_MODIFY_ACCESS
 from ..core.models import StaffMapping
@@ -194,7 +195,7 @@ class RemoveComputer(BaseDatatablesRemoveView):
         """
 
         # Pull post parameters
-        computer_id = request.POST["item_id"]
+        computer_id = request.data["item_id"]
 
         response = {}
         response["success"] = True
@@ -216,8 +217,7 @@ class RemoveComputer(BaseDatatablesRemoveView):
         return response
 
 
-@ajax
-@require_POST
+@api_view(['POST'])
 def remove_pinhole(request):
     """ Removes a pinhole.
 
@@ -227,7 +227,7 @@ def remove_pinhole(request):
     """
 
     # Pull post parameters
-    pinhole_id = request.POST["pinhole_id"]
+    pinhole_id = request.data["pinhole_id"]
 
     # Get the Pinhole record
     pinhole = Pinhole.objects.get(id=int(pinhole_id))
@@ -271,11 +271,10 @@ Thanks,
     context = {}
     context["sr_number"] = sr_number
 
-    return context
+    return Response(context)
 
 
-@ajax
-@require_POST
+@api_view(['POST'])
 def remove_domain_name(request):
     """ Removes a domain name.
 
@@ -285,7 +284,7 @@ def remove_domain_name(request):
     """
 
     # Pull post parameters
-    domain_name_id = request.POST["domain_name_id"]
+    domain_name_id = request.data["domain_name_id"]
 
     # Get the Domain Name record
     domain_name_record = DomainName.objects.get(id=int(domain_name_id))
@@ -319,4 +318,4 @@ Thanks,
     context = {}
     context["sr_number"] = sr_number
 
-    return context
+    return Response(context)

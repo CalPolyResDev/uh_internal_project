@@ -127,7 +127,6 @@
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-timepicker-addon/1.4.5/jquery-ui-timepicker-addon.min.js"></script>
         <script type="text/javascript" src="https://cdn.rawgit.com/walmik/timer.jquery/v0.4.11/dist/timer.jquery.min.js"></script>
         
-        <script src="{% static 'django_ajax/js/jquery.ajax.min.js' %}"></script>
         <script src="{% static 'js/jquery.blockUI.js' %}"></script>
         
         <script type="text/javascript" src="https://cdn.rawgit.com/js-cookie/js-cookie/v2.1.0/src/js.cookie.js"></script>
@@ -137,6 +136,28 @@
         <script src="{% static 'js/navbar.js' %}?version=1.0"></script>
         <script src="{% static 'js/airwaves_chart.js' %}?1.1"></script>
         
+        <script type="text/javascript">
+            function getCookie(name) {
+                var cookieValue = null;
+
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+
+                    for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                    }
+                }
+
+                return cookieValue;
+            }
+        </script>
+
         <script type="text/javascript">            
             // Popover Initilization
             $(document).ready(function() {

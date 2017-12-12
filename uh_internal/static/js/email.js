@@ -140,7 +140,7 @@ function archive_selected(destination_folder) {
     var post_data = array_to_ajax(selected_messages, 'message');
     post_data['destination_folder'] = destination_folder;
 
-    ajaxPost(DjangoReverse['dailyduties:email_archive'](), post_data, function(response_context) {
+    fetch(DjangoReverse['dailyduties:email_archive'](), post_data).then(function(response_context) {
         for (var index = 0; index < selected_messages.length; ++index) {
             $(document.getElementById(selected_messages[index])).remove();
         }
@@ -150,7 +150,7 @@ function archive_selected(destination_folder) {
 function mark_selected_unread() {
     var selected_messages = get_selected_emails();
     set_spinner_status(selected_messages, true);
-    ajaxPost(DjangoReverse['dailyduties:email_mark_unread'](), array_to_ajax(selected_messages, 'message'), function(response_context) {
+    fetch(DjangoReverse['dailyduties:email_mark_unread'](), array_to_ajax(selected_messages, 'message')).then(function(response_context) {
         for (var index = 0; index < selected_messages.length; ++index) {
             $(document.getElementById(selected_messages[index])).addClass('bg-info');
         }
@@ -161,7 +161,7 @@ function mark_selected_unread() {
 function mark_selected_read() {
     var selected_messages = get_selected_emails();
     set_spinner_status(selected_messages, true);
-    ajaxPost(DjangoReverse['dailyduties:email_mark_read'](), array_to_ajax(selected_messages, 'message'), function(response_context) {
+    fetch(DjangoReverse['dailyduties:email_mark_read'](), array_to_ajax(selected_messages, 'message')).then(function(response_context) {
         for (var index = 0; index < selected_messages.length; ++index) {
             $(document.getElementById(selected_messages[index])).removeClass('bg-info');
         }
@@ -177,7 +177,7 @@ function remove_voicemail(message_uid)  {
     var spinner = document.getElementById('spinner_' + message_uid);
     spinner.style.display = 'block';
     
-    ajaxPost(DjangoReverse['dailyduties:remove_voicemail'](), {"message_uid": message_uid}, function(response_context) {
+    fetch(DjangoReverse['dailyduties:remove_voicemail'](), {"message_uid": message_uid}).then(function(response_context) {
         var row = document.getElementById('voicemail_' + message_uid);
         row.parentNode.removeChild(row);
     });

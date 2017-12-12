@@ -68,11 +68,35 @@
 {{ block.super }}
 <script type="text/javascript">
     function update_ordered_toner(toner_id, ordered) {
-    	ajaxPost("{% url 'printerrequests:update_toner_inventory' %}", {'toner_id': toner_id, 'ordered': ordered});
+        var request = {};
+        var request_header = {};
+        var request_body = {};
+        request_header["X-CSRFToken"] = getCookie('csrftoken');
+        request_header["Content-Type"] = 'application/json'
+        request_body["toner_id"] = toner_id;
+        request_body["ordered"] = ordered;
+        request["method"] = 'POST';
+        request["headers"] = request_header;
+        request["credentials"] = 'include';
+        request["body"] = JSON.stringify(request_body);
+
+    	fetch("{% url 'printerrequests:update_toner_inventory' %}", request);
     }
 
     function update_ordered_parts(part_id, ordered) {
-    	ajaxPost("{% url 'printerrequests:update_part_inventory' %}", {'part_id': part_id, 'ordered': ordered});
+        var request = {};
+        var request_header = {};
+        var request_body = {};
+        request_header["X-CSRFToken"] = getCookie('csrftoken');
+        request_header["Content-Type"] = 'application/json'
+        request_body["part_id"] = part_id;
+        request_body["ordered"] = ordered;
+        request["method"] = 'POST';
+        request["headers"] = request_header;
+        request["credentials"] = 'include';
+        request["body"] = JSON.stringify(request_body);
+
+    	fetch("{% url 'printerrequests:update_part_inventory' %}", request);
     }
 </script>
 {% endblock %}

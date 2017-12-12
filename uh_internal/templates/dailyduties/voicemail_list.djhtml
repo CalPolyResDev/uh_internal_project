@@ -68,10 +68,22 @@
         var spinner = document.getElementById('spinner_' + message_uid); 
         spinner.style.display = 'block';
         
-        ajaxPost("{% url 'dailyduties:remove_voicemail' %}", {"message_uid": message_uid}, function(response_context) {
-            var row = document.getElementById('voicemail_' + message_uid);
-            row.parentNode.removeChild(row);
-        });
+        var request = {};
+        var request_header = {};
+        var request_body = {};
+        request_header["X-CSRFToken"] = getCookie('csrftoken');
+        request_header["Content-Type"] = 'application/json'
+        request_body["message_uid"] = message_uid;
+        request["method"] = 'POST';
+        request["headers"] = request_header;
+        request["credentials"] = 'include';
+        request["body"] = JSON.stringify(request_body);
+
+        fetch("{% url 'dailyduties:remove_voicemail' %}", request)
+            .then(function() {
+                var row = document.getElementById('voicemail_' + message_uid);
+                row.parentNode.removeChild(row);
+            });
     }
     function mark_new(message_uid)  {
         // Cannot use JQuery here: $ signs and other characters in UUID break the query
@@ -80,13 +92,25 @@
         
         var spinner = document.getElementById('spinner_mark_new_' + message_uid); 
         spinner.style.display = 'block';
+
+        var request = {};
+        var request_header = {};
+        var request_body = {};
+        request_header["X-CSRFToken"] = getCookie('csrftoken');
+        request_header["Content-Type"] = 'application/json'
+        request_body["message0"] = ('Voicemails/' + message_uid);
+        request["method"] = 'POST';
+        request["headers"] = request_header;
+        request["credentials"] = 'include';
+        request["body"] = JSON.stringify(request_body);
         
-        ajaxPost("{% url 'dailyduties:email_mark_unread' %}", {"message0": ('Voicemails/' + message_uid) }, function(response_context) {
-            var row = document.getElementById('voicemail_' + message_uid);
-            row.className = 'bg-info';
-            spinner.style.display = 'none';
-            mark_new_link.style.display = 'block';
-        });
+        fetch("{% url 'dailyduties:email_mark_unread' %}", request)
+            .then(function() {
+                var row = document.getElementById('voicemail_' + message_uid);
+                row.className = 'bg-info';
+                spinner.style.display = 'none';
+                mark_new_link.style.display = 'block';
+            });
     }
 </script>
 {% endblock %}

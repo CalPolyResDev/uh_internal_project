@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 <script src='https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js'></script>
 
@@ -44,16 +44,29 @@
         function confirm_remove(item_id) {
             var response = confirm('Are you sure you want to delete this {{ item_name|escapejs }}?');
             if (response) {
-                ajaxPost("{{ remove_url|escapejs }}", {"item_id": item_id}, function(response_context) {
-                    if (response_context["success"]) {
-                        $("#"+ item_id).closest("tr").remove();
-                        return true;
-                    }
-                    else {
-                        alert(response_context["error_message"]);
-                        return false;
-                    }
-                });
+                var request = {};
+                var request_header = {};
+                var request_body = {};
+                request_header["X-CSRFToken"] = getCookie('csrftoken');
+                request_header["Content-Type"] = 'application/json'
+                request_body["item_id"] = item_id;
+                request["method"] = 'POST';
+                request["headers"] = request_header;
+                request["credentials"] = 'include';
+                request["body"] = JSON.stringify(request_body);
+
+                fetch("{{ remove_url|escapejs }}", request)
+                    .then(function(response) { return response.json(); })
+                    .then(function(data) {
+                        if (data["success"]) {
+                            $("#"+ item_id).closest("tr").remove();
+                            return true;
+                        }
+                        else {
+                            alert(data["error_message"]);
+                            return false;
+                        }
+                    });
             } else {
                 return false;
             }
@@ -209,10 +222,12 @@
                             if (!objectEquals(initial_data, changed_data)) {
                                 // Attempt to send the data
                                 var row_data = changed_data;
-                                row_data["csrfmiddlewaretoken"] = getCookie('csrftoken');
+                                row_data["headers"]["X-CSRFToken"] = getCookie('csrftoken');
                                 row_data["id"] = row_id;
+                                row_data["credentials"] = 'include';
+                                row_data["method"] = 'POST';
         
-                                ajaxPost("{{ datatable_update_url }}", row_data, function(response_context) {
+                                fetch("{{ datatable_update_url }}", row_data).then(function(response_context) {
                                     if (response_context["form_valid"]) {
                                         // Replace the edited row with updated html
                                         var rendered_row = response_context["rendered_row"];
