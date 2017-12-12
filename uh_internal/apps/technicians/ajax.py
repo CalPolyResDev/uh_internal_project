@@ -7,13 +7,13 @@
 """
 
 from django.views.decorators.http import require_POST
-from django_ajax.decorators import ajax
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from ldap_groups import ADGroup
 from srsconnector.models import AccountRequest
 
 
-@ajax
-@require_POST
+@api_view(['POST'])
 def remove_resnet_tech(request):
     """ Removes members from both the resnet tech groups.
 
@@ -25,8 +25,8 @@ def remove_resnet_tech(request):
     """
 
     # Pull post parameters
-    account_name = request.POST["account_name"]
-    group_dn = request.POST["group_dn"]
+    account_name = request.data["account_name"]
+    group_dn = request.data["group_dn"]
 
     context = {}
     context["success"] = True
@@ -52,4 +52,4 @@ def remove_resnet_tech(request):
     # Remove from AD
     ad_group_instance.remove_member(account_name)
 
-    return context
+    return Response(context)
