@@ -28,7 +28,6 @@ from ..core.models import Building
 from ..core.templatetags.srs_urls import srs_edit_url
 from .models import DailyDuties, EmailViewingRecord
 from .utils import GetDutyData
-from .authhelper import get_token, get_admin_consent
 
 logger = logging.getLogger(__name__)
 
@@ -36,9 +35,6 @@ logger = logging.getLogger(__name__)
 @api_view(['GET'])
 def refresh_duties(request):
     duty_data = cache.get('duty_data')
-    admin_consent = get_admin_consent()
-    # token = get_token()
-    token = 1
 
     if not duty_data:
         duty_data_manager = GetDutyData()
@@ -46,8 +42,8 @@ def refresh_duties(request):
 
         duty_data = {
             'printer_requests': duty_data_manager.get_printer_requests(),
-            'voicemail': duty_data_manager.get_voicemail(token),
-            'email': duty_data_manager.get_email(token),
+            'voicemail': duty_data_manager.get_voicemail(),
+            'email': duty_data_manager.get_email(),
             'tickets': duty_data_manager.get_tickets(request.user),
         }
         cache.set('duty_data', duty_data, 120)
