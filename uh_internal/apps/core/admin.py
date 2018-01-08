@@ -2,13 +2,9 @@ from clever_selects.admin import ChainedSelectAdminMixin
 from django.contrib import admin
 
 from .forms import RoomCreateForm
-from .models import (Community, Building, Room, Department, SubDepartment, SiteAnnouncements,
+from .models import (Community, Building, Room, Department, SubDepartment,
                      StaffMapping, CSDMapping, TechFlair, UHInternalUser as InternalUser,
                      ADGroup, NavbarLink, PermissionClass)
-
-
-class SiteAnnouncementsAdmin(admin.ModelAdmin):
-    list_display = ['title', 'created']
 
 
 class StaffMappingAdmin(admin.ModelAdmin):
@@ -54,7 +50,6 @@ admin.site.register(Building, BuildingAdmin)
 admin.site.register(Room, RoomAdmin)
 admin.site.register(Department)
 admin.site.register(SubDepartment)
-admin.site.register(SiteAnnouncements, SiteAnnouncementsAdmin)
 admin.site.register(StaffMapping, StaffMappingAdmin)
 admin.site.register(CSDMapping, CSDMappingAdmin)
 admin.site.register(TechFlair, TechFlairAdmin)
