@@ -49,12 +49,26 @@
 {{ block.super }}
 <script type="text/javascript">
     function change_request_status(request_id, current_status) {
-    	ajaxPost("{% url 'printerrequests:change_status' %}", {'request_id': request_id, 'current_status': current_status}, function(response_context) {
-			if (!response_context["success"]) {
-				alert(response_context["error_message"]);
-				return false;
-			}
-		});
+        var request = {};
+        var request_header = {};
+        var request_body = {};
+        request_header["X-CSRFToken"] = getCookie('csrftoken');
+        request_header["Content-Type"] = 'application/json'
+        request_body["request_id"] = request_id;
+        request_body["current_status"] = current_status;
+        request["method"] = 'POST';
+        request["headers"] = request_header;
+        request["credentials"] = 'include';
+        request["body"] = JSON.stringify(request_body);
+
+    	fetch("{% url 'printerrequests:change_status' %}", request)
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (!data["success"]) {
+                    alert(data["error_message"]);
+                    return false;
+                }
+            });
     }
 </script>
 {% endblock %}

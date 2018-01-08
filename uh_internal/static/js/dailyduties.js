@@ -15,12 +15,17 @@ function add_duties() {
     });
 }
 function refreshDuties() {
-    ajaxGet(DjangoReverse['dailyduties:refresh_duties'](), function(response_context) {
-        $("#email_link").attr('data-content', response_context.email_content);
-        $("#ticket_manager_link").attr('data-content', response_context.tickets_content);
-        $("#voicemail_link").attr('data-content', response_context.voicemail_content);
-        $("#printer_requests_link").attr('data-content', response_context.printer_requests_content);
-    });
+    fetch(DjangoReverse['dailyduties:refresh_duties'](), {credentials: 'include'})
+        .then(function(response) { return response.json(); })
+        .then(function(data) {
+            for (var key in data["inner-fragments"]) {
+                $(key).html(data["inner-fragments"][key]);
+            }
+            $("#email_link").attr('data-content', data.email_content);
+            $("#ticket_manager_link").attr('data-content', data.tickets_content);
+            $("#voicemail_link").attr('data-content', data.voicemail_content);
+            $("#printer_requests_link").attr('data-content', data.printer_requests_content);
+        });
 }
 function updateEmail() {
     updateDuty('email', 'https://outlook.office.com/owa/resnet@calpoly.edu/?offline=disabled', '_blank');
@@ -51,14 +56,27 @@ function updateDuty(duty, redirect_url, target) {
             }
         }
     });
-    ajaxPost(DjangoReverse['dailyduties:update_duty'](), {"duty": duty}, function(response_context) {
-        if (redirect_url && target !== '_blank') {
-            window.open(redirect_url, target);
-        }
-        else {
-            refreshDuties();
-        }
-    });
+
+    var request = {};
+    var request_header = {};
+    var request_body = {};
+    request_header["X-CSRFToken"] = getCookie('csrftoken');
+    request_header["Content-Type"] = 'application/json'
+    request_body["duty"] = duty;
+    request["method"] = 'POST';
+    request["headers"] = request_header;
+    request["credentials"] = 'include';
+    request["body"] = JSON.stringify(request_body);
+
+    fetch(DjangoReverse['dailyduties:update_duty'](), request)
+        .then(function() {
+            if (redirect_url && target !== '_blank') {
+                window.open(redirect_url, target);
+            }
+            else {
+                refreshDuties();
+            }
+        });
 }
 
 $(document).ready(function() {

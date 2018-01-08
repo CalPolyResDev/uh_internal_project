@@ -29,7 +29,7 @@ class CASLDAPBackend(CASBackend):
     def authenticate(self, ticket, service, request):
         """Verifies CAS ticket and gets or creates User object"""
 
-        user = super(CASLDAPBackend, self).authenticate(ticket, service, request)
+        user = super(CASLDAPBackend, self).authenticate(request, ticket, service)
 
         # Populate user attributes
         if user:
@@ -39,11 +39,11 @@ class CASLDAPBackend(CASBackend):
                 connection.start_tls()
 
                 account_def = ObjectDef('user')
-                account_def.add(AttrDef('userPrincipalName'))
-                account_def.add(AttrDef('displayName'))
-                account_def.add(AttrDef('givenName'))
-                account_def.add(AttrDef('sn'))
-                account_def.add(AttrDef('mail'))
+                account_def += AttrDef('userPrincipalName')
+                account_def += AttrDef('displayName')
+                account_def += AttrDef('givenName')
+                account_def += AttrDef('sn')
+                account_def += AttrDef('mail')
 
                 account_reader = Reader(connection=connection, object_def=account_def, query="userPrincipalName: {principal_name}".format(principal_name=user.username), base=settings.LDAP_GROUPS_BASE_DN)
                 account_reader.search_subtree()

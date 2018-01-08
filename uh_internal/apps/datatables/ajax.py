@@ -19,9 +19,10 @@ from django.db.models.query import QuerySet
 from django.forms import models as model_forms
 from django.http.response import HttpResponseNotAllowed
 from django.views.generic.edit import ModelFormMixin, ProcessFormView, View
-from django_ajax.mixin import AJAXMixin
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django_datatables_view.mixins import JSONResponseView
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from ..core.utils import dict_merge
 
@@ -50,7 +51,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
             "zeroRecords": "No records to display.",
             "loadingRecords": "Loading...",
         },
-        "dom": "<'row'<'col-sm-12'f>>" +
+        "dom": "<'row'<'col-sm-12 text-right'f<'filter-hover-help'>>>" +
                "<'row'<'col-sm-12'tr>>" +
                "<'row'<'col-sm-12'i>>",
         "processing": False,
@@ -361,13 +362,13 @@ class RNINDatatablesFormView(JSONResponseView):
         populate_class_instance = self.populate_class()
         populate_class_instance._initialize_write_permissions(self.request.user)
 
-        item_id = self.request.POST['item_id']
+        item_id = self.request.data['item_id']
         item = populate_class_instance.model.objects.get(id=item_id)
 
         return {'editable_row_columns': populate_class_instance.retrieve_editable_row(item)}
 
 
-class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
+class BaseDatatablesUpdateView(APIView, ModelFormMixin, ProcessFormView):
     """ Base class to update datatable rows."""
 
     model = None
@@ -394,7 +395,7 @@ class BaseDatatablesUpdateView(AJAXMixin, ModelFormMixin, ProcessFormView):
         return model_forms.modelform_factory(self.model, form=self.form_class, fields=self.fields)
 
     def post(self, request, *args, **kwargs):
-        instance_id = request.POST.get("id", None)
+        instance_id = request.data.get("id", None)
 
         if instance_id:
             self.object = self.model.objects.get(id=instance_id)
@@ -441,7 +442,7 @@ def redraw_row(request, populate_class, row_id):
     return {"rendered_row": rendered_row}
 
 
-class BaseDatatablesRemoveView(AJAXMixin, View):
+class BaseDatatablesRemoveView(APIView, View):
     model = None
 
     def post(self, request, *args, **kwargs):
@@ -453,14 +454,14 @@ class BaseDatatablesRemoveView(AJAXMixin, View):
         """
 
         # Pull post parameters
-        item_id = request.POST["item_id"]
+        item_id = request.data["item_id"]
 
-        response = {}
-        response["success"] = True
-        response["error_message"] = None
-        response["item_id"] = item_id
+        response_data = {}
+        response_data["success"] = True
+        response_data["error_message"] = None
+        response_data["item_id"] = item_id
 
         item_instance = self.model.objects.get(id=item_id)
         item_instance.delete()
 
-        return response
+        return Response(response_data)

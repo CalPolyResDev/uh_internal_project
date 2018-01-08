@@ -9,10 +9,23 @@
         function confirm_status_change(port_id) {
             var response = confirm('Are you sure you want to change the status of this port?');
             if (response) {
-                ajaxPost("{% url 'network:change_port_status' %}", {"port_id": port_id}, function(response_context) {
-                    var rendered_row = response_context["rendered_row"];
-                    redraw_datatables_row($("#" + port_id), rendered_row);
-                });
+                var request = {};
+                var request_header = {};
+                var request_body = {};
+                request_header["X-CSRFToken"] = getCookie('csrftoken');
+                request_header["Content-Type"] = 'application/json'
+                request_body["port_id"] = port_id;
+                request["method"] = 'POST';
+                request["headers"] = request_header;
+                request["credentials"] = 'include';
+                request["body"] = JSON.stringify(request_body);
+
+                fetch("{% url 'network:change_port_status' %}", request)
+                    .then(function(response) { return response.json(); })
+                    .then(function(data) {
+                        var rendered_row = data["rendered_row"];
+                        redraw_datatables_row($("#" + port_id), rendered_row);
+                    });
             } else {
                 return false;
             }
