@@ -30,7 +30,6 @@ from srsconnector.models import ServiceRequest
 
 from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
-from .pyexchange import get_mail, get_voicemail, setup
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +42,8 @@ ms_api_url = "https://graph.microsoft.com/v1.0/users"
 
 class GetDutyData(object):
     """ Utility for gathering daily duty data."""
+
+    server = None
 
     def get_printer_requests(self):
         """Checks the current number of printer requests."""
@@ -66,7 +67,7 @@ class GetDutyData(object):
 
         return printer_requests
 
-    def get_voicemail(self, server):
+    def get_voicemail(self, token):
         """Checks the current number of voicemail messages."""
 
         voicemail = {
@@ -78,9 +79,9 @@ class GetDutyData(object):
 
         data = DailyDuties.objects.get(name='voicemail')
 
-        count = get_voicemail(server)
+        count = 0
+        # Select the Inbox, get the message count
         voicemail["count"] = count
-
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
             voicemail["status_color"] = GREEN
         else:
@@ -90,7 +91,7 @@ class GetDutyData(object):
 
         return voicemail
 
-    def get_email(self, server):
+    def get_email(self,token):
         """Checks the current number of unread email messages."""
 
         email = {
@@ -102,10 +103,13 @@ class GetDutyData(object):
 
         data = DailyDuties.objects.get(name='email')
 
-        #fetch email with pyexchange
-        count = get_mail(server)
-        email["count"] = count
+        # Make API call to get this
+        # Select the Inbox, get the message count
+        #mail = get_mail_api(token)
 
+        count = 0
+
+        email["count"] = count
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
             email["status_color"] = GREEN
         else:

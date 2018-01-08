@@ -34,4 +34,3 @@ git+https://github.com/fedorareis/django-clever-selects.git
 git+https://github.com/CalPolyResDev/django-jfu.git
 git+https://github.com/CalPolyResDev/django-dbbackup.git
 git+https://github.com/fedorareis/ldap-groups.git
-git+https://github.com/fedorareis/pyexchange.git
