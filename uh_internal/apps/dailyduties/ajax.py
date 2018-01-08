@@ -28,6 +28,7 @@ from ..core.models import Building
 from ..core.templatetags.srs_urls import srs_edit_url
 from .models import DailyDuties, EmailViewingRecord
 from .utils import GetDutyData
+from .pyexchange import setup
 
 logger = logging.getLogger(__name__)
 
@@ -35,22 +36,21 @@ logger = logging.getLogger(__name__)
 @api_view(['GET'])
 def refresh_duties(request):
     duty_data = cache.get('duty_data')
+    server = setup()
 
     if not duty_data:
         duty_data_manager = GetDutyData()
-        # api_request = duty_data_manager.send_api_request(token)
 
         duty_data = {
             'printer_requests': duty_data_manager.get_printer_requests(),
-            'voicemail': duty_data_manager.get_voicemail(),
-            'email': duty_data_manager.get_email(),
+            'voicemail': duty_data_manager.get_voicemail(server),
+            'email': duty_data_manager.get_email(server),
             'tickets': duty_data_manager.get_tickets(request.user),
         }
         cache.set('duty_data', duty_data, 120)
 
     def duty_dict_to_link_text(daily_duty_dict, name):
         return_string = name
-        print(daily_duty_dict['count'])
         if daily_duty_dict['count'] > 10:
             return_string += ' <strong class="text-danger">(' + str(daily_duty_dict['count']) + ')</strong>'
         elif daily_duty_dict['count'] > 0:
