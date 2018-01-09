@@ -23,15 +23,16 @@ def setup():
 
 
 def get_mail(service):
-    
+
     folder = service.folder()
     folder_id = "inbox"
     email = folder.get_folder(folder_id)
 
     return email.total_count
 
+
 def get_voicemail(service):
-    
+
     folder = service.folder()
     voicemail_folder_id = "AAMkADk3MzI3ZmNiLTM5YzMtNGZlOS1hZjVkLTFhN2I5ZTBjNmFmOAAuAAAAAACiNxZPdHhiS6q1zMiCAUIaAQBCzAjvjx3GTKwjaiEZoJadAAADOUuhAAA="
     voicemail = folder.get_folder(voicemail_folder_id)
