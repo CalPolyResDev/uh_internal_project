@@ -11,9 +11,9 @@
     {% if not request.user.is_authenticated %}
         <div id ="outter-landing-login-display" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
             <div id="inner-landing-login-display" >   
-                <h1>Welcome to <br> University Housing Internal</h1>
+                <h1 style="color: #29551A;">Welcome to <br> University Housing Internal</h1>
                 <form action="{% url 'core:login' %}" style="padding-top: 30px">
-                    <input type="submit" value="Login" style="padding: 2px 10px">
+                    <input class="login-button" type="submit" value="Login">
                 </form>
             </div>
         </div>
