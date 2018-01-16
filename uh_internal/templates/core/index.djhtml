@@ -14,6 +14,9 @@
                 <div class="col-xs-12">
                     <h2>Network Status</h2>
                 </div>
+                <div class="col-xs-12 outage-container">
+                    <button type="button" class="btn btn-warning">Report Outage</button>
+                </div>
                 <div class="col-xs-12 col-md-12 col-lg-6">
                     <h4>Bandwidth</h4>
                     <span id="network-bandwidth-usage" style="height: 200px; display: block;"><p>Loading...</p></span>
