@@ -4,4 +4,4 @@
 -r base.txt
 
 git+https://github.com/CalPolyResDev/uwsgicachetop.git
-uwsgitop>=0.9
+uwsgitop==0.9
