@@ -45,7 +45,7 @@
 {% block extra_script %}
     <script type="text/javascript">
         function complete_orientation() {
-            ajaxGet("{% url 'orientation:complete' %}");
+            fetch("{% url 'orientation:complete' %}", {credentials: 'include'});
         };
     </script>
 {% endblock %}

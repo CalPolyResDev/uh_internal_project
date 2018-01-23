@@ -12,7 +12,8 @@ from clever_selects.views import ChainedSelectChoicesView
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseRedirect
 from django.views.decorators.http import require_POST
-from django_ajax.decorators import ajax
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from srsconnector.models import STATUS_CHOICES, PrinterRequest
 
 from .models import Request, Toner, Part
@@ -34,8 +35,7 @@ class PartChainedAjaxView(ChainedSelectChoicesView):
         return Part.objects.filter(printer__id=self.parent_value).order_by('type')
 
 
-@ajax
-@require_POST
+@api_view(['POST'])
 def change_request_status(request):
     """ Updates the status of a printer request based on a drop-down value.
 
@@ -47,8 +47,8 @@ def change_request_status(request):
     """
 
     # Pull post parameters
-    request_id = request.POST["request_id"]
-    current_status = request.POST["current_status"]
+    request_id = request.data["request_id"]
+    current_status = request.data["current_status"]
 
     context = {}
     context["success"] = True
@@ -117,8 +117,7 @@ def change_request_status(request):
     return HttpResponseRedirect(reverse('printerrequests:home'))
 
 
-@ajax
-@require_POST
+@api_view(['POST'])
 def update_toner_inventory(request):
     """ Updates the inventory quantity of a toner cartridge.
 
@@ -132,9 +131,9 @@ def update_toner_inventory(request):
     """
 
     # Pull post parameters
-    toner_id = request.POST["toner_id"]
-    quantity = request.POST.get("quantity", None)
-    ordered = request.POST.get("ordered", None)
+    toner_id = request.data["toner_id"]
+    quantity = request.data.get("quantity", None)
+    ordered = request.data.get("ordered", None)
 
     toner_instance = Toner.objects.get(id=toner_id)
     if quantity:
@@ -144,8 +143,7 @@ def update_toner_inventory(request):
     toner_instance.save()
 
 
-@ajax
-@require_POST
+@api_view(['POST'])
 def update_part_inventory(request):
     """ Updates the inventory quantity of a printer part.
 
@@ -159,9 +157,9 @@ def update_part_inventory(request):
     """
 
     # Pull post parameters
-    part_id = request.POST["part_id"]
-    quantity = request.POST.get("quantity", None)
-    ordered = request.POST.get("ordered", None)
+    part_id = request.data["part_id"]
+    quantity = request.data.get("quantity", None)
+    ordered = request.data.get("ordered", None)
 
     part_instance = Part.objects.get(id=part_id)
     if quantity:

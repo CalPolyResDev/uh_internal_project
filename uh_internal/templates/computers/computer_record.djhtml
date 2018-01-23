@@ -104,15 +104,41 @@
 {{ block.super }}
     <script type="text/javascript">
         function remove_pinhole(pinhole_id)  {
-            ajaxPost("{% url 'computers:remove_pinhole' %}", {"pinhole_id": pinhole_id}, function(response_context) {
-                alert("A pinhole removal request has been created in your name. Please use SR#" + response_context["sr_number"] + " as a reference.")
+            var request = {};
+            var request_header = {};
+            var request_body = {};
+            request_header["X-CSRFToken"] = getCookie('csrftoken');
+            request_header["Content-Type"] = 'application/json'
+            request_body["pinhole_id"] = pinhole_id;
+            request["method"] = 'POST';
+            request["headers"] = request_header;
+            request["credentials"] = 'include';
+            request["body"] = JSON.stringify(request_body);
+
+            fetch("{% url 'computers:remove_pinhole' %}", request)
+                .then(function(response) { return response.json() })
+                .then(function(data) 
+                    alert("A pinhole removal request has been created in your name. Please use SR#" + data["sr_number"] + " as a reference.")
                 $("#pinhole_" + pinhole_id).remove();
             });
         }
 
         function remove_domain_name(domain_name_id)  {
-            ajaxPost("{% url 'computers:remove_domain_name' %}", {"domain_name_id": domain_name_id}, function(response_context) {
-                alert("A domain name removal request has been created in your name. Please use SR#" + response_context["sr_number"] + " as a reference.")
+            var request = {};
+            var request_header = {};
+            var request_body = {};
+            request_header["X-CSRFToken"] = getCookie('csrftoken');
+            request_header["Content-Type"] = 'application/json'
+            request_body["domain_name_id"] = domain_name_id;
+            request["method"] = 'POST';
+            request["headers"] = request_header;
+            request["credentials"] = 'include';
+            request["body"] = JSON.stringify(request_body);
+
+            fetch("{% url 'computers:remove_domain_name' %}", request)
+                .then(function(response) { return response.json(); }
+                .then(function(data) {
+                    alert("A domain name removal request has been created in your name. Please use SR#" + data["sr_number"] + " as a reference.")
                 $("#domain_name_" + domain_name_id).remove();
             });
         }

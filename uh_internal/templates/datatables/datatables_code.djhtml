@@ -1,4 +1,4 @@
-{% load staticfiles %}
+{% load static %}
 <script src='https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js'></script>
 <script src='https://cdn.datatables.net/1.10.10/js/dataTables.bootstrap.min.js'></script>
 
@@ -44,16 +44,29 @@
         function confirm_remove(item_id) {
             var response = confirm('Are you sure you want to delete this {{ item_name|escapejs }}?');
             if (response) {
-                ajaxPost("{{ remove_url|escapejs }}", {"item_id": item_id}, function(response_context) {
-                    if (response_context["success"]) {
-                        $("#"+ item_id).closest("tr").remove();
-                        return true;
-                    }
-                    else {
-                        alert(response_context["error_message"]);
-                        return false;
-                    }
-                });
+                var request = {};
+                var request_header = {};
+                var request_body = {};
+                request_header["X-CSRFToken"] = getCookie('csrftoken');
+                request_header["Content-Type"] = 'application/json'
+                request_body["item_id"] = item_id;
+                request["method"] = 'POST';
+                request["headers"] = request_header;
+                request["credentials"] = 'include';
+                request["body"] = JSON.stringify(request_body);
+
+                fetch("{{ remove_url|escapejs }}", request)
+                    .then(function(response) { return response.json(); })
+                    .then(function(data) {
+                        if (data["success"]) {
+                            $("#"+ item_id).closest("tr").remove();
+                            return true;
+                        }
+                        else {
+                            alert(data["error_message"]);
+                            return false;
+                        }
+                    });
             } else {
                 return false;
             }
@@ -73,7 +86,22 @@
                 $('[type="search"]').removeClass('loading-spinner');
             }
         });
-
+        
+        // Adding the filter help popover via JS...adding it in the middle of datatables constructor is even messier
+        $('div.filter-hover-help').html(`
+            <a href="#" data-toggle="popover">
+                <span class="glyphicon glyphicon-question-sign"></span>
+            </a>
+        `);
+        $('div.filter-hover-help [data-toggle="popover"]').popover({
+            html: true,
+            container: '.dataTables_wrapper',
+            placement: 'auto',
+            trigger : 'hover',
+            title: 'Filtering and Sorting',
+            content: $('div.filter-hover-help-content').html()  // this element is at the end of this file
+        }); 
+        
         // Add the popover to hoverable items
         {{ datatable_name }}.on('draw.dt', function() {
             $('[popover-data-url]').hover(
@@ -194,10 +222,12 @@
                             if (!objectEquals(initial_data, changed_data)) {
                                 // Attempt to send the data
                                 var row_data = changed_data;
-                                row_data["csrfmiddlewaretoken"] = getCookie('csrftoken');
+                                row_data["headers"]["X-CSRFToken"] = getCookie('csrftoken');
                                 row_data["id"] = row_id;
+                                row_data["credentials"] = 'include';
+                                row_data["method"] = 'POST';
         
-                                ajaxPost("{{ datatable_update_url }}", row_data, function(response_context) {
+                                fetch("{{ datatable_update_url }}", row_data).then(function(response_context) {
                                     if (response_context["form_valid"]) {
                                         // Replace the edited row with updated html
                                         var rendered_row = response_context["rendered_row"];
@@ -241,3 +271,20 @@
         {% endif %}
     });
 </script>
+
+
+<div class="filter-hover-help-content hidden">
+    <b>Searching</b>
+    <ul>
+        <li>If you need to look up a room by resident, simply add the resident's cal poly alias as a search parameter and prepend it with a question mark (e.g. ?) . Note that until the rms term is updated, this will yield no results.</li>
+        <li>Multiple search terms must be separated by a space.</li>
+        <li>The search feature uses an OR join across the table columns, so if you search for "2", any column that has a 2 in it will come up.</li>
+        <li>The search feature uses an AND join with multiple search terms, so if you search for "Apple Pie", both "Apple" and "Pie" must be present in a column for the record to show up.</li>
+    </ul>
+    
+    <b>Sorting</b>
+    <ul>
+        <li>Click on a column heading to sort the column - the black arrows to the right indicate the direction (ascending, descending, none).</li>
+        <li>Sort by multiple columns in multiple directions by holding down shift while you click.</li>
+    </ul>
+</div>

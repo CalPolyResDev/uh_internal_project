@@ -235,10 +235,10 @@ function forward() {
 function archive(destination_folder) {
     $.blockUI({message: '<h1>Archiving...</h1>'});
 
-    ajaxPost(DjangoReverse['dailyduties:email_archive'](), 
+    fetch(DjangoReverse['dailyduties:email_archive'](), 
         {'message0': message_path, 
-            'destination_folder': destination_folder}, 
-        function(response_context) {
+         'destination_folder': destination_folder
+        }).then(function(response_context) {
             $.unblockUI();
             $(parent.document.getElementById(message_path)).remove();
             parent.$('#modal').modal('hide');
@@ -266,9 +266,9 @@ function create_ticket() {
     var newTicketWindow = window.open('', 'newTicketWindow');
     newTicketWindow.document.body.innerHTML = '<h1>Creating Ticket...</h1>';
 
-    ajaxPost(DjangoReverse['dailyduties:email_create_ticket'](),
-        {'message_path': message_path, 'requestor_username': requestorUsername},
-        function(response) {
+    fetch(DjangoReverse['dailyduties:email_create_ticket'](),
+        {'message_path': message_path, 'requestor_username': requestorUsername
+    }).then(function(response) {
             if (response['redirect_url']) {
                 newTicketWindow.location.href = response['redirect_url'];
             } 
@@ -313,8 +313,8 @@ function send_email(archive_folder) {
     post_dict['is_html'] = is_html;
     post_dict['in_reply_to'] = in_reply_to;
 
-    ajaxPost(DjangoReverse['dailyduties:send_email'](), post_dict, 
-        function(response_context) {
+    fetch(DjangoReverse['dailyduties:send_email'](), post_dict)
+        .then(function(response_context) {
             $.unblockUI();
             
             if (response_context['success']) {

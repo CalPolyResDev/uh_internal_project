@@ -8,6 +8,17 @@
 {% endblock %}
 
 {% block main %}
+    {% if not request.user.is_authenticated %}
+        <div id ="outter-landing-login-display" class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+            <div id="inner-landing-login-display" >   
+                <h1 style="color: #29551A;">Welcome to <br> University Housing Internal</h1>
+                <form action="{% url 'core:login' %}" style="padding-top: 30px">
+                    <input class="login-button" type="submit" value="Login">
+                </form>
+            </div>
+        </div>
+    {% endif %}
+    
     <div class="col-xs-12">
         {% if network_access %}
             <div class="row">
@@ -25,16 +36,8 @@
             </div>
         {% endif %}
         <div class="row">
-            <div class="col-xs-12 col-md-12 col-lg-3">
-                <h2>General Site Announcements</h2>
-                {% for announcement in announcements %}
-                    <h3>{{ announcement.title }}&nbsp&nbsp<wbr /><small>{{ announcement.created|date }}</small></h3>
-                    <p>{% autoescape off %}{{ announcement.description }}{% endautoescape %}</p>
-                {% endfor %}
-            </div>
-            
             {% if network_access %}
-                <div class="col-xs-12 col-md-6 col-lg-4">
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <h2>Infrastructure Devices</h2>
                     <div id="network-status-response" class="table-responsive table-wrapper-cutoff">
                         <p>Loading...</p>
@@ -43,7 +46,7 @@
             {% endif %}
             
             {% if ticket_access %}
-                <div class="col-xs-12 col-md-6 col-lg-5">
+                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                     <h2>Ticket Summary</h2>
                     <div id="tickets-response" class="table-responsive table-wrapper-cutoff">
                         <p>Loading...</p>
@@ -58,11 +61,19 @@
 <script type="text/javascript">
     $(document).ready(function() {       
         {% if request.user.is_authenticated and ticket_access %}
-            ajaxGet("{% url 'core:get_tickets' %}");
+            fetch("{% url 'core:get_tickets' %}", {credentials: 'include'})
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    $("#tickets-response").html(data["inner-fragments"]["#tickets-response"]);
+                });
         {% endif %}
         
         {% if network_access %}
-            ajaxGet("{% url 'core:update_network_status' %}");
+            fetch("{% url 'core:update_network_status' %}", {credentials: 'include'})
+                .then(function(response) { return response.json(); })
+                .then(function(data) {
+                    $("#network-status-response").html(data["inner-fragments"]["#network-status-response"]);
+                });
             displayAirwavesChart('#network-bandwidth-usage', DjangoReverse['network:airwaves_overall_bandwidth']());
             displayAirwavesChart('#network-clients', DjangoReverse['network:airwaves_overall_clients']());
         {% endif %}

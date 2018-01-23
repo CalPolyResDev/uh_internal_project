@@ -379,6 +379,9 @@ MIDDLEWARE_CLASSES = (
 )
 
 INSTALLED_APPS = (
+    'clever_selects',
+    'crispy_forms',
+    'dbbackup',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -386,32 +389,29 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.staticfiles',
     'django_cas_ng',
+    'django_ewiz',
+    'django_js_reverse',
+    'jfu',
     'raven.contrib.django.raven_compat',
-    'django_ajax',
-    'static_precompiler',
+    'rest_framework',
     'rmsconnector',
     'srsconnector',
-    'django_ewiz',
+    'static_precompiler',
     'paramiko',
-    'jfu',
-    'dbbackup',
-    'clever_selects',
-    'crispy_forms',
-    'django_js_reverse',
+    MAIN_APP_NAME + '.apps.computers',
     MAIN_APP_NAME + '.apps.core',
     MAIN_APP_NAME + '.apps.core.templatetags.__init__.default_app_config',
     MAIN_APP_NAME + '.apps.dailyduties',
     MAIN_APP_NAME + '.apps.datatables',
     MAIN_APP_NAME + '.apps.datatables.templatetags.__init__.default_app_config',
-    MAIN_APP_NAME + '.apps.technicians',
-    MAIN_APP_NAME + '.apps.orientation',
-    MAIN_APP_NAME + '.apps.computers',
     MAIN_APP_NAME + '.apps.network',
+    MAIN_APP_NAME + '.apps.orientation',
     MAIN_APP_NAME + '.apps.printers',
     MAIN_APP_NAME + '.apps.printerrequests',
     MAIN_APP_NAME + '.apps.printerrequests.templatetags.__init__.default_app_config',
     MAIN_APP_NAME + '.apps.residents',
     MAIN_APP_NAME + '.apps.rosters',
+    MAIN_APP_NAME + '.apps.technicians',
 )
 
 # ======================================================================================================== #
@@ -427,7 +427,7 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
     'root': {
-        'level': 'INFO',
+        'level': 'WARNING',
         'handlers': ['sentry'],
     },
     'formatters': {
@@ -437,7 +437,7 @@ LOGGING = {
     },
     'handlers': {
         'sentry': {
-            'level': 'INFO',
+            'level': 'DEBUG',
             'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
         },
         'console': {
