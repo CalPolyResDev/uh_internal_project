@@ -25,7 +25,7 @@
         <script>
             Raven.showReportDialog({
                 eventId: '{{ request.sentry.id }}',
-                dsn: 'https://81990af275634a619d56963b8f309da8@logs.resdev.calpoly.edu/2',
+                dsn: '{{ sentry_dsn }}',
             });
         </script>
         {% endif %}

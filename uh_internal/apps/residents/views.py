@@ -51,17 +51,17 @@ class SearchView(FormView):
         address_form_kwargs['user'] = self.request.user
         address_form = self.address_form_class(**address_form_kwargs)
 
-        if self.request.data["lookup_type"] == "full_name":
+        if self.request.POST["lookup_type"] == "full_name":
             if full_name_form.is_valid():
                 return self.full_name_form_valid(full_name_form)
             else:
                 return self.full_name_form_invalid(full_name_form)
-        elif self.request.data["lookup_type"] == "principal_name":
+        elif self.request.POST["lookup_type"] == "principal_name":
             if principal_name_form.is_valid():
                 return self.principal_name_form_valid(principal_name_form)
             else:
                 return self.principal_name_form_invalid(principal_name_form)
-        elif self.request.data["lookup_type"] == "address":
+        elif self.request.POST["lookup_type"] == "address":
             if address_form.is_valid():
                 return self.address_form_valid(address_form)
             else:
@@ -92,8 +92,8 @@ class SearchView(FormView):
         return form_class(**self.get_form_kwargs())
 
     def full_name_form_valid(self, form):
-        first_name = self.request.data['first_name']
-        last_name = self.request.data['last_name']
+        first_name = self.request.POST['first_name']
+        last_name = self.request.POST['last_name']
 
         resident_profiles = ResidentProfile.objects.filter(first_name__icontains=first_name, last_name__icontains=last_name)
 
@@ -120,7 +120,7 @@ class SearchView(FormView):
             return self.full_name_form_invalid(form)
 
     def principal_name_form_valid(self, form):
-        principal_name = self.request.data['principal_name']
+        principal_name = self.request.POST['principal_name']
 
         try:
             resident_list = [Resident(principal_name=principal_name)]
@@ -143,7 +143,7 @@ class SearchView(FormView):
     def address_form_valid(self, form):
         community = form.cleaned_data['community'].name
         building = form.cleaned_data['building'].name
-        room = self.request.data['room']
+        room = self.request.POST['room']
 
         try:
             resident_list = reverse_address_lookup(community=community, building=building, room=room)
