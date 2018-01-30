@@ -245,6 +245,14 @@ class TechFlair(Model):
         verbose_name_plural = 'Tech Flair'
 
 
+class OutageWarning(Model):
+    state = BooleanField(default=False)
+    description = TextField()
+    time = DateTimeField()
+
+    # def report_outage(self):
+    #    self.save()
+
 class NavbarLink(Model):
     display_name = CharField(max_length=50, verbose_name='Display Name')
     permission_classes = ManyToManyField(PermissionClass, verbose_name='Permission Classes', blank=True)

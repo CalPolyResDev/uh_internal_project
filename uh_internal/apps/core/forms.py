@@ -13,7 +13,7 @@ from crispy_forms.layout import Layout, Field, Fieldset, Submit
 from django.core.urlresolvers import reverse_lazy
 from django.forms import ModelChoiceField, ModelForm
 
-from .models import Community, Building, Room
+from .models import Community, Building, Room, OutageWarning
 
 
 class RoomCreateForm(ChainedChoicesModelForm):
@@ -52,3 +52,8 @@ class RoomUpdateForm(ModelForm):
     class Meta:
         model = Room
         fields = ['name']
+
+class OutageForm(ModelForm):
+    
+    model = OutageWarning
+        

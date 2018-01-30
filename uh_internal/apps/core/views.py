@@ -13,12 +13,13 @@ from django.conf import settings
 from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
 from django.views.generic.base import TemplateView
+from django.http import HttpResponseRedirect
 from ldap_groups import ADGroup as LDAPADGroup
 from srsconnector.models import ServiceRequest
 
 from ..datatables.views import DatatablesView
 from .ajax import PopulateRooms
-from .forms import RoomCreateForm
+from .forms import RoomCreateForm, OutageForm
 from .models import Room, CSDMapping, ADGroup
 
 
@@ -81,6 +82,13 @@ class RoomsView(ChainedSelectFormViewMixin, DatatablesView):
     populate_class = PopulateRooms
     model = Room
     success_url = reverse_lazy('core:rooms')
+
+def report_outage(request):   
+    if request.methodf == 'POST':
+        form = OutageForm(request.POST)
+        if form.is_valid():
+            
+            return HttpResponseRedirect('/')
 
 
 def handler500(request):

@@ -18,7 +18,7 @@ from django_js_reverse.views import urls_js
 from .ajax import (BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, update_network_status, get_tickets, PopulateRooms,
                    UpdateRoom, RemoveRoom, RetrieveRoomForm, update_csd_domain)
 from .permissions import ticket_access, rooms_access, rooms_modify_access, csd_assignment_access
-from .views import IndexView, RoomsView, TicketSummaryView, CSDDomainAssignmentEditView
+from .views import IndexView, RoomsView, TicketSummaryView, CSDDomainAssignmentEditView, report_outage
 
 
 app_name = 'core'
@@ -50,5 +50,7 @@ urlpatterns = [
 
     url(r'^csd/assign_domain/$', login_required(csd_assignment_access(CSDDomainAssignmentEditView.as_view())), name='csd_assign_domain'),
     url(r'^csd/assign_domain/update/$', login_required(csd_assignment_access(update_csd_domain)), name='update_csd_domain'),
+
+    url(r'^outage/', view=report_outage)
 
 ]

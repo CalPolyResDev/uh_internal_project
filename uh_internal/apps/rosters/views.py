@@ -60,7 +60,7 @@ class RosterGenerateView(FormView):
                                                              resident_list=resident_list))
 
     def render_to_response(self, context, **response_kwargs):
-        if context['form'].is_valid() and self.request.data['mode'] == "csv":
+        if context['form'].is_valid() and self.request.POST['mode'] == "csv":
             response = HttpResponse(content_type='text/csv')
             response['Content-Disposition'] = self.get_content_disposition(context)
 
@@ -83,7 +83,7 @@ class RosterGenerateView(FormView):
             resident_data = []
 
             for resident in kwargs.pop('resident_list', []):
-                if self.request.data['mode'] == "csv":
+                if self.request.POST['mode'] == "csv":
                     resident_data.append([getattr(resident, attribute) for attribute in self.attribute_list])
                     resident_data.sort(key=itemgetter(2))
                 else:
