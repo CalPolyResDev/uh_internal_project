@@ -25,11 +25,12 @@
                 <p>Enter description:</p>
                     <input type="text" class="description">
                 <p>Report when the outage started: </>
-                <p id="datepair">
-                    <input type="text" class="date"/>
-                    <input type="text" class="time"/>
-                </p>
-                <button id="submit_report" class="btn btn-success">Submit</button>
+                <form action="/outage/"id="datepair" method="POST" > {% csrf_token %}
+                    {{ form }}
+                    
+                    <input type="submit" value="Submit" />
+                </form>
+                  
             </div>
             <div class="row">
                 <div class="col-xs-12 col-md-12 outage-banner"></div>
@@ -73,19 +74,6 @@
 
 {% block extra_script %}
 
-<!--<script type="text/javascript">
-    $('.btn-warning').click(function() {
-        var desc = window.prompt("Please enter description: ", "");
-        if (desc != null) {
-            
-            $('.outage-banner').append('<div class="btn btn-danger" style="width:100%">There has been an outage</div>');
-            $('.btn-warning').html("End outage");
-
-        }
-        console.log(desc);
-    });
-</script> -->
-
 <script type="text/javascript">
     $(function() {
         $("#dialog").dialog({
@@ -108,11 +96,11 @@
     });
 
     // initialize datepair
-    $('#datepair').datepair();
+    //$('#datepair').datepair();
 
-    $('#submit_report').click(function() {
-        console.log("It worked!");
-    })
+    /*function report_outage(){
+        $.et('core')
+    }*/
 </script>
 
 <script type="text/javascript">
