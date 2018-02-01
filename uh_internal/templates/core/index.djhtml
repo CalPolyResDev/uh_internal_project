@@ -10,8 +10,18 @@
 {% block main %}
     <div class="col-xs-12">
         {% if network_access %}
+            <div id="dialog" title="Report Outage">
+                <p>Enter description:</p>
+                    <input type="text" class="description">
+                <p>Report when the outage started: </>
+                <p id="datepair">
+                    <input type="text" class="date"/>
+                    <input type="text" class="time"/>
+                </p>
+                <button id="submit_report" class="btn btn-success">Submit</button>
+            </div>
             <div class="row">
-                <div class="col-xs-12 col-md-12 outage-banner""></div>
+                <div class="col-xs-12 col-md-12 outage-banner"></div>
                 <div class="col-xs-12">
                     <h2>Network Status</h2>
                 </div>
@@ -52,7 +62,7 @@
 
 {% block extra_script %}
 
-<script type="text/javascript">
+<!--<script type="text/javascript">
     $('.btn-warning').click(function() {
         var desc = window.prompt("Please enter description: ", "");
         if (desc != null) {
@@ -63,6 +73,35 @@
         }
         console.log(desc);
     });
+</script> -->
+
+<script type="text/javascript">
+    $(function() {
+        $("#dialog").dialog({
+            autoOpen: false
+        });
+        $(".btn-warning").on("click", function() {
+            $("#dialog").dialog("open");
+        });
+    });
+
+    $('#datepair .time').timepicker({
+        'showDuration': true,
+        'interval': 30,
+        'timeFormat': 'H:mm'
+    });
+
+    $('#datepair .date').datepicker({
+        'format': 'yyyy-m-d',
+        'autoclose': true
+    });
+
+    // initialize datepair
+    $('#datepair').datepair();
+
+    $('#submit_report').click(function() {
+        console.log("It worked!");
+    })
 </script>
 
 <script type="text/javascript">
