@@ -31,7 +31,6 @@ urlpatterns = [
     url(r'^dailyduties/', include(MAIN_APP_NAME + '.apps.dailyduties.urls')),
     url(r'^orientation/', include(MAIN_APP_NAME + '.apps.orientation.urls')),
     url(r'^network/', include(MAIN_APP_NAME + '.apps.network.urls')),
-    url(r'^printerrequests/', include(MAIN_APP_NAME + '.apps.printerrequests.urls')),
     url(r'^printers/', include(MAIN_APP_NAME + '.apps.printers.urls')),
     url(r'^residents/', include(MAIN_APP_NAME + '.apps.residents.urls')),
     url(r'^rosters/', include(MAIN_APP_NAME + '.apps.rosters.urls')),

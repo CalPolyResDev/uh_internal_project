@@ -407,8 +407,6 @@ INSTALLED_APPS = (
     MAIN_APP_NAME + '.apps.network',
     MAIN_APP_NAME + '.apps.orientation',
     MAIN_APP_NAME + '.apps.printers',
-    MAIN_APP_NAME + '.apps.printerrequests',
-    MAIN_APP_NAME + '.apps.printerrequests.templatetags.__init__.default_app_config',
     MAIN_APP_NAME + '.apps.residents',
     MAIN_APP_NAME + '.apps.rosters',
     MAIN_APP_NAME + '.apps.technicians',
