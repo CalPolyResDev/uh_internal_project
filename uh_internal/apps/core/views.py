@@ -9,6 +9,7 @@
 from datetime import datetime
 
 from clever_selects.views import ChainedSelectFormViewMixin
+from django.conf import settings
 from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
 from django.views.generic.base import TemplateView
@@ -89,5 +90,8 @@ def handler500(request):
     from django.http import HttpResponseServerError
 
     template = loader.get_template('500.djhtml')
+    temp = settings.RAVEN_CONFIG['dsn'].split(":")
+    dsn = temp[0] + ":" + temp[1] + "@" + temp[2].split("@")[1]
+    context = {'sentry_dsn': dsn}
 
-    return HttpResponseServerError(template.render(request=request))
+    return HttpResponseServerError(template.render(context=context, request=request))

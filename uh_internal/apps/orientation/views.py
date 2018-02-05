@@ -51,7 +51,7 @@ class OnityDoorAccessView(FormView):
         send_mail(subject="New ResNet Technician Onity Door Access Appointment",
                   message=form.cleaned_data.get('message'),
                   from_email=self.request.user.email,
-                  recipient_list=[self.request.data['to_email']], fail_silently=False)
+                  recipient_list=[self.request.POST['to_email']], fail_silently=False)
 
         return super(OnityDoorAccessView, self).form_valid(form)
 
