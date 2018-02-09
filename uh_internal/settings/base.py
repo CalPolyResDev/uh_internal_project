@@ -208,7 +208,6 @@ PRINTERS_MODIFY_ACCESS = 'printers_modify'
 CSD_ASSIGNMENT_ACCESS = 'csd_assignment'
 ROSTER_ACCESS = 'roster'
 RESIDENT_LOOKUP_ACCESS = 'resident_lookup'
-PRINTER_REQUEST_CREATE_ACCESS = 'printer_request_create'
 
 ACCESS_PERMISSIONS = [
     DEVELOPER_ACCESS,
@@ -228,7 +227,6 @@ ACCESS_PERMISSIONS = [
     CSD_ASSIGNMENT_ACCESS,
     ROSTER_ACCESS,
     RESIDENT_LOOKUP_ACCESS,
-    PRINTER_REQUEST_CREATE_ACCESS,
 ]
 
 
@@ -407,8 +405,6 @@ INSTALLED_APPS = (
     MAIN_APP_NAME + '.apps.network',
     MAIN_APP_NAME + '.apps.orientation',
     MAIN_APP_NAME + '.apps.printers',
-    MAIN_APP_NAME + '.apps.printerrequests',
-    MAIN_APP_NAME + '.apps.printerrequests.templatetags.__init__.default_app_config',
     MAIN_APP_NAME + '.apps.residents',
     MAIN_APP_NAME + '.apps.rosters',
     MAIN_APP_NAME + '.apps.technicians',
