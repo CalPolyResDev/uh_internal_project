@@ -28,7 +28,6 @@ from django.db import DatabaseError
 from django.utils.encoding import smart_text
 from srsconnector.models import ServiceRequest
 
-from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
 from .pyexchange import get_mail, get_voicemail, setup
 
@@ -43,28 +42,6 @@ ms_api_url = "https://graph.microsoft.com/v1.0/users"
 
 class GetDutyData(object):
     """ Utility for gathering daily duty data."""
-
-    def get_printer_requests(self):
-        """Checks the current number of printer requests."""
-
-        printer_requests = {
-            "count": None,
-            "status_color": None,
-            "last_checked": None,
-            "last_user": None
-        }
-
-        data = DailyDuties.objects.get(name='printerrequests')
-
-        printer_requests["count"] = PrinterRequest.objects.filter(status=REQUEST_STATUSES.index("Open")).count()
-        if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
-            printer_requests["status_color"] = GREEN
-        else:
-            printer_requests["status_color"] = RED
-        printer_requests["last_checked"] = datetime.strftime(data.last_checked, "%Y-%m-%d %H:%M")
-        printer_requests["last_user"] = data.last_user.get_full_name()
-
-        return printer_requests
 
     def get_voicemail(self, server):
         """Checks the current number of voicemail messages."""

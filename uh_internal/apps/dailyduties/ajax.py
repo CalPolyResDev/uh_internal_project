@@ -42,7 +42,6 @@ def refresh_duties(request):
         duty_data_manager = GetDutyData()
 
         duty_data = {
-            'printer_requests': duty_data_manager.get_printer_requests(),
             'voicemail': duty_data_manager.get_voicemail(server),
             'email': duty_data_manager.get_email(server),
             'tickets': duty_data_manager.get_tickets(request.user),
@@ -69,12 +68,10 @@ def refresh_duties(request):
 
     data = {
         'inner-fragments': {
-            '#printer_requests_text': duty_dict_to_link_text(duty_data['printer_requests'], 'Printer Requests'),
             '#voicemail_text': duty_dict_to_link_text(duty_data['voicemail'], 'Voicemail'),
             '#email_text': duty_dict_to_link_text(duty_data['email'], 'Email'),
             '#ticket_manager_text': duty_dict_to_link_text(duty_data['tickets'], 'Ticket Manager'),
         },
-        'printer_requests_content': duty_dict_to_popover_html(duty_data['printer_requests']),
         'voicemail_content': duty_dict_to_popover_html(duty_data['voicemail']),
         'email_content': duty_dict_to_popover_html(duty_data['email']),
         'tickets_content': duty_dict_to_popover_html(duty_data['tickets']),
