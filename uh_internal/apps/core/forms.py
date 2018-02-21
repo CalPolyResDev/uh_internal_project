@@ -55,5 +55,6 @@ class RoomUpdateForm(ModelForm):
 
 class OutageForm(ModelForm):
     
-    model = OutageWarning
-        
+    class Meta:
+        model = OutageWarning
+        fields = ['description', 'datetime']

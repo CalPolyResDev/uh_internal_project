@@ -51,6 +51,5 @@ urlpatterns = [
     url(r'^csd/assign_domain/$', login_required(csd_assignment_access(CSDDomainAssignmentEditView.as_view())), name='csd_assign_domain'),
     url(r'^csd/assign_domain/update/$', login_required(csd_assignment_access(update_csd_domain)), name='update_csd_domain'),
 
-    url(r'^outage/', view=report_outage)
-
+    url(r'^outage/new/$', login_required(report_outage), name='report_outage') # get form
 ]

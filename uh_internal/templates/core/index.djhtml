@@ -37,9 +37,11 @@
                 <div class="col-xs-12">
                     <h2>Network Status</h2>
                 </div>
-                <div class="col-xs-12 outage-container">
-                    <button type="button" class="btn btn-warning">Report Outage</button>
-                </div>
+                <a href="{% url 'core:report_outage' %}">
+                    <div class="col-xs-12 outage-container">
+                            <button type="button" class="btn btn-warning outage-btn">Report Outage</button>
+                    </div>
+                </a>
                 <div class="col-xs-12 col-md-12 col-lg-6">
                     <h4>Bandwidth</h4>
                     <span id="network-bandwidth-usage" style="height: 200px; display: block;"><p>Loading...</p></span>
@@ -74,6 +76,7 @@
 
 {% block extra_script %}
 
+<<<<<<< HEAD
 <script type="text/javascript">
     $(function() {
         $("#dialog").dialog({
@@ -103,6 +106,8 @@
     }*/
 </script>
 
+=======
+>>>>>>> 7491f47... Created new page for outage
 <script type="text/javascript">
     $(document).ready(function() {       
         {% if request.user.is_authenticated and ticket_access %}

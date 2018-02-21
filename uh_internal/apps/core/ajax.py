@@ -185,7 +185,6 @@ def update_csd_domain(request):
 
     return Response(data)
 
-
 class BuildingChainedAjaxView(ChainedSelectChoicesView):
 
     def get_child_set(self):

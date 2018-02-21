@@ -6,14 +6,18 @@
 
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 from clever_selects.views import ChainedSelectFormViewMixin
 from django.conf import settings
 from django.core.urlresolvers import reverse_lazy
 from django.db.models import Q
 from django.views.generic.base import TemplateView
+<<<<<<< HEAD
 from django.http import HttpResponseRedirect
+=======
+from django.shortcuts import render, redirect
+>>>>>>> 7491f47... Created new page for outage
 from ldap_groups import ADGroup as LDAPADGroup
 from srsconnector.models import ServiceRequest
 
@@ -83,13 +87,16 @@ class RoomsView(ChainedSelectFormViewMixin, DatatablesView):
     model = Room
     success_url = reverse_lazy('core:rooms')
 
-def report_outage(request):   
-    if request.methodf == 'POST':
-        form = OutageForm(request.POST)
-        if form.is_valid():
-            
-            return HttpResponseRedirect('/')
+def report_outage(request):
+    form = OutageForm()
 
+    if request.method == "POST":
+        outage = form.save(commit=False)
+        outage.author = request.user.username
+        outage.save()
+        return redirect('core:home')
+    else:
+        return render(request, 'core/outage.djhtml', {'form': form})
 
 def handler500(request):
     """500 error handler which includes ``request`` in the context."""

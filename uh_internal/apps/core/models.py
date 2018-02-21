@@ -248,7 +248,8 @@ class TechFlair(Model):
 class OutageWarning(Model):
     state = BooleanField(default=False)
     description = TextField()
-    time = DateTimeField()
+    author = CharField(max_length=50, verbose_name='Reporter')
+    datetime = DateTimeField(default=timezone.now)
 
     # def report_outage(self):
     #    self.save()
