@@ -92,6 +92,7 @@ def report_outage(request):
 
     if request.method == "POST":
         outage = form.save(commit=False)
+        outage.status = True
         outage.author = request.user.username
         outage.save()
         return redirect('core:home')

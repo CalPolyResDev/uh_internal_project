@@ -4,7 +4,7 @@ from django.contrib import admin
 from .forms import RoomCreateForm
 from .models import (Community, Building, Room, Department, SubDepartment,
                      StaffMapping, CSDMapping, TechFlair, UHInternalUser as InternalUser,
-                     ADGroup, NavbarLink, PermissionClass)
+                     ADGroup, NavbarLink, PermissionClass, OutageWarning)
 
 
 class StaffMappingAdmin(admin.ModelAdmin):
@@ -57,3 +57,4 @@ admin.site.register(InternalUser, InternalUserAdmin)
 admin.site.register(PermissionClass, PermissionClassAdmin)
 admin.site.register(ADGroup, ADGroupAdmin)
 admin.site.register(NavbarLink, NavBarLinkAdmin)
+admin.site.register(OutageWarning)
