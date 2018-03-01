@@ -1,21 +1,17 @@
 import os
 from os.path import join, dirname
-from ...settings.base import get_env_variable
+from django.conf import settings
 
 # https://github.com/fedorareis/pyexchange This is a combination of a few branches and some custom code
 from pyexchange import Exchange2010Service, ExchangeNTLMAuthConnection, ExchangeBasicAuthConnection
-
-URL = get_env_variable('RESNET_INTERNAL_OUTLOOK_URL')
-USERNAME = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_USERNAME')  # ResNet username
-PASSWORD = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_PASSWORD')  # ResNet Password
 
 
 def setup():
     """ Creates the Exchange Connection """
     # Set up the connection to Exchange
-    connection = ExchangeBasicAuthConnection(url=URL,
-                                             username=USERNAME,
-                                             password=PASSWORD)
+    connection = ExchangeBasicAuthConnection(url=settings.OUTLOOK_URL,
+                                             username=OUTLOOK_USERNAME,
+                                             password=OUTLOOK_PASSWORD)
 
     service = Exchange2010Service(connection)
 
