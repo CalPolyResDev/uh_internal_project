@@ -144,6 +144,10 @@ EMAIL_USE_TLS = True if get_env_variable('RESNET_INTERNAL_EMAIL_OUT_TLS') == "Tr
 EMAIL_HOST_USER = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_USERNAME')  # The username to use. The full email address is what most servers require.
 EMAIL_HOST_PASSWORD = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_PASSWORD')  # The password to use. Note that only clearText authentication is supported.
 
+OUTLOOK_URL = get_env_variable('RESNET_INTERNAL_OUTLOOK_URL')
+EMAIL_OUT_USERNAME = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_USERNAME')
+EMAIL_OUT_PASSWORD = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_PASSWORD')
+
 # Set the server's email address (for sending emails only)
 SERVER_EMAIL = 'ResDev Mail Relay Server <resdev@calpoly.edu>'
 DEFAULT_FROM_EMAIL = SERVER_EMAIL

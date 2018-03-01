@@ -29,7 +29,9 @@ from django.utils.encoding import smart_text
 from srsconnector.models import ServiceRequest
 
 from .models import DailyDuties
-from .pyexchange import get_mail, get_voicemail, setup
+
+# https://github.com/fedorareis/pyexchange This is a combination of a few branches and some custom code
+from pyexchange import Exchange2010Service, ExchangeNTLMAuthConnection, ExchangeBasicAuthConnection
 
 logger = logging.getLogger(__name__)
 
@@ -38,10 +40,39 @@ RED = "#900"
 
 ACCEPTABLE_LAST_CHECKED = timedelta(days=1)
 
-ms_api_url = "https://graph.microsoft.com/v1.0/users"
+class GetInboxCount():
+    
+    def setup(self):
+        """ Creates the Exchange Connection """
+        # Set up the connection to Exchange
+        connection = ExchangeBasicAuthConnection(url=settings.OUTLOOK_URL,
+                                                username=settings.EMAIL_OUT_USERNAME,
+                                                password=settings.EMAIL_OUT_PASSWORD)
+
+        service = Exchange2010Service(connection)
+
+        return service
+
+    def get_mail_count(self, service):
+
+        folder = service.folder()
+        folder_id = "inbox"
+        email = folder.get_folder(folder_id)
+
+        return email.total_count
+
+    def get_voicemail_count(self, service):
+
+        folder = service.folder()
+        voicemail_folder_id = "AAMkADk3MzI3ZmNiLTM5YzMtNGZlOS1hZjVkLTFhN2I5ZTBjNmFmOAAuAAAAAACiNxZPdHhiS6q1zMiCAUIaAQBCzAjvjx3GTKwjaiEZoJadAAADOUuhAAA="
+        voicemail = folder.get_folder(voicemail_folder_id)
+
+        return voicemail.total_count
 
 class GetDutyData(object):
     """ Utility for gathering daily duty data."""
+
+    inbox = GetInboxCount()
 
     def get_voicemail(self, server):
         """Checks the current number of voicemail messages."""
@@ -55,7 +86,7 @@ class GetDutyData(object):
 
         data = DailyDuties.objects.get(name='voicemail')
 
-        count = get_voicemail(server)
+        count = inbox.get_voicemail_count(server)
         voicemail["count"] = count
 
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
@@ -80,7 +111,7 @@ class GetDutyData(object):
         data = DailyDuties.objects.get(name='email')
 
         #fetch email with pyexchange
-        count = get_mail(server)
+        count = inbox.get_mail_count(server)
         email["count"] = count
 
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
@@ -137,3 +168,4 @@ class GetDutyData(object):
             return r.json()
         except:
             'Error sending API request: {0} - {1}'.format(r.status_code, r.text)
+
