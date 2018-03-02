@@ -30,28 +30,3 @@ class DailyDuties(Model):
     class Meta(object):
         verbose_name_plural = 'Daily Duties'
         verbose_name = 'Daily Duty'
-
-
-class EmailPermalink(Model):
-    current_mailbox = CharField(max_length=100)
-    current_uid = IntegerField()
-
-    date = DateTimeField()
-    subject = TextField()
-    sender_name = CharField(max_length=255)
-    sender_email = EmailField()
-
-    slug = SlugField(unique=True, blank=True)
-
-    def _generate_slug(self):
-        if not self.slug:
-            slug_str = self.sender_email + ' ' + self.subject
-            unique_slugify(self, slug_str)
-
-    def save(self, **kwargs):
-        self._generate_slug()
-        super().save(**kwargs)
-
-    @cached_property
-    def absolute_uri(self):
-        self._generate_slug()
