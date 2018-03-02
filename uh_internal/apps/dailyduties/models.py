@@ -55,5 +55,3 @@ class EmailPermalink(Model):
     @cached_property
     def absolute_uri(self):
         self._generate_slug()
-
-        return urljoin(settings.DEFAULT_BASE_URL, reverse('dailyduties:email_permalink_view_message', kwargs={'slug': self.slug}))
