@@ -9,7 +9,7 @@ django-cas-ng==3.5.8
 django-crispy-forms==1.7.0
 django-ewiz==1.5.4
 django-js-reverse==0.8.1
-django-static-precompiler==1.7.1
+django-static-precompiler==1.8
 django-uwsgi-cache==1.0.1
 dj_database_url==0.4.2
 html2text==2018.1.9
