@@ -40,9 +40,11 @@ RED = "#900"
 
 ACCEPTABLE_LAST_CHECKED = timedelta(days=1)
 
-class GetInboxCount():
+class GetInboxCount(object):
+    """Utility for gathering count of emails and voicemails in inbox"""
     
-    def setup(self):
+    @staticmethod
+    def setup():
         """ Creates the Exchange Connection """
         # Set up the connection to Exchange
         connection = ExchangeBasicAuthConnection(url=settings.OUTLOOK_URL,
@@ -53,7 +55,8 @@ class GetInboxCount():
 
         return service
 
-    def get_mail_count(self, service):
+    @staticmethod
+    def get_mail_count(service):
 
         folder = service.folder()
         folder_id = "inbox"
@@ -61,18 +64,16 @@ class GetInboxCount():
 
         return email.total_count
 
-    def get_voicemail_count(self, service):
+    @staticmethod
+    def get_voicemail_count(service):
 
         folder = service.folder()
-        voicemail_folder_id = "AAMkADk3MzI3ZmNiLTM5YzMtNGZlOS1hZjVkLTFhN2I5ZTBjNmFmOAAuAAAAAACiNxZPdHhiS6q1zMiCAUIaAQBCzAjvjx3GTKwjaiEZoJadAAADOUuhAAA="
-        voicemail = folder.get_folder(voicemail_folder_id)
+        voicemail = folder.get_folder(settings.OUTLOOK_VOICEMAIL_FOLDER_ID)
 
         return voicemail.total_count
 
 class GetDutyData(object):
     """ Utility for gathering daily duty data."""
-
-    inbox = GetInboxCount()
 
     def get_voicemail(self, server):
         """Checks the current number of voicemail messages."""
@@ -86,7 +87,7 @@ class GetDutyData(object):
 
         data = DailyDuties.objects.get(name='voicemail')
 
-        count = inbox.get_voicemail_count(server)
+        count = GetInboxCount.get_voicemail_count(server)
         voicemail["count"] = count
 
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
@@ -111,7 +112,7 @@ class GetDutyData(object):
         data = DailyDuties.objects.get(name='email')
 
         #fetch email with pyexchange
-        count = inbox.get_mail_count(server)
+        count = GetInboxCount.get_mail_count(server)
         email["count"] = count
 
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:

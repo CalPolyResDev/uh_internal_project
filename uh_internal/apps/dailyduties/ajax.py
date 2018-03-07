@@ -36,8 +36,7 @@ logger = logging.getLogger(__name__)
 def refresh_duties(request):
     duty_data = cache.get('duty_data')
 
-    inbox = GetInboxCount()
-    server = inbox.setup()
+    server = GetInboxCount.setup()
 
     if not duty_data:
         duty_data_manager = GetDutyData()
