@@ -8,8 +8,6 @@
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
-from email import header
-import email
 from itertools import zip_longest
 import itertools
 import logging
@@ -23,7 +21,6 @@ import requests
 from django.conf import settings
 from django.core import mail
 from django.core.cache import cache
-from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
 from srsconnector.models import ServiceRequest
