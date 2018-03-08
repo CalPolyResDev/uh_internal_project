@@ -125,33 +125,10 @@ DATABASES['default']['DBBACKUP_BACKUP_COMMAND_EXTRA_ARGS'] = ['--exclude-table-d
 #                                            E-Mail Configuration                                          #
 # ======================================================================================================== #
 
-# Incoming email settings
-INCOMING_EMAIL = {
-    'IMAP4': {  # IMAP4 is currently the only supported protocol. It must be included.
-        'HOST': get_env_variable('RESNET_INTERNAL_EMAIL_IN_HOST'),  # The host to use for receiving email. Set to empty string for localhost.
-        'PORT': int(get_env_variable('RESNET_INTERNAL_EMAIL_IN_PORT')),  # The port to use. Set to empty string for default values: 143, 993(SSL).
-        'USE_SSL': True if get_env_variable('RESNET_INTERNAL_EMAIL_IN_SSL') == "True" else False,  # Whether or not to use SSL (Boolean)
-        'USER': get_env_variable('RESNET_INTERNAL_EMAIL_IN_USERNAME'),  # The username to use. The full email address is what most servers require.
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_EMAIL_IN_PASSWORD'),  # The password to use. Note that only clearText authentication is supported.
-    },
-}
-
-# Outgoing email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # This configuration uses the SMTP protocol as a backend
-EMAIL_HOST = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_HOST')  # The host to use for sending email. Set to empty string for localhost.
-EMAIL_PORT = int(get_env_variable('RESNET_INTERNAL_EMAIL_OUT_PORT'))  # The port to use. Defaul values: 25, 587
-EMAIL_USE_TLS = True if get_env_variable('RESNET_INTERNAL_EMAIL_OUT_TLS') == "True" else False  # Whether or not to use SSL (Boolean)
-EMAIL_HOST_USER = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_USERNAME')  # The username to use. The full email address is what most servers require.
-EMAIL_HOST_PASSWORD = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_PASSWORD')  # The password to use. Note that only clearText authentication is supported.
-
 OUTLOOK_URL = get_env_variable('RESNET_INTERNAL_OUTLOOK_URL')
-EMAIL_OUT_USERNAME = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_USERNAME')
-EMAIL_OUT_PASSWORD = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_PASSWORD')
+EMAIL_USERNAME = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_USERNAME')
+EMAIL_PASSWORD = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_PASSWORD')
 OUTLOOK_VOICEMAIL_FOLDER_ID = 'AAMkADk3MzI3ZmNiLTM5YzMtNGZlOS1hZjVkLTFhN2I5ZTBjNmFmOAAuAAAAAACiNxZPdHhiS6q1zMiCAUIaAQBCzAjvjx3GTKwjaiEZoJadAAADOUuhAAA='
-
-# Set the server's email address (for sending emails only)
-SERVER_EMAIL = 'ResDev Mail Relay Server <resdev@calpoly.edu>'
-DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
 # ======================================================================================================== #
 #                                            Slack Configuration                                           #
