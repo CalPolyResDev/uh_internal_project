@@ -122,6 +122,19 @@ DBBACKUP_DATABASES = ['default']
 DATABASES['default']['DBBACKUP_BACKUP_COMMAND_EXTRA_ARGS'] = ['--exclude-table-data=network_clearpassloginattempt']
 
 # ======================================================================================================== #
+#                                            E-Mail Configuration                                          #
+# ======================================================================================================== #
+
+OUTLOOK_URL = get_env_variable('RESNET_INTERNAL_OUTLOOK_URL')
+EMAIL_OUT_USERNAME = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_USERNAME')
+EMAIL_OUT_PASSWORD = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_PASSWORD')
+OUTLOOK_VOICEMAIL_FOLDER_ID = 'AAMkADk3MzI3ZmNiLTM5YzMtNGZlOS1hZjVkLTFhN2I5ZTBjNmFmOAAuAAAAAACiNxZPdHhiS6q1zMiCAUIaAQBCzAjvjx3GTKwjaiEZoJadAAADOUuhAAA='
+
+# Set the server's email address (for sending emails only)
+SERVER_EMAIL = 'ResDev Mail Relay Server <resdev@calpoly.edu>'
+DEFAULT_FROM_EMAIL = SERVER_EMAIL
+
+# ======================================================================================================== #
 #                                            Slack Configuration                                           #
 # ======================================================================================================== #
 
