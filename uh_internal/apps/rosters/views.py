@@ -9,12 +9,13 @@
 import csv
 from operator import itemgetter
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 from django.http import HttpResponse
 from django.views.decorators.cache import cache_control
 from django.views.generic.edit import FormView
 
-from rmsconnector.utils import reverse_address_lookup
+from starrezconnector.connection import StarRezAuthConnection
+from starrezconnector.exceptions import ObjectDoesNotExist
 
 from .forms import GenerationForm
 
@@ -26,7 +27,15 @@ class RosterGenerateView(FormView):
     template_name = 'rosters/rosters.djhtml'
     report_template_name = 'rosters/rosters_report.djhtml'
 
-    attribute_list = ["full_name", "sex", "address", "cell_phone", "dorm_phone", "college", "major", "course_year", "email", "is_buckley"]
+    attribute_list = ["full_name",
+                      "sex",
+                      "address",
+                      "cell_phone",
+                      "college",
+                      "major",
+                      "course_year",
+                      "email",
+                      "is_buckley"]
     empty_error_message_csv = "The buildings provided are currently vacant."
     empty_error_message_html = "The buildings provided are currently vacant."
 
@@ -44,6 +53,9 @@ class RosterGenerateView(FormView):
         return kwargs
 
     def form_valid(self, form):
+        con = StarRezAuthConnection(host=settings.STARREZ["url"],
+                                    username=settings.STARREZ["username"],
+                                    password=settings.STARREZ["password"])
         self.template_name = self.report_template_name
 
         buildings = form.cleaned_data['buildings']
@@ -51,7 +63,8 @@ class RosterGenerateView(FormView):
 
         for building in buildings:
             try:
-                resident_list.extend(reverse_address_lookup(community=building.community.name, building=building.name))
+                resident_list.extend(con.reverse_lookup(community=building.community.name,
+                                                        building=building.name))
             except ObjectDoesNotExist:
                 pass
 
@@ -65,7 +78,13 @@ class RosterGenerateView(FormView):
             response['Content-Disposition'] = self.get_content_disposition(context)
 
             writer = csv.writer(response, dialect='excel', delimiter=';', quoting=csv.QUOTE_ALL)
-            writer.writerow(["Name", "Dorm Address", "Cell Phone", "Dorm Phone", "E-mail Address", "Buckley Status", "Picture?", "Signature"])
+            writer.writerow(["Name",
+                             "Dorm Address",
+                             "Cell Phone",
+                             "E-mail Address",
+                             "Buckley Status",
+                             "Picture?",
+                             "Signature"])
             for row in context["resident_list"]:
                 writer.writerow(row)
             else:
@@ -74,7 +93,9 @@ class RosterGenerateView(FormView):
             return response
         else:
             response_kwargs.setdefault('content_type', self.content_type)
-            return self.response_class(request=self.request, template=self.get_template_names(), context=context, **response_kwargs)
+            return self.response_class(request=self.request,
+                                       template=self.get_template_names(),
+                                       context=context, **response_kwargs)
 
     def get_context_data(self, **kwargs):
         context = super(RosterGenerateView, self).get_context_data(**kwargs)
