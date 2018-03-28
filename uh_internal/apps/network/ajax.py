@@ -23,7 +23,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django_datatables_view.mixins import JSONResponseView
 from paramiko import SSHClient, AutoAddPolicy
-from rmsconnector.utils import Resident
+from starrezconnector.connection import StarRezAuthConnection
 
 from ...settings.base import NETWORK_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
@@ -112,6 +112,9 @@ class PopulatePorts(RNINDatatablesPopulateView):
             return super().render_column(row, column)
 
     def get_extra_params(self, params):
+        con = StarRezAuthConnection(host=settings.STARREZ["url"],
+                                    username=settings.STARREZ["username"],
+                                    password=settings.STARREZ["password"])
         # Check for email lookup flag
         for param in params:
             if param[:1] == '?':
@@ -119,7 +122,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
 
                 if email:
                     try:
-                        resident = Resident(principal_name=email)
+                        resident = con.lookup_resident(principal_name=email)
                         params = [resident.address_dict['community'], resident.address_dict['building'], resident.address_dict['room']]
                     except (ObjectDoesNotExist, ImproperlyConfigured):
                         params = ['Address', 'Not', 'Found']
