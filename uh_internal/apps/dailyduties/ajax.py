@@ -27,8 +27,7 @@ from jfu.http import upload_receive, UploadResponse, JFUResponse
 from ..core.models import Building
 from ..core.templatetags.srs_urls import srs_edit_url
 from .models import DailyDuties
-from .utils import GetDutyData
-from .pyexchange import setup
+from .utils import GetInboxCount, GetDutyData
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +35,8 @@ logger = logging.getLogger(__name__)
 @api_view(['GET'])
 def refresh_duties(request):
     duty_data = cache.get('duty_data')
-    server = setup()
+
+    server = GetInboxCount.setup()
 
     if not duty_data:
         duty_data_manager = GetDutyData()
