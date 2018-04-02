@@ -1,6 +1,6 @@
 function add_duties() {
-    var duties_links = ['email_link', 'ticket_manager_link', 'voicemail_link', 'printer_requests_link'];
-    var duties_titles = ['Email', 'Tickets', 'Voicemail', 'Printer Requests'];
+    var duties_links = ['email_link', 'ticket_manager_link', 'voicemail_link'];
+    var duties_titles = ['Email', 'Tickets', 'Voicemail'];
     
     for (var i=0; i < duties_links.length; ++i) {
         var link = $('#' + duties_links[i]);
@@ -24,7 +24,6 @@ function refreshDuties() {
             $("#email_link").attr('data-content', data.email_content);
             $("#ticket_manager_link").attr('data-content', data.tickets_content);
             $("#voicemail_link").attr('data-content', data.voicemail_content);
-            $("#printer_requests_link").attr('data-content', data.printer_requests_content);
         });
 }
 function updateEmail() {
@@ -32,9 +31,6 @@ function updateEmail() {
 }
 function updateVoicemail() {
     updateDuty('voicemail', 'https://outlook.office.com/owa/resnet@calpoly.edu/?offline=disabled', '_blank');
-}
-function updatePrinterRequests() {
-    updateDuty('printerrequests', DjangoReverse['printerrequests:home'](), '_self');
 }
 function updateTickets() {
     updateDuty('tickets', 'https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Main', '_blank');

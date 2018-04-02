@@ -8,8 +8,6 @@
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
-from email import header
-import email
 from itertools import zip_longest
 import itertools
 import logging
@@ -23,14 +21,14 @@ import requests
 from django.conf import settings
 from django.core import mail
 from django.core.cache import cache
-from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
 from srsconnector.models import ServiceRequest
 
-from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
-from .pyexchange import get_mail, get_voicemail, setup
+
+# https://github.com/fedorareis/pyexchange This is a combination of a few branches and some custom code
+from pyexchange import Exchange2010Service, ExchangeNTLMAuthConnection, ExchangeBasicAuthConnection
 
 logger = logging.getLogger(__name__)
 
@@ -39,32 +37,40 @@ RED = "#900"
 
 ACCEPTABLE_LAST_CHECKED = timedelta(days=1)
 
-ms_api_url = "https://graph.microsoft.com/v1.0/users"
+class GetInboxCount(object):
+    """Utility for gathering count of emails and voicemails in inbox"""
+    
+    @staticmethod
+    def setup():
+        """ Creates the Exchange Connection """
+        # Set up the connection to Exchange
+        connection = ExchangeBasicAuthConnection(url=settings.OUTLOOK_URL,
+                                                username=settings.EMAIL_OUT_USERNAME,
+                                                password=settings.EMAIL_OUT_PASSWORD)
+
+        service = Exchange2010Service(connection)
+
+        return service
+
+    @staticmethod
+    def get_mail_count(service):
+
+        folder = service.folder()
+        folder_id = "inbox"
+        email = folder.get_folder(folder_id)
+
+        return email.total_count
+
+    @staticmethod
+    def get_voicemail_count(service):
+
+        folder = service.folder()
+        voicemail = folder.get_folder(settings.OUTLOOK_VOICEMAIL_FOLDER_ID)
+
+        return voicemail.total_count
 
 class GetDutyData(object):
     """ Utility for gathering daily duty data."""
-
-    def get_printer_requests(self):
-        """Checks the current number of printer requests."""
-
-        printer_requests = {
-            "count": None,
-            "status_color": None,
-            "last_checked": None,
-            "last_user": None
-        }
-
-        data = DailyDuties.objects.get(name='printerrequests')
-
-        printer_requests["count"] = PrinterRequest.objects.filter(status=REQUEST_STATUSES.index("Open")).count()
-        if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
-            printer_requests["status_color"] = GREEN
-        else:
-            printer_requests["status_color"] = RED
-        printer_requests["last_checked"] = datetime.strftime(data.last_checked, "%Y-%m-%d %H:%M")
-        printer_requests["last_user"] = data.last_user.get_full_name()
-
-        return printer_requests
 
     def get_voicemail(self, server):
         """Checks the current number of voicemail messages."""
@@ -78,7 +84,7 @@ class GetDutyData(object):
 
         data = DailyDuties.objects.get(name='voicemail')
 
-        count = get_voicemail(server)
+        count = GetInboxCount.get_voicemail_count(server)
         voicemail["count"] = count
 
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
@@ -103,7 +109,7 @@ class GetDutyData(object):
         data = DailyDuties.objects.get(name='email')
 
         #fetch email with pyexchange
-        count = get_mail(server)
+        count = GetInboxCount.get_mail_count(server)
         email["count"] = count
 
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
@@ -160,3 +166,4 @@ class GetDutyData(object):
             return r.json()
         except:
             'Error sending API request: {0} - {1}'.format(r.status_code, r.text)
+

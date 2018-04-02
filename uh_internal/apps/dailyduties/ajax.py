@@ -26,9 +26,14 @@ from jfu.http import upload_receive, UploadResponse, JFUResponse
 
 from ..core.models import Building
 from ..core.templatetags.srs_urls import srs_edit_url
+<<<<<<< HEAD
 from .models import DailyDuties, EmailViewingRecord
+from .utils import GetInboxCount, GetDutyData
+=======
+from .models import DailyDuties
 from .utils import GetDutyData
 from .pyexchange import setup
+>>>>>>> ebd645a632d14994831849996be468f3f77ff20e
 
 logger = logging.getLogger(__name__)
 
@@ -36,13 +41,13 @@ logger = logging.getLogger(__name__)
 @api_view(['GET'])
 def refresh_duties(request):
     duty_data = cache.get('duty_data')
-    server = setup()
+
+    server = GetInboxCount.setup()
 
     if not duty_data:
         duty_data_manager = GetDutyData()
 
         duty_data = {
-            'printer_requests': duty_data_manager.get_printer_requests(),
             'voicemail': duty_data_manager.get_voicemail(server),
             'email': duty_data_manager.get_email(server),
             'tickets': duty_data_manager.get_tickets(request.user),
@@ -69,12 +74,10 @@ def refresh_duties(request):
 
     data = {
         'inner-fragments': {
-            '#printer_requests_text': duty_dict_to_link_text(duty_data['printer_requests'], 'Printer Requests'),
             '#voicemail_text': duty_dict_to_link_text(duty_data['voicemail'], 'Voicemail'),
             '#email_text': duty_dict_to_link_text(duty_data['email'], 'Email'),
             '#ticket_manager_text': duty_dict_to_link_text(duty_data['tickets'], 'Ticket Manager'),
         },
-        'printer_requests_content': duty_dict_to_popover_html(duty_data['printer_requests']),
         'voicemail_content': duty_dict_to_popover_html(duty_data['voicemail']),
         'email_content': duty_dict_to_popover_html(duty_data['email']),
         'tickets_content': duty_dict_to_popover_html(duty_data['tickets']),

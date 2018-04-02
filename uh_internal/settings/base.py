@@ -35,9 +35,9 @@ def string_to_bool(string):
     return False
 
 
-# ======================================================================================================== #
-#                                         General Management                                               #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                         General Management                                       #
+# ================================================================================================ #
 
 ADMINS = (
     ('ResDev', 'resdev@calpoly.edu'),
@@ -45,9 +45,9 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-# ======================================================================================================== #
-#                                         General Settings                                                 #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                         General Settings                                         #
+# ================================================================================================ #
 
 # Local time zone for this installation. Choices can be found here:
 TIME_ZONE = 'America/Los_Angeles'
@@ -81,26 +81,19 @@ FILE_UPLOAD_MAX_MEMORY_SIZE = 1048576 * 21  # 21 MiB
 
 MAIN_APP_NAME = 'uh_internal'
 
-# ======================================================================================================== #
-#                                      URL Configuration                                                   #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                      URL Configuration                                           #
+# ================================================================================================ #
 
 ROOT_URLCONF = MAIN_APP_NAME + '.urls'
 DEFAULT_BASE_URL = get_env_variable('RESNET_INTERNAL_DEFAULT_BASE_URL')
 
-# ======================================================================================================== #
-#                                          Database Configuration                                          #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                          Database Configuration                                  #
+# ================================================================================================ #
 
 DATABASES = {
     'default': dj_database_url.config(default=get_env_variable('RESNET_INTERNAL_DB_DEFAULT_DATABASE_URL')),
-    'rms': {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': 'mercprd.db.calpoly.edu:1521/mercprd',
-        'USER': get_env_variable('RESNET_INTERNAL_DB_RMS_USERNAME'),
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_RMS_PASSWORD'),
-        'OPTIONS': {'threaded': True},
-    },
     'srs': {
         'ENGINE': 'django_ewiz',
         'NAME': 'Calpoly2',
@@ -113,7 +106,6 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = (
-    'rmsconnector.routers.RMSRouter',
     'srsconnector.routers.SRSRouter',
 )
 
@@ -121,45 +113,41 @@ DBBACKUP_DATABASES = ['default']
 
 DATABASES['default']['DBBACKUP_BACKUP_COMMAND_EXTRA_ARGS'] = ['--exclude-table-data=network_clearpassloginattempt']
 
-# ======================================================================================================== #
-#                                            E-Mail Configuration                                          #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                       Datastore API Configuration                                #
+# ================================================================================================ #
 
-# Incoming email settings
-INCOMING_EMAIL = {
-    'IMAP4': {  # IMAP4 is currently the only supported protocol. It must be included.
-        'HOST': get_env_variable('RESNET_INTERNAL_EMAIL_IN_HOST'),  # The host to use for receiving email. Set to empty string for localhost.
-        'PORT': int(get_env_variable('RESNET_INTERNAL_EMAIL_IN_PORT')),  # The port to use. Set to empty string for default values: 143, 993(SSL).
-        'USE_SSL': True if get_env_variable('RESNET_INTERNAL_EMAIL_IN_SSL') == "True" else False,  # Whether or not to use SSL (Boolean)
-        'USER': get_env_variable('RESNET_INTERNAL_EMAIL_IN_USERNAME'),  # The username to use. The full email address is what most servers require.
-        'PASSWORD': get_env_variable('RESNET_INTERNAL_EMAIL_IN_PASSWORD'),  # The password to use. Note that only clearText authentication is supported.
-    },
+STARREZ = {
+    'url': get_env_variable('RESNET_INTERNAL_STARREZ_URL'),
+    'username': get_env_variable('RESNET_INTERNAL_STARREZ_USERNAME'),
+    'password': get_env_variable('RESNET_INTERNAL_STARREZ_PASSWORD'),
 }
 
-# Outgoing email settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # This configuration uses the SMTP protocol as a backend
-EMAIL_HOST = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_HOST')  # The host to use for sending email. Set to empty string for localhost.
-EMAIL_PORT = int(get_env_variable('RESNET_INTERNAL_EMAIL_OUT_PORT'))  # The port to use. Defaul values: 25, 587
-EMAIL_USE_TLS = True if get_env_variable('RESNET_INTERNAL_EMAIL_OUT_TLS') == "True" else False  # Whether or not to use SSL (Boolean)
-EMAIL_HOST_USER = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_USERNAME')  # The username to use. The full email address is what most servers require.
-EMAIL_HOST_PASSWORD = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_PASSWORD')  # The password to use. Note that only clearText authentication is supported.
+# ================================================================================================ #
+#                                            E-Mail Configuration                                  #
+# ================================================================================================ #
+
+OUTLOOK_URL = get_env_variable('RESNET_INTERNAL_OUTLOOK_URL')
+EMAIL_OUT_USERNAME = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_USERNAME')
+EMAIL_OUT_PASSWORD = get_env_variable('RESNET_INTERNAL_EMAIL_OUT_PASSWORD')
+OUTLOOK_VOICEMAIL_FOLDER_ID = 'AAMkADk3MzI3ZmNiLTM5YzMtNGZlOS1hZjVkLTFhN2I5ZTBjNmFmOAAuAAAAAACiNxZPdHhiS6q1zMiCAUIaAQBCzAjvjx3GTKwjaiEZoJadAAADOUuhAAA='
 
 # Set the server's email address (for sending emails only)
 SERVER_EMAIL = 'ResDev Mail Relay Server <resdev@calpoly.edu>'
 DEFAULT_FROM_EMAIL = SERVER_EMAIL
 
-# ======================================================================================================== #
-#                                            Slack Configuration                                           #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                            Slack Configuration                                   #
+# ================================================================================================ #
 
 SLACK_WEBHOOK_URL = get_env_variable('RESNET_INTERNAL_SLACK_WEBHOOK_URL')
 SLACK_VM_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_VM_CHANNEL')
 SLACK_EMAIL_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_EMAIL_CHANNEL')
 SLACK_NETWORK_STATUS_CHANNEL = get_env_variable('RESNET_INTERNAL_SLACK_NETWORK_STATUS_CHANNEL')
 
-# ======================================================================================================== #
-#                                      Network Devices Configuration                                       #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                      Network Devices Configuration                               #
+# ================================================================================================ #
 
 AIRWAVES = {
     'url': get_env_variable('RESNET_INTERNAL_AIRWAVES_URL'),
@@ -187,9 +175,9 @@ CLEARPASS_SERVICE_IGNORE = [
     'SLO_AIRGROUP_AUTH_SERVICE',
 ]
 
-# ======================================================================================================== #
-#                                              Access Permissions                                          #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                              Access Permissions                                  #
+# ================================================================================================ #
 
 DEVELOPER_ACCESS = 'developer'
 TICKET_ACCESS = 'ticket'
@@ -208,7 +196,6 @@ PRINTERS_MODIFY_ACCESS = 'printers_modify'
 CSD_ASSIGNMENT_ACCESS = 'csd_assignment'
 ROSTER_ACCESS = 'roster'
 RESIDENT_LOOKUP_ACCESS = 'resident_lookup'
-PRINTER_REQUEST_CREATE_ACCESS = 'printer_request_create'
 
 ACCESS_PERMISSIONS = [
     DEVELOPER_ACCESS,
@@ -228,13 +215,12 @@ ACCESS_PERMISSIONS = [
     CSD_ASSIGNMENT_ACCESS,
     ROSTER_ACCESS,
     RESIDENT_LOOKUP_ACCESS,
-    PRINTER_REQUEST_CREATE_ACCESS,
 ]
 
 
-# ======================================================================================================== #
-#                                        Authentication Configuration                                      #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                    Authentication Configuration                                  #
+# ================================================================================================ #
 
 LOGIN_URL = '/login/'
 
@@ -257,9 +243,9 @@ CAS_LOGOUT_URL = "https://my.calpoly.edu/cas/casClientLogout.jsp?logoutApp=Unive
 
 RESTRICT_LOGIN_TO_DEVELOPERS = string_to_bool(get_env_variable('RESNET_INTERNAL_RESTRICT_LOGIN_TO_DEVELOPERS'))
 
-# ======================================================================================================== #
-#                                        LDAP Groups Configuration                                         #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                    LDAP Groups Configuration                                     #
+# ================================================================================================ #
 
 LDAP_GROUPS_SERVER_URI = 'ldap://ad.calpoly.edu'
 LDAP_GROUPS_BASE_DN = 'DC=ad,DC=calpoly,DC=edu'
@@ -278,16 +264,16 @@ LDAP_GROUPS_ATTRIBUTE_LIST = ['displayName', LDAP_GROUPS_USER_LOOKUP_ATTRIBUTE, 
 LDAP_ADMIN_GROUP = 'CN=UH-RN-Staff,OU=Technology,OU=UH,OU=Manual,OU=Groups,' + LDAP_GROUPS_BASE_DN
 LDAP_DEVELOPER_GROUP = 'CN=UH-RN-DevTeam,OU=Technology,OU=UH,OU=Manual,OU=Groups,' + LDAP_GROUPS_BASE_DN
 
-# ======================================================================================================== #
-#                                            SSH Configuration                                             #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                        SSH Configuration                                         #
+# ================================================================================================ #
 
 RESNET_SWITCH_SSH_USER = get_env_variable('RESNET_INTERNAL_SWITCH_USER_DN')
 RESNET_SWITCH_SSH_PASSWORD = get_env_variable('RESNET_INTERNAL_SWITCH_USER_PASSWORD')
 
-# ======================================================================================================== #
-#                                      Session/Security Configuration                                      #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                  Session/Security Configuration                                  #
+# ================================================================================================ #
 
 # Cookie settings.
 SESSION_COOKIE_HTTPONLY = True
@@ -298,9 +284,9 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = get_env_variable('RESNET_INTERNAL_SECRET_KEY')
 
-# ======================================================================================================== #
-#                                  File/Application Handling Configuration                                 #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                               File/Application Handling Configuration                            #
+# ================================================================================================ #
 
 PROJECT_DIR = Path(__file__).parents[2]
 
@@ -394,7 +380,6 @@ INSTALLED_APPS = (
     'jfu',
     'raven.contrib.django.raven_compat',
     'rest_framework',
-    'rmsconnector',
     'srsconnector',
     'static_precompiler',
     'paramiko',
@@ -407,16 +392,14 @@ INSTALLED_APPS = (
     MAIN_APP_NAME + '.apps.network',
     MAIN_APP_NAME + '.apps.orientation',
     MAIN_APP_NAME + '.apps.printers',
-    MAIN_APP_NAME + '.apps.printerrequests',
-    MAIN_APP_NAME + '.apps.printerrequests.templatetags.__init__.default_app_config',
     MAIN_APP_NAME + '.apps.residents',
     MAIN_APP_NAME + '.apps.rosters',
     MAIN_APP_NAME + '.apps.technicians',
 )
 
-# ======================================================================================================== #
-#                                         Logging Configuration                                            #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                         Logging Configuration                                    #
+# ================================================================================================ #
 
 RAVEN_CONFIG = {
     'dsn': get_env_variable('RESNET_INTERNAL_SENTRY_DSN'),
