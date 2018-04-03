@@ -130,7 +130,7 @@ STARREZ = {
 OUTLOOK_URL = get_env_variable('RESNET_INTERNAL_OUTLOOK_URL')
 EMAIL_USERNAME = get_env_variable('RESNET_INTERNAL_OUTLOOK_USERNAME')
 EMAIL_PASSWORD = get_env_variable('RESNET_INTERNAL_OUTLOOK_PASSWORD')
-OUTLOOK_VOICEMAIL_FOLDER_ID = get_env_variable('OUTLOOK_VOICEMAIL_FOLDER_ID')
+OUTLOOK_VOICEMAIL_FOLDER_ID = get_env_variable('RESNET_INTERNAL_OUTLOOK_VOICEMAIL_FOLDER_ID')
 
 # ================================================================================================ #
 #                                            Slack Configuration                                   #
