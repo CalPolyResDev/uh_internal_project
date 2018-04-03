@@ -29,6 +29,7 @@ from .models import DailyDuties
 
 # https://github.com/fedorareis/pyexchange This is a combination of a few branches and some custom code
 from pyexchange import Exchange2010Service, ExchangeNTLMAuthConnection, ExchangeBasicAuthConnection
+from pyexchange.exceptions import FailedExchangeException
 
 logger = logging.getLogger(__name__)
 
@@ -117,7 +118,7 @@ class GetDutyData(object):
         try:
             count = GetInboxCount.get_mail_count(server)
             email["count"] = count
-        except FailedExchangeException:
+        except FailedExchangeException as e:
             email["count"] = '?'
 
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
