@@ -101,9 +101,9 @@ class SearchView(FormView):
         try:
             resident_list = con.full_name_lookup(first_name, last_name)
             return self.render_to_response(self.get_context_data(full_name_form=form,
-                                                        principal_name_form=self.principal_name_form_class(),
-                                                        address_form=self.address_form_class(),
-                                                        resident_list=resident_list))
+                                                                 principal_name_form=self.principal_name_form_class(),
+                                                                 address_form=self.address_form_class(),
+                                                                 resident_list=resident_list))
         except ObjectDoesNotExist:
             form.add_error(field=None, error='The first and last names provided do not match University Housing records.')
             return self.full_name_form_invalid(form)
@@ -115,9 +115,11 @@ class SearchView(FormView):
             resident_list = [con.lookup_resident(principal_name)]
         except ObjectDoesNotExist as exc:
             if str(exc).startswith("A room booking could not be found"):
-                form.add_error(field=None, error="{principal_name} does not currently reside in University Housing.".format(principal_name=principal_name))
+                form.add_error(field=None,
+                               error="{principal_name} does not currently reside in University Housing.".format(principal_name=principal_name))
             else:
-                form.add_error(field=None, error="The email address provided does not match University Housing records.")
+                form.add_error(field=None,
+                               error="The email address provided does not match University Housing records.")
             return self.principal_name_form_invalid(form)
         else:
             return self.render_to_response(self.get_context_data(full_name_form=self.full_name_form_class(),
@@ -133,10 +135,12 @@ class SearchView(FormView):
         try:
             resident_list = con.reverse_lookup(community=community, building=building, room=room)
         except ObjectDoesNotExist:
-            form.add_error(field=None, error='The address provided does not match University Housing records or is currently vacant.')
+            form.add_error(field=None,
+                           error='The address provided does not match University Housing records or is currently vacant.')
             return self.address_form_invalid(form)
         except UnsupportedCommunityException:
-            form.add_error(field=None, error='The address provided does not match University Housing records')
+            form.add_error(field=None,
+                           error='The address provided does not match University Housing records')
             return self.address_form_invalid(form)
         else:
             return self.render_to_response(self.get_context_data(full_name_form=self.full_name_form_class(),

@@ -17,8 +17,10 @@ from ..core.models import Building, Community
 
 
 class FullNameSearchForm(Form):
-    first_name = CharField(label='First Name', error_messages={'required': 'A first name is required'})
-    last_name = CharField(label='Last Name', error_messages={'required': 'A last name is required'})
+    first_name = CharField(label='First Name',
+                           error_messages={'required': 'A first name is required'})
+    last_name = CharField(label='Last Name',
+                          error_messages={'required': 'A last name is required'})
 
     def __init__(self, user=None, *args, **kwargs):
         super(FullNameSearchForm, self).__init__(*args, **kwargs)
@@ -41,7 +43,9 @@ class FullNameSearchForm(Form):
 
 
 class PrincipalNameSearchForm(Form):
-    principal_name = CharField(label='Email Address', max_length=20, error_messages={'required': 'A cal poly email address is required'})
+    principal_name = CharField(label='Email Address',
+                               max_length=20,
+                               error_messages={'required': 'A cal poly email address is required'})
 
     def __init__(self, user=None, *args, **kwargs):
         super(PrincipalNameSearchForm, self).__init__(*args, **kwargs)
@@ -63,8 +67,14 @@ class PrincipalNameSearchForm(Form):
 
 
 class AddressSearchForm(ChainedChoicesForm):
-    community = ModelChoiceField(queryset=Community.objects.all(), label='Community', error_messages={'required': 'A community is required'})
-    building = ChainedModelChoiceField('community', reverse_lazy('core:chained_building'), Building, label='Building', error_messages={'required': 'A building is required'})
+    community = ModelChoiceField(queryset=Community.objects.all(),
+                                 label='Community',
+                                 error_messages={'required': 'A community is required'})
+    building = ChainedModelChoiceField(parent_field='community',
+                                       ajax_url=reverse_lazy('core:chained_building'),
+                                       model=Building,
+                                       label='Building',
+                                       error_messages={'required': 'A building is required'})
     room = CharField(label='Room', error_messages={'required': 'A room number is required'})
 
     def __init__(self, user=None, *args, **kwargs):
