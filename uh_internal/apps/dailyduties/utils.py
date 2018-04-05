@@ -142,6 +142,7 @@ class GetDutyData(object):
 
         try:
             # If ORs were possible with SRS, this would be a lot cleaner...
+            # TODO: Update to use updated srsconnector. We should be able to add a util method that does this with an or
             total_open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(status=8).count()
             assigned_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(status=8).exclude(assigned_person="").count()
             my_assigned_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET", assigned_person=str(user.get_full_name())).exclude(status=4).exclude(status=8).count()

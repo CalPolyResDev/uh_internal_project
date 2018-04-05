@@ -41,6 +41,8 @@ def remove_resnet_tech(request):
     ad_group_instance = ADGroup(group_dn)
 
     # Remove from SRS
+    # TODO: Update to use updated srsconnector
+    """
     ticket = AccountRequest(subject_username=account_name)
     ticket.request_type = 'Account Modification'
     ticket.action = 'Please remove from ResNet team.'
@@ -48,6 +50,7 @@ def remove_resnet_tech(request):
 
     sr_number = ticket.ticket_id
     context["sr_number"] = sr_number
+    """
 
     # Remove from AD
     ad_group_instance.remove_member(account_name)

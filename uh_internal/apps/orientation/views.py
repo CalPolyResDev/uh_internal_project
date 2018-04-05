@@ -11,8 +11,6 @@ from django.core.mail import send_mail
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-from django_ewiz import EwizAttacher
-from srsconnector.settings import DATABASE_ALIAS as SRS_DATABASE_ALIAS
 
 from ..core.models import StaffMapping
 from .forms import SRSUploadForm, OnityEmailForm
@@ -66,14 +64,9 @@ class SRSAccessView(FormView):
     def form_valid(self, form):
         # Create a new account request
         from srsconnector.models import AccountRequest
+        # TODO: Update to use updated srsconnector
         ticket = AccountRequest(subject_username=self.request.user.get_alias())
         ticket.save()
-
-        # Grab the RUP
-        file_reference = self.request.FILES['signed_rup'].file
-
-        # Upload the RUP
-        EwizAttacher(settings_dict=settings.DATABASES[SRS_DATABASE_ALIAS], model=ticket, file_reference=file_reference, file_name=self.request.user.get_alias() + '.pdf').attach_file()
 
         return super(SRSAccessView, self).form_valid(form)
 

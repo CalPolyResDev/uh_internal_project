@@ -259,17 +259,20 @@ Thanks,
 %(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
 
     # Create service request
+    # TODO: Update to use updated srsconnector
+    """
     pinhole_removal_request = PinholeRequest(priority='Low', requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
     pinhole_removal_request.summary = 'Pinhole Removal Request via University Housing Internal'
     pinhole_removal_request.save()
 
     sr_number = pinhole_removal_request.ticket_id
+    """
 
     # Delete the pinhole record
     pinhole.delete()
 
     context = {}
-    context["sr_number"] = sr_number
+    # context["sr_number"] = sr_number
 
     return Response(context)
 
@@ -306,16 +309,19 @@ Thanks,
 %(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'domain_name': domain_name, 'submitter': submitter}
 
     # Create service request
+    # TODO: Update to use updated srsconnector
+    """
     domain_name_removal_request = DomainNameRequest(priority='Low', requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
     domain_name_removal_request.summary = 'DNS Alias Removal Request via University Housing Internal'
     domain_name_removal_request.save()
 
     sr_number = domain_name_removal_request.ticket_id
+    """
 
     # Delete the domain record
     domain_name_record.delete()
 
     context = {}
-    context["sr_number"] = sr_number
+    # context["sr_number"] = sr_number
 
     return Response(context)
