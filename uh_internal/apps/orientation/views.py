@@ -65,8 +65,8 @@ class SRSAccessView(FormView):
         # Create a new account request
         from srsconnector.models import AccountRequest
         # TODO: Update to use updated srsconnector
-        ticket = AccountRequest(subject_username=self.request.user.get_alias())
-        ticket.save()
+        # ticket = AccountRequest(subject_username=self.request.user.get_alias())
+        # ticket.save()
 
         return super(SRSAccessView, self).form_valid(form)
 

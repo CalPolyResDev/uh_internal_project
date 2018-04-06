@@ -37,8 +37,7 @@ class TicketSummaryView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(TicketSummaryView, self).get_context_data(**kwargs)
         ticket_id = kwargs['ticket_id']
-        # TODO: Update to use updated srsconnector
-        context['ticket'] = ServiceRequest.objects.get(ticket_id=ticket_id)
+        context['ticket'] = ServiceRequest(ticket_id=ticket_id)
 
         time_difference = (datetime.today() - context['ticket'].date_updated).total_seconds() / 86400
 

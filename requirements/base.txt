@@ -7,7 +7,6 @@ djangorestframework==3.8.1
 django-datatables-view==1.15.1
 django-cas-ng==3.5.9
 django-crispy-forms==1.7.2
-django-ewiz==1.5.4
 django-js-reverse==0.8.1
 django-static-precompiler==1.8.2
 django-uwsgi-cache==1.0.1
