@@ -17,7 +17,7 @@ from django.http.response import HttpResponseRedirect, HttpResponse
 from django.utils.encoding import smart_str
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-from srsconnector.models import PinholeRequest, DomainNameRequest
+# from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ..datatables.views import DatatablesView
 from .ajax import PopulateComputers

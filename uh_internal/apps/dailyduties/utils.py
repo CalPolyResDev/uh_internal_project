@@ -27,7 +27,7 @@ from srsconnector.utils import get_ticket_count
 
 from .models import DailyDuties
 
-# https://github.com/fedorareis/pyexchange This is a combination of a few branches and some custom code
+# https://github.com/fedorareis/pyexchange This is a combination of branches with some custom code
 from pyexchange import Exchange2010Service, ExchangeNTLMAuthConnection, ExchangeBasicAuthConnection
 from pyexchange.exceptions import FailedExchangeException
 
@@ -143,7 +143,7 @@ class GetDutyData(object):
         try:
             data = DailyDuties.objects.get(name='tickets')
 
-            tickets["count"] = get_ticket_count()
+            tickets["count"] = get_ticket_count(full_name=str(user.get_full_name()))
             if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
                 tickets["status_color"] = GREEN
             else:

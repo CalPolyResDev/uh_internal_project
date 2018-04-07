@@ -8,7 +8,7 @@
 
 from collections import OrderedDict
 from datetime import datetime
-from srsconnector.models import PinholeRequest, DomainNameRequest
+# from srsconnector.models import PinholeRequest, DomainNameRequest
 import logging
 
 from dateutil.relativedelta import relativedelta
