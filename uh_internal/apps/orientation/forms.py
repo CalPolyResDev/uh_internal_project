@@ -11,11 +11,10 @@ import os
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (Layout, Field, Fieldset, Submit, Reset, Hidden)
-from django.forms import Form, CharField, FileField, Textarea, ValidationError
+from django.forms import Form, CharField, Textarea, ValidationError
 
 
 class SRSUploadForm(Form):
-    signed_rup = FileField(label="Signed RUP", required=True)
 
     def __init__(self, *args, **kwargs):
         super(SRSUploadForm, self).__init__(*args, **kwargs)
@@ -29,29 +28,16 @@ class SRSUploadForm(Form):
         self.helper.field_class = 'col-sm-10 col-md-8'
 
         self.helper.layout = Layout(
-            Fieldset(
-                'Upload your signed RUP (PDF only)',
-                Field('signed_rup', placeholder=self.fields['signed_rup'].label),
-            ),
             FormActions(
-                Submit('submit', 'Upload'),
+                Submit('submit', 'Submit'),
             ),
         )
 
-    def clean(self):
-        cleaned_data = super(SRSUploadForm, self).clean()
-        for filedata in cleaned_data:
-            if cleaned_data[filedata] is not None:
-                name = cleaned_data[filedata].name
-                ext = os.path.splitext(name)[1]
-                ext = ext.lower()
-                if ext != '.pdf':
-                    raise ValidationError("The RUP you tried uploading is not a PDF file. It's okay; you're still new here... (love, Alex)")
-        return cleaned_data
-
 
 class OnityEmailForm(Form):
-    message = CharField(widget=Textarea, error_messages={'required': 'The message field cannot be left blank.'}, required=True)
+    message = CharField(widget=Textarea,
+                        error_messages={'required': 'The message field cannot be left blank.'},
+                        required=True)
 
     def __init__(self, *args, **kwargs):
         super(OnityEmailForm, self).__init__(*args, **kwargs)

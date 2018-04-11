@@ -54,21 +54,8 @@ class OnityDoorAccessView(FormView):
         return super(OnityDoorAccessView, self).form_valid(form)
 
 
-class SRSAccessView(FormView):
-    """Orientation Checklist Item: SRS Access."""
-
+class SRSAccessView(TemplateView):
     template_name = "orientation/srs_access.djhtml"
-    form_class = SRSUploadForm
-    success_url = reverse_lazy('orientation:home')
-
-    def form_valid(self, form):
-        # Create a new account request
-        # from srsconnector.models import AccountRequest
-        # TODO: Update to use updated srsconnector
-        # ticket = AccountRequest(subject_username=self.request.user.get_alias())
-        # ticket.save()
-
-        return super(SRSAccessView, self).form_valid(form)
 
 
 class PayrollView(TemplateView):
