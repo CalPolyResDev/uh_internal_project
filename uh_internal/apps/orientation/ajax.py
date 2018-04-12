@@ -31,6 +31,9 @@ def complete_task(request):
         user.onity_complete = True
     elif task == "srs":
         user.srs_complete = True
+        from srsconnector.models import AccountRequest
+        ticket = AccountRequest(subject_username=request.user.get_alias())
+        ticket.save()
     elif task == "payroll":
         user.payroll_complete = True
 

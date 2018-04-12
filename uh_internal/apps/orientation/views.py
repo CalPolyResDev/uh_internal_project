@@ -56,26 +56,8 @@ class OnityDoorAccessView(FormView):
         return super(OnityDoorAccessView, self).form_valid(form)
 
 
-class SRSAccessView(FormView):
-    """Orientation Checklist Item: SRS Access."""
-
+class SRSAccessView(TemplateView):
     template_name = "orientation/srs_access.djhtml"
-    form_class = SRSUploadForm
-    success_url = reverse_lazy('orientation:home')
-
-    def form_valid(self, form):
-        # Create a new account request
-        from srsconnector.models import AccountRequest
-        ticket = AccountRequest(subject_username=self.request.user.get_alias())
-        ticket.save()
-
-        # Grab the RUP
-        file_reference = self.request.FILES['signed_rup'].file
-
-        # Upload the RUP
-        EwizAttacher(settings_dict=settings.DATABASES[SRS_DATABASE_ALIAS], model=ticket, file_reference=file_reference, file_name=self.request.user.get_alias() + '.pdf').attach_file()
-
-        return super(SRSAccessView, self).form_valid(form)
 
 
 class PayrollView(TemplateView):
