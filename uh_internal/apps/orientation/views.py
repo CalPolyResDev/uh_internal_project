@@ -32,7 +32,10 @@ class OnityDoorAccessView(FormView):
     def get_initial(self):
         full_name = self.request.user.get_full_name()
         first_name = self.request.user.first_name
-        initial_message = "To Whom It May Concern:\n\nMy name is %s. I've just been hired as a ResNet technician and would like to set up an appointment to get my PolyCard coded for Onity Door Access to the ResNet offices.\n\nSincerely,\n%s" % (full_name, first_name)
+        initial_message = ("To Whom It May Concern:\n\nMy name is %s."
+                           " I've just been hired as a ResNet technician and would like to set up"
+                           " an appointment to get my PolyCard coded for Onity Door Access to the"
+                           " ResNet offices.\n\nSincerely,\n%s" % (full_name, first_name))
 
         return {'message': initial_message}
 
