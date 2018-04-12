@@ -64,7 +64,19 @@
 {{ block.super }}
     <script type="text/javascript">
         function update_csd_domain(mapping_id, csd_info) {
-            ajaxPost("{% url 'core:update_csd_domain' %}", {'mapping_id': mapping_id, 'csd_info': csd_info});
+            var request = {};
+            var request_header = {};
+            var request_body = {};
+            request_header["X-CSRFToken"] = getCookie('csrftoken');
+            request_header["Content-Type"] = 'application/json'
+            request_body["mapping_id"] = mapping_id;
+            request_body["csd_info"] = csd_info;
+            request["method"] = 'POST';
+            request["headers"] = request_header;
+            request["credentials"] = 'include';
+            request["body"] = JSON.stringify(request_body);
+
+            fetch("{% url 'core:update_csd_domain' %}", request);
         }
     </script>
 {% endblock %}

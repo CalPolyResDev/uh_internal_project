@@ -13,8 +13,7 @@ import re
 
 from django.core.cache import cache
 from django.template.defaultfilters import slugify
-from srsconnector.models import ServiceRequest
-
+from srsconnector.utils import get_open_tickets
 
 logger = logging.getLogger(__name__)
 
@@ -49,12 +48,12 @@ def get_ticket_list(user):
     if user.ad_groups.all().filter(display_name='ResNet Technician').exists():
         user_teams.append('SA RESNET')
 
-    cache_key = 'ticket_list:' + str(user_teams)
+    cache_key = 'ticket_list:' + str(user_teams).replace(" ", "_")
 
     tickets = cache.get(cache_key)
 
     if tickets is None:
-        ticket_queryset = ServiceRequest.objects.filter(assigned_team__in=user_teams).exclude(status=4).exclude(status=8)
+        ticket_queryset = get_open_tickets()
 
         tickets = list({'ticket_id': ticket.ticket_id,
                         'requestor_full_name': ticket.requestor_full_name,

@@ -28,15 +28,11 @@
 
     <div class="col-xs-12">
         <br /><p>Once you gain access to the SRS, click the following button to take this item off the checklist:</p>
-        <br /><button class="btn btn-primary" onclick="complete_task('srs')">I am Able to Access the SRS</button>
+        <form action="../complete_task/" method="post" id="srs">
+            {% csrf_token %}
+            <input type="hidden" value="srs" name="task" />
+        </form>
+        <br /><button type="submit" class="btn btn-primary" form="srs">I am Able to Access the SRS</button>
     </div>
 </div>
-{% endblock %}
-
-{% block extra_script %}
-    <script type="text/javascript">
-        function complete_task(task) {
-            ajaxPost("{% url 'orientation:complete_task' %}", {"task": task});
-        };
-    </script>
 {% endblock %}

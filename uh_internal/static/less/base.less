@@ -304,18 +304,6 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
     display: none;
 }
 
-#email_tree {
-    overflow: hidden;
-}
-
-#email_tree, #email_buttons, #email_search_wrapper {
-    padding-bottom: 20px;
-}
-
-#mailbox_name_header {
-    display: none;
-}
-
 /* media queries */
 
 @media (max-width: 768px) {
@@ -408,20 +396,6 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
     color: red;
 }
 
-/* Email */
-#email_buttons {
-    padding-right: 0px;
-}
-
-#email_buttons .btn {
-    font-size: 13px;
-}
-
-#email_search_wrapper {
-    padding-left: 0px;
-    padding-right: 5px;
-}
-
 /* Source: http://cpratt.co/twitter-bootstrap-callout-css-styles/ */
 
 .bs-callout {
@@ -504,4 +478,53 @@ table.dataTable thead .sorting_asc::after, table.dataTable thead .sorting_desc::
 .clearpass-action-buttons > div > .btn {
     margin-top: 5px;
     margin-bottom: 5px;
+}
+
+
+// Datatables filter help
+.dataTables_wrapper {
+    .dataTables_filter {
+        display: inline-block;
+    }
+    .filter-hover-help {
+        display: inline-block;
+        font-size: large;
+        a {
+            padding: 10px 0 10px 10px;
+            span.glyphicon {
+                top: 5px;
+                font-size: large;
+            }
+        }
+    }
+    // Increase bootstrap popover max width
+    .popover {
+        max-width: 800px;
+        width: 100%;
+    }
+}
+
+#outter-landing-login-display {
+    display: inline-block;
+    position: relative;
+    left: -230px;
+    width: ~"calc(100% + 230px)";
+}
+
+#inner-landing-login-display {
+    padding-top: 30px;
+    width: 50%;
+    margin: auto;
+    text-align: center;
+}
+
+.login-button {
+    padding: 5px 15px;
+    background-color: #29551A;
+    border-radius: 5px;
+    border-style: none;
+    font-size: 18px;
+    color: white;
+    font-weight: bold;
+    letter-spacing: 1px;
 }

@@ -125,20 +125,6 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='SiteAnnouncements',
-            fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('title', models.CharField(max_length=150, verbose_name='Title')),
-                ('description', models.TextField(verbose_name='Description')),
-                ('created', models.DateTimeField(verbose_name='Entry Creation Date')),
-                ('permission_classes', models.ManyToManyField(blank=True, related_name='site_announcements', to='core.PermissionClass')),
-            ],
-            options={
-                'verbose_name': 'Site Announcement',
-                'get_latest_by': 'created',
-            },
-        ),
-        migrations.CreateModel(
             name='StaffMapping',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),

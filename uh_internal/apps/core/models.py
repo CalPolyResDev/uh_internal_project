@@ -102,19 +102,6 @@ class SubDepartment(Model):
         verbose_name = 'Sub Department'
 
 
-class SiteAnnouncements(Model):
-    """Latest site announcements"""
-
-    title = CharField(max_length=150, verbose_name='Title')
-    description = TextField(verbose_name='Description')
-    created = DateTimeField(verbose_name='Entry Creation Date')
-    permission_classes = ManyToManyField('PermissionClass', related_name='site_announcements', blank=True)
-
-    class Meta:
-        get_latest_by = "created"
-        verbose_name = 'Site Announcement'
-
-
 class ADGroup(Model):
     distinguished_name = CharField(max_length=250, unique=True, verbose_name='Distinguished Name')
     display_name = CharField(max_length=50, verbose_name='Display Name')

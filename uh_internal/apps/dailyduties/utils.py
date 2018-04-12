@@ -8,8 +8,6 @@
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
-from email import header
-import email
 from itertools import zip_longest
 import itertools
 import logging
@@ -23,13 +21,15 @@ import requests
 from django.conf import settings
 from django.core import mail
 from django.core.cache import cache
-from django.core.mail.message import EmailMessage
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
-from srsconnector.models import ServiceRequest
+from srsconnector.utils import get_ticket_count
 
-from ..printerrequests.models import Request as PrinterRequest, REQUEST_STATUSES
 from .models import DailyDuties
+
+# https://github.com/fedorareis/pyexchange This is a combination of branches with some custom code
+from pyexchange import Exchange2010Service, ExchangeNTLMAuthConnection, ExchangeBasicAuthConnection
+from pyexchange.exceptions import FailedExchangeException
 
 logger = logging.getLogger(__name__)
 
@@ -38,36 +38,44 @@ RED = "#900"
 
 ACCEPTABLE_LAST_CHECKED = timedelta(days=1)
 
-ms_api_url = "https://graph.microsoft.com/v1.0/users"
+
+class GetInboxCount(object):
+    """Utility for gathering count of emails and voicemails in inbox"""
+
+    @staticmethod
+    def setup():
+        """ Creates the Exchange Connection """
+        # Set up the connection to Exchange
+        connection = ExchangeBasicAuthConnection(url=settings.OUTLOOK_URL,
+                                                 username=settings.EMAIL_USERNAME,
+                                                 password=settings.EMAIL_PASSWORD)
+
+        service = Exchange2010Service(connection)
+
+        return service
+
+    @staticmethod
+    def get_mail_count(service):
+
+        folder = service.folder()
+        folder_id = "inbox"
+        email = folder.get_folder(folder_id)
+
+        return email.total_count
+
+    @staticmethod
+    def get_voicemail_count(service):
+
+        folder = service.folder()
+        voicemail = folder.get_folder(settings.OUTLOOK_VOICEMAIL_FOLDER_ID)
+
+        return voicemail.total_count
+
 
 class GetDutyData(object):
     """ Utility for gathering daily duty data."""
 
-    server = None
-
-    def get_printer_requests(self):
-        """Checks the current number of printer requests."""
-
-        printer_requests = {
-            "count": None,
-            "status_color": None,
-            "last_checked": None,
-            "last_user": None
-        }
-
-        data = DailyDuties.objects.get(name='printerrequests')
-
-        printer_requests["count"] = PrinterRequest.objects.filter(status=REQUEST_STATUSES.index("Open")).count()
-        if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
-            printer_requests["status_color"] = GREEN
-        else:
-            printer_requests["status_color"] = RED
-        printer_requests["last_checked"] = datetime.strftime(data.last_checked, "%Y-%m-%d %H:%M")
-        printer_requests["last_user"] = data.last_user.get_full_name()
-
-        return printer_requests
-
-    def get_voicemail(self, token):
+    def get_voicemail(self, server):
         """Checks the current number of voicemail messages."""
 
         voicemail = {
@@ -79,9 +87,12 @@ class GetDutyData(object):
 
         data = DailyDuties.objects.get(name='voicemail')
 
-        count = 0
-        # Select the Inbox, get the message count
-        voicemail["count"] = count
+        try:
+            count = GetInboxCount.get_voicemail_count(server)
+            voicemail["count"] = count
+        except FailedExchangeException:
+            voicemail["count"] = '?'
+
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
             voicemail["status_color"] = GREEN
         else:
@@ -91,7 +102,7 @@ class GetDutyData(object):
 
         return voicemail
 
-    def get_email(self,token):
+    def get_email(self, server):
         """Checks the current number of unread email messages."""
 
         email = {
@@ -103,13 +114,13 @@ class GetDutyData(object):
 
         data = DailyDuties.objects.get(name='email')
 
-        # Make API call to get this
-        # Select the Inbox, get the message count
-        #mail = get_mail_api(token)
+        # fetch email with pyexchange
+        try:
+            count = GetInboxCount.get_mail_count(server)
+            email["count"] = count
+        except FailedExchangeException as e:
+            email["count"] = '?'
 
-        count = 0
-
-        email["count"] = count
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
             email["status_color"] = GREEN
         else:
@@ -130,14 +141,9 @@ class GetDutyData(object):
         }
 
         try:
-            # If ORs were possible with SRS, this would be a lot cleaner...
-            total_open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(status=8).count()
-            assigned_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(status=8).exclude(assigned_person="").count()
-            my_assigned_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET", assigned_person=str(user.get_full_name())).exclude(status=4).exclude(status=8).count()
-
             data = DailyDuties.objects.get(name='tickets')
 
-            tickets["count"] = (total_open_tickets - assigned_tickets) + my_assigned_tickets
+            tickets["count"] = get_ticket_count(full_name=str(user.get_full_name()))
             if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
                 tickets["status_color"] = GREEN
             else:
@@ -146,7 +152,7 @@ class GetDutyData(object):
             tickets["last_user"] = data.last_user.get_full_name()
         except DatabaseError as message:
             logger.exception(message, exc_info=True)
-            tickets["count"] = 0
+            tickets["count"] = '?'
             tickets["status_color"] = RED
             tickets["last_checked"] = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
             tickets["last_user"] = "Connection Error!"
@@ -155,7 +161,7 @@ class GetDutyData(object):
 
     def send_api_request(self, token):
         api_data = {
-            'Authorization' : 'Bearer ' + token
+            'Authorization': 'Bearer ' + token
         }
 
         r = requests.get(ms_api_url, data=api_data)

@@ -9,12 +9,12 @@
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.http.response import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.views.decorators.http import require_POST
-from django_ajax.decorators import ajax
+from rest_framework.decorators import api_view
 
 
-@ajax
-@require_POST
+@api_view(['POST'])
 def complete_task(request):
     """ Completes a task.
 
@@ -24,23 +24,26 @@ def complete_task(request):
     """
 
     # Pull post parameters
-    task = request.POST["task"]
+    task = request.data["task"]
 
     user = get_user_model().objects.get(username=request.user.username)
 
     if task == "onity":
         user.onity_complete = True
     elif task == "srs":
+        from srsconnector.models import AccountRequest
+        ticket = AccountRequest(subject_username=request.user.get_alias())
+        ticket.save()
         user.srs_complete = True
     elif task == "payroll":
         user.payroll_complete = True
 
     user.save()
 
-    return HttpResponseRedirect(reverse('orientation:home'))
+    return redirect('orientation:home')
 
 
-@ajax
+@api_view(['GET'])
 def complete_orientation(request):
     """ Completes orientation."""
 
@@ -49,4 +52,4 @@ def complete_orientation(request):
     user.is_new_tech = False
     user.save()
 
-    return HttpResponseRedirect(reverse('core:home'))
+    return redirect('core:home')

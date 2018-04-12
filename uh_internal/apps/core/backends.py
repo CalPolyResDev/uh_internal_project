@@ -39,11 +39,11 @@ class CASLDAPBackend(CASBackend):
                 connection.start_tls()
 
                 account_def = ObjectDef('user')
-                account_def.add(AttrDef('userPrincipalName'))
-                account_def.add(AttrDef('displayName'))
-                account_def.add(AttrDef('givenName'))
-                account_def.add(AttrDef('sn'))
-                account_def.add(AttrDef('mail'))
+                account_def += AttrDef('userPrincipalName')
+                account_def += AttrDef('displayName')
+                account_def += AttrDef('givenName')
+                account_def += AttrDef('sn')
+                account_def += AttrDef('mail')
 
                 account_reader = Reader(connection=connection, object_def=account_def, query="userPrincipalName: {principal_name}".format(principal_name=user.username), base=settings.LDAP_GROUPS_BASE_DN)
                 account_reader.search_subtree()
@@ -55,7 +55,7 @@ class CASLDAPBackend(CASBackend):
                 principal_name = str(user_info["userPrincipalName"])
 
                 def get_group_members(group):
-                    cache_key = 'group_members::' + group
+                    cache_key = 'group_members::' + (group if " " not in group else group.replace(" ", "_"))
                     group_members = cache.get(cache_key)
 
                     if group_members is None:
