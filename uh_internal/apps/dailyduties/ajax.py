@@ -19,10 +19,10 @@ from django.template import Template, RequestContext
 from django.utils.encoding import smart_text
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from django_datatables_view.mixins import JSONResponseView
 from jfu.http import upload_receive, UploadResponse, JFUResponse
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from ..core.models import Building
 from ..core.templatetags.srs_urls import srs_edit_url
@@ -50,7 +50,9 @@ def refresh_duties(request):
 
     def duty_dict_to_link_text(daily_duty_dict, name):
         return_string = name
-        if daily_duty_dict['count'] > 10:
+        if daily_duty_dict['count'] == '?':
+            return_string += ' <strong class="text-warning">(' + daily_duty_dict['count'] + ')</strong>'
+        elif daily_duty_dict['count'] > 10:
             return_string += ' <strong class="text-danger">(' + str(daily_duty_dict['count']) + ')</strong>'
         elif daily_duty_dict['count'] > 0:
             return_string += ' <strong>(' + str(daily_duty_dict['count']) + ')</strong>'

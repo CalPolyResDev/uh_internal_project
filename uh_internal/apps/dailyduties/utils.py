@@ -29,6 +29,7 @@ from .models import DailyDuties
 
 # https://github.com/fedorareis/pyexchange This is a combination of a few branches and some custom code
 from pyexchange import Exchange2010Service, ExchangeNTLMAuthConnection, ExchangeBasicAuthConnection
+from pyexchange.exceptions import FailedExchangeException
 
 logger = logging.getLogger(__name__)
 
@@ -37,16 +38,17 @@ RED = "#900"
 
 ACCEPTABLE_LAST_CHECKED = timedelta(days=1)
 
+
 class GetInboxCount(object):
     """Utility for gathering count of emails and voicemails in inbox"""
-    
+
     @staticmethod
     def setup():
         """ Creates the Exchange Connection """
         # Set up the connection to Exchange
         connection = ExchangeBasicAuthConnection(url=settings.OUTLOOK_URL,
-                                                username=settings.EMAIL_USERNAME,
-                                                password=settings.EMAIL_PASSWORD)
+                                                 username=settings.EMAIL_USERNAME,
+                                                 password=settings.EMAIL_PASSWORD)
 
         service = Exchange2010Service(connection)
 
@@ -69,6 +71,7 @@ class GetInboxCount(object):
 
         return voicemail.total_count
 
+
 class GetDutyData(object):
     """ Utility for gathering daily duty data."""
 
@@ -84,8 +87,11 @@ class GetDutyData(object):
 
         data = DailyDuties.objects.get(name='voicemail')
 
-        count = GetInboxCount.get_voicemail_count(server)
-        voicemail["count"] = count
+        try:
+            count = GetInboxCount.get_voicemail_count(server)
+            voicemail["count"] = count
+        except FailedExchangeException:
+            voicemail["count"] = '?'
 
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
             voicemail["status_color"] = GREEN
@@ -108,9 +114,12 @@ class GetDutyData(object):
 
         data = DailyDuties.objects.get(name='email')
 
-        #fetch email with pyexchange
-        count = GetInboxCount.get_mail_count(server)
-        email["count"] = count
+        # fetch email with pyexchange
+        try:
+            count = GetInboxCount.get_mail_count(server)
+            email["count"] = count
+        except FailedExchangeException as e:
+            email["count"] = '?'
 
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
             email["status_color"] = GREEN
@@ -148,7 +157,7 @@ class GetDutyData(object):
             tickets["last_user"] = data.last_user.get_full_name()
         except DatabaseError as message:
             logger.exception(message, exc_info=True)
-            tickets["count"] = 0
+            tickets["count"] = '?'
             tickets["status_color"] = RED
             tickets["last_checked"] = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
             tickets["last_user"] = "Connection Error!"
@@ -157,7 +166,7 @@ class GetDutyData(object):
 
     def send_api_request(self, token):
         api_data = {
-            'Authorization' : 'Bearer ' + token
+            'Authorization': 'Bearer ' + token
         }
 
         r = requests.get(ms_api_url, data=api_data)
@@ -166,4 +175,3 @@ class GetDutyData(object):
             return r.json()
         except:
             'Error sending API request: {0} - {1}'.format(r.status_code, r.text)
-

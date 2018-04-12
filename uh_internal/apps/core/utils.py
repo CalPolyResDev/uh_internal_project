@@ -49,7 +49,7 @@ def get_ticket_list(user):
     if user.ad_groups.all().filter(display_name='ResNet Technician').exists():
         user_teams.append('SA RESNET')
 
-    cache_key = 'ticket_list:' + str(user_teams)
+    cache_key = 'ticket_list:' + str(user_teams).replace(" ", "_")
 
     tickets = cache.get(cache_key)
 

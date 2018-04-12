@@ -30,10 +30,9 @@
             <thead>
                 <tr>
                     <th width="25%">Name</th>
-                    <th width="10%">Email</th>
+                    <th width="15%">Email</th>
                     <th width="15%">Cell Phone</th>
-                    <th width="15%">Dorm Phone</th>
-                    <th width="35%">Dorm Address</th>
+                    <th width="45%">Dorm Address</th>
                 </tr>
             </thead>
             <tbody>
@@ -43,7 +42,6 @@
                         <td>{{ resident.full_name }}</td>
                         <td>{{ resident.email }}</td>
                         <td>{{ resident.cell_phone }}</td>
-                        <td>{{ resident.dorm_phone }}</td>
                         <td>{{ resident.address }}</td>
                     </tr>
                     {% endfor %}

@@ -9,16 +9,19 @@
 import logging
 import re
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 from django.views.generic.edit import FormView
-from rmsconnector.exceptions import UnsupportedCommunityException
-from rmsconnector.models import ResidentProfile, StudentAddress
-from rmsconnector.utils import reverse_address_lookup, Resident
+from starrezconnector.connection import StarRezAuthConnection
+from starrezconnector.exceptions import ObjectDoesNotExist, UnsupportedCommunityException
 
 from .forms import FullNameSearchForm, PrincipalNameSearchForm, AddressSearchForm
 
 
 logger = logging.getLogger(__name__)
+
+con = StarRezAuthConnection(host=settings.STARREZ["url"],
+                            username=settings.STARREZ["username"],
+                            password=settings.STARREZ["password"])
 
 
 class SearchView(FormView):
@@ -29,7 +32,7 @@ class SearchView(FormView):
     principal_name_form_class = PrincipalNameSearchForm
     address_form_class = AddressSearchForm
 
-    attribute_list = ["full_name", "email", "cell_phone", "dorm_phone", "address", "is_buckley"]
+    attribute_list = ["full_name", "email", "cell_phone", "address", "is_buckley"]
 
     def get(self, request, *args, **kwargs):
         full_name_form = self.get_form(self.full_name_form_class)
@@ -95,27 +98,13 @@ class SearchView(FormView):
         first_name = self.request.POST['first_name']
         last_name = self.request.POST['last_name']
 
-        resident_profiles = ResidentProfile.objects.filter(first_name__icontains=first_name, last_name__icontains=last_name)
-
-        if resident_profiles.exists():
-            resident_list = []
-
-            for resident_profile in resident_profiles:
-                try:
-                    principal_name = resident_profile.student_address.email
-                except StudentAddress.DoesNotExist:
-                    continue
-                else:
-                    try:
-                        resident_list.append(Resident(principal_name=principal_name))
-                    except ObjectDoesNotExist:
-                        continue
-
+        try:
+            resident_list = con.full_name_lookup(first_name, last_name)
             return self.render_to_response(self.get_context_data(full_name_form=form,
                                                                  principal_name_form=self.principal_name_form_class(),
                                                                  address_form=self.address_form_class(),
                                                                  resident_list=resident_list))
-        else:
+        except ObjectDoesNotExist:
             form.add_error(field=None, error='The first and last names provided do not match University Housing records.')
             return self.full_name_form_invalid(form)
 
@@ -123,16 +112,14 @@ class SearchView(FormView):
         principal_name = self.request.POST['principal_name']
 
         try:
-            resident_list = [Resident(principal_name=principal_name)]
+            resident_list = [con.lookup_resident(principal_name)]
         except ObjectDoesNotExist as exc:
             if str(exc).startswith("A room booking could not be found"):
-                form.add_error(field=None, error="{principal_name} does not currently reside in University Housing.".format(principal_name=principal_name))
+                form.add_error(field=None,
+                               error="{principal_name} does not currently reside in University Housing.".format(principal_name=principal_name))
             else:
-                form.add_error(field=None, error="The email address provided does not match University Housing records.")
-            return self.principal_name_form_invalid(form)
-        except UnsupportedCommunityException as exc:
-            community_name = re.search('\((?P<community_name>[^)*]+)\)', str(exc)).groupdict()['community_name']
-            form.add_error(field=None, error="This resident lives in {community_name}, an unsupported community.".format(community_name=community_name))
+                form.add_error(field=None,
+                               error="The email address provided does not match University Housing records.")
             return self.principal_name_form_invalid(form)
         else:
             return self.render_to_response(self.get_context_data(full_name_form=self.full_name_form_class(),
@@ -146,9 +133,14 @@ class SearchView(FormView):
         room = self.request.POST['room']
 
         try:
-            resident_list = reverse_address_lookup(community=community, building=building, room=room)
+            resident_list = con.reverse_lookup(community=community, building=building, room=room)
         except ObjectDoesNotExist:
-            form.add_error(field=None, error='The address provided does not match University Housing records or is currently vacant.')
+            form.add_error(field=None,
+                           error='The address provided does not match University Housing records or is currently vacant.')
+            return self.address_form_invalid(form)
+        except UnsupportedCommunityException:
+            form.add_error(field=None,
+                           error='The address provided does not match University Housing records')
             return self.address_form_invalid(form)
         else:
             return self.render_to_response(self.get_context_data(full_name_form=self.full_name_form_class(),
