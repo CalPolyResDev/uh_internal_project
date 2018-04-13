@@ -55,7 +55,6 @@ class CASLDAPBackend(CASBackend):
                 principal_name = str(user_info["userPrincipalName"])
 
                 def get_group_members(group):
-                    # TODO: Fix cache_key
                     cache_key = 'group_members::' + (group if " " not in group else group.replace(" ", "_"))
                     group_members = cache.get(cache_key)
 

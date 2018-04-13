@@ -23,11 +23,11 @@ from django.core import mail
 from django.core.cache import cache
 from django.db import DatabaseError
 from django.utils.encoding import smart_text
-from srsconnector.models import ServiceRequest
+from srsconnector.utils import get_ticket_count
 
 from .models import DailyDuties
 
-# https://github.com/fedorareis/pyexchange This is a combination of a few branches and some custom code
+# https://github.com/fedorareis/pyexchange This is a combination of branches with some custom code
 from pyexchange import Exchange2010Service, ExchangeNTLMAuthConnection, ExchangeBasicAuthConnection
 from pyexchange.exceptions import FailedExchangeException
 
@@ -141,14 +141,9 @@ class GetDutyData(object):
         }
 
         try:
-            # If ORs were possible with SRS, this would be a lot cleaner...
-            total_open_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(status=8).count()
-            assigned_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET").exclude(status=4).exclude(status=8).exclude(assigned_person="").count()
-            my_assigned_tickets = ServiceRequest.objects.filter(assigned_team="SA RESNET", assigned_person=str(user.get_full_name())).exclude(status=4).exclude(status=8).count()
-
             data = DailyDuties.objects.get(name='tickets')
 
-            tickets["count"] = (total_open_tickets - assigned_tickets) + my_assigned_tickets
+            tickets["count"] = get_ticket_count(full_name=str(user.get_full_name()))
             if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
                 tickets["status_color"] = GREEN
             else:

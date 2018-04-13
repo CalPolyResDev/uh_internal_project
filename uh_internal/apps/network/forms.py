@@ -21,7 +21,9 @@ from .models import Port, AccessPoint, NetworkInfrastructureDevice
 
 class PortCreateForm(ChainedChoicesModelForm):
     community = ModelChoiceField(queryset=Community.objects.all())
-    building = ChainedModelChoiceField('community', reverse_lazy('core:chained_building'), Building)
+    building = ChainedModelChoiceField(parent_field='community',
+                                       ajax_url=reverse_lazy('core:chained_building'),
+                                       model=Building)
     room = ChainedModelChoiceField('building', reverse_lazy('core:chained_room'), Room)
     upstream_device = ModelChoiceField(queryset=NetworkInfrastructureDevice.objects.all())
 
@@ -138,8 +140,12 @@ class AccessPointUpdateForm(ModelForm):
 
 class NetworkInfrastructureDeviceCreateForm(ChainedChoicesModelForm):
     community = ModelChoiceField(queryset=Community.objects.all())
-    building = ChainedModelChoiceField('community', reverse_lazy('core:chained_building'), Building)
-    room = ChainedModelChoiceField('building', reverse_lazy('core:chained_room'), Room)
+    building = ChainedModelChoiceField(parent_field='community',
+                                       ajax_url=reverse_lazy('core:chained_building'),
+                                       model=Building)
+    room = ChainedModelChoiceField('building',
+                                   reverse_lazy('core:chained_room'),
+                                   model=Room)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

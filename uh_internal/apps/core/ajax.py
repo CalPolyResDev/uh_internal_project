@@ -138,7 +138,7 @@ def get_tickets(request):
             ticket['display_class'] = 'bg-muted'
             ticket['sort_order'] = 5
 
-        ticket['modal_id'] = 'ticket_' + ticket['ticket_id']
+        ticket['modal_id'] = 'ticket_' + str(ticket['ticket_id'])
 
     tickets.sort(key=itemgetter('sort_order'))
     template = Template(raw_response)

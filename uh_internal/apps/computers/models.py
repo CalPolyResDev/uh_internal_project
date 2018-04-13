@@ -9,7 +9,7 @@
 from django.db.models.base import Model
 from django.db.models.fields import BooleanField, CharField, IntegerField, GenericIPAddressField, DateField
 from django.db.models.fields.related import ForeignKey
-from srsconnector.models import PinholeRequest, DomainNameRequest
+# from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ..core.models import Department, SubDepartment
 from ..network.models import NetworkDevice
@@ -73,7 +73,9 @@ class Pinhole(Model):
     @property
     def pinhole_request(self):
         if self.sr_number:
-            return PinholeRequest.objects.get(ticket_id=self.sr_number)
+            # TODO: Update to use updated srsconnector
+            # return PinholeRequest.objects.get(ticket_id=self.sr_number)
+            return None
         return None
 
 
@@ -90,7 +92,9 @@ class DomainName(Model):
     @property
     def domain_name_request(self):
         if self.sr_number:
-            return DomainNameRequest.objects.get(ticket_id=self.sr_number)
+            # TODO: Update to use updated srsconnector
+            # return DomainNameRequest.objects.get(ticket_id=self.sr_number)
+            return None
         return None
 
     class Meta:

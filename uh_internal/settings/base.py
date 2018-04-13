@@ -95,7 +95,6 @@ DEFAULT_BASE_URL = get_env_variable('RESNET_INTERNAL_DEFAULT_BASE_URL')
 DATABASES = {
     'default': dj_database_url.config(default=get_env_variable('RESNET_INTERNAL_DB_DEFAULT_DATABASE_URL')),
     'srs': {
-        'ENGINE': 'django_ewiz',
         'NAME': 'Calpoly2',
         'USER': 'resnetapi@calpoly.edu',
         'PASSWORD': get_env_variable('RESNET_INTERNAL_DB_SRS_PASSWORD'),
@@ -104,10 +103,6 @@ DATABASES = {
         'NUM_CONNECTIONS': 40,
     },
 }
-
-DATABASE_ROUTERS = (
-    'srsconnector.routers.SRSRouter',
-)
 
 DBBACKUP_DATABASES = ['default']
 
@@ -371,12 +366,10 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.staticfiles',
     'django_cas_ng',
-    'django_ewiz',
     'django_js_reverse',
     'jfu',
     'raven.contrib.django.raven_compat',
     'rest_framework',
-    'srsconnector',
     'static_precompiler',
     'paramiko',
     MAIN_APP_NAME + '.apps.computers',

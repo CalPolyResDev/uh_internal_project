@@ -15,7 +15,7 @@ from django.forms import Form, CharField, Textarea
 
 
 class OnityEmailForm(Form):
-    message = CharField(widget=Textarea, 
+    message = CharField(widget=Textarea,
                         error_messages={'required': 'The message field cannot be left blank.'},
                         required=True)
 

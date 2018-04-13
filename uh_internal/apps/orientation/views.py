@@ -11,8 +11,6 @@ from django.core.mail import send_mail
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-from django_ewiz import EwizAttacher
-from srsconnector.settings import DATABASE_ALIAS as SRS_DATABASE_ALIAS
 
 from ..core.models import StaffMapping
 from .forms import OnityEmailForm
