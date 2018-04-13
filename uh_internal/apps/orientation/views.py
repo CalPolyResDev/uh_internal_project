@@ -15,7 +15,7 @@ from django_ewiz import EwizAttacher
 from srsconnector.settings import DATABASE_ALIAS as SRS_DATABASE_ALIAS
 
 from ..core.models import StaffMapping
-from .forms import SRSUploadForm, OnityEmailForm
+from .forms import OnityEmailForm
 
 
 class ChecklistView(TemplateView):
@@ -42,7 +42,7 @@ class OnityDoorAccessView(FormView):
     def get_context_data(self, **kwargs):
         context = super(OnityDoorAccessView, self).get_context_data(**kwargs)
 
-        onity_staff = StaffMapping.objects.get(title="Housing: Information Technology Consultant")
+        onity_staff = StaffMapping.objects.get(title="Onity Specialist")
 
         context['onity_staff_name'] = onity_staff.name
         context['onity_staff_email'] = onity_staff.email
