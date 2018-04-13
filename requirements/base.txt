@@ -1,11 +1,13 @@
 # Django must be first to avoid dependencies installing their own version.
-django==1.10.8
+django==1.11.12
+
 beautifulsoup4==4.6.0
 colorama==0.3.9
-cx_Oracle==5.2.1
-djangorestframework==3.8.1
+cx_Oracle==6.2.1
+djangorestframework==3.8.2
 django-datatables-view==1.15.1
 django-cas-ng==3.5.9
+django-clever-selects==0.8.2
 django-crispy-forms==1.7.2
 django-js-reverse==0.8.1
 django-static-precompiler==1.8.2
@@ -29,8 +31,6 @@ git+ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git@switch_to_REST
 
 git+https://github.com/CalPolyResDev/StarRezAPI.git
 git+https://github.com/CalPolyResDev/StarRezConnector.git
-git+https://github.com/kavdev/djangotoolbox
-git+https://github.com/fedorareis/django-clever-selects.git
 git+https://github.com/CalPolyResDev/django-jfu.git
 git+https://github.com/CalPolyResDev/django-dbbackup.git
 git+https://github.com/CalPolyResDev/ldap-groups.git
