@@ -14,13 +14,12 @@
             <div class="panel-heading">Gain SRS Access</div>
             
             <div class="panel-body">
-                <p>To gain access to the SRS Manager, you must first email <a href="mailto:baschult@calpoly.edu">Brian Schultz</a> to request access. Once you have done this, an account request will be created in your name. It can take up to a week to process the request, so please be patient.</p>
+                <p>To gain access to the SRS Manager, click the button below. Once you have done this, an account request will be created in your name. It can take up to a week to process the request, so please be patient.</p>
             </div>
         </div>
     </div>
 
     <div class="col-xs-12">
-        <br /><p>Once you gain access to the SRS, click the following button to take this item off the checklist:</p>
         <form action="../complete_task/" method="post" id="srs">
             {% csrf_token %}
             <input type="hidden" value="srs" name="task" />
