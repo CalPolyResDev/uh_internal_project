@@ -11,27 +11,7 @@ import os
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (Layout, Field, Fieldset, Submit, Reset, Hidden)
-from django.forms import Form, CharField, Textarea, ValidationError
-
-
-class SRSUploadForm(Form):
-
-    def __init__(self, *args, **kwargs):
-        super(SRSUploadForm, self).__init__(*args, **kwargs)
-
-        self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.html5_required = True
-
-        self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-10 col-md-8'
-
-        self.helper.layout = Layout(
-            FormActions(
-                Submit('submit', 'Submit'),
-            ),
-        )
+from django.forms import Form, CharField, Textarea
 
 
 class OnityEmailForm(Form):
