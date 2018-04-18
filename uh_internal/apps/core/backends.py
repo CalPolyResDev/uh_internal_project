@@ -8,6 +8,7 @@
 
 from concurrent.futures.thread import ThreadPoolExecutor
 import logging
+from datetime import datetime
 
 from django.conf import settings
 from django.core.cache import cache
@@ -35,7 +36,11 @@ class CASLDAPBackend(CASBackend):
         if user:
             try:
                 server = Server(settings.LDAP_GROUPS_SERVER_URI)
-                connection = Connection(server=server, auto_bind=True, user=settings.LDAP_GROUPS_BIND_DN, password=settings.LDAP_GROUPS_BIND_PASSWORD, raise_exceptions=True)
+                connection = Connection(server=server,
+                                        auto_bind=True,
+                                        user=settings.LDAP_GROUPS_BIND_DN,
+                                        password=settings.LDAP_GROUPS_BIND_PASSWORD,
+                                        raise_exceptions=True)
                 connection.start_tls()
 
                 account_def = ObjectDef('user')
@@ -43,10 +48,32 @@ class CASLDAPBackend(CASBackend):
                 account_def += AttrDef('displayName')
                 account_def += AttrDef('givenName')
                 account_def += AttrDef('sn')
+                account_def += AttrDef('o')
+                account_def += AttrDef('ou')
+                account_def += AttrDef('l')
                 account_def += AttrDef('mail')
 
-                account_reader = Reader(connection=connection, object_def=account_def, query="userPrincipalName: {principal_name}".format(principal_name=user.username), base=settings.LDAP_GROUPS_BASE_DN)
+                account_reader = Reader(connection=connection,
+                                        object_def=account_def,
+                                        query="userPrincipalName: {principal_name}, &(objectCategory=group)".format(principal_name=user.username),
+                                        base=settings.LDAP_GROUPS_BASE_DN)
                 account_reader.search_subtree()
+
+                # print(account_reader)
+                # print(user.username)
+                test = Reader(connection=connection,
+                              object_def=account_def,
+                              query='(&(member=CN=kjreis,OU=People,OU=Enterprise,OU=Accounts,DC=ad,DC=calpoly,DC=edu)(objectClass=group))',
+                              base=settings.LDAP_GROUPS_BASE_DN).search()
+                # print(test)
+                # print(ADGroup.objects.all().values_list('distinguished_name', flat=True)[0])
+                for group_item in test:
+                    group = str(group_item).split(" - STATUS:")[0].split("DN: ")[1]
+                    # print(group)
+                    if "CN=StateHRDept - UH-" in group:
+                        group = "CN=StateHRDept - University Housing (205200 FacStf All),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu"
+                    if group in ADGroup.objects.all().values_list('distinguished_name', flat=True):
+                        print("found: " + group)
 
                 user_info = account_reader.entries[0]
             except Exception as msg:
@@ -62,7 +89,9 @@ class CASLDAPBackend(CASBackend):
                         try:
                             group_members = LDAPADGroup(group).get_tree_members()
                         except InvalidGroupDN:
-                            logger.exception('Could not retrieve group members for DN: ' + group, exc_info=True, extra={'request': request})
+                            logger.exception('Could not retrieve group members for DN: ' + group,
+                                             exc_info=True,
+                                             extra={'request': request})
                             return []
 
                         group_members = [member["userPrincipalName"] for member in group_members]
@@ -71,14 +100,23 @@ class CASLDAPBackend(CASBackend):
                     return group_members
 
                 def check_group_for_user(group):
+                    a = datetime.now()
                     group_members = get_group_members(group.distinguished_name)
+                    b = datetime.now()
+                    # print("Get Members of " + group.distinguished_name + " : " + str(b - a))
                     if principal_name in group_members:
+                        print("Member of: " + group.distinguished_name)
                         user.ad_groups.add(group)
 
                 # New Code should use the ad_groups property of the user to enforce permissions
                 user.ad_groups.clear()
+                print(ADGroup.objects.count())
+                c = datetime.now()
                 with ThreadPoolExecutor(ADGroup.objects.count()) as pool:
                     pool.map(check_group_for_user, ADGroup.objects.all())
+                d = datetime.now()
+                print(d - c)
+                # print(user.ad_groups)
 
                 if not user.ad_groups.exists():
                     raise PermissionDenied('User %s is not in any of the allowed groups.' % principal_name)
