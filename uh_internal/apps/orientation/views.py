@@ -13,7 +13,7 @@ from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
 
 from ..core.models import StaffMapping
-from .forms import SRSUploadForm, OnityEmailForm
+from .forms import OnityEmailForm
 
 
 class ChecklistView(TemplateView):
@@ -30,14 +30,17 @@ class OnityDoorAccessView(FormView):
     def get_initial(self):
         full_name = self.request.user.get_full_name()
         first_name = self.request.user.first_name
-        initial_message = "To Whom It May Concern:\n\nMy name is %s. I've just been hired as a ResNet technician and would like to set up an appointment to get my PolyCard coded for Onity Door Access to the ResNet offices.\n\nSincerely,\n%s" % (full_name, first_name)
+        initial_message = ("To Whom It May Concern:\n\nMy name is %s."
+                           " I've just been hired as a ResNet technician and would like to set up"
+                           " an appointment to get my PolyCard coded for Onity Door Access to the"
+                           " ResNet offices.\n\nSincerely,\n%s" % (full_name, first_name))
 
         return {'message': initial_message}
 
     def get_context_data(self, **kwargs):
         context = super(OnityDoorAccessView, self).get_context_data(**kwargs)
 
-        onity_staff = StaffMapping.objects.get(title="Housing: Information Technology Consultant")
+        onity_staff = StaffMapping.objects.get(title="Onity Specialist")
 
         context['onity_staff_name'] = onity_staff.name
         context['onity_staff_email'] = onity_staff.email
