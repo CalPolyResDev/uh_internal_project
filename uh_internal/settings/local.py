@@ -14,8 +14,8 @@ ALLOWED_HOSTS = [
 #                                        Authentication Configuration                              #
 # ================================================================================================ #
 
-CAS_SERVER_URL = "https://mydev.calpoly.edu/cas/"
-CAS_LOGOUT_URL = "https://mydev.calpoly.edu/cas/casClientLogout.jsp?logoutApp=University%20Housing%20Internal"
+CAS_SERVER_URL = "https://idp-dev.calpoly.edu/idp/profile/cas/"
+CAS_LOGOUT_URL = "https://idp-dev.calpoly.edu/idp/app-logout.jsp?logoutApp=University%20Housing%20Internal"
 
 # ================================================================================================ #
 #                                          Database Configuration                                  #

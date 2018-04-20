@@ -6,9 +6,7 @@
 
 """
 
-from concurrent.futures.thread import ThreadPoolExecutor
 import logging
-from datetime import datetime
 
 from django.conf import settings
 from django.core.cache import cache
@@ -48,9 +46,6 @@ class CASLDAPBackend(CASBackend):
                 account_def += AttrDef('displayName')
                 account_def += AttrDef('givenName')
                 account_def += AttrDef('sn')
-                account_def += AttrDef('o')
-                account_def += AttrDef('ou')
-                account_def += AttrDef('l')
                 account_def += AttrDef('mail')
 
                 account_reader = Reader(connection=connection,
@@ -59,27 +54,74 @@ class CASLDAPBackend(CASBackend):
                                         base=settings.LDAP_GROUPS_BASE_DN)
                 account_reader.search_subtree()
 
-                # print(account_reader)
-                # print(user.username)
-                test = Reader(connection=connection,
-                              object_def=account_def,
-                              query='(&(member=CN=kjreis,OU=People,OU=Enterprise,OU=Accounts,DC=ad,DC=calpoly,DC=edu)(objectClass=group))',
-                              base=settings.LDAP_GROUPS_BASE_DN).search()
-                # print(test)
-                # print(ADGroup.objects.all().values_list('distinguished_name', flat=True)[0])
-                for group_item in test:
-                    group = str(group_item).split(" - STATUS:")[0].split("DN: ")[1]
-                    # print(group)
-                    if "CN=StateHRDept - UH-" in group:
-                        group = "CN=StateHRDept - University Housing (205200 FacStf All),OU=FacStaff,OU=StateHRDept,OU=Automated,OU=Groups,DC=ad,DC=calpoly,DC=edu"
-                    if group in ADGroup.objects.all().values_list('distinguished_name', flat=True):
-                        print("found: " + group)
-
                 user_info = account_reader.entries[0]
             except Exception as msg:
                 logger.exception(msg, exc_info=True, extra={'request': request})
             else:
                 principal_name = str(user_info["userPrincipalName"])
+
+                user_group_objects = Reader(connection=connection,
+                                            object_def=account_def,
+                                            query='(&(member=CN=kjreis,OU=People,OU=Enterprise,OU=Accounts,DC=ad,DC=calpoly,DC=edu)(objectClass=group))',
+                                            base=settings.LDAP_GROUPS_BASE_DN).search()
+
+                user_groups = []
+                for group_item in user_group_objects:
+                    group = str(group_item).split(" - STATUS:")[0].split("DN: ")[1]
+                    user_groups.append(group)
+
+                def escape_query(query):
+                    """Escapes certain filter characters from an LDAP query."""
+
+                    return query.replace("\\", r"\5C").replace("*", r"\2A").replace("(", r"\28").replace(")", r"\29")
+
+                # Ideally ldap-groups will be updated to have better performance like the below code does
+                def AD_get_children(connection, parent):
+                    connection.search(settings.LDAP_GROUPS_BASE_DN,
+                                      "(&(objectCategory=group)(memberOf={group_name}))".format(group_name=escape_query(parent)))
+                    children = connection.entries
+                    results = []
+                    for child in children:
+                        child = str(child).split(" - STATUS:")[0].split("DN: ")[1]
+                        results.append(child)
+                    return results
+
+                def get_descendants(connection, parent):
+                    descendants = []
+                    queue = []
+                    queue.append(parent)
+                    visited = set()
+
+                    while len(queue):
+                        node = queue.pop()
+
+                        if node not in visited:
+                            children = AD_get_children(connection, node)
+                            for child in children:
+                                if child not in descendants:
+                                    descendants.append(child)
+                                    queue.append(child)
+                            visited.add(node)
+
+                    return descendants
+
+                # New Code should use the ad_groups property of the user to enforce permissions
+                user.ad_groups.clear()
+
+                for group in ADGroup.objects.all().values_list('id', 'distinguished_name'):
+                    if group[1] in user_groups:
+                        user.ad_groups.add(group[0])
+                    else:
+                        children = get_descendants(connection, group[1])
+                        for child in children:
+                            if child in user_groups:
+                                user.ad_groups.add(group[0])
+
+                if not user.ad_groups.exists():
+                    raise PermissionDenied('User %s is not in any of the allowed groups.' % principal_name)
+
+                if not user.ad_groups.all().filter(distinguished_name='CN=UH-RN-DevTeam,OU=Technology,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu').exists() and settings.RESTRICT_LOGIN_TO_DEVELOPERS:
+                    raise PermissionDenied('Only developers can access the site on this server. Please use the primary site.')
 
                 def get_group_members(group):
                     cache_key = 'group_members::' + (group if " " not in group else group.replace(" ", "_"))
@@ -98,31 +140,6 @@ class CASLDAPBackend(CASBackend):
                         cache.set(cache_key, group_members, 60)
 
                     return group_members
-
-                def check_group_for_user(group):
-                    a = datetime.now()
-                    group_members = get_group_members(group.distinguished_name)
-                    b = datetime.now()
-                    # print("Get Members of " + group.distinguished_name + " : " + str(b - a))
-                    if principal_name in group_members:
-                        print("Member of: " + group.distinguished_name)
-                        user.ad_groups.add(group)
-
-                # New Code should use the ad_groups property of the user to enforce permissions
-                user.ad_groups.clear()
-                print(ADGroup.objects.count())
-                c = datetime.now()
-                with ThreadPoolExecutor(ADGroup.objects.count()) as pool:
-                    pool.map(check_group_for_user, ADGroup.objects.all())
-                d = datetime.now()
-                print(d - c)
-                # print(user.ad_groups)
-
-                if not user.ad_groups.exists():
-                    raise PermissionDenied('User %s is not in any of the allowed groups.' % principal_name)
-
-                if not user.ad_groups.all().filter(distinguished_name='CN=UH-RN-DevTeam,OU=Technology,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu').exists() and settings.RESTRICT_LOGIN_TO_DEVELOPERS:
-                    raise PermissionDenied('Only developers can access the site on this server. Please use the primary site.')
 
                 # Django Flags
                 developer_list = get_group_members('CN=UH-RN-DevTeam,OU=Technology,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')

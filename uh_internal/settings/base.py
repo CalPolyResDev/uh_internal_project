@@ -230,8 +230,8 @@ CAS_LOGOUT_COMPLETELY = False
 CAS_LOGIN_MSG = None
 CAS_LOGGED_MSG = None
 
-CAS_SERVER_URL = "https://my.calpoly.edu/cas/"
-CAS_LOGOUT_URL = "https://my.calpoly.edu/cas/casClientLogout.jsp?logoutApp=University%20Housing%20Internal"
+CAS_SERVER_URL = "https://idp.calpoly.edu/idp/profile/cas/"
+CAS_LOGOUT_URL = "https://idp.calpoly.edu/idp/app-logout.jsp?logoutApp=University%20Housing%20Internal"
 
 RESTRICT_LOGIN_TO_DEVELOPERS = string_to_bool(get_env_variable('RESNET_INTERNAL_RESTRICT_LOGIN_TO_DEVELOPERS'))
 
