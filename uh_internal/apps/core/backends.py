@@ -68,9 +68,8 @@ class CASLDAPBackend(CASBackend):
                                             base=settings.LDAP_GROUPS_BASE_DN).search()
 
                 user_groups = []
-                for group_item in user_group_objects:
-                    group = str(group_item).split(" - STATUS:")[0].split("DN: ")[1]
-                    user_groups.append(group)
+                for group in user_group_objects:
+                    user_groups.append(group.entry_dn)
 
                 # Ideally ldap-groups will be updated to have better performance like the below code does
                 def AD_get_children(connection, parent):
@@ -79,8 +78,7 @@ class CASLDAPBackend(CASBackend):
                     children = connection.entries
                     results = []
                     for child in children:
-                        child = str(child).split(" - STATUS:")[0].split("DN: ")[1]
-                        results.append(child)
+                        results.append(child.entry_dn)
                     return results
 
                 def get_descendants(connection, parent):
