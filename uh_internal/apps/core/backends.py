@@ -14,6 +14,7 @@ from django.core.exceptions import PermissionDenied
 from django_cas_ng.backends import CASBackend
 from ldap3 import Server, Connection, ObjectDef, AttrDef, Reader
 from ldap_groups.exceptions import InvalidGroupDN
+from ldap_groups.utils import escape_query
 from ldap_groups.groups import ADGroup as LDAPADGroup
 
 from .models import ADGroup
@@ -50,7 +51,7 @@ class CASLDAPBackend(CASBackend):
 
                 account_reader = Reader(connection=connection,
                                         object_def=account_def,
-                                        query="userPrincipalName: {principal_name}, &(objectCategory=group)".format(principal_name=user.username),
+                                        query="userPrincipalName: {principal_name}".format(principal_name=user.username),
                                         base=settings.LDAP_GROUPS_BASE_DN)
                 account_reader.search_subtree()
 
@@ -59,21 +60,17 @@ class CASLDAPBackend(CASBackend):
                 logger.exception(msg, exc_info=True, extra={'request': request})
             else:
                 principal_name = str(user_info["userPrincipalName"])
+                username = principal_name.split("@")[0]
 
                 user_group_objects = Reader(connection=connection,
                                             object_def=account_def,
-                                            query='(&(member=CN=kjreis,OU=People,OU=Enterprise,OU=Accounts,DC=ad,DC=calpoly,DC=edu)(objectClass=group))',
+                                            query='(&(member=CN={username},OU=People,OU=Enterprise,OU=Accounts,DC=ad,DC=calpoly,DC=edu)(objectClass=group))'.format(username=username),
                                             base=settings.LDAP_GROUPS_BASE_DN).search()
 
                 user_groups = []
                 for group_item in user_group_objects:
                     group = str(group_item).split(" - STATUS:")[0].split("DN: ")[1]
                     user_groups.append(group)
-
-                def escape_query(query):
-                    """Escapes certain filter characters from an LDAP query."""
-
-                    return query.replace("\\", r"\5C").replace("*", r"\2A").replace("(", r"\28").replace(")", r"\29")
 
                 # Ideally ldap-groups will be updated to have better performance like the below code does
                 def AD_get_children(connection, parent):
@@ -108,14 +105,14 @@ class CASLDAPBackend(CASBackend):
                 # New Code should use the ad_groups property of the user to enforce permissions
                 user.ad_groups.clear()
 
-                for group in ADGroup.objects.all().values_list('id', 'distinguished_name'):
-                    if group[1] in user_groups:
-                        user.ad_groups.add(group[0])
+                for group_id, group_dn in ADGroup.objects.all().values_list('id', 'distinguished_name'):
+                    if group_dn in user_groups:
+                        user.ad_groups.add(group_id)
                     else:
-                        children = get_descendants(connection, group[1])
+                        children = get_descendants(connection, group_dn)
                         for child in children:
                             if child in user_groups:
-                                user.ad_groups.add(group[0])
+                                user.ad_groups.add(group_id)
 
                 if not user.ad_groups.exists():
                     raise PermissionDenied('User %s is not in any of the allowed groups.' % principal_name)
