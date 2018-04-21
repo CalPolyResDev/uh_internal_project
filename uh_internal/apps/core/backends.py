@@ -71,7 +71,6 @@ class CASLDAPBackend(CASBackend):
                 for group in user_group_objects:
                     user_groups.append(group.entry_dn)
 
-                # Ideally ldap-groups will be updated to have better performance like the below code does
                 def AD_get_children(connection, parent):
                     connection.search(settings.LDAP_GROUPS_BASE_DN,
                                       "(&(objectCategory=group)(memberOf={group_name}))".format(group_name=escape_query(parent)))
