@@ -101,6 +101,7 @@ DATABASES = {
         'HOST': 'srs.calpoly.edu/ewws/',
         'PORT': '443',
         'NUM_CONNECTIONS': 40,
+        'test': False,
     },
 }
 
@@ -359,11 +360,11 @@ INSTALLED_APPS = (
     'clever_selects',
     'crispy_forms',
     'dbbackup',
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.admin',
     'django.contrib.staticfiles',
     'django_cas_ng',
     'django_js_reverse',

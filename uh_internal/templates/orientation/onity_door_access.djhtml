@@ -13,7 +13,7 @@
         <p><b>To get your card coded:</b></p>
 
         <div class="panel panel-default">
-            <div class="panel-heading">Contact {{ onity_staff_name }} (Housing and Business Services)</div>
+            <div class="panel-heading">Contact {{ onity_staff_name }} (Housing Services)</div>
 
             <div class="table-responsive">
                 <table class="table">
@@ -29,7 +29,7 @@
                         <tr>
                             <td>6-{{ onity_staff_extension }}</td>
                             <td>{{ onity_staff_email }}</td>
-                            <td>The office behind Trinity Hall</td>
+                            <td>Housing, Building #31</td>
                             <td>9am-5pm M-F</td>
                         </tr>
                     </tbody>
@@ -45,25 +45,10 @@
 
     <div class="col-xs-12">
         <br /><p>If your PolyCard has been encoded, click the following button to take this item off the checklist:</p>
-        <br /><button class="btn btn-primary" onclick="complete_task('onity')">My PolyCard Has Been Encoded</button>
+        <form action="../complete_task/" method="post" id="onity">
+            {% csrf_token %}
+            <input type="hidden" value="onity" name="task" />
+        </form>
+        <br /><button type="submit" class="btn btn-primary" form="onity">My PolyCard Has Been Encoded</button>
     </div>
-{% endblock %}
-
-{% block extra_script %}
-    <script type="text/javascript">
-        function complete_task(task) {
-            var request = {};
-            var request_header = {};
-            var request_body = {};
-            request_header["X-CSRFToken"] = getCookie('csrftoken');
-            request_header["Content-Type"] = 'application/json'
-            request_body["task"] = task;
-            request["method"] = 'POST';
-            request["headers"] = request_header;
-            request["credentials"] = 'include';
-            request["body"] = JSON.stringify(request_body);
-
-            fetch("{% url 'orientation:complete_task' %}", request);
-        };
-    </script>
 {% endblock %}
