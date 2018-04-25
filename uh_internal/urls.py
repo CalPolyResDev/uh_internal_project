@@ -25,7 +25,7 @@ handler500 = handler500
 logger = logging.getLogger(__name__)
 
 urlpatterns = [
-    url(r'^flugzeug/', include(admin.site.urls)),  # admin site urls, masked
+    url(r'^flugzeug/', admin.site.urls),  # admin site urls, masked
     url(r'^technicians/', include(MAIN_APP_NAME + '.apps.technicians.urls')),
     url(r'^computers/', include(MAIN_APP_NAME + '.apps.computers.urls')),
     url(r'^dailyduties/', include(MAIN_APP_NAME + '.apps.dailyduties.urls')),

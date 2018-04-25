@@ -43,14 +43,15 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.templates.TemplatesPanel',
     'debug_toolbar.panels.cache.CachePanel',
     'debug_toolbar.panels.signals.SignalsPanel',
-    #     'debug_toolbar.panels.profiling.ProfilingPanel',
     'debug_toolbar.panels.logging.LoggingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',
 )
 
 DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
     'SHOW_TEMPLATE_CONTEXT': True,
+    'DISABLE_PANELS': {'debug_toolbar.panels.redirects.RedirectsPanel',
+                       'debug_toolbar.panels.profiling.ProfilingPanel'
+                      },
 }
 
 DBBACKUP_SEND_EMAIL = False
@@ -59,7 +60,7 @@ DBBACKUP_SEND_EMAIL = False
 #                                  File/Application Handling Configuration                         #
 # ================================================================================================ #
 
-MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware',]
 
 INSTALLED_APPS += (
     'debug_toolbar',

@@ -346,7 +346,7 @@ TEMPLATES = [
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -354,7 +354,7 @@ MIDDLEWARE_CLASSES = (
     MAIN_APP_NAME + '.apps.orientation.middleware.OrientationRedirectMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-)
+]
 
 INSTALLED_APPS = (
     'clever_selects',
