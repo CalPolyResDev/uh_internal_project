@@ -107,7 +107,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
             if device_is_down(row.upstream_device):
                 return self.display_block_template.format(value="", link_block="", inline_images="")
             else:
-                return self.render_action_column(row=row, column=column, function_name="confirm_status_change", link_class_name="action_blue", link_display="Deactivate" if getattr(row, column) else "Activate")
+                return self.render_action_column(row=row, column=column, function_name="confirm_status_change", icon_name = "deactivate" if getattr(row, column) else "activate", icon_url=static("images/icons/disconnect.png") if getattr(row, column) else static("images/icons/connect.ico"))
         else:
             return super().render_column(row, column)
 
