@@ -13,9 +13,9 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
 from django.http.response import HttpResponse
 from django.template import Template, RequestContext
+from django.urls import reverse
 from django.utils.encoding import smart_text
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST

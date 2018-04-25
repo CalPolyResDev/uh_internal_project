@@ -12,8 +12,8 @@ import socket
 import subprocess
 
 from clever_selects.views import ChainedSelectFormViewMixin
-from django.core.urlresolvers import reverse, reverse_lazy
 from django.http.response import HttpResponseRedirect, HttpResponse
+from django.urls import reverse, reverse_lazy
 from django.utils.encoding import smart_str
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView

@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.db import migrations, models
-import django.db.models.deletion
+from django.db.models.deletion import CASCADE
 import uh_internal.apps.core.models
 
 
@@ -20,14 +20,22 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UHInternalUser',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('password', models.CharField(max_length=128, verbose_name='password')),
-                ('last_login', models.DateTimeField(blank=True, null=True, verbose_name='last login')),
-                ('is_superuser', models.BooleanField(default=False, help_text='Designates that this user has all permissions without explicitly assigning them.', verbose_name='superuser status')),
-                ('username', models.CharField(max_length=30, unique=True, verbose_name='Username')),
-                ('first_name', models.CharField(blank=True, max_length=30, verbose_name='First Name')),
-                ('last_name', models.CharField(blank=True, max_length=30, verbose_name='Last Name')),
-                ('email', models.EmailField(blank=True, max_length=254, verbose_name='Email Address')),
+                ('last_login', models.DateTimeField(blank=True, null=True,
+                                                    verbose_name='last login')),
+                ('is_superuser', models.BooleanField(default=False,
+                                                     help_text='Designates that this user has all permissions without explicitly assigning them.',
+                                                     verbose_name='superuser status')),
+                ('username', models.CharField(max_length=30, unique=True,
+                                              verbose_name='Username')),
+                ('first_name', models.CharField(blank=True, max_length=30,
+                                                verbose_name='First Name')),
+                ('last_name', models.CharField(blank=True, max_length=30,
+                                               verbose_name='Last Name')),
+                ('email', models.EmailField(blank=True, max_length=254,
+                                            verbose_name='Email Address')),
                 ('is_active', models.BooleanField(default=True)),
                 ('is_staff', models.BooleanField(default=False)),
                 ('onity_complete', models.BooleanField(default=False)),
@@ -45,8 +53,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='ADGroup',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('distinguished_name', models.CharField(max_length=250, unique=True, verbose_name='Distinguished Name')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
+                ('distinguished_name', models.CharField(max_length=250, unique=True,
+                                                        verbose_name='Distinguished Name')),
                 ('display_name', models.CharField(max_length=50, verbose_name='Display Name')),
             ],
             options={
@@ -56,14 +66,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Building',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=30, verbose_name='Building Name')),
             ],
         ),
         migrations.CreateModel(
             name='Community',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=30, verbose_name='Community Name')),
             ],
             options={
@@ -73,12 +85,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='CSDMapping',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=50, verbose_name='Full Name')),
                 ('email', models.CharField(max_length=20, verbose_name='Email')),
                 ('domain', models.CharField(max_length=35, unique=True, verbose_name='Domain')),
-                ('ad_group', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.ADGroup', verbose_name='Domain AD Group')),
-                ('buildings', models.ManyToManyField(related_name='csdmappings', to='core.Building', verbose_name='Domain Buildings')),
+                ('ad_group', models.ForeignKey(on_delete=CASCADE, to='core.ADGroup',
+                                               verbose_name='Domain AD Group')),
+                ('buildings', models.ManyToManyField(related_name='csdmappings', to='core.Building',
+                                                     verbose_name='Domain Buildings')),
             ],
             options={
                 'verbose_name': 'CSD Domain Mapping',
@@ -87,30 +102,42 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Department',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=50, verbose_name='Department Name')),
             ],
         ),
         migrations.CreateModel(
             name='NavbarLink',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('display_name', models.CharField(max_length=50, verbose_name='Display Name')),
-                ('show_to_all', models.BooleanField(default=False, verbose_name='Show To All Users')),
-                ('icon', models.CharField(blank=True, max_length=100, null=True, verbose_name='Icon Static File Location')),
+                ('show_to_all', models.BooleanField(default=False,
+                                                    verbose_name='Show To All Users')),
+                ('icon', models.CharField(blank=True, max_length=100, null=True,
+                                          verbose_name='Icon Static File Location')),
                 ('sequence_index', models.SmallIntegerField(verbose_name='Sequence Index')),
                 ('external_url', models.URLField(blank=True, null=True, verbose_name='URL')),
                 ('url_name', models.CharField(blank=True, max_length=100, null=True)),
-                ('onclick', models.CharField(blank=True, max_length=200, null=True, verbose_name='Onclick Handler')),
-                ('parent_group', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='links', to='core.NavbarLink', verbose_name='Parent Link Group')),
+                ('onclick', models.CharField(blank=True, max_length=200, null=True,
+                                             verbose_name='Onclick Handler')),
+                ('parent_group', models.ForeignKey(blank=True,
+                                                   null=True,
+                                                   on_delete=CASCADE,
+                                                   related_name='links',
+                                                   to='core.NavbarLink',
+                                                   verbose_name='Parent Link Group')),
             ],
         ),
         migrations.CreateModel(
             name='PermissionClass',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=50, unique=True, verbose_name='Class Name')),
-                ('groups', models.ManyToManyField(related_name='permissionclasses', to='core.ADGroup', verbose_name='AD Groups')),
+                ('groups', models.ManyToManyField(related_name='permissionclasses',
+                                                  to='core.ADGroup', verbose_name='AD Groups')),
             ],
             options={
                 'verbose_name_plural': 'permission classes',
@@ -119,15 +146,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Room',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=10, verbose_name='Room Number')),
-                ('building', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='rooms', to='core.Building', verbose_name='Building')),
+                ('building', models.ForeignKey(on_delete=CASCADE, related_name='rooms',
+                                               to='core.Building', verbose_name='Building')),
             ],
         ),
         migrations.CreateModel(
             name='StaffMapping',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=50, unique=True, verbose_name='Title')),
                 ('name', models.CharField(max_length=50, verbose_name='Full Name')),
                 ('email', models.CharField(max_length=20, verbose_name='Email Address')),
@@ -140,9 +170,14 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SubDepartment',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=50, verbose_name='Sub Department Name')),
-                ('department', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='sub_departments', to='core.Department', verbose_name='Department')),
+                ('department', models.ForeignKey(null=True,
+                                                 on_delete=CASCADE,
+                                                 related_name='sub_departments',
+                                                 to='core.Department',
+                                                 verbose_name='Department')),
             ],
             options={
                 'verbose_name': 'Sub Department',
@@ -151,9 +186,11 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='TechFlair',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('flair', models.CharField(max_length=30, unique=True, verbose_name='Flair')),
-                ('tech', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='Technician')),
+                ('tech', models.ForeignKey(on_delete=CASCADE, to=settings.AUTH_USER_MODEL,
+                                           verbose_name='Technician')),
             ],
             options={
                 'verbose_name': 'Tech Flair',
@@ -163,26 +200,39 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='navbarlink',
             name='permission_classes',
-            field=models.ManyToManyField(to='core.PermissionClass', verbose_name='Permission Classes'),
+            field=models.ManyToManyField(to='core.PermissionClass',
+                                         verbose_name='Permission Classes'),
         ),
         migrations.AddField(
             model_name='building',
             name='community',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='buildings', to='core.Community', verbose_name='Community'),
+            field=models.ForeignKey(on_delete=CASCADE, related_name='buildings',
+                                    to='core.Community', verbose_name='Community'),
         ),
         migrations.AddField(
             model_name='uhinternaluser',
             name='ad_groups',
-            field=models.ManyToManyField(related_name='users', to='core.ADGroup', verbose_name='AD Groups'),
+            field=models.ManyToManyField(related_name='users', to='core.ADGroup',
+                                         verbose_name='AD Groups'),
         ),
         migrations.AddField(
             model_name='uhinternaluser',
             name='groups',
-            field=models.ManyToManyField(blank=True, help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.', related_name='user_set', related_query_name='user', to='auth.Group', verbose_name='groups'),
+            field=models.ManyToManyField(blank=True,
+                                         help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
+                                         related_name='user_set',
+                                         related_query_name='user',
+                                         to='auth.Group',
+                                         verbose_name='groups'),
         ),
         migrations.AddField(
             model_name='uhinternaluser',
             name='user_permissions',
-            field=models.ManyToManyField(blank=True, help_text='Specific permissions for this user.', related_name='user_set', related_query_name='user', to='auth.Permission', verbose_name='user permissions'),
+            field=models.ManyToManyField(blank=True,
+                                         help_text='Specific permissions for this user.',
+                                         related_name='user_set',
+                                         related_query_name='user',
+                                         to='auth.Permission',
+                                         verbose_name='user permissions'),
         ),
     ]

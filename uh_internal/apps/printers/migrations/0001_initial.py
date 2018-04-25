@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import django.db.models.deletion
+from django.db.models.deletion import CASCADE
 
 
 class Migration(migrations.Migration):
@@ -19,16 +19,27 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Printer',
             fields=[
-                ('networkdevice_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='network.NetworkDevice')),
+                ('networkdevice_ptr', models.OneToOneField(auto_created=True,
+                                                           on_delete=CASCADE,
+                                                           parent_link=True,
+                                                           primary_key=True,
+                                                           serialize=False,
+                                                           to='network.NetworkDevice')),
                 ('model', models.CharField(max_length=25, verbose_name='Model')),
-                ('serial_number', models.CharField(blank=True, default=None, max_length=20, null=True, unique=True, verbose_name='Serial Number')),
-                ('property_id', models.CharField(blank=True, default=None, max_length=50, null=True, unique=True, verbose_name='Cal Poly Property ID')),
-                ('location', models.CharField(blank=True, max_length=100, null=True, verbose_name='Location')),
+                ('serial_number', models.CharField(blank=True, default=None, max_length=20,
+                                                   null=True, unique=True,
+                                                   verbose_name='Serial Number')),
+                ('property_id', models.CharField(blank=True, default=None, max_length=50, null=True,
+                                                 unique=True, verbose_name='Cal Poly Property ID')),
+                ('location', models.CharField(blank=True, max_length=100, null=True,
+                                              verbose_name='Location')),
                 ('date_purchased', models.DateField(verbose_name='Date Purchased')),
                 ('description', models.CharField(max_length=100, verbose_name='Description')),
                 ('dhcp', models.BooleanField(default=False)),
-                ('department', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.Department', verbose_name='Department')),
-                ('sub_department', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='core.SubDepartment', verbose_name='Sub Department')),
+                ('department', models.ForeignKey(on_delete=CASCADE, to='core.Department',
+                                                 verbose_name='Department')),
+                ('sub_department', models.ForeignKey(on_delete=CASCADE, to='core.SubDepartment',
+                                                     verbose_name='Sub Department')),
             ],
             bases=('network.networkdevice',),
         ),

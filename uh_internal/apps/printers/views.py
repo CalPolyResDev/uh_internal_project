@@ -8,7 +8,7 @@
 
 import logging
 
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 from ..datatables.views import DatatablesView
 from .ajax import PopulatePrinters

@@ -13,7 +13,10 @@
 from django.contrib.postgres.fields.array import ArrayField
 from django.core.exceptions import ValidationError
 from django.db.models.base import Model
-from django.db.models.fields import CharField, GenericIPAddressField, NullBooleanField, BooleanField, PositiveSmallIntegerField, IntegerField, DateTimeField, TextField
+from django.db.models.deletion import CASCADE
+from django.db.models.fields import (CharField, GenericIPAddressField, NullBooleanField,
+                                     BooleanField, PositiveSmallIntegerField, IntegerField,
+                                     DateTimeField, TextField)
 from django.db.models.fields.related import ForeignKey
 from django.utils.functional import cached_property
 
@@ -26,10 +29,12 @@ class NetworkDevice(Model):
 
     display_name = CharField(max_length=100, verbose_name='Display Name')
     dns_name = CharField(max_length=75, verbose_name='DNS Name', null=True, blank=True)
-    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address', null=True, blank=True)
+    ip_address = GenericIPAddressField(protocol='IPv4', verbose_name='IP Address',
+                                       null=True, blank=True)
     mac_address = MACAddressField(verbose_name='MAC Address', null=True, blank=True)
-    upstream_device = ForeignKey('NetworkDevice', related_name='downstream_devices', null=True, blank=True)
-    room = ForeignKey(Room, verbose_name='Room', null=True, blank=True)
+    upstream_device = ForeignKey('NetworkDevice', related_name='downstream_devices',
+                                 null=True, blank=True, on_delete=CASCADE)
+    room = ForeignKey(Room, verbose_name='Room', null=True, blank=True, on_delete=CASCADE)
     airwaves_id = IntegerField(null=True, blank=True)
     airwaves_is_up = NullBooleanField()
 
@@ -132,7 +137,8 @@ class ClearPassLoginAttempt(Model):
     alerts = TextField(null=True, blank=True)
 
     def __str__(self):
-        return 'Username: ' + str(self.username) + ', Service: ' + str(self.service) + ', Roles: ' + str(self.roles) + '\n'
+        return ('Username: ' + str(self.username) + ', Service: '
+                + str(self.service) + ', Roles: ' + str(self.roles) + '\n')
 
     @cached_property
     def client_mac_address_formatted(self):
