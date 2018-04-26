@@ -368,7 +368,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_cas_ng',
     'django_js_reverse',
-    'jfu',
     'raven.contrib.django.raven_compat',
     'rest_framework',
     'static_precompiler',
