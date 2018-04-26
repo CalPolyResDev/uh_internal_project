@@ -15,6 +15,8 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='navbarlink',
             name='permission_classes',
-            field=models.ManyToManyField(blank=True, to='core.PermissionClass', verbose_name='Permission Classes'),
+            field=models.ManyToManyField(blank=True,
+                                         to='core.PermissionClass',
+                                         verbose_name='Permission Classes'),
         ),
     ]

@@ -19,8 +19,7 @@ def add_navbar_link(apps, schema_editor):
                       icon='images/icons/aruba.png',
                       sequence_index=-1,
                       parent_group=parent,
-                      url_name='network:troubleshooter',
-                      )
+                      url_name='network:troubleshooter')
     link.save()
     link.permission_classes.add(permission_class)
 
