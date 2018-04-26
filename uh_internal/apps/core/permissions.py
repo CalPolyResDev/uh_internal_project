@@ -9,10 +9,12 @@
 from django.contrib.auth.decorators import user_passes_test
 from django.core.exceptions import PermissionDenied
 
-from ...settings.base import (TICKET_ACCESS, ROOMS_ACCESS, ROOMS_MODIFY_ACCESS, DAILY_DUTIES_ACCESS, TECHNICIAN_LIST_ACCESS,
-                              NETWORK_ACCESS, NETWORK_MODIFY_ACCESS, COMPUTERS_RECORD_MODIFY_ACCESS, CSD_ASSIGNMENT_ACCESS,
-                              ORIENTATION_ACCESS, COMPUTERS_ACCESS, PRINTERS_ACCESS, COMPUTERS_MODIFY_ACCESS, PRINTERS_MODIFY_ACCESS,
-                              ROSTER_ACCESS, RESIDENT_LOOKUP_ACCESS)
+from ...settings.base import (TICKET_ACCESS, ROOMS_ACCESS, ROOMS_MODIFY_ACCESS,
+                              DAILY_DUTIES_ACCESS, TECHNICIAN_LIST_ACCESS, NETWORK_ACCESS,
+                              NETWORK_MODIFY_ACCESS, COMPUTERS_RECORD_MODIFY_ACCESS,
+                              CSD_ASSIGNMENT_ACCESS, ORIENTATION_ACCESS, COMPUTERS_ACCESS,
+                              PRINTERS_ACCESS, COMPUTERS_MODIFY_ACCESS,
+                              PRINTERS_MODIFY_ACCESS, ROSTER_ACCESS, RESIDENT_LOOKUP_ACCESS)
 
 
 def permissions_check(class_name, raise_exception=True):

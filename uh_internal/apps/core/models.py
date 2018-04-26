@@ -16,8 +16,8 @@ from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
 from django.db.models.base import Model
 from django.db.models.deletion import CASCADE
-from django.db.models.fields import (CharField, TextField, DateTimeField, EmailField, BooleanField,
-                                     URLField, SmallIntegerField, PositiveSmallIntegerField)
+from django.db.models.fields import (CharField, EmailField, BooleanField, URLField,
+                                     SmallIntegerField, PositiveSmallIntegerField)
 from django.db.models.fields.related import ForeignKey, ManyToManyField
 from django.urls import reverse, NoReverseMatch
 from django.utils import timezone
@@ -295,7 +295,6 @@ class NavbarLink(Model):
                 logger.warning('Could not resolve ``' + self.url_name +
                                '`` for navbar link ' + self.display_name,
                                exc_info=True)
-                pass
         else:
             url = self.external_url
 

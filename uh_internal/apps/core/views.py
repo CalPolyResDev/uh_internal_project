@@ -10,7 +10,6 @@ from datetime import datetime
 
 from clever_selects.views import ChainedSelectFormViewMixin
 from django.conf import settings
-from django.db.models import Q
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
 from ldap_groups import ADGroup as LDAPADGroup

@@ -15,12 +15,12 @@ import logging
 from clever_selects.views import ChainedSelectChoicesView
 from django.template import Template, RequestContext
 from django.urls import reverse_lazy
-from django.views.decorators.http import require_POST
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from ...settings.base import ROOMS_MODIFY_ACCESS
-from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView
+from ..datatables.ajax import (RNINDatatablesPopulateView, BaseDatatablesUpdateView,
+                               BaseDatatablesRemoveView, RNINDatatablesFormView)
 from ..network.utils import NetworkReachabilityTester
 from .forms import RoomCreateForm, RoomUpdateForm
 from .models import Building, Room, SubDepartment, CSDMapping
@@ -118,7 +118,7 @@ def get_tickets(request):
 
     for ticket in tickets:
         if ((not ticket['assigned_person'] or ticket['assigned_person'] == request.user.get_full_name()) and
-                (ticket['status'] != 'Pending Information' or ticket['updater_is_technician'] == False or
+                (ticket['status'] != 'Pending Information' or  not ticket['updater_is_technician'] or
                  ticket['date_updated'] + timedelta(weeks=1) < datetime.today())):
 
             time_difference = (now - ticket['date_updated']).total_seconds() / 86400  # 24 hours
@@ -220,10 +220,23 @@ class PopulateRooms(RNINDatatablesPopulateView):
     remove_url_name = 'core:remove_room'
 
     column_definitions = OrderedDict()
-    column_definitions["community"] = {"type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "building__community__name"}
-    column_definitions["building"] = {"type": "string", "editable": False, "title": "Building", "related": True, "lookup_field": "name"}
+    column_definitions["community"] = {"type": "string",
+                                       "editable": False,
+                                       "title": "Community",
+                                       "custom_lookup": True,
+                                       "lookup_field": "building__community__name"}
+    column_definitions["building"] = {"type": "string",
+                                      "editable": False,
+                                      "title": "Building",
+                                      "related": True,
+                                      "lookup_field": "name"}
     column_definitions["name"] = {"type": "string", "title": "Name"}
-    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+    column_definitions["remove"] = {"width": "0px",
+                                    "searchable": False,
+                                    "orderable": False,
+                                    "visible": False,
+                                    "editable": False,
+                                    "title": "&nbsp;"}
 
     extra_options = {
         "scrollX": False,
@@ -231,7 +244,10 @@ class PopulateRooms(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
+            self.column_definitions["remove"].update({"width": "80px",
+                                                      "type": "string",
+                                                      "remove_column": True,
+                                                      "visible": True})
 
         return super().get_options()
 

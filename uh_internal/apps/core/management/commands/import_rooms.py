@@ -22,7 +22,8 @@ class Command(BaseCommand):
         from django.conf import settings
 
         room_import = DictReader(settings.DATA_IMPORT_PATH.joinpath('rooms.csv').open('r'))
-        failed_rooms = DictWriter(settings.DATA_IMPORT_PATH.joinpath('rooms_failed.csv').open('w'), ['community', 'building', 'name'])
+        failed_rooms = DictWriter(settings.DATA_IMPORT_PATH.joinpath('rooms_failed.csv').open('w'),
+                                  ['community', 'building', 'name'])
         failed_rooms.writeheader()
 
         for room in room_import:

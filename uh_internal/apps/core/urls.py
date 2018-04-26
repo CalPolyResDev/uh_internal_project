@@ -15,8 +15,9 @@ from django.views.generic.base import RedirectView
 from django_cas_ng.views import login as auth_login, logout as auth_logout
 from django_js_reverse.views import urls_js
 
-from .ajax import (BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView, update_network_status, get_tickets, PopulateRooms,
-                   UpdateRoom, RemoveRoom, RetrieveRoomForm, update_csd_domain)
+from .ajax import (BuildingChainedAjaxView, RoomChainedAjaxView, SubDepartmentChainedAjaxView,
+                   update_network_status, get_tickets, PopulateRooms, UpdateRoom, RemoveRoom,
+                   RetrieveRoomForm, update_csd_domain)
 from .permissions import ticket_access, rooms_access, rooms_modify_access, csd_assignment_access
 from .views import IndexView, RoomsView, TicketSummaryView, CSDDomainAssignmentEditView
 
@@ -25,8 +26,12 @@ app_name = 'core'
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='home'),
-    url(r'^favicon\.ico$', RedirectView.as_view(url=static('images/icons/favicon.ico'), permanent=True), name='favicon'),
-    url(r'^robots\.txt$', RedirectView.as_view(url=static('robots.txt'), permanent=True), name='robots'),
+    url(r'^favicon\.ico$',
+        RedirectView.as_view(url=static('images/icons/favicon.ico'), permanent=True),
+        name='favicon'),
+    url(r'^robots\.txt$',
+        RedirectView.as_view(url=static('robots.txt'), permanent=True),
+        name='robots'),
     url(r'^login/$', auth_login, name='login'),
     url(r'^logout/$', auth_logout, name='logout', kwargs={'next_page': settings.CAS_LOGOUT_URL}),
 
