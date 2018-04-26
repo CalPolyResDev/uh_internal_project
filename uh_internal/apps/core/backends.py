@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 class CASLDAPBackend(CASBackend):
     """CAS authentication backend with LDAP attribute retrieval."""
 
-    def authenticate(self, ticket, service, request):
+    def authenticate(self, request, ticket, service):
         """Verifies CAS ticket and gets or creates User object"""
 
         user = super(CASLDAPBackend, self).authenticate(request, ticket, service)
