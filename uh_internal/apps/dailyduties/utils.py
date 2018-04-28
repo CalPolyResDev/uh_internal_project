@@ -5,31 +5,18 @@
 .. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
 """
-from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timedelta
-from itertools import zip_longest
-import itertools
 import logging
-from operator import itemgetter
-import os
-import socket
-from ssl import SSLError, SSLEOFError
-from threading import Lock
-import requests
 
 from django.conf import settings
-from django.core import mail
-from django.core.cache import cache
 from django.db import DatabaseError
-from django.utils.encoding import smart_text
 from srsconnector.utils import get_ticket_count
 
-from .models import DailyDuties
-
 # https://github.com/fedorareis/pyexchange This is a combination of branches with some custom code
-from pyexchange import Exchange2010Service, ExchangeNTLMAuthConnection, ExchangeBasicAuthConnection
+from pyexchange import Exchange2010Service, ExchangeBasicAuthConnection
 from pyexchange.exceptions import FailedExchangeException
+
+from .models import DailyDuties
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +43,7 @@ class GetInboxCount(object):
 
     @staticmethod
     def get_mail_count(service):
+        """ Returns the number of emails in the Inbox """
 
         folder = service.folder()
         folder_id = "inbox"
@@ -65,6 +53,7 @@ class GetInboxCount(object):
 
     @staticmethod
     def get_voicemail_count(service):
+        """ Returns the number of emails in the Voicemail Folder """
 
         folder = service.folder()
         voicemail = folder.get_folder(settings.OUTLOOK_VOICEMAIL_FOLDER_ID)
@@ -118,7 +107,7 @@ class GetDutyData(object):
         try:
             count = GetInboxCount.get_mail_count(server)
             email["count"] = count
-        except FailedExchangeException as e:
+        except FailedExchangeException:
             email["count"] = '?'
 
         if data.last_checked > datetime.now() - ACCEPTABLE_LAST_CHECKED:
@@ -158,15 +147,3 @@ class GetDutyData(object):
             tickets["last_user"] = "Connection Error!"
 
         return tickets
-
-    def send_api_request(self, token):
-        api_data = {
-            'Authorization': 'Bearer ' + token
-        }
-
-        r = requests.get(ms_api_url, data=api_data)
-        try:
-            print(r.text)
-            return r.json()
-        except:
-            'Error sending API request: {0} - {1}'.format(r.status_code, r.text)

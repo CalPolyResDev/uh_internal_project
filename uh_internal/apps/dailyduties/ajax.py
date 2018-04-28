@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 
 @api_view(['GET'])
 def refresh_duties(request):
+    """ Handles a GET request and responds with updated info for the daily duties panel"""
+
     duty_data = cache.get('duty_data')
 
     server = GetInboxCount.setup()
@@ -37,23 +39,29 @@ def refresh_duties(request):
         cache.set('duty_data', duty_data, 120)
 
     def duty_dict_to_link_text(daily_duty_dict, name):
+        """ Formats the count for the duty """
+
         return_string = name
         if daily_duty_dict['count'] == '?':
-            return_string += ' <strong class="text-warning">(' + daily_duty_dict['count'] + ')</strong>'
+            return_string += (' <strong class="text-warning">(' + daily_duty_dict['count'] +
+                              ')</strong>')
         elif daily_duty_dict['count'] > 10:
-            return_string += ' <strong class="text-danger">(' + str(daily_duty_dict['count']) + ')</strong>'
+            return_string += (' <strong class="text-danger">(' + str(daily_duty_dict['count']) +
+                              ')</strong>')
         elif daily_duty_dict['count'] > 0:
             return_string += ' <strong>(' + str(daily_duty_dict['count']) + ')</strong>'
 
         return return_string
 
     def duty_dict_to_popover_html(daily_duty_dict):
+        """ Creates the popover for the duty """
+
         popover_html = """
             Last Checked:
-            <font color='""" + str(daily_duty_dict["status_color"]) + """'>""" + str(daily_duty_dict["last_checked"]) + """</font>
+            <font color='""" + (str(daily_duty_dict["status_color"]) + "'>" +
+                                str(daily_duty_dict["last_checked"])) + """</font>
             <br />
-            (<span style='text-align: center;'>""" + str(daily_duty_dict["last_user"]) + """</span>)
-            """
+            (<span style='text-align: center;'>""" + str(daily_duty_dict["last_user"]) + "</span>)"
         return popover_html
 
     data = {

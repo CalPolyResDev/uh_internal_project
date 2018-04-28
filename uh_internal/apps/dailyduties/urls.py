@@ -16,6 +16,10 @@ from .ajax import refresh_duties, update_duty
 app_name = 'dailyduties'
 
 urlpatterns = [
-    url(r'^refresh_duties/$', login_required(daily_duties_access(refresh_duties)), name='refresh_duties'),
-    url(r'^update_duty/$', login_required(daily_duties_access(update_duty)), name='update_duty'),
+    url(r'^refresh_duties/$',
+        login_required(daily_duties_access(refresh_duties)),
+        name='refresh_duties'),
+    url(r'^update_duty/$',
+        login_required(daily_duties_access(update_duty)),
+        name='update_duty'),
 ]

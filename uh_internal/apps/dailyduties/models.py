@@ -6,19 +6,10 @@
 
 """
 
-from datetime import datetime, timedelta
-from urllib.parse import urljoin
-
 from django.conf import settings
 from django.db.models import Model, ForeignKey
 from django.db.models.deletion import SET_NULL
-from django.db.models.fields import (CharField, DateTimeField, TextField, EmailField,
-                                     SlugField, IntegerField, BooleanField)
-from django.urls import reverse
-from django.utils.functional import cached_property
-
-from ..core.models import UHInternalUser
-from ..core.utils import unique_slugify
+from django.db.models.fields import CharField, DateTimeField
 
 
 class DailyDuties(Model):
