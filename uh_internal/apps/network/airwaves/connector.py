@@ -12,9 +12,11 @@ import json
 from django.conf import settings
 from django.utils.encoding import smart_text
 import requests
+import urllib3
 import xmltodict
 
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 AIRWAVES_XML_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
 
 
