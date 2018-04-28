@@ -188,6 +188,8 @@ PRINTERS_MODIFY_ACCESS = 'printers_modify'
 CSD_ASSIGNMENT_ACCESS = 'csd_assignment'
 ROSTER_ACCESS = 'roster'
 RESIDENT_LOOKUP_ACCESS = 'resident_lookup'
+UPLOADER_ACCESS = 'uploader'
+UPLOADER_MODIFY_ACCESS = 'uploader_modify'
 
 ACCESS_PERMISSIONS = [
     DEVELOPER_ACCESS,
@@ -207,6 +209,8 @@ ACCESS_PERMISSIONS = [
     CSD_ASSIGNMENT_ACCESS,
     ROSTER_ACCESS,
     RESIDENT_LOOKUP_ACCESS,
+    UPLOADER_ACCESS,
+    UPLOADER_MODIFY_ACCESS,
 ]
 
 
@@ -384,6 +388,7 @@ INSTALLED_APPS = (
     MAIN_APP_NAME + '.apps.residents',
     MAIN_APP_NAME + '.apps.rosters',
     MAIN_APP_NAME + '.apps.technicians',
+    MAIN_APP_NAME + '.apps.uploaders',
 )
 
 # ================================================================================================ #
