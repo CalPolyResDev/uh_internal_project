@@ -15,6 +15,7 @@ from ..network.models import NetworkDevice
 
 
 class Printer(NetworkDevice):
+    """ The model for printer data storage """
 
     department = ForeignKey(Department, verbose_name='Department', on_delete=CASCADE)
     sub_department = ForeignKey(SubDepartment, verbose_name='Sub Department', on_delete=CASCADE)
@@ -32,7 +33,7 @@ class Printer(NetworkDevice):
     dhcp = BooleanField(default=False)
 
     def __str__(self):
-        return self.printer_name
+        return self.display_name
 
     def save(self, *args, **kwargs):
         """Uppercase field names on save."""

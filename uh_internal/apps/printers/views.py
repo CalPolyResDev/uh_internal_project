@@ -20,6 +20,8 @@ logger = logging.getLogger(__name__)
 
 
 class PrintersView(DatatablesView):
+    """ Loads the printer index view """
+
     template_name = "printers/printers.djhtml"
     model = Printer
     form_class = PrinterForm

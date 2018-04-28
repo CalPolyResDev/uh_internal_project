@@ -18,10 +18,19 @@ from .models import Printer
 
 
 class PrinterForm(ChainedChoicesModelForm):
-    sub_department = ChainedModelChoiceField('department', reverse_lazy('core:chained_sub_department'), SubDepartment, label="Sub Department")
+    sub_department = ChainedModelChoiceField('department',
+                                             reverse_lazy('core:chained_sub_department'),
+                                             SubDepartment,
+                                             label="Sub Department")
     community = ModelChoiceField(queryset=Community.objects.all(), required=False)
-    building = ChainedModelChoiceField('community', reverse_lazy('core:chained_building'), Building, required=False)
-    room = ChainedModelChoiceField('building', reverse_lazy('core:chained_room'), Room, required=False)
+    building = ChainedModelChoiceField('community',
+                                       reverse_lazy('core:chained_building'),
+                                       Building,
+                                       required=False)
+    room = ChainedModelChoiceField('building',
+                                   reverse_lazy('core:chained_room'),
+                                   Room,
+                                   required=False)
 
     def __init__(self, *args, **kwargs):
         super(PrinterForm, self).__init__(*args, **kwargs)
@@ -47,12 +56,15 @@ class PrinterForm(ChainedChoicesModelForm):
                 Field('sub_department', autocomplete='off'),
                 Field('display_name', placeholder=self.fields['display_name'].label),
                 Field('mac_address', placeholder=self.fields['mac_address'].label),
-                Field('ip_address', css_class="ip_address_field", placeholder=self.fields['ip_address'].label, title="Leave blank for DHCP."),
+                Field('ip_address', css_class="ip_address_field",
+                      placeholder=self.fields['ip_address'].label,
+                      title="Leave blank for DHCP."),
                 Field('model', placeholder=self.fields['model'].label),
                 Field('serial_number', placeholder=self.fields['serial_number'].label),
                 Field('property_id', placeholder=self.fields['property_id'].label),
                 Field('location', placeholder=self.fields['location'].label),
-                Field('date_purchased', css_class="dateinput", placeholder=self.fields['date_purchased'].label),
+                Field('date_purchased', css_class="dateinput",
+                      placeholder=self.fields['date_purchased'].label),
                 Field('description', placeholder=self.fields['description'].label),
             ),
             FormActions(
@@ -66,4 +78,17 @@ class PrinterForm(ChainedChoicesModelForm):
 
     class Meta:
         model = Printer
-        fields = ['community', 'building', 'room', 'department', 'sub_department', 'display_name', 'mac_address', 'ip_address', 'model', 'serial_number', 'property_id', 'location', 'date_purchased', 'description']
+        fields = ['community',
+                  'building',
+                  'room',
+                  'department',
+                  'sub_department',
+                  'display_name',
+                  'mac_address',
+                  'ip_address',
+                  'model',
+                  'serial_number',
+                  'property_id',
+                  'location',
+                  'date_purchased',
+                  'description']
