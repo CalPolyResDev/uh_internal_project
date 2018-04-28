@@ -17,6 +17,10 @@ class Uploaders(Model):
     last_run = DateTimeField(verbose_name='Last DateTime run')
     successful = BooleanField(verbose_name='If the run was successful')
 
+    def __str__(self):
+        success = " Uploaded " if self.successful else " Failed "
+        return self.name + success + "on " + str(self.last_run)
+
     class Meta(object):
         verbose_name_plural = 'Uploaders'
         verbose_name = 'Uploader'
