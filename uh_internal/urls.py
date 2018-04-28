@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^printers/', include(MAIN_APP_NAME + '.apps.printers.urls')),
     url(r'^residents/', include(MAIN_APP_NAME + '.apps.residents.urls')),
     url(r'^rosters/', include(MAIN_APP_NAME + '.apps.rosters.urls')),
+    url(r'^uploaders/', include(MAIN_APP_NAME + '.apps.uploaders.urls')),
     url(r'^', include(MAIN_APP_NAME + '.apps.core.urls')),
 ]
 

@@ -13,8 +13,9 @@ from ...settings.base import (TICKET_ACCESS, ROOMS_ACCESS, ROOMS_MODIFY_ACCESS,
                               DAILY_DUTIES_ACCESS, TECHNICIAN_LIST_ACCESS, NETWORK_ACCESS,
                               NETWORK_MODIFY_ACCESS, COMPUTERS_RECORD_MODIFY_ACCESS,
                               CSD_ASSIGNMENT_ACCESS, ORIENTATION_ACCESS, COMPUTERS_ACCESS,
-                              PRINTERS_ACCESS, COMPUTERS_MODIFY_ACCESS,
-                              PRINTERS_MODIFY_ACCESS, ROSTER_ACCESS, RESIDENT_LOOKUP_ACCESS)
+                              PRINTERS_ACCESS, COMPUTERS_MODIFY_ACCESS, PRINTERS_MODIFY_ACCESS,
+                              ROSTER_ACCESS, RESIDENT_LOOKUP_ACCESS, UPLOADER_ACCESS,
+                              UPLOADER_MODIFY_ACCESS)
 
 
 def permissions_check(class_name, raise_exception=True):
@@ -64,3 +65,6 @@ csd_assignment_access = permissions_check(CSD_ASSIGNMENT_ACCESS)
 roster_access = permissions_check(ROSTER_ACCESS)
 
 resident_lookup_access = permissions_check(RESIDENT_LOOKUP_ACCESS)
+
+uploader_access = permissions_check(UPLOADER_ACCESS)
+uploader_modify_access = permissions_check(UPLOADER_MODIFY_ACCESS)
