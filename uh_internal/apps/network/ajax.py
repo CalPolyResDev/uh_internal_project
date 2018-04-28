@@ -15,14 +15,15 @@ from clever_selects.views import ChainedSelectChoicesView
 from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist, ValidationError
-from django.core.urlresolvers import reverse_lazy, reverse
 from django.template import Template, Context
+from django.urls import reverse_lazy, reverse
 from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
-from django_ajax.decorators import ajax
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 from django_datatables_view.mixins import JSONResponseView
 from paramiko import SSHClient, AutoAddPolicy
-from rmsconnector.utils import Resident
+from starrezconnector.connection import StarRezAuthConnection
 
 from ...settings.base import NETWORK_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, RNINDatatablesFormView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, redraw_row
@@ -62,7 +63,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
     column_definitions["blade_number"] = {"width": "50px", "type": "numeric", "title": "Blade"}
     column_definitions["port_number"] = {"width": "50px", "type": "numeric", "title": "Port"}
     column_definitions["downstream_devices"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP", "related": True, "lookup_field": "id"}
-    column_definitions["active"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+    column_definitions["active"] = {"width": "0px", "searchable": False, "orderable": True, "visible": False, "editable": False, "title": "&nbsp;"}
     column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
@@ -111,6 +112,9 @@ class PopulatePorts(RNINDatatablesPopulateView):
             return super().render_column(row, column)
 
     def get_extra_params(self, params):
+        con = StarRezAuthConnection(host=settings.STARREZ["url"],
+                                    username=settings.STARREZ["username"],
+                                    password=settings.STARREZ["password"])
         # Check for email lookup flag
         for param in params:
             if param[:1] == '?':
@@ -118,7 +122,7 @@ class PopulatePorts(RNINDatatablesPopulateView):
 
                 if email:
                     try:
-                        resident = Resident(principal_name=email)
+                        resident = con.lookup_resident(principal_name=email)
                         params = [resident.address_dict['community'], resident.address_dict['building'], resident.address_dict['room']]
                     except (ObjectDoesNotExist, ImproperlyConfigured):
                         params = ['Address', 'Not', 'Found']
@@ -141,8 +145,7 @@ class RemovePort(BaseDatatablesRemoveView):
     model = Port
 
 
-@ajax
-@require_POST
+@api_view(['POST'])
 def change_port_status(request):
     """ Activates or Deactivates a port.
 
@@ -152,7 +155,7 @@ def change_port_status(request):
     """
 
     # Pull post parameters
-    port_id = request.POST["port_id"]
+    port_id = request.data["port_id"]
 
     port_instance = Port.objects.get(id=port_id)
 

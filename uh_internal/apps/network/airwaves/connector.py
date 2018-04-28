@@ -12,9 +12,11 @@ import json
 from django.conf import settings
 from django.utils.encoding import smart_text
 import requests
+import urllib3
 import xmltodict
 
 
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 AIRWAVES_XML_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
 
 
@@ -32,10 +34,10 @@ class AirwavesAPIConnector(object):
 
     def login(self):
         response = AirwavesAPIConnector.session.post(urljoin(self.url, '/LOGIN'),
-                          data={'credential_0': self.username,
-                                'credential_1': self.password,
-                                'destination': '/',
-                                'login': 'Log In'})
+                                                     data={'credential_0': self.username,
+                                                           'credential_1': self.password,
+                                                           'destination': '/',
+                                                           'login': 'Log In'})
 
         AirwavesAPIConnector.session.headers.update({'X-BISCOTTI': response.headers['X-BISCOTTI']})
 

@@ -10,8 +10,8 @@ from clever_selects.forms import ChainedChoicesModelForm, ChainedModelChoiceFiel
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset, Submit
-from django.core.urlresolvers import reverse_lazy
 from django.forms import ModelChoiceField, ModelForm
+from django.urls import reverse_lazy
 
 from .models import Community, Building, Room
 

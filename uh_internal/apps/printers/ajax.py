@@ -10,7 +10,7 @@ from collections import OrderedDict
 from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 from ...settings.base import PRINTERS_MODIFY_ACCESS
 from ..datatables.ajax import RNINDatatablesPopulateView, BaseDatatablesUpdateView, BaseDatatablesRemoveView, RNINDatatablesFormView

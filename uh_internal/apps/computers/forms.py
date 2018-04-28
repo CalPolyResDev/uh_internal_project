@@ -11,9 +11,9 @@ from clever_selects.forms import ChainedChoicesModelForm
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Fieldset, Submit, HTML
-from django.core.urlresolvers import reverse_lazy
 from django.forms import Form, BooleanField, CharField, ChoiceField, Textarea, ValidationError
-from srsconnector.models import PRIORITY_CHOICES
+from django.urls import reverse_lazy
+from srsconnector.constants import PRIORITY_CHOICES
 
 from ..core.models import SubDepartment, Community, Building, Room
 from .fields import PortListFormField, DomainNameListFormFiled

@@ -10,14 +10,17 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 
 from ..core.permissions import network_access, network_modify_access
-from .ajax import (PopulatePorts, UpdatePort, RetrievePortForm, change_port_status, RemovePort, PortChainedAjaxView,
-                   PopulateAccessPoints, UpdateAccessPoint, RetrieveAccessPointForm, RemoveAccessPoint,
-                   PopulateNetworkInfrastructureDevices, UpdateNetworkInfrastructureDevice, RetrieveNetworkInfrastructureDeviceForm,
-                   RemoveNetworkInfrastructureDevice, EndpointChangeToKnown, EndpointSetAsGamingDevice, EndpointSetAsGamingPC, EndpointSetAsMediaDevice,
+from .ajax import (PopulatePorts, UpdatePort, RetrievePortForm, change_port_status, RemovePort,
+                   PortChainedAjaxView, PopulateAccessPoints, UpdateAccessPoint,
+                   RetrieveAccessPointForm, RemoveAccessPoint, PopulateNetworkInfrastructureDevices,
+                   UpdateNetworkInfrastructureDevice, RetrieveNetworkInfrastructureDeviceForm,
+                   RemoveNetworkInfrastructureDevice, EndpointChangeToKnown,
+                   EndpointSetAsGamingDevice, EndpointSetAsGamingPC, EndpointSetAsMediaDevice,
                    EndpointRemoveAttribute, RetrieveLoginAttempts)
-from .views import (PortsView, PortFrameView, AccessPointsView, AccessPointFrameView, NetworkInfrastructureDevicesView,
-                    DeviceStatusView, OverallBandwidthReportView, DeviceBandwidthReportView, OverallClientReportView,
-                    LoginAttemptInfoFrameView, ClientBandwidthReportView, TroubleshooterView, TroubleshooterReportView)
+from .views import (PortsView, PortFrameView, AccessPointsView, AccessPointFrameView,
+                    NetworkInfrastructureDevicesView, DeviceStatusView, OverallBandwidthReportView, 
+                    DeviceBandwidthReportView, OverallClientReportView, LoginAttemptInfoFrameView,
+                    ClientBandwidthReportView, TroubleshooterView, TroubleshooterReportView)
 
 
 app_name = 'network'

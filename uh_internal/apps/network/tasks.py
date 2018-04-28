@@ -11,7 +11,7 @@ import json
 from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from uwsgidecorators import timer
 import requests
 

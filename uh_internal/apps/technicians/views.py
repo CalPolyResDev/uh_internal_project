@@ -121,5 +121,5 @@ class ResTechListEditView(SingleGroupEditView):
     template_name = "technicians/restech_list_edit.djhtml"
     subtitle = "ResNet Technicians"
     group_name = "ResNet Technicians"
-    group_dn = "CN=UH-RN-Techs,OU=ResNet,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu"
+    group_dn = "CN=UH-RN-Techs,OU=Technology,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu"
     removal_method = 'remove_resnet_tech'

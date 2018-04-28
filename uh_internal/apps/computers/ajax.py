@@ -8,14 +8,15 @@
 
 from collections import OrderedDict
 from datetime import datetime
-from srsconnector.models import PinholeRequest, DomainNameRequest
+# from srsconnector.models import PinholeRequest, DomainNameRequest
 import logging
 
 from dateutil.relativedelta import relativedelta
 from django.contrib.staticfiles.templatetags.staticfiles import static
-from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
+from django.urls import reverse, reverse_lazy, NoReverseMatch
 from django.views.decorators.http import require_POST
-from django_ajax.decorators import ajax
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from ...settings.base import COMPUTERS_MODIFY_ACCESS
 from ..core.models import StaffMapping
@@ -194,7 +195,7 @@ class RemoveComputer(BaseDatatablesRemoveView):
         """
 
         # Pull post parameters
-        computer_id = request.POST["item_id"]
+        computer_id = request.data["item_id"]
 
         response = {}
         response["success"] = True
@@ -216,8 +217,7 @@ class RemoveComputer(BaseDatatablesRemoveView):
         return response
 
 
-@ajax
-@require_POST
+@api_view(['POST'])
 def remove_pinhole(request):
     """ Removes a pinhole.
 
@@ -227,7 +227,7 @@ def remove_pinhole(request):
     """
 
     # Pull post parameters
-    pinhole_id = request.POST["pinhole_id"]
+    pinhole_id = request.data["pinhole_id"]
 
     # Get the Pinhole record
     pinhole = Pinhole.objects.get(id=int(pinhole_id))
@@ -259,23 +259,25 @@ Thanks,
 %(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
 
     # Create service request
+    # TODO: Update to use updated srsconnector
+    """
     pinhole_removal_request = PinholeRequest(priority='Low', requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
     pinhole_removal_request.summary = 'Pinhole Removal Request via University Housing Internal'
     pinhole_removal_request.save()
 
     sr_number = pinhole_removal_request.ticket_id
+    """
 
     # Delete the pinhole record
     pinhole.delete()
 
     context = {}
-    context["sr_number"] = sr_number
+    # context["sr_number"] = sr_number
 
-    return context
+    return Response(context)
 
 
-@ajax
-@require_POST
+@api_view(['POST'])
 def remove_domain_name(request):
     """ Removes a domain name.
 
@@ -285,7 +287,7 @@ def remove_domain_name(request):
     """
 
     # Pull post parameters
-    domain_name_id = request.POST["domain_name_id"]
+    domain_name_id = request.data["domain_name_id"]
 
     # Get the Domain Name record
     domain_name_record = DomainName.objects.get(id=int(domain_name_id))
@@ -307,16 +309,19 @@ Thanks,
 %(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'domain_name': domain_name, 'submitter': submitter}
 
     # Create service request
+    # TODO: Update to use updated srsconnector
+    """
     domain_name_removal_request = DomainNameRequest(priority='Low', requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
     domain_name_removal_request.summary = 'DNS Alias Removal Request via University Housing Internal'
     domain_name_removal_request.save()
 
     sr_number = domain_name_removal_request.ticket_id
+    """
 
     # Delete the domain record
     domain_name_record.delete()
 
     context = {}
-    context["sr_number"] = sr_number
+    # context["sr_number"] = sr_number
 
-    return context
+    return Response(context)

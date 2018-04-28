@@ -10,16 +10,22 @@ ALLOWED_HOSTS = [
 ]
 
 
-# ======================================================================================================== #
-#                                        Authentication Configuration                                      #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                        Authentication Configuration                              #
+# ================================================================================================ #
 
 CAS_SERVER_URL = "https://mydev.calpoly.edu/cas/"
 CAS_LOGOUT_URL = "https://mydev.calpoly.edu/cas/casClientLogout.jsp?logoutApp=University%20Housing%20Internal"
 
-# ======================================================================================================== #
-#                                          Debugging Configuration                                         #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                          Database Configuration                                  #
+# ================================================================================================ #
+
+DATABASES['srs']['test'] = True
+
+# ================================================================================================ #
+#                                          Debugging Configuration                                 #
+# ================================================================================================ #
 
 INTERNAL_IPS = (
     "localhost",
@@ -37,23 +43,24 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.templates.TemplatesPanel',
     'debug_toolbar.panels.cache.CachePanel',
     'debug_toolbar.panels.signals.SignalsPanel',
-    #     'debug_toolbar.panels.profiling.ProfilingPanel',
     'debug_toolbar.panels.logging.LoggingPanel',
     'debug_toolbar.panels.redirects.RedirectsPanel',
 )
 
 DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
     'SHOW_TEMPLATE_CONTEXT': True,
+    'DISABLE_PANELS': {'debug_toolbar.panels.redirects.RedirectsPanel',
+                       'debug_toolbar.panels.profiling.ProfilingPanel'
+                      },
 }
 
 DBBACKUP_SEND_EMAIL = False
 
-# ======================================================================================================== #
-#                                  File/Application Handling Configuration                                 #
-# ======================================================================================================== #
+# ================================================================================================ #
+#                                  File/Application Handling Configuration                         #
+# ================================================================================================ #
 
-MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware',)
+MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware',]
 
 INSTALLED_APPS += (
     'debug_toolbar',

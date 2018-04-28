@@ -14,11 +14,12 @@ from django.contrib.auth.models import AbstractBaseUser, UserManager, Permission
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db.models.base import Model
+from django.db.models.deletion import CASCADE
 from django.db.models.fields import (CharField, TextField, DateTimeField, EmailField, BooleanField,
-    URLField, SmallIntegerField, PositiveSmallIntegerField)
+                                     URLField, SmallIntegerField, PositiveSmallIntegerField)
 from django.db.models.fields.related import ForeignKey, ManyToManyField
+from django.urls import reverse, NoReverseMatch
 from django.utils import timezone
 from django.utils.functional import cached_property
 from ldap_groups.exceptions import InvalidGroupDN
@@ -46,7 +47,8 @@ class Community(Model):
 class Building(Model):
 
     name = CharField(max_length=30, verbose_name="Building Name")
-    community = ForeignKey(Community, verbose_name="Community", related_name="buildings")
+    community = ForeignKey(Community, verbose_name="Community",
+                           related_name="buildings", on_delete=CASCADE)
 
     def __str__(self):
         return self.name
@@ -59,7 +61,8 @@ class Building(Model):
 class Room(Model):
 
     name = CharField(max_length=10, verbose_name="Room Number")
-    building = ForeignKey(Building, verbose_name="Building", related_name="rooms")
+    building = ForeignKey(Building, verbose_name="Building",
+                          related_name="rooms", on_delete=CASCADE)
 
     def __str__(self):
         return self.name
@@ -93,26 +96,17 @@ class Department(Model):
 class SubDepartment(Model):
 
     name = CharField(max_length=50, verbose_name='Sub Department Name')
-    department = ForeignKey(Department, verbose_name="Department", null=True, related_name="sub_departments")
+    department = ForeignKey(Department,
+                            verbose_name="Department",
+                            null=True,
+                            related_name="sub_departments",
+                            on_delete=CASCADE)
 
     def __str__(self):
         return self.name
 
     class Meta:
         verbose_name = 'Sub Department'
-
-
-class SiteAnnouncements(Model):
-    """Latest site announcements"""
-
-    title = CharField(max_length=150, verbose_name='Title')
-    description = TextField(verbose_name='Description')
-    created = DateTimeField(verbose_name='Entry Creation Date')
-    permission_classes = ManyToManyField('PermissionClass', related_name='site_announcements', blank=True)
-
-    class Meta:
-        get_latest_by = "created"
-        verbose_name = 'Site Announcement'
 
 
 class ADGroup(Model):
@@ -161,8 +155,10 @@ class CSDMapping(Model):
     name = CharField(max_length=50, verbose_name='Full Name')
     email = CharField(max_length=20, verbose_name='Email')
     domain = CharField(max_length=35, unique=True, verbose_name='Domain')
-    buildings = ManyToManyField(Building, related_name="csdmappings", verbose_name="Domain Buildings")
-    ad_group = ForeignKey(ADGroup, verbose_name='Domain AD Group')
+    buildings = ManyToManyField(Building, related_name="csdmappings",
+                                verbose_name="Domain Buildings")
+    ad_group = ForeignKey(ADGroup, verbose_name='Domain AD Group',
+                          on_delete=CASCADE)
 
     def __str__(self):
         return self.domain
@@ -182,7 +178,8 @@ class InternalUserManager(UserManager):
         email = self.normalize_email(email)
         username = self.normalize_email(username)
 
-        user = self.model(username=username, email=email, is_staff=is_staff, is_active=True, is_superuser=is_superuser, last_login=now, **extra_fields)
+        user = self.model(username=username, email=email, is_staff=is_staff, is_active=True,
+                          is_superuser=is_superuser, last_login=now, **extra_fields)
         user.set_password("!")
         user.save(using=self._db)
 
@@ -216,7 +213,8 @@ class UHInternalUser(AbstractBaseUser, PermissionsMixin):
         verbose_name = 'University Housing Internal User'
 
     def get_full_name(self):
-        """Returns the first_name combined with the last_name separated via space with the possible '- ADMIN' removed."""
+        """Returns the first_name combined with the last_name
+           separated with a space with the possible '- ADMIN' removed."""
 
         full_name = '%s %s' % (self.first_name, re.sub(r' - ADMIN', '', self.last_name))
         return full_name.strip()
@@ -250,7 +248,7 @@ class UHInternalUser(AbstractBaseUser, PermissionsMixin):
 class TechFlair(Model):
     """A mapping of users to custom flair."""
 
-    tech = ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Technician')
+    tech = ForeignKey(settings.AUTH_USER_MODEL, verbose_name='Technician', on_delete=CASCADE)
     flair = CharField(max_length=30, unique=True, verbose_name='Flair')
 
     class Meta:
@@ -260,11 +258,14 @@ class TechFlair(Model):
 
 class NavbarLink(Model):
     display_name = CharField(max_length=50, verbose_name='Display Name')
-    permission_classes = ManyToManyField(PermissionClass, verbose_name='Permission Classes', blank=True)
+    permission_classes = ManyToManyField(PermissionClass,
+                                         verbose_name='Permission Classes', blank=True)
     show_to_all = BooleanField(verbose_name='Show To All Users', default=False)
-    icon = CharField(max_length=100, verbose_name='Icon Static File Location', blank=True, null=True)
+    icon = CharField(max_length=100, verbose_name='Icon Static File Location',
+                     blank=True, null=True)
     sequence_index = SmallIntegerField(verbose_name='Sequence Index')
-    parent_group = ForeignKey('NavbarLink', related_name='links', blank=True, null=True, verbose_name='Parent Link Group')
+    parent_group = ForeignKey('NavbarLink', related_name='links', blank=True, null=True,
+                              verbose_name='Parent Link Group', on_delete=CASCADE)
 
     external_url = URLField(verbose_name='URL', blank=True, null=True)
     url_name = CharField(max_length=100, blank=True, null=True)
@@ -291,7 +292,9 @@ class NavbarLink(Model):
             try:
                 url = reverse(self.url_name)
             except NoReverseMatch:
-                logger.warning('Could not resolve ``' + self.url_name + '`` for navbar link ' + self.display_name, exc_info=True)
+                logger.warning('Could not resolve ``' + self.url_name +
+                               '`` for navbar link ' + self.display_name,
+                               exc_info=True)
                 pass
         else:
             url = self.external_url

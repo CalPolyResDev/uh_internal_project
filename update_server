@@ -14,7 +14,7 @@ if [ ! -f .update_lock ]; then
     if (( $UPDATED == 1 && $SUCCESS == 0 )); then    
 	echo $GITOUTPUT
 	pip3 install -U pip wheel setuptools
-	pip3 install -U -r requirements.txt 
+	pip3 install -U -r requirements/production.txt 
 	python3 uh_internal/manage.py migrate --noinput
 	python3 uh_internal/manage.py collectstatic --noinput
 	touch conf/uwsgi.ini

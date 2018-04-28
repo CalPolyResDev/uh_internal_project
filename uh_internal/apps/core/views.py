@@ -9,8 +9,9 @@
 from datetime import datetime
 
 from clever_selects.views import ChainedSelectFormViewMixin
-from django.core.urlresolvers import reverse_lazy
+from django.conf import settings
 from django.db.models import Q
+from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
 from ldap_groups import ADGroup as LDAPADGroup
 from srsconnector.models import ServiceRequest
@@ -18,7 +19,7 @@ from srsconnector.models import ServiceRequest
 from ..datatables.views import DatatablesView
 from .ajax import PopulateRooms
 from .forms import RoomCreateForm
-from .models import SiteAnnouncements, Room, CSDMapping, ADGroup
+from .models import Room, CSDMapping, ADGroup
 
 
 class IndexView(TemplateView):
@@ -27,7 +28,6 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
 
         context = super(TemplateView, self).get_context_data(**kwargs)
-        context['announcements'] = SiteAnnouncements.objects.filter(Q(permission_classes__groups__users__id=self.request.user.id) | Q(permission_classes=None)).order_by('-created').distinct()[:3]
         return context
 
 
@@ -37,7 +37,7 @@ class TicketSummaryView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(TicketSummaryView, self).get_context_data(**kwargs)
         ticket_id = kwargs['ticket_id']
-        context['ticket'] = ServiceRequest.objects.get(ticket_id=ticket_id)
+        context['ticket'] = ServiceRequest(ticket_id=ticket_id)
 
         time_difference = (datetime.today() - context['ticket'].date_updated).total_seconds() / 86400
 
@@ -90,5 +90,8 @@ def handler500(request):
     from django.http import HttpResponseServerError
 
     template = loader.get_template('500.djhtml')
+    temp = settings.RAVEN_CONFIG['dsn'].split(":")
+    dsn = temp[0] + ":" + temp[1] + "@" + temp[2].split("@")[1]
+    context = {'sentry_dsn': dsn}
 
-    return HttpResponseServerError(template.render(request=request))
+    return HttpResponseServerError(template.render(context=context, request=request))

@@ -36,16 +36,11 @@
         </ul>
     
         {% if request.user.onity_complete and request.user.srs_complete and request.user.payroll_complete %} <!-- and not request.user.orientation_complete %} -->
-        <br /><p>You did it! That wasn't too hard, was it? Click the following button to complete your orientation:</p>
-        <br /><button class="btn btn-primary" onclick="complete_orientation()">Complete Orientation!</button>
+            <br /><p>You did it! That wasn't too hard, was it? Click the following button to complete your orientation:</p>
+            <form action="complete/" method="get" id="complete">
+                {% csrf_token %}
+            </form>
+            <br /><button type="submit" class="btn btn-primary" form="complete">Complete Orientation!</button>
         {% endif %}
     </div>
-{% endblock %}
-
-{% block extra_script %}
-    <script type="text/javascript">
-        function complete_orientation() {
-            ajaxGet("{% url 'orientation:complete' %}");
-        };
-    </script>
 {% endblock %}
