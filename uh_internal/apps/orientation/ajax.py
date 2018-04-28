@@ -7,10 +7,7 @@
 """
 
 from django.contrib.auth import get_user_model
-from django.http.response import HttpResponseRedirect
 from django.shortcuts import redirect
-from django.urls import reverse
-from django.views.decorators.http import require_POST
 from rest_framework.decorators import api_view
 
 

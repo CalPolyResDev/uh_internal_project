@@ -6,7 +6,6 @@
 
 """
 
-from django.conf import settings
 from django.core.mail import send_mail
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
@@ -17,6 +16,8 @@ from .forms import OnityEmailForm
 
 
 class ChecklistView(TemplateView):
+    """ Loads the main orientaion checklist view """
+
     template_name = "orientation/checklist.djhtml"
 
 
@@ -58,8 +59,12 @@ class OnityDoorAccessView(FormView):
 
 
 class SRSAccessView(TemplateView):
+    """ Loads the SRS access view """
+
     template_name = "orientation/srs_access.djhtml"
 
 
 class PayrollView(TemplateView):
+    """ Loads the payroll access view """
+
     template_name = "orientation/payroll_access.djhtml"

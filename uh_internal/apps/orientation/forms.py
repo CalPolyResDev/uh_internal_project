@@ -6,8 +6,6 @@
 
 """
 
-import os
-
 from crispy_forms.bootstrap import FormActions
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import (Layout, Field, Fieldset, Submit, Reset, Hidden)
@@ -15,6 +13,8 @@ from django.forms import Form, CharField, Textarea
 
 
 class OnityEmailForm(Form):
+    """ Creates the form for sending the Onity request email """
+
     message = CharField(widget=Textarea,
                         error_messages={'required': 'The message field cannot be left blank.'},
                         required=True)
