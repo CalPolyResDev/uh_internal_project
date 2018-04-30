@@ -6,7 +6,6 @@
 
 """
 
-from concurrent.futures.thread import ThreadPoolExecutor
 import logging
 
 from django.conf import settings
@@ -15,6 +14,7 @@ from django.core.exceptions import PermissionDenied
 from django_cas_ng.backends import CASBackend
 from ldap3 import Server, Connection, ObjectDef, AttrDef, Reader
 from ldap_groups.exceptions import InvalidGroupDN
+from ldap_groups.utils import escape_query
 from ldap_groups.groups import ADGroup as LDAPADGroup
 
 from .models import ADGroup
@@ -35,7 +35,11 @@ class CASLDAPBackend(CASBackend):
         if user:
             try:
                 server = Server(settings.LDAP_GROUPS_SERVER_URI)
-                connection = Connection(server=server, auto_bind=True, user=settings.LDAP_GROUPS_BIND_DN, password=settings.LDAP_GROUPS_BIND_PASSWORD, raise_exceptions=True)
+                connection = Connection(server=server,
+                                        auto_bind=True,
+                                        user=settings.LDAP_GROUPS_BIND_DN,
+                                        password=settings.LDAP_GROUPS_BIND_PASSWORD,
+                                        raise_exceptions=True)
                 connection.start_tls()
 
                 account_def = ObjectDef('user')
@@ -45,7 +49,10 @@ class CASLDAPBackend(CASBackend):
                 account_def += AttrDef('sn')
                 account_def += AttrDef('mail')
 
-                account_reader = Reader(connection=connection, object_def=account_def, query="userPrincipalName: {principal_name}".format(principal_name=user.username), base=settings.LDAP_GROUPS_BASE_DN)
+                account_reader = Reader(connection=connection,
+                                        object_def=account_def,
+                                        query="userPrincipalName: {principal_name}".format(principal_name=user.username),
+                                        base=settings.LDAP_GROUPS_BASE_DN)
                 account_reader.search_subtree()
 
                 user_info = account_reader.entries[0]
@@ -53,6 +60,62 @@ class CASLDAPBackend(CASBackend):
                 logger.exception(msg, exc_info=True, extra={'request': request})
             else:
                 principal_name = str(user_info["userPrincipalName"])
+                username = principal_name.split("@")[0]
+
+                user_group_objects = Reader(connection=connection,
+                                            object_def=account_def,
+                                            query='(&(member=CN={username},OU=People,OU=Enterprise,OU=Accounts,DC=ad,DC=calpoly,DC=edu)(objectClass=group))'.format(username=username),
+                                            base=settings.LDAP_GROUPS_BASE_DN).search()
+
+                user_groups = []
+                for group in user_group_objects:
+                    user_groups.append(group.entry_dn)
+
+                def AD_get_children(connection, parent):
+                    connection.search(settings.LDAP_GROUPS_BASE_DN,
+                                      "(&(objectCategory=group)(memberOf={group_name}))".format(group_name=escape_query(parent)))
+                    children = connection.entries
+                    results = []
+                    for child in children:
+                        results.append(child.entry_dn)
+                    return results
+
+                def get_descendants(connection, parent):
+                    descendants = []
+                    queue = []
+                    queue.append(parent)
+                    visited = set()
+
+                    while len(queue):
+                        node = queue.pop()
+
+                        if node not in visited:
+                            children = AD_get_children(connection, node)
+                            for child in children:
+                                if child not in descendants:
+                                    descendants.append(child)
+                                    queue.append(child)
+                            visited.add(node)
+
+                    return descendants
+
+                # New Code should use the ad_groups property of the user to enforce permissions
+                user.ad_groups.clear()
+
+                for group_id, group_dn in ADGroup.objects.all().values_list('id', 'distinguished_name'):
+                    if group_dn in user_groups:
+                        user.ad_groups.add(group_id)
+                    else:
+                        children = get_descendants(connection, group_dn)
+                        for child in children:
+                            if child in user_groups:
+                                user.ad_groups.add(group_id)
+
+                if not user.ad_groups.exists():
+                    raise PermissionDenied('User %s is not in any of the allowed groups.' % principal_name)
+
+                if not user.ad_groups.all().filter(distinguished_name='CN=UH-RN-DevTeam,OU=Technology,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu').exists() and settings.RESTRICT_LOGIN_TO_DEVELOPERS:
+                    raise PermissionDenied('Only developers can access the site on this server. Please use the primary site.')
 
                 def get_group_members(group):
                     cache_key = 'group_members::' + (group if " " not in group else group.replace(" ", "_"))
@@ -62,29 +125,15 @@ class CASLDAPBackend(CASBackend):
                         try:
                             group_members = LDAPADGroup(group).get_tree_members()
                         except InvalidGroupDN:
-                            logger.exception('Could not retrieve group members for DN: ' + group, exc_info=True, extra={'request': request})
+                            logger.exception('Could not retrieve group members for DN: ' + group,
+                                             exc_info=True,
+                                             extra={'request': request})
                             return []
 
                         group_members = [member["userPrincipalName"] for member in group_members]
                         cache.set(cache_key, group_members, 60)
 
                     return group_members
-
-                def check_group_for_user(group):
-                    group_members = get_group_members(group.distinguished_name)
-                    if principal_name in group_members:
-                        user.ad_groups.add(group)
-
-                # New Code should use the ad_groups property of the user to enforce permissions
-                user.ad_groups.clear()
-                with ThreadPoolExecutor(ADGroup.objects.count()) as pool:
-                    pool.map(check_group_for_user, ADGroup.objects.all())
-
-                if not user.ad_groups.exists():
-                    raise PermissionDenied('User %s is not in any of the allowed groups.' % principal_name)
-
-                if not user.ad_groups.all().filter(distinguished_name='CN=UH-RN-DevTeam,OU=Technology,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu').exists() and settings.RESTRICT_LOGIN_TO_DEVELOPERS:
-                    raise PermissionDenied('Only developers can access the site on this server. Please use the primary site.')
 
                 # Django Flags
                 developer_list = get_group_members('CN=UH-RN-DevTeam,OU=Technology,OU=UH,OU=Manual,OU=Groups,DC=ad,DC=calpoly,DC=edu')
