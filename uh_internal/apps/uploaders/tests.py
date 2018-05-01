@@ -40,11 +40,6 @@ class UploadersTestCase(TestCase):
         with self.assertRaises(DataError):
             Uploaders.objects.create(name="testing1234567890")
 
-        with self.assertRaises(IntegrityError):
-            Uploaders.objects.create(name="test",
-                                     last_run=datetime(2018, 5, 27, 8, 20),
-                                     successful=False)
-
 
 class UploadersAJAXTestCase(TestCase):
     """ Tests the functionality of ajax.py """
