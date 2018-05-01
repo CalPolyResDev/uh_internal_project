@@ -5,6 +5,7 @@
 """
 
 from datetime import datetime
+from django.db import DataError, IntegrityError
 from django.test import TestCase, RequestFactory
 
 from .models import Uploaders
@@ -32,6 +33,18 @@ class UploadersTestCase(TestCase):
 
         uploader = Uploaders.objects.get(name="test2")
         self.assertEqual(str(uploader), "test2 Failed on " + str(datetime(2018, 4, 27, 8, 20)))
+
+    def test_bad_uploader_name(self):
+        """ Tests a bad uploader name """
+
+        with self.assertRaises(DataError):
+            Uploaders.objects.create(name="testing1234567890")
+
+        with self.assertRaises(IntegrityError):
+            Uploaders.objects.create(name="test",
+                                     last_run=datetime(2018, 5, 27, 8, 20),
+                                     successful=False)
+
 
 class UploadersAJAXTestCase(TestCase):
     """ Tests the functionality of ajax.py """
