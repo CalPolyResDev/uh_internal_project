@@ -6,7 +6,6 @@
 
 """
 
-from django.views.decorators.http import require_POST
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from ldap_groups import ADGroup

@@ -39,6 +39,8 @@ class UploadersAJAXTestCase(TestCase):
     def setUp(self):
         # Every test needs access to the request factory.
         self.factory = RequestFactory()
+        # Regex expression for valid datetime string
+        self.dtregex = r"(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}).(\d{6}))"
 
     def test_log_uploader_success(self):
         """ Tests if a successful upload is logged correctly """
@@ -49,7 +51,7 @@ class UploadersAJAXTestCase(TestCase):
         response = log_uploader(request)
         self.assertEqual(response.status_code, 200)
         uploader = Uploaders.objects.get(name="test2")
-        self.assertEqual(str(uploader)[:-8], "test2 Uploaded on " + str(datetime.now())[:-8])
+        self.assertRegex(str(uploader), "(test2 Uploaded on " + self.dtregex)
 
     def test_log_uploader_fail(self):
         """ Tests if a failed upload is logged correctly """
@@ -60,4 +62,4 @@ class UploadersAJAXTestCase(TestCase):
         response = log_uploader(request)
         self.assertEqual(response.status_code, 200)
         uploader = Uploaders.objects.get(name="test")
-        self.assertEqual(str(uploader)[:-8], "test Failed on " + str(datetime.now())[:-8])
+        self.assertRegex(str(uploader), "(test Failed on " + self.dtregex)
