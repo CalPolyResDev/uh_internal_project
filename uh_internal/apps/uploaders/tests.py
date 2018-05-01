@@ -63,3 +63,15 @@ class UploadersAJAXTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
         uploader = Uploaders.objects.get(name="test")
         self.assertRegex(str(uploader), "(test Failed on " + self.dtregex)
+
+    def test_log_uploader_bad_request(self):
+        """ Tests if a bad request throws an error correctly """
+
+        body = {"uploader": "test2"}
+        body2 = {"success": False}
+        request = self.factory.post('/uploaders/log_upload/', body)
+        request2 = self.factory.post('/uploaders/log_upload/', body2)
+
+        with self.assertRaises(KeyError):
+            log_uploader(request)
+            log_uploader(request2)
