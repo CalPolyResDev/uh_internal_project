@@ -13,7 +13,7 @@ from django.db.models.fields import CharField, DateTimeField, BooleanField
 class Uploaders(Model):
     """Uploader Information"""
 
-    name = CharField(max_length=15, unique=True, verbose_name='Uploader Name')
+    name = CharField(max_length=15, verbose_name='Uploader Name')
     last_run = DateTimeField(verbose_name='Last DateTime run')
     successful = BooleanField(verbose_name='If the run was successful')
 
