@@ -17,7 +17,7 @@ from django.http.response import HttpResponseRedirect, HttpResponse
 from django.utils.encoding import smart_str
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
-# from srsconnector.models import PinholeRequest, DomainNameRequest
+from srsconnector.models import PinholeRequest, DomainNameRequest
 
 from ..datatables.views import DatatablesView
 from .ajax import PopulateComputers
@@ -130,8 +130,6 @@ Thanks,
 %(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
 
         # Create service request
-        # TODO: Update to use updated srsconnector
-        """
         new_pinhole_request = PinholeRequest(priority=priority, requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
         new_pinhole_request.save()
 
@@ -147,7 +145,6 @@ Thanks,
         new_pinhole.udp_ports = udp_ports
         new_pinhole.sr_number = sr_number
         new_pinhole.save()
-        """
 
         return HttpResponseRedirect(reverse('computers:view_record', kwargs={'ip_address': ip_address}))
 
@@ -175,8 +172,6 @@ Thanks,
 %(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'domain_names_split': domain_names_split, 'submitter': submitter}
 
         # Create service request
-        # TODO: Update to use updated srsconnector
-        """
         new_domain_name_request = DomainNameRequest(priority=priority, requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
         new_domain_name_request.save()
 
@@ -189,6 +184,5 @@ Thanks,
             new_domain_name.domain_name = domain_name
             new_domain_name.sr_number = sr_number
             new_domain_name.save()
-        """
 
         return HttpResponseRedirect(reverse('computers:view_record', kwargs={'ip_address': ip_address}))

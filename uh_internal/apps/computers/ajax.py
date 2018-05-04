@@ -8,7 +8,7 @@
 
 from collections import OrderedDict
 from datetime import datetime
-# from srsconnector.models import PinholeRequest, DomainNameRequest
+from srsconnector.models import PinholeRequest, DomainNameRequest
 import logging
 
 from dateutil.relativedelta import relativedelta
@@ -259,14 +259,11 @@ Thanks,
 %(submitter)s (via University Housing Internal)""" % {'ip_address': ip_address, 'inner_fw': inner_fw, 'border_fw': border_fw, 'tcp_ports': tcp_ports, 'udp_ports': udp_ports, 'submitter': submitter}
 
     # Create service request
-    # TODO: Update to use updated srsconnector
-    """
     pinhole_removal_request = PinholeRequest(priority='Low', requestor_username=requestor_username, work_log='Created Ticket for %s.' % submitter, description=description)
     pinhole_removal_request.summary = 'Pinhole Removal Request via University Housing Internal'
     pinhole_removal_request.save()
 
     sr_number = pinhole_removal_request.ticket_id
-    """
 
     # Delete the pinhole record
     pinhole.delete()
