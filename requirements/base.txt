@@ -27,10 +27,10 @@ uwsgidecorators==1.1.0
 xmltodict==0.11.0
 python-dotenv==0.8.2
 
-git+ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git@switch_to_REST
+git+ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git@switch_to_REST#egg=srsconnector
 
-git+https://github.com/CalPolyResDev/StarRezAPI.git
-git+https://github.com/CalPolyResDev/StarRezConnector.git
-git+https://github.com/CalPolyResDev/django-dbbackup.git
-git+https://github.com/CalPolyResDev/ldap-groups.git
-git+https://github.com/fedorareis/pyexchange.git
+git+https://github.com/CalPolyResDev/StarRezAPI.git#egg=StarRezAPI
+git+https://github.com/CalPolyResDev/StarRezConnector.git#egg=StarRezConnector
+git+https://github.com/CalPolyResDev/django-dbbackup.git#egg=django-dbbackup
+git+https://github.com/CalPolyResDev/ldap-groups.git#egg=ldap-groups
+git+https://github.com/fedorareis/pyexchange.git#egg=pyexchange
