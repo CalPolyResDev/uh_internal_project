@@ -56,9 +56,9 @@ def activate_env():
     load_dotenv(find_dotenv())
 
     # Activate the virtual env
-    activate_env = virtualenv_home.joinpath(repo_name, "bin", "activate_this.py")
+   # activate_env = virtualenv_home.joinpath(repo_name, "bin", "activate_this.py")
 
-    exec(compile(open(str(activate_env)).read(), str(activate_env), 'exec'), dict(__file__=str(activate_env)))
+    #exec(compile(open(str(activate_env)).read(), str(activate_env), 'exec'), dict(__file__=str(activate_env)))
 
 
 if __name__ == "__main__":
