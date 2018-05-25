@@ -22,7 +22,7 @@ def specializations(request):
     display_name = None
     user_specializations = []
 
-    if request.user.is_authenticated() and not request.is_ajax():
+    if request.user.is_authenticated and not request.is_ajax():
         display_name = request.user.get_full_name()
 
         for group in request.user.ad_groups.all():
@@ -50,7 +50,7 @@ def specializations(request):
 
 
 def navbar(request):
-    if request.user.is_authenticated() and not request.is_ajax():
+    if request.user.is_authenticated and not request.is_ajax():
         cache_key = request.user.username + ':navbar'
 
         navbar = cache.get(cache_key)

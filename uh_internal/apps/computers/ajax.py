@@ -13,7 +13,7 @@ import logging
 
 from dateutil.relativedelta import relativedelta
 from django.contrib.staticfiles.templatetags.staticfiles import static
-from django.core.urlresolvers import reverse, reverse_lazy, NoReverseMatch
+from django.urls import reverse, reverse_lazy, NoReverseMatch
 from django.views.decorators.http import require_POST
 from rest_framework.decorators import api_view
 from rest_framework.response import Response

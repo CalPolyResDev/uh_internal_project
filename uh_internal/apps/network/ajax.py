@@ -15,8 +15,8 @@ from clever_selects.views import ChainedSelectChoicesView
 from django.conf import settings
 from django.contrib.staticfiles.templatetags.staticfiles import static
 from django.core.exceptions import ImproperlyConfigured, ObjectDoesNotExist, ValidationError
-from django.core.urlresolvers import reverse_lazy, reverse
 from django.template import Template, Context
+from django.urls import reverse_lazy, reverse
 from django.utils.encoding import smart_str
 from django.views.decorators.http import require_POST
 from rest_framework.decorators import api_view

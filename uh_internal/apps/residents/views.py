@@ -7,7 +7,6 @@
 """
 
 import logging
-import re
 
 from django.conf import settings
 from django.views.generic.edit import FormView

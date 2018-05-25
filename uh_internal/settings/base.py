@@ -188,6 +188,8 @@ PRINTERS_MODIFY_ACCESS = 'printers_modify'
 CSD_ASSIGNMENT_ACCESS = 'csd_assignment'
 ROSTER_ACCESS = 'roster'
 RESIDENT_LOOKUP_ACCESS = 'resident_lookup'
+UPLOADER_ACCESS = 'uploader'
+UPLOADER_MODIFY_ACCESS = 'uploader_modify'
 
 ACCESS_PERMISSIONS = [
     DEVELOPER_ACCESS,
@@ -207,6 +209,8 @@ ACCESS_PERMISSIONS = [
     CSD_ASSIGNMENT_ACCESS,
     ROSTER_ACCESS,
     RESIDENT_LOOKUP_ACCESS,
+    UPLOADER_ACCESS,
+    UPLOADER_MODIFY_ACCESS,
 ]
 
 
@@ -230,8 +234,8 @@ CAS_LOGOUT_COMPLETELY = False
 CAS_LOGIN_MSG = None
 CAS_LOGGED_MSG = None
 
-CAS_SERVER_URL = "https://my.calpoly.edu/cas/"
-CAS_LOGOUT_URL = "https://my.calpoly.edu/cas/casClientLogout.jsp?logoutApp=University%20Housing%20Internal"
+CAS_SERVER_URL = "https://idp.calpoly.edu/idp/profile/cas/"
+CAS_LOGOUT_URL = "https://idp.calpoly.edu/idp/app-logout.jsp?logoutApp=University%20Housing%20Internal"
 
 RESTRICT_LOGIN_TO_DEVELOPERS = string_to_bool(get_env_variable('RESNET_INTERNAL_RESTRICT_LOGIN_TO_DEVELOPERS'))
 
@@ -346,7 +350,7 @@ TEMPLATES = [
 
 CRISPY_TEMPLATE_PACK = 'bootstrap3'
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -354,7 +358,7 @@ MIDDLEWARE_CLASSES = (
     MAIN_APP_NAME + '.apps.orientation.middleware.OrientationRedirectMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'raven.contrib.django.raven_compat.middleware.SentryResponseErrorIdMiddleware',
-)
+]
 
 INSTALLED_APPS = (
     'clever_selects',
@@ -368,7 +372,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django_cas_ng',
     'django_js_reverse',
-    'jfu',
     'raven.contrib.django.raven_compat',
     'rest_framework',
     'static_precompiler',
@@ -385,6 +388,7 @@ INSTALLED_APPS = (
     MAIN_APP_NAME + '.apps.residents',
     MAIN_APP_NAME + '.apps.rosters',
     MAIN_APP_NAME + '.apps.technicians',
+    MAIN_APP_NAME + '.apps.uploaders',
 )
 
 # ================================================================================================ #
