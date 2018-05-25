@@ -101,6 +101,7 @@ DATABASES = {
         'HOST': 'srs.calpoly.edu/ewws/',
         'PORT': '443',
         'NUM_CONNECTIONS': 40,
+        'TEST': False
     },
 }
 
