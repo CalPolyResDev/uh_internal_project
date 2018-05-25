@@ -6,5 +6,5 @@ from .base import *  # noqa @PydevCodeAnalysisIgnore
 # ======================================================================================================== #
 
 DATABASES['default'] = dj_database_url.config(default=get_env_variable('RESNET_INTERNAL_DB_TEST_DATABASE_URL'))
-DATABASES['srs']['TEST'] = True
+DATABASES['srs']['test'] = True
 
