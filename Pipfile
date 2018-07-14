@@ -5,11 +5,12 @@ name = "pypi"
 
 [dev-packages]
 
+[requires]
+python_version = "3.5"
+
 [packages]
-django = "==2.0.5"
 "beautifulsoup4" = "==4.6.0"
 colorama = "==0.3.9"
-cx-oracle = "==6.3.1"
 djangorestframework = "==3.8.2"
 django-datatables-view = "==1.16.0"
 django-cas-ng = "==3.5.9"
@@ -38,8 +39,8 @@ StarRezConnector = {git = "https://github.com/CalPolyResDev/StarRezConnector.git
 django-dbbackup = {git = "https://github.com/CalPolyResDev/django-dbbackup.git"}
 ldap-groups = {git = "https://github.com/CalPolyResDev/ldap-groups.git"}
 pyexchange = {git = "https://github.com/fedorareis/pyexchange.git"}
-uwsgicachetop = {git = "https://github.com/CalPolyResDev/uwsgicachetop.git"}
-uwsgitop = "==0.10"
-
-[requires]
-python_version = "3.5"
+django-debug-toolbar = "==1.9.1"
+pylint = "==1.8.4"
+pylint-django = "==0.11"
+Django = "==2.0.5"
+cx_Oracle = "==6.3.1"
