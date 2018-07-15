@@ -1,4 +1,8 @@
 #!/usr/bin/python3
+"""wsgi application that was generated with startproject.
+
+https://docs.djangoproject.com/en/2.0/howto/deployment/wsgi/
+"""
 
 from .manage import activate_env
 

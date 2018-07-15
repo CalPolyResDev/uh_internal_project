@@ -370,6 +370,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.admindocs',
     'django_cas_ng',
     'django_js_reverse',
     'raven.contrib.django.raven_compat',
