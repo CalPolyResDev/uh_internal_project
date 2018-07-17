@@ -52,9 +52,9 @@ class RNINDatatablesPopulateView(BaseDatatableView):
             "zeroRecords": "No records to display.",
             "loadingRecords": "Loading...",
         },
-        "dom": "<'row'<'col-sm-12 text-right'f<'filter-hover-help'>>>" +
-               "<'row'<'col-sm-12'tr>>" +
-               "<'row'<'col-sm-12'i>>",
+        "dom": ("<'row'<'col-sm-12 text-right'f<'filter-hover-help'>>>"
+                "<'row'<'col-sm-12'tr>>"
+                "<'row'<'col-sm-12'i>>"),
         "processing": False,
         "serverSide": True,
         "lengthChange": False,
@@ -226,7 +226,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
 
     def render_action_column(self, row, column, function_name, icon_name, icon_url):
         onclick = "{function_name}({id});return false;".format(function_name=function_name, id=row.id)
-        action_icon_block = self.onclick_icon_template.format(onlick_action = onclick, icon_name = icon_name, icon_url = icon_url)
+        action_icon_block = self.onclick_icon_template.format(onlick_action=onclick, icon_name=icon_name, icon_url=icon_url)
         display_block = self.display_block_template.format(value="", link_block=action_icon_block, inline_images="")
 
         return self.base_column_template.format(column=column, display_block=display_block)
@@ -243,7 +243,7 @@ class RNINDatatablesPopulateView(BaseDatatableView):
         """
 
         if column in self._get_columns_by_attribute("remove_column", default=False, test=True):
-            return self.render_action_column(row=row, column=column, function_name="confirm_remove", icon_name = "remove", icon_url=static("images/icons/remove.png"))
+            return self.render_action_column(row=row, column=column, function_name="confirm_remove", icon_name="remove", icon_url=static("images/icons/remove.png"))
         else:
             return self.base_column_template.format(column=column, display_block=self.get_display_block(row, column))
 
