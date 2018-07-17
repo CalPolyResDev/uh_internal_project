@@ -9,10 +9,10 @@
 """
 
 from clever_selects.views import ChainedSelectFormViewMixin
-from django.core.urlresolvers import reverse_lazy
+from django.template import loader
+from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
 from django.views.generic.detail import DetailView
-from django.template import loader
 from django_datatables_view.mixins import JSONResponseView
 
 from ..datatables.views import DatatablesView

@@ -7,25 +7,13 @@
 """
 
 from datetime import datetime
-from operator import itemgetter
-from urllib.parse import unquote
 import logging
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.core.urlresolvers import reverse
-from django.http.response import HttpResponse
-from django.template import Template, RequestContext
-from django.utils.encoding import smart_text
-from django.views.decorators.cache import cache_page
-from django.views.decorators.http import require_POST
-from django_datatables_view.mixins import JSONResponseView
-from jfu.http import upload_receive, UploadResponse, JFUResponse
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from ..core.models import Building
-from ..core.templatetags.srs_urls import srs_edit_url
 from .models import DailyDuties
 from .utils import GetInboxCount, GetDutyData
 

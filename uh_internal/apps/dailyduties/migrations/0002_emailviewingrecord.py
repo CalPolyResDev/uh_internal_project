@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.db import migrations, models
-import django.db.models.deletion
+from django.db.models.deletion import CASCADE
 
 
 class Migration(migrations.Migration):
@@ -18,12 +18,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EmailViewingRecord',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('mailbox', models.CharField(max_length=100)),
                 ('uid', models.IntegerField()),
                 ('replying', models.BooleanField()),
                 ('expiry_time', models.DateTimeField()),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(on_delete=CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

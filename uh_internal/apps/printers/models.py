@@ -6,6 +6,7 @@
 
 """
 
+from django.db.models.deletion import CASCADE
 from django.db.models.fields import BooleanField, CharField, DateField
 from django.db.models.fields.related import ForeignKey
 
@@ -15,12 +16,14 @@ from ..network.models import NetworkDevice
 
 class Printer(NetworkDevice):
 
-    department = ForeignKey(Department, verbose_name='Department')
-    sub_department = ForeignKey(SubDepartment, verbose_name='Sub Department')
+    department = ForeignKey(Department, verbose_name='Department', on_delete=CASCADE)
+    sub_department = ForeignKey(SubDepartment, verbose_name='Sub Department', on_delete=CASCADE)
 
     model = CharField(max_length=25, verbose_name='Model')
-    serial_number = CharField(max_length=20, verbose_name='Serial Number', blank=True, null=True, unique=True, default=None)
-    property_id = CharField(max_length=50, verbose_name='Cal Poly Property ID', blank=True, null=True, unique=True, default=None)
+    serial_number = CharField(max_length=20, verbose_name='Serial Number', blank=True,
+                              null=True, unique=True, default=None)
+    property_id = CharField(max_length=50, verbose_name='Cal Poly Property ID', blank=True,
+                            null=True, unique=True, default=None)
 
     location = CharField(max_length=100, verbose_name='Location', blank=True, null=True)
     date_purchased = DateField(verbose_name='Date Purchased')

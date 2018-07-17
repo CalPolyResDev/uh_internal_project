@@ -33,7 +33,7 @@ function updateVoicemail() {
     updateDuty('voicemail', 'https://outlook.office.com/owa/resnet@calpoly.edu/?offline=disabled', '_blank');
 }
 function updateTickets() {
-    updateDuty('tickets', 'https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Main', '_blank');
+    updateDuty('tickets', 'https://srs.calpoly.edu/gui2/cas-login?KB=calpoly2&state=Main', '_blank');
 }
 function updateDuty(duty, redirect_url, target) {
     if (target === '_blank') {  // Popup-Blocking Workaround

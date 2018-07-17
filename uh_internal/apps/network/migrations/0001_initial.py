@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import django.db.models.deletion
+from django.db.models.deletion import CASCADE
 import uh_internal.apps.computers.fields
 
 
@@ -19,35 +19,65 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='NetworkDevice',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('display_name', models.CharField(max_length=100, verbose_name='Display Name')),
-                ('dns_name', models.CharField(blank=True, max_length=75, null=True, verbose_name='DNS Name')),
-                ('ip_address', models.GenericIPAddressField(blank=True, null=True, protocol='IPv4', verbose_name='IP Address')),
-                ('mac_address', uh_internal.apps.computers.fields.MACAddressField(blank=True, max_length=17, null=True, verbose_name='MAC Address')),
+                ('dns_name', models.CharField(blank=True, max_length=75, null=True,
+                                              verbose_name='DNS Name')),
+                ('ip_address', models.GenericIPAddressField(blank=True,
+                                                            null=True,
+                                                            protocol='IPv4',
+                                                            verbose_name='IP Address')),
+                ('mac_address', uh_internal.apps.computers.fields.MACAddressField(blank=True,
+                                                                                  max_length=17,
+                                                                                  null=True,
+                                                                                  verbose_name='MAC Address')),
                 ('airwaves_id', models.IntegerField(blank=True, null=True)),
             ],
         ),
         migrations.CreateModel(
             name='AccessPoint',
             fields=[
-                ('networkdevice_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='network.NetworkDevice')),
-                ('property_id', models.CharField(max_length=7, unique=True, verbose_name='Property ID')),
-                ('serial_number', models.CharField(max_length=9, unique=True, verbose_name='Serial Number')),
-                ('ap_type', models.PositiveSmallIntegerField(choices=[(0, '5 Ghz'), (1, '2.4 Ghz'), (2, 'Air Monitor')], verbose_name='Type')),
+                ('networkdevice_ptr', models.OneToOneField(auto_created=True,
+                                                           on_delete=CASCADE,
+                                                           parent_link=True,
+                                                           primary_key=True,
+                                                           serialize=False,
+                                                           to='network.NetworkDevice')),
+                ('property_id', models.CharField(max_length=7,
+                                                 unique=True,
+                                                 verbose_name='Property ID')),
+                ('serial_number', models.CharField(max_length=9,
+                                                   unique=True,
+                                                   verbose_name='Serial Number')),
+                ('ap_type', models.PositiveSmallIntegerField(choices=[(0, '5 Ghz'),
+                                                                      (1, '2.4 Ghz'),
+                                                                      (2, 'Air Monitor')],
+                                                             verbose_name='Type')),
             ],
             bases=('network.networkdevice',),
         ),
         migrations.CreateModel(
             name='NetworkInfrastructureDevice',
             fields=[
-                ('networkdevice_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='network.NetworkDevice')),
+                ('networkdevice_ptr', models.OneToOneField(auto_created=True,
+                                                           on_delete=CASCADE,
+                                                           parent_link=True,
+                                                           primary_key=True,
+                                                           serialize=False,
+                                                           to='network.NetworkDevice')),
             ],
             bases=('network.networkdevice',),
         ),
         migrations.CreateModel(
             name='Port',
             fields=[
-                ('networkdevice_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='network.NetworkDevice')),
+                ('networkdevice_ptr', models.OneToOneField(auto_created=True,
+                                                           on_delete=CASCADE,
+                                                           parent_link=True,
+                                                           primary_key=True,
+                                                           serialize=False,
+                                                           to='network.NetworkDevice')),
                 ('blade_number', models.PositiveSmallIntegerField(verbose_name='Blade')),
                 ('port_number', models.PositiveSmallIntegerField(verbose_name='Port')),
                 ('active', models.BooleanField(default=True, verbose_name='Active')),
@@ -57,11 +87,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='networkdevice',
             name='room',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='core.Room', verbose_name='Room'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=CASCADE,
+                                    to='core.Room', verbose_name='Room'),
         ),
         migrations.AddField(
             model_name='networkdevice',
             name='upstream_device',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='downstream_devices', to='network.NetworkDevice'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=CASCADE,
+                                    related_name='downstream_devices', to='network.NetworkDevice'),
         ),
     ]

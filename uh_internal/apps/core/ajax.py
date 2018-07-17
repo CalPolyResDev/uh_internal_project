@@ -13,8 +13,8 @@ import ast
 import logging
 
 from clever_selects.views import ChainedSelectChoicesView
-from django.core.urlresolvers import reverse_lazy
 from django.template import Template, RequestContext
+from django.urls import reverse_lazy
 from django.views.decorators.http import require_POST
 from rest_framework.decorators import api_view
 from rest_framework.response import Response

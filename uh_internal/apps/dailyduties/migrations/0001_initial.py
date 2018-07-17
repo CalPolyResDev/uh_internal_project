@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.conf import settings
 from django.db import migrations, models
-import django.db.models.deletion
+from django.db.models.deletion import SET_NULL
 
 
 class Migration(migrations.Migration):
@@ -19,10 +19,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DailyDuties',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=15, unique=True, verbose_name='Duty Name')),
                 ('last_checked', models.DateTimeField(verbose_name='Last DateTime Checked')),
-                ('last_user', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL, verbose_name='Last User to Check')),
+                ('last_user', models.ForeignKey(blank=True, null=True, on_delete=SET_NULL,
+                                                to=settings.AUTH_USER_MODEL,
+                                                verbose_name='Last User to Check')),
             ],
             options={
                 'verbose_name': 'Daily Duty',
@@ -32,7 +35,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EmailPermalink',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('current_mailbox', models.CharField(max_length=100)),
                 ('current_uid', models.IntegerField()),
                 ('date', models.DateTimeField()),
