@@ -26,6 +26,7 @@ termcolor==1.1.0
 uwsgidecorators==1.1.0
 xmltodict==0.11.0
 python-dotenv==0.8.2
+docutils==0.14
 
 git+ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git@switch_to_REST#egg=srsconnector
 
