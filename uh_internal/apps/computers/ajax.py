@@ -54,7 +54,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
     column_definitions["display_name"] = {"width": "200px", "type": "string", "title": "Computer Name"}
     column_definitions["mac_address"] = {"width": "150px", "type": "string", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
-    column_definitions["RDP"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "RDP"}
+    column_definitions["RDP"] = {"width": "1px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "RDP"}
     column_definitions["department"] = {"width": "200px", "type": "string", "title": "Department", "related": True, "lookup_field": "name"}
     column_definitions["sub_department"] = {"width": "200px", "type": "string", "title": "Sub Department", "related": True, "lookup_field": "name"}
     column_definitions["model"] = {"width": "200px", "type": "string", "title": "Model"}
@@ -64,7 +64,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
     column_definitions["date_purchased"] = {"width": "100px", "type": "string", "searchable": False, "title": "Date Purchased"}
     column_definitions["dn"] = {"width": "250px", "type": "string", "title": "Distinguished Name"}
     column_definitions["description"] = {"width": "250px", "type": "string", "title": "Description"}
-    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+    column_definitions["remove"] = {"width": "1px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
         "language": {
@@ -74,7 +74,7 @@ class PopulateComputers(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
+            self.column_definitions["remove"].update({"width": "1px", "type": "string", "remove_column": True, "visible": True})
 
         return super(PopulateComputers, self).get_options()
 
