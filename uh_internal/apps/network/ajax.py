@@ -59,12 +59,12 @@ class PopulatePorts(RNINDatatablesPopulateView):
     column_definitions["room"] = {"width": "80px", "type": "string", "editable": False, "title": "Room", "related": True, "lookup_field": "name"}
     column_definitions["switch_name"] = {"width": "100px", "type": "string", "title": "Switch Name", "custom_lookup": True, "lookup_field": "upstream_device__display_name"}
     column_definitions["switch_ip"] = {"width": "150px", "type": "ip-address", "title": "Switch IP", "custom_lookup": True, "lookup_field": "upstream_device__ip_address"}
-    column_definitions["display_name"] = {"width": "50px", "type": "string", "editable": False, "title": "Jack"}
-    column_definitions["blade_number"] = {"width": "50px", "type": "numeric", "title": "Blade"}
-    column_definitions["port_number"] = {"width": "50px", "type": "numeric", "title": "Port"}
-    column_definitions["downstream_devices"] = {"width": "50px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP", "related": True, "lookup_field": "id"}
-    column_definitions["active"] = {"width": "0px", "searchable": False, "orderable": True, "visible": False, "editable": False, "title": "&nbsp;"}
-    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+    column_definitions["display_name"] = {"width": "1px", "type": "string", "editable": False, "title": "Jack"}
+    column_definitions["blade_number"] = {"width": "1px", "type": "numeric", "title": "Blade"}
+    column_definitions["port_number"] = {"width": "1px", "type": "numeric", "title": "Port"}
+    column_definitions["downstream_devices"] = {"width": "1px", "type": "html", "searchable": False, "orderable": False, "editable": False, "title": "AP", "related": True, "lookup_field": "id"}
+    column_definitions["active"] = {"width": "1px", "searchable": False, "orderable": True, "visible": False, "editable": False, "title": "&nbsp;"}
+    column_definitions["remove"] = {"width": "1px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
         "language": {
@@ -74,8 +74,8 @@ class PopulatePorts(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["active"].update({"width": "90px", "type": "string", "visible": True})
-            self.column_definitions["remove"].update({"width": "70px", "type": "string", "remove_column": True, "visible": True})
+            self.column_definitions["active"].update({"width": "1px", "type": "string", "visible": True})
+            self.column_definitions["remove"].update({"width": "1px", "type": "string", "remove_column": True, "visible": True})
 
         return super().get_options()
 
@@ -248,12 +248,12 @@ class PopulateAccessPoints(RNINDatatablesPopulateView):
     column_definitions["mac_address"] = {"width": "125px", "type": "string", "title": "MAC Address"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
     column_definitions["ap_type"] = {"width": "80px", "type": "string", "title": "Type"}
-    column_definitions["airwaves_id"] = {"width": "10px", "type": "string", "orderable": False}
-    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+    column_definitions["airwaves_id"] = {"width": "1px", "type": "string", "orderable": False}
+    column_definitions["remove"] = {"width": "1px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
+            self.column_definitions["remove"].update({"width": "1px", "type": "string", "remove_column": True, "visible": True})
 
         return super().get_options()
 
@@ -364,12 +364,12 @@ class PopulateNetworkInfrastructureDevices(RNINDatatablesPopulateView):
     column_definitions["display_name"] = {"width": "80px", "type": "string", "title": "Name"}
     column_definitions["dns_name"] = {"width": "80px", "type": "string", "title": "DNS"}
     column_definitions["ip_address"] = {"width": "150px", "type": "string", "title": "IP Address"}
-    column_definitions["airwaves_id"] = {"width": "10px", "type": "string", "title": "", "orderable": False}
-    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+    column_definitions["airwaves_id"] = {"width": "1px", "type": "string", "title": "", "orderable": False}
+    column_definitions["remove"] = {"width": "1px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
+            self.column_definitions["remove"].update({"width": "1px", "type": "string", "remove_column": True, "visible": True})
 
         return super().get_options()
 

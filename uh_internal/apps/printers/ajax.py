@@ -53,7 +53,7 @@ class PopulatePrinters(RNINDatatablesPopulateView):
     column_definitions["location"] = {"width": "150px", "type": "string", "title": "Location"}
     column_definitions["date_purchased"] = {"width": "100px", "type": "string", "searchable": False, "title": "Date Purchased"}
     column_definitions["description"] = {"width": "250px", "type": "string", "title": "Description"}
-    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+    column_definitions["remove"] = {"width": "20px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
         "language": {
@@ -63,7 +63,7 @@ class PopulatePrinters(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
+            self.column_definitions["remove"].update({"width": "20px", "type": "string", "remove_column": True, "visible": True})
 
         return super(PopulatePrinters, self).get_options()
 
