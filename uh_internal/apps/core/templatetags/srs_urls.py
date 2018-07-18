@@ -12,4 +12,4 @@ register = template.Library()
 
 @register.simple_tag
 def srs_edit_url(ticket_id):
-    return 'https://calpoly.enterprisewizard.com/gui2/cas-login?KB=calpoly2&state=Edit:helpdesk_case&record=' + str(ticket_id) + '&gui=Staff&record_access=Edit'
+    return 'https://srs.calpoly.edu/gui2/cas-login?KB=calpoly2&state=Edit:helpdesk_case&record=' + str(ticket_id) + '&gui=Staff&record_access=Edit'
