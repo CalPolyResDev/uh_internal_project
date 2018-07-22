@@ -223,7 +223,7 @@ class PopulateRooms(RNINDatatablesPopulateView):
     column_definitions["community"] = {"type": "string", "editable": False, "title": "Community", "custom_lookup": True, "lookup_field": "building__community__name"}
     column_definitions["building"] = {"type": "string", "editable": False, "title": "Building", "related": True, "lookup_field": "name"}
     column_definitions["name"] = {"type": "string", "title": "Name"}
-    column_definitions["remove"] = {"width": "0px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
+    column_definitions["remove"] = {"width": "1px", "searchable": False, "orderable": False, "visible": False, "editable": False, "title": "&nbsp;"}
 
     extra_options = {
         "scrollX": False,
@@ -231,7 +231,7 @@ class PopulateRooms(RNINDatatablesPopulateView):
 
     def get_options(self):
         if self.get_write_permissions():
-            self.column_definitions["remove"].update({"width": "80px", "type": "string", "remove_column": True, "visible": True})
+            self.column_definitions["remove"].update({"width": "1px", "type": "string", "remove_column": True, "visible": True})
 
         return super().get_options()
 
