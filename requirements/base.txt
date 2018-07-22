@@ -1,4 +1,6 @@
 -i https://pypi.org/simple
+--extra-index-url https://pypi.org/simple
+argparse==1.4.0
 asn1crypto==0.24.0
 bcrypt==3.1.4
 beautifulsoup4==4.6.0
@@ -23,6 +25,7 @@ git+https://github.com/CalPolyResDev/StarRezAPI.git@b184e1863c37ff4fcf7a05509ad8
 git+https://github.com/CalPolyResDev/StarRezConnector.git@c691c717830793d93dcbdb261b1ebaf5759f4b5d#egg=starrezconnector
 git+https://github.com/CalPolyResDev/django-dbbackup.git@2c188d501798674e5ef31aa08368deb47e463db0#egg=django-dbbackup
 git+https://github.com/CalPolyResDev/ldap-groups.git@0dd3a7d9eafa3903127364839b12a4b3dd3ca521#egg=ldap-groups
+git+https://github.com/CalPolyResDev/uwsgicachetop.git@765a8fe14f872d030c635e11d31683fb011fe7e4#egg=uwsgicachetop
 git+https://github.com/fedorareis/pyexchange.git@988c1c57d6b830733dc2f69b5c2a45523a8ab1d7#egg=pyexchange
 git+ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git@3406138d5c25cddf18d2ecccb8a97f5e2036732e#egg=srsconnector
 html2text==2018.1.9
@@ -41,10 +44,12 @@ python-dotenv==0.8.2
 pytz==2018.5
 raven==6.9.0
 requests==2.19.1
+simplejson==3.16.0
 six==1.11.0
 sqlparse==0.2.4
 termcolor==1.1.0
-urllib3==1.23; python_version >= '2.6'
+urllib3==1.23
 uwsgidecorators==1.1.0
+uwsgitop==0.10
 webencodings==0.5.1
 xmltodict==0.11.0

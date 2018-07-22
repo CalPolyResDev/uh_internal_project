@@ -3,5 +3,3 @@
 
 -r base.txt
 
-git+https://github.com/CalPolyResDev/uwsgicachetop.git#egg=uwsgicachetop
-uwsgitop==0.10

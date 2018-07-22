@@ -4,42 +4,67 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+"asn1crypto" = "==0.24.0"
+bcrypt = "==3.1.4"
 "beautifulsoup4" = "==4.6.0"
+certifi = "==2018.4.16"
+cffi = "==1.11.5"
+chardet = "==3.0.4"
 colorama = "==0.3.9"
-djangorestframework = "==3.8.2"
-django-datatables-view = "==1.16.0"
+cryptography = "==2.3"
+dj-database-url = "==0.5.0"
 django-cas-ng = "==3.5.9"
 django-clever-selects = "==0.8.2"
 django-crispy-forms = "==1.7.2"
+django-datatables-view = "==1.16.0"
 django-js-reverse = "==0.8.2"
 django-static-precompiler = "==1.8.2"
 django-uwsgi-cache = "==1.0.1"
-dj-database-url = "==0.5.0"
+djangorestframework = "==3.8.2"
+docutils = "==0.14"
+starrezapi = {ref = "b184e1863c37ff4fcf7a05509ad8ea8ba825b367", git = "https://github.com/CalPolyResDev/StarRezAPI.git"}
+starrezconnector = {ref = "c691c717830793d93dcbdb261b1ebaf5759f4b5d", git = "https://github.com/CalPolyResDev/StarRezConnector.git"}
+django-dbbackup = {ref = "2c188d501798674e5ef31aa08368deb47e463db0", git = "https://github.com/CalPolyResDev/django-dbbackup.git"}
+ldap-groups = {ref = "0dd3a7d9eafa3903127364839b12a4b3dd3ca521", git = "https://github.com/CalPolyResDev/ldap-groups.git"}
+pyexchange = {ref = "988c1c57d6b830733dc2f69b5c2a45523a8ab1d7", git = "https://github.com/fedorareis/pyexchange.git"}
+srsconnector = {ref = "3406138d5c25cddf18d2ecccb8a97f5e2036732e", git = "ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git"}
 "html2text" = "==2018.1.9"
 "html5lib" = "==1.0.1"
+idna = "==2.7"
 "ldap3" = "==2.5"
 mysqlclient = "==1.3.13"
 paramiko = "==2.4.1"
 "psycopg2" = "==2.7.5"
+"pyasn1" = "==0.4.3"
+pycparser = "==2.18"
+python-cas = "==1.2.0"
 python-dateutil = "==2.7.3"
+python-dotenv = "==0.8.2"
+pytz = "==2018.5"
 raven = "==6.9.0"
+requests = "==2.19.1"
+six = "==1.11.0"
 sqlparse = "==0.2.4"
 termcolor = "==1.1.0"
+"urllib3" = "==1.23"
 uwsgidecorators = "==1.1.0"
+webencodings = "==0.5.1"
 xmltodict = "==0.11.0"
-python-dotenv = "==0.8.2"
-docutils = "==0.14"
-srsconnector = {ref = "switch_to_REST", git = "ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git"}
-starrezapi = {git = "https://github.com/CalPolyResDev/StarRezAPI.git"}
-starrezconnector = {git = "https://github.com/CalPolyResDev/StarRezConnector.git"}
-django-dbbackup = {git = "https://github.com/CalPolyResDev/django-dbbackup.git"}
-ldap-groups = {git = "https://github.com/CalPolyResDev/ldap-groups.git"}
-pyexchange = {git = "https://github.com/fedorareis/pyexchange.git"}
-Django = "==2.0.7"
+uwsgicachetop = {git = "https://github.com/CalPolyResDev/uwsgicachetop.git"}
+uwsgitop = "==0.10"
 cx_Oracle = "==6.4.1"
+Django = "==2.0.7"
+PyNaCl = "==1.2.1"
 
 [dev-packages]
 django-debug-toolbar = "==1.9.1"
+pytz = "==2018.5"
+sqlparse = "==0.2.4"
+Django = "==2.0.7"
 
 [requires]
 python_version = "3.5"
+
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
