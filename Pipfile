@@ -3,11 +3,6 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 name = "pypi"
 
-[dev-packages]
-
-[requires]
-python_version = "3.5"
-
 [packages]
 "beautifulsoup4" = "==4.6.0"
 colorama = "==0.3.9"
@@ -16,32 +11,35 @@ django-datatables-view = "==1.16.0"
 django-cas-ng = "==3.5.9"
 django-clever-selects = "==0.8.2"
 django-crispy-forms = "==1.7.2"
-django-js-reverse = "==0.8.1"
+django-js-reverse = "==0.8.2"
 django-static-precompiler = "==1.8.2"
 django-uwsgi-cache = "==1.0.1"
 dj-database-url = "==0.5.0"
 "html2text" = "==2018.1.9"
 "html5lib" = "==1.0.1"
 "ldap3" = "==2.5"
-mysqlclient = "==1.3.12"
+mysqlclient = "==1.3.13"
 paramiko = "==2.4.1"
-"psycopg2" = "==2.7.4"
+"psycopg2" = "==2.7.5"
 python-dateutil = "==2.7.3"
-raven = "==6.8.0"
+raven = "==6.9.0"
 sqlparse = "==0.2.4"
 termcolor = "==1.1.0"
 uwsgidecorators = "==1.1.0"
 xmltodict = "==0.11.0"
 python-dotenv = "==0.8.2"
-srsconnector = {git = "ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git", ref = "switch_to_REST"}
-StarRezAPI = {git = "https://github.com/CalPolyResDev/StarRezAPI.git"}
-StarRezConnector = {git = "https://github.com/CalPolyResDev/StarRezConnector.git"}
+docutils = "==0.14"
+srsconnector = {ref = "switch_to_REST", git = "ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git"}
+starrezapi = {git = "https://github.com/CalPolyResDev/StarRezAPI.git"}
+starrezconnector = {git = "https://github.com/CalPolyResDev/StarRezConnector.git"}
 django-dbbackup = {git = "https://github.com/CalPolyResDev/django-dbbackup.git"}
 ldap-groups = {git = "https://github.com/CalPolyResDev/ldap-groups.git"}
 pyexchange = {git = "https://github.com/fedorareis/pyexchange.git"}
+Django = "==2.0.7"
+cx_Oracle = "==6.4.1"
+
+[dev-packages]
 django-debug-toolbar = "==1.9.1"
-pylint = "==1.8.4"
-pylint-django = "==0.11"
-Django = "==2.0.5"
-cx_Oracle = "==6.3.1"
-docutils = "*"
+
+[requires]
+python_version = "3.6"
