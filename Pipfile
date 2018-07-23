@@ -61,6 +61,7 @@ django-debug-toolbar = "==1.9.1"
 pytz = "==2018.5"
 sqlparse = "==0.2.4"
 Django = "==2.0.7"
+"flake8" = "*"
 
 [requires]
 python_version = "3.5"
