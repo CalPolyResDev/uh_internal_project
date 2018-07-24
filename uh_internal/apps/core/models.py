@@ -261,9 +261,7 @@ class NavbarLink(Model):
     permission_classes = ManyToManyField(PermissionClass,
                                          verbose_name='Permission Classes', blank=True)
     show_to_all = BooleanField(verbose_name='Show To All Users', default=False)
-    #icon = CharField(max_length=100, verbose_name='Icon Static File Location',
-    #                 blank=True, null=True)
-    icon = FilePathField(path="/home/hluengas/projects/uh_internal_project/uh_internal/static/images/icons")
+    icon = FilePathField(path=str(settings.PROJECT_DIR)+"/uh_internal/static/images/icons")
     sequence_index = SmallIntegerField(verbose_name='Sequence Index')
     parent_group = ForeignKey('NavbarLink', related_name='links', blank=True, null=True,
                               verbose_name='Parent Link Group', on_delete=CASCADE)
