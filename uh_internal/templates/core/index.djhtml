@@ -55,17 +55,32 @@
                     </div>
                 {% endif %}
 
-                <div>
-                    <h2> Feedback/Report Issue </h2>
-                </div>
+                {% if request.user.is_authenticated %}
+                    <div>
+                        <h2> Feedback/Report Issue </h2>
+                        <form action="https://hooks.slack.com/services/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" enctype="application/json">
+                            <input id="feedback_box" name="text" value="test">
+                            <br>
+                            Broken/Urgent: 
+                            <input type="checkbox" id="urgent">
+                            <br>
+                            <br>
+                            <input type="button" value="Send" onclick="Feedback(feedback_box.value, urgent.value)" id="feedback_button">
+                        </form>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
+
 {% endblock %}
 
 {% block extra_script %}
 <script type="text/javascript">
-    $(document).ready(function() {       
+    
+</script>
+<script type="text/javascript">
+    $(document).ready(function() {
         {% if request.user.is_authenticated and ticket_access %}
             fetch("{% url 'core:get_tickets' %}", {credentials: 'include'})
                 .then(function(response) { return response.json(); })
@@ -85,4 +100,5 @@
         {% endif %}
     });
 </script>
+
 {% endblock %}
