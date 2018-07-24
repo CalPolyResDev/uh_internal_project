@@ -1,5 +1,5 @@
 function Feedback(string, urgent){
-    if(urgent == "on"){
+    if(urgent == true){
         string = "<!channel> " + string
     }
     $.ajax({

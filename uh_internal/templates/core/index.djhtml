@@ -65,7 +65,7 @@
                             <input type="checkbox" id="urgent">
                             <br>
                             <br>
-                            <input type="button" value="Send" onclick="Feedback(feedback_box.value, urgent.value)" id="feedback_button">
+                            <input type="button" value="Send" onclick="Feedback(feedback_box.value, urgent.checked)" id="feedback_button">
                         </form>
                     </div>
                 {% endif %}
@@ -76,9 +76,6 @@
 {% endblock %}
 
 {% block extra_script %}
-<script type="text/javascript">
-    
-</script>
 <script type="text/javascript">
     $(document).ready(function() {
         {% if request.user.is_authenticated and ticket_access %}
