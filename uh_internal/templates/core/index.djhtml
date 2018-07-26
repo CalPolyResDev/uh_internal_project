@@ -45,21 +45,40 @@
                 </div>
             {% endif %}
             
-            {% if ticket_access %}
-                <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                    <h2>Ticket Summary</h2>
-                    <div id="tickets-response" class="table-responsive table-wrapper-cutoff">
-                        <p>Loading...</p>
+            <div class="col">
+                {% if ticket_access %}
+                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                        <h2>Ticket Summary</h2>
+                        <div id="tickets-response" class="table-responsive table-wrapper-cutoff">
+                            <p>Loading...</p>
+                        </div>
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
+
+                {% if request.user.is_authenticated %}
+                    <div>
+                        <br><br>
+                        <h2> Feedback/Report Issue </h2>
+                        Send an anonymous message to the devs with a feature you'd like to see or to report an issue.  If something is broken, also check the box below. 
+                        <br><br>
+                        <textarea id="feedback_box" name="text" value="test" rows="15"></textarea>
+                        <br><br>
+                        <label for="urgent">Broken:</label> 
+                        <input type="checkbox" id="urgent">
+                        <br><br>
+                        <input type="button" value="Send" onclick="Feedback(feedback_box.value, urgent.checked)" id="feedback_button" class="btn btn-primary">
+                        <span id="sent_message"></span>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
+
 {% endblock %}
 
 {% block extra_script %}
 <script type="text/javascript">
-    $(document).ready(function() {       
+    $(document).ready(function() {
         {% if request.user.is_authenticated and ticket_access %}
             fetch("{% url 'core:get_tickets' %}", {credentials: 'include'})
                 .then(function(response) { return response.json(); })
@@ -79,4 +98,5 @@
         {% endif %}
     });
 </script>
+
 {% endblock %}
