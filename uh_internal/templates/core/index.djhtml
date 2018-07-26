@@ -59,7 +59,7 @@
                     <div>
                         <br><br>
                         <h2> Feedback/Report Issue </h2>
-                        Send a message to the devs with a feature you'd like to see or to report an issue.  If something is broken, also check the box below. 
+                        Send an anonymous message to the devs with a feature you'd like to see or to report an issue.  If something is broken, also check the box below. 
                         <br><br>
                         <textarea id="feedback_box" name="text" value="test" rows="15"></textarea>
                         <br><br>
