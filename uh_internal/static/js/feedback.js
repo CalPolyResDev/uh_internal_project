@@ -1,6 +1,9 @@
 function Feedback(string, urgent){
     textarea = document.getElementById("feedback_box")
     sent_message = document.getElementById("sent_message")
+    if (string == default_text){
+        return;
+    }
     if(urgent == true){
         string = "<!channel> " + string
         message = "Repair message sent!"
