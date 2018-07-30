@@ -1,5 +1,5 @@
 function Feedback(string, urgent){
-    textarea = document.getElementById("feedback_box")
+    text_area = document.getElementById("feedback_box")
     sent_message = document.getElementById("sent_message")
     if (string == default_text){
         return;
@@ -17,27 +17,27 @@ function Feedback(string, urgent){
        
        data: JSON.stringify({"text":string})
    })
-   textarea.value = default_text
+   text_area.value = default_text
    sent_message.innerHTML=message
 }
 
 default_text = "Type here!"
 
-function Focus(textarea){
-    if (textarea.value == default_text){
-        textarea.value = "";
+function Focus(text_area){
+    if (text_area.value == default_text){
+        text_area.value = "";
     }
 }
 
-function Blur(textarea){
-    if(textarea.value == "") {
-        textarea.value = default_text
+function Blur(text_area){
+    if(text_area.value == "") {
+        text_area.value = default_text
     }
 }
 
 window.onload = function() {
-    var textarea = this.document.getElementById("feedback_box");
-    textarea.value = default_text;
-    textarea.onfocus = function() { Focus(this); };
-    textarea.onblur = function() { Blur(this); };
+    var text_area = this.document.getElementById("feedback_box");
+    text_area.value = default_text;
+    text_area.onfocus = function() { Focus(this); };
+    text_area.onblur = function() { Blur(this); };
 }
