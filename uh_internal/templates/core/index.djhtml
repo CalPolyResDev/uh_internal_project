@@ -45,9 +45,9 @@
                 </div>
             {% endif %}
             
-            <div class="col">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 {% if ticket_access %}
-                    <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                    <div>
                         <h2>Ticket Summary</h2>
                         <div id="tickets-response" class="table-responsive table-wrapper-cutoff">
                             <p>Loading...</p>
