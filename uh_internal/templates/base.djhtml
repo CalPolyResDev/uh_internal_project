@@ -135,6 +135,7 @@
         <script src="{% static 'js/modal-frames.js' %}?version=1.1"></script>
         <script src="{% static 'js/navbar.js' %}?version=1.0"></script>
         <script src="{% static 'js/airwaves_chart.js' %}?1.1"></script>
+        <script src="{% static 'js/feedback.js' %}"></script>
         
         <script type="text/javascript">
             function getCookie(name) {
