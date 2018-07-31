@@ -1,7 +1,6 @@
-"""
-.. module:: resnet_internal.apps.computers.models
-   :synopsis: University Housing Internal Computer Index Models.
+"""University Housing Internal Computer Index Models.
 
+.. module:: resnet_internal.apps.computers.models
 .. moduleauthor:: Thomas Willson <tewillso@calpoly.edu>
 .. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 
@@ -28,6 +27,12 @@ csv_re = re.compile(CSV_RE, re.DOTALL)
 
 
 class DomainNameListFormFiled(RegexField):
+    """Form field for domain names.
+    
+    Attributes:
+        default_error_messages (TYPE): Description
+    """
+
     default_error_messages = {
         'invalid': 'Domain names must be comma-separated e.g. "a.example.com, b.example.com, c.example.com".',
     }

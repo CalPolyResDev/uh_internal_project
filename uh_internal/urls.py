@@ -1,7 +1,7 @@
 """
-.. module:: resnet_internal.urls
-   :synopsis: University Housing Internal URLs.
+University Housing Internal URLs.
 
+.. module:: resnet_internal.urls
 .. moduleauthor:: Alex Kavanaugh <alex@kavdev.io>
 .. moduleauthor:: RJ Almada <almada.dev@gmail.com>
 .. moduleauthor:: Thomas Willson <thomas.willson@icloud.com>
@@ -25,7 +25,8 @@ handler500 = handler500
 logger = logging.getLogger(__name__)
 
 urlpatterns = [
-    url(r'^flugzeug/', admin.site.urls),  # admin site urls, masked
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^admin/', admin.site.urls),  # admin site urls, masked
     url(r'^technicians/', include(MAIN_APP_NAME + '.apps.technicians.urls')),
     url(r'^computers/', include(MAIN_APP_NAME + '.apps.computers.urls')),
     url(r'^dailyduties/', include(MAIN_APP_NAME + '.apps.dailyduties.urls')),
