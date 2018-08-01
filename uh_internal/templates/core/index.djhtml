@@ -20,6 +20,26 @@
     {% endif %}
     
     <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                {% if ticket_access %}
+                    <div>
+                        <h2>Ticket Summary</h2>
+                        <div id="tickets-response" class="table-responsive table-wrapper-cutoff">
+                            <p>Loading...</p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+                {% if request.user.is_authenticated %}
+                    <div id="calendar_div">
+                            <iframe src="https://outlook.office365.com/owa/calendar/97327fcb39c34fe9af5d1a7b9e0c6af8@calpoly.edu/1f82a24e95eb4d0f9ddcee9fcf2ef4bd7236223821977132394/calendar.html" id="calendar"></iframe>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
         {% if network_access %}
             <div class="row">
                 <div class="col-xs-12">
@@ -35,6 +55,7 @@
                 </div>
             </div>
         {% endif %}
+
         <div class="row">
             {% if network_access %}
                 <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
@@ -46,14 +67,6 @@
             {% endif %}
             
             <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
-                {% if ticket_access %}
-                    <div>
-                        <h2>Ticket Summary</h2>
-                        <div id="tickets-response" class="table-responsive table-wrapper-cutoff">
-                            <p>Loading...</p>
-                        </div>
-                    </div>
-                {% endif %}
 
                 {% if request.user.is_authenticated %}
                     <div>
@@ -70,15 +83,10 @@
                         <span id="sent_message"></span>
                     </div>
 
-                    <br>
-
-                    <div id="calendar_div">
-                        <iframe src="https://outlook.office365.com/owa/calendar/97327fcb39c34fe9af5d1a7b9e0c6af8@calpoly.edu/1f82a24e95eb4d0f9ddcee9fcf2ef4bd7236223821977132394/calendar.html" id="calendar"></iframe>
-                    </div>
-
                 {% endif %}
             </div>
         </div>
+
     </div>
 
 {% endblock %}
