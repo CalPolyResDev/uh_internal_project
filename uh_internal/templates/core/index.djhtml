@@ -70,9 +70,10 @@
                         <span id="sent_message"></span>
                     </div>
 
-                    <div>
-                        <iframe src="https://calendar.google.com/calendar/embed?showTitle=0&amp;showPrint=0&amp;mode=WEEK&amp;height=600&amp;wkst=1&amp;bgcolor=%23FFFFFF&amp;src=2vgsb865j4fl7tf5pop6usbdl0%40group.calendar.google.com&amp;color=%23711616&amp;ctz=America%2FLos_Angeles" 
-                        style="border-width:0" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+                    <br>
+
+                    <div id="calendar_div">
+                        <iframe src="https://outlook.office365.com/owa/calendar/97327fcb39c34fe9af5d1a7b9e0c6af8@calpoly.edu/1f82a24e95eb4d0f9ddcee9fcf2ef4bd7236223821977132394/calendar.html" id="calendar"></iframe>
                     </div>
 
                 {% endif %}
