@@ -31,7 +31,7 @@ git+ssh://git@code.its.calpoly.edu:7999/srsc/srsconnector.git@3406138d5c25cddf18
 html2text==2018.1.9
 html5lib==1.0.1
 idna==2.7
-ldap3==2.5
+ldap3==2.5.1
 mysqlclient==1.3.13
 paramiko==2.4.1
 psycopg2==2.7.5
