@@ -33,8 +33,9 @@
             </div>
             <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
                 {% if request.user.is_authenticated %}
+                    <h2>Calendar</h2>
                     <div id="calendar_div">
-                            <iframe src="https://outlook.office365.com/owa/calendar/97327fcb39c34fe9af5d1a7b9e0c6af8@calpoly.edu/1f82a24e95eb4d0f9ddcee9fcf2ef4bd7236223821977132394/calendar.html" id="calendar"></iframe>
+                            <iframe src="https://outlook.office365.com/owa/calendar/97327fcb39c34fe9af5d1a7b9e0c6af8@calpoly.edu/1f82a24e95eb4d0f9ddcee9fcf2ef4bd7236223821977132394/calendar.html" id="calendar" frameBorder="0"></iframe>
                     </div>
                 {% endif %}
             </div>
