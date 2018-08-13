@@ -60,7 +60,13 @@ def navbar(request):
             navbar = ''
 
             def a_inner_html(link):
-                return '<img class="link-icon" aria-hidden="true" src="{icon_url}" height="16" width="16"><span id="{link_id}_text">{link_name}</span>'.format(icon_url=static(link.icon),
+                
+                # link.icon can be the full path or path from static, therefore we normalize it to path from static
+                resolve_icon_url = link.icon
+                if (resolve_icon_url.find("images") != -1):
+                    resolve_icon_url = (resolve_icon_url[resolve_icon_url.find("images"):])
+
+                return '<img class="link-icon" aria-hidden="true" src="{icon_url}" height="16" width="16"><span id="{link_id}_text">{link_name}</span>'.format(icon_url=static(resolve_icon_url),
                                                                                                                                                                link_name=link.display_name,
                                                                                                                                                                link_id=link.html_id)
 
