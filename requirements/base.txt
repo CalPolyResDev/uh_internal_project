@@ -19,7 +19,7 @@ django-js-reverse==0.8.2
 django-static-precompiler==1.8.2
 django-uwsgi-cache==1.0.1
 django==2.0.7
-djangorestframework==3.8.2
+djangorestframework==3.10.2
 docutils==0.14
 git+https://github.com/CalPolyResDev/StarRezAPI.git@b184e1863c37ff4fcf7a05509ad8ea8ba825b367#egg=starrezapi
 git+https://github.com/CalPolyResDev/StarRezConnector.git@c691c717830793d93dcbdb261b1ebaf5759f4b5d#egg=starrezconnector
