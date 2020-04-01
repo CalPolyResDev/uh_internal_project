@@ -1,7 +1,7 @@
 -i https://pypi.org/simple
 --extra-index-url https://pypi.org/simple
 django-debug-toolbar==1.9.1
-django==2.0.7
+django==3.0.5
 flake8==3.5.0
 mccabe==0.6.1
 pycodestyle==2.3.1
