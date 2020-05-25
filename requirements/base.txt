@@ -37,7 +37,7 @@ paramiko==2.4.1
 psycopg2==2.7.5
 pyasn1==0.4.3
 pycparser==2.18
-pynacl==1.2.1
+pynacl==1.4.0
 python-cas==1.2.0
 python-dateutil==2.7.3
 python-dotenv==0.8.2
