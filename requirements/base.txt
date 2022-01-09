@@ -11,7 +11,7 @@ colorama==0.3.9
 cryptography==2.3
 cx-oracle==6.4.1
 dj-database-url==0.5.0
-django-cas-ng==3.5.9
+django-cas-ng==4.3.0
 django-clever-selects==0.8.2
 django-crispy-forms==1.7.2
 django-datatables-view==1.16.0
