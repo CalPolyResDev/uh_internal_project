@@ -18,7 +18,7 @@ django-datatables-view==1.16.0
 django-js-reverse==0.8.2
 django-static-precompiler==1.8.2
 django-uwsgi-cache==1.0.1
-django==2.0.7
+django==4.0.6
 djangorestframework==3.8.2
 docutils==0.14
 git+https://github.com/CalPolyResDev/StarRezAPI.git@b184e1863c37ff4fcf7a05509ad8ea8ba825b367#egg=starrezapi
