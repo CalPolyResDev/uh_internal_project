@@ -41,7 +41,7 @@ pynacl==1.2.1
 python-cas==1.2.0
 python-dateutil==2.7.3
 python-dotenv==0.8.2
-pytz==2018.5
+pytz==2023.3
 raven==6.9.0
 requests==2.19.1
 simplejson==3.16.0
