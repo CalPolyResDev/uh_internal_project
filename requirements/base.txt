@@ -15,7 +15,7 @@ django-cas-ng==3.5.9
 django-clever-selects==0.8.2
 django-crispy-forms==1.7.2
 django-datatables-view==1.16.0
-django-js-reverse==0.8.2
+django-js-reverse==0.10.2
 django-static-precompiler==1.8.2
 django-uwsgi-cache==1.0.1
 django==2.0.7
