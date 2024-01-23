@@ -40,7 +40,7 @@ pycparser==2.18
 pynacl==1.2.1
 python-cas==1.2.0
 python-dateutil==2.7.3
-python-dotenv==0.8.2
+python-dotenv==1.0.1
 pytz==2018.5
 raven==6.9.0
 requests==2.19.1
